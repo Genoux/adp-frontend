@@ -2,17 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { useRouter } from 'next/router';
-import { createClient } from '@supabase/supabase-js';
-
+import supabase from '@/app/services/supabase';
 // Create a single supabase client for interacting with your database
-const supabase = createClient('http://localhost:54321', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0');
 
-export default function Room({ params }: { params: { roomid: string } }) {
+export default function Room({ params }: { params: { roomid: string, teamid: string } }) {
   const roomid = params.roomid;
+  const teamid = params.teamid;
   const [socket, setSocket] = useState<Socket | null>(null);
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
     if (roomid) {
       const newSocket = io('http://localhost:3000', { query: { room: roomid } });
@@ -23,7 +22,7 @@ export default function Room({ params }: { params: { roomid: string } }) {
         // Join the room
         newSocket.emit('joinRoom', roomid);
 
-        const { data, error } = await supabase.from('rooms').select('*').eq('id', roomid).single();
+        const { data, error } = await supabase.from('teams').select('*, room(*)').eq('id', teamid).single();
         if (error || !data) {
           console.error('Error fetching data:', error);
           setRoomNotFound(true);
@@ -49,6 +48,11 @@ export default function Room({ params }: { params: { roomid: string } }) {
       return <h1>404 - Page Not Found</h1>;
     }
 
-    return <p>Post: {roomid}</p>;
+    return (
+      <div>
+        <p>Room: {roomid}</p>
+        <p>Team: {teamid}</p>
+      </div>
+    );
   }
 }
