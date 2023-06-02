@@ -29,7 +29,7 @@ export default function Room({
       newSocket.on("connect", async () => {
         console.log(`Connected to room ${roomid}`);
         // Join the room
-        newSocket.emit("joinRoom", roomid);
+        newSocket.emit("joinRoom", roomid, teamid);
 
         const { data: teamData, error } = await supabase
           .from("teams")
@@ -58,6 +58,7 @@ export default function Room({
 
       return () => {
         newSocket.disconnect();
+        setSocket(null);
       };
     }
   }, [roomid, teamid]);
