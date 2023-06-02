@@ -1,10 +1,11 @@
 "use client";
 
-import Image from 'next/image'
-import { useState } from 'react';
-import supabase from '@/app/services/supabase';
-import { randomChampions } from '@/app/utils/champions';
-import { generateArray } from '@/app/utils/helpers';
+import Image from "next/image";
+import { useState } from "react";
+import supabase from "@/app/services/supabase";
+import { randomChampions } from "@/app/utils/champions";
+import { generateArray } from "@/app/utils/helpers";
+import Link from "next/link";
 
 interface Room {
   id: number;
@@ -53,14 +54,14 @@ function Home() {
       });
 
       // for each team, update the room id
-      const { redUpdate, redUpdateError } = await supabase
+      await supabase
         .from("teams")
         .update({
           room: roomID,
         })
         .eq("id", teamRedId);
 
-      const { blueUpdate, blueUpdateError } = await supabase
+      await supabase
         .from("teams")
         .update({
           room: roomID,
@@ -95,9 +96,19 @@ function Home() {
             <div key={index}>
               <p>ID: {room.id}</p>
               <p>Name: {room.name}</p>
-              <hr />
-              <p>Blue: {room.blue}</p>
-              <p>Red: {room.red}</p>
+              <p>
+                Blue:
+                <Link href={`/room/${room.id}/${room.blue}`} target="_blank">
+                  {room.blue}
+                </Link>
+              </p>
+              <p>
+                Red:
+                <Link href={`/room/${room.id}/${room.red}`} target="_blank">
+                  {room.red}
+                </Link>
+              </p>
+              <p>Status: {room.status}</p>
             </div>
           ))
         ) : (

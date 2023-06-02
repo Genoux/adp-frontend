@@ -12,6 +12,9 @@ export default function Room({ params }: { params: { roomid: string, teamid: str
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   
+  const [team, setTeam] = useState<any>(null);
+  const [room, setRoom] = useState<any>(null);
+
   useEffect(() => {
     if (roomid) {
       const newSocket = io('http://localhost:3000', { query: { room: roomid } });
@@ -22,17 +25,19 @@ export default function Room({ params }: { params: { roomid: string, teamid: str
         // Join the room
         newSocket.emit('joinRoom', roomid);
 
-        const { data, error } = await supabase.from('teams').select('*, room(*)').eq('id', teamid).single();
-        if (error || !data) {
+        const { data: teamData, error } = await supabase.from('teams').select('*').eq('id', teamid).single();
+        const { data: roomData, error: roomError } = await supabase.from('rooms').select('*').eq('id', roomid).single();
+        
+        if (error || !teamData || roomError || !roomData) {
           console.error('Error fetching data:', error);
           setRoomNotFound(true);
         } else {
-          console.log('Fetched data:', data);
+          setLoading(false)
+          setTeam(teamData);
+          setRoom(roomData);
         }
       });
       
-      setLoading(false)
-
       newSocket.on('welcome', (arg: any) => {
         console.log('Server says:', arg);
       });
@@ -41,18 +46,29 @@ export default function Room({ params }: { params: { roomid: string, teamid: str
         newSocket.disconnect();
       };
     }
-  }, [roomid]);
+  }, [roomid, teamid]);
 
-  if (!loading) {
-    if (roomNotFound) {
-      return <h1>404 - Page Not Found</h1>;
-    }
-
-    return (
-      <div>
-        <p>Room: {roomid}</p>
-        <p>Team: {teamid}</p>
-      </div>
-    );
+  // Handle rendering
+  if (loading) {
+    return <p>Loading...</p>
   }
+  
+  if (roomNotFound) {
+    return <h1>404 - Page Not Found</h1>;
+  }
+
+  return (
+    <div>
+      <h1>Room ID: {room?.id}</h1>
+      <h1>Team ID: {team?.id}</h1>
+      <pre>{team?.color}</pre>
+      <pre>{team?.isTurn.toString()}</pre>
+      {team?.heroes_pool?.map((hero: any, index: number) => (
+        <div key={index}>
+          <pre>{hero.name}</pre>
+        </div>
+      ))}
+    </div>
+  );
 }
+
