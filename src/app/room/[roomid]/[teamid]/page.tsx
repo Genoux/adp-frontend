@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import supabase from "@/app/services/supabase";
+import Image from 'next/image';
 // Create a single supabase client for interacting with your database
 
 export default function Room({
@@ -103,10 +104,11 @@ export default function Room({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-5 gap-4">
         {team?.heroes_pool?.map((hero: any, index: number) => (
           <div key={index} className="border p-4">
-            <pre>Name: {hero.name}</pre>
+            <Image src={`/images/champions/tiles/${hero.name.replace(/\s/g, '').toLowerCase()}.jpg`} alt={hero.name} width={60} height={60} />
+            <pre>{hero.name}</pre>
           </div>
         ))}
       </div>
