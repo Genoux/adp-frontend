@@ -11,13 +11,15 @@ export default function useSocket(roomid: string, teamid: string) {
       query: { room: roomid },
     });
 
+    setSocket(newSocket);
+
     newSocket.on("connect", async () => {
       console.log(`Connected to room ${roomid}`);
       newSocket.emit('joinRoom', roomid, teamid);
       // handle connection...
     });
 
-    setSocket(newSocket);
+    
 
     return () => {
       if (newSocket) {

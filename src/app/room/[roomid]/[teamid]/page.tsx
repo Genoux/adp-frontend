@@ -18,6 +18,7 @@ export default function Room({
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedChampion, setSelectedChampion] = useState<string>("");
+  const [timer, setTimer] = useState<string>("");
 
   const socket = useSocket(roomid, teamid);
 
@@ -39,7 +40,14 @@ export default function Room({
 
   useEffect(() => {
     if (socket) {
-      socket.on("welcome", (arg: any) => {
+      socket.on("message", (arg: any) => {
+        console.log("Server says:", arg);
+      });
+      socket.on("TIMER", (arg: any) => {
+        if (arg === "00:00:00") {
+          setSelectedChampion("");
+        }
+        setTimer(arg);
         console.log("Server says:", arg);
       });
     }
@@ -47,61 +55,13 @@ export default function Room({
   }, [findRoom, roomid, socket]);
 
   const handleConfirmSelection = async () => {
-    if (!selectedChampion) return;
-    const { data: team } = await supabase
-      .from("teams")
-      .select("id, heroes_pool, number_of_pick, heroes_selected")
-      .eq("room", roomid)
-      .eq("isTurn", true)
-      .single();
-
-    if (!team) return;
-
-    const { heroes_pool, heroes_selected } = team;
-
-    if (allNamesNotNull(heroes_selected)) {
-      throw new Error("All heroes are selected");
-    }
-
-    let hero;
-    if (selectedChampion) {
-      hero = heroes_pool.find((hero: any) => hero.name === selectedChampion);
-    } else {
-      const unselectedHeroes = heroes_pool.filter(
-        (hero: any) => !hero.selected
-      );
-      if (unselectedHeroes.length === 0)
-        throw new Error("No unselected heroes left");
-      hero =
-        unselectedHeroes[Math.floor(Math.random() * unselectedHeroes.length)];
-    }
-
-    hero.selected = true;
-
-    const nullSlotIndex = heroes_selected.findIndex(
-      (hero: any) => hero.name === null
-    );
-    if (nullSlotIndex !== -1) {
-      heroes_selected[nullSlotIndex] = hero;
-    }
-
-    const updatedHeroesPool = heroes_pool.map((hero: any) =>
-      hero.name === selectedChampion ? { ...hero, selected: true } : hero
-    );
-    
-    await supabase
-    .from('teams')
-    .update({ heroes_selected: heroes_selected, number_of_pick: team.number_of_pick - 1 })
-    .eq('id', team.id);
-
-    await Promise.all([
-      supabase
-        .from("teams")
-        .update({ heroes_pool: updatedHeroesPool })
-        .eq("room", roomid),
-    ]);
-
+    socket?.emit('SELECT_CHAMPION', { roomid: roomid, selectedChampion: selectedChampion });
     setSelectedChampion("");
+  };
+
+  const debugTimer = async () => {
+    socket?.emit('ROOM_READY', { roomid: roomid });
+
   };
 
   if (loading) {
@@ -112,6 +72,8 @@ export default function Room({
     <div>
       {!roomNotFound && (
         <>
+          {timer}
+          <button onClick={debugTimer}>start timer</button>
           <RoomInfo roomid={roomid} />
           <TeamView
             teamid={teamid}
