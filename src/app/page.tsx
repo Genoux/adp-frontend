@@ -52,7 +52,8 @@ function Home() {
         red: teamRedId,
         status: "waiting",
       });
-
+      
+      //todo room are not assigned to the teams - fix it
       // for each team, update the room id
       await supabase
         .from("teams")
