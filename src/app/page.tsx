@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import supabase from "@/app/services/supabase";
 import { randomChampions } from "@/app/utils/champions";
-import { generateArray } from "@/app/utils/helpers";
+import { generateArray, purgeAllRooms } from "@/app/utils/helpers";
 import Link from "next/link";
 
 interface Room {
@@ -20,6 +20,11 @@ function Home() {
   const [roomData, setRoomData] = useState<Room[] | null>(null);
 
   const createRoom = async () => {
+
+    //TODO remove this
+    const purge = await purgeAllRooms();
+    console.log("createRoom - purge:", purge);
+
     const champions = await randomChampions();
 
     const teamRedId = Math.floor(Math.random() * 1000000);

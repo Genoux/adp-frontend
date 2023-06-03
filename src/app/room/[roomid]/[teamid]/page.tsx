@@ -88,18 +88,17 @@ export default function Room({
     const updatedHeroesPool = heroes_pool.map((hero: any) =>
       hero.name === selectedChampion ? { ...hero, selected: true } : hero
     );
+    
+    await supabase
+    .from('teams')
+    .update({ heroes_selected: heroes_selected, number_of_pick: team.number_of_pick - 1 })
+    .eq('id', team.id);
 
     await Promise.all([
-      supabase.from("teams").update({ heroes_selected }).eq("id", team.id),
       supabase
         .from("teams")
         .update({ heroes_pool: updatedHeroesPool })
         .eq("room", roomid),
-      supabase.from("teams").update({ selected_hero: null }).eq("id", team.id),
-      supabase
-        .from("teams")
-        .update({ number_of_pick: team.number_of_pick - 1 })
-        .eq("id", team.id),
     ]);
 
     setSelectedChampion("");
