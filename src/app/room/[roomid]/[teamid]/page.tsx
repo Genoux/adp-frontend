@@ -5,6 +5,7 @@ import { io, Socket } from "socket.io-client";
 import supabase from "@/app/services/supabase";
 import RoomInfo from "@/app/components/RoomInfo";
 import TeamView from "@/app/components/TeamView";
+import ReadyView from "@/app/components/ReadyView";
 import useSocket from "@/app/hooks/useSocket";
 import { allNamesNotNull } from "@/app/utils/helpers";
 
@@ -19,6 +20,7 @@ export default function Room({
   const [loading, setLoading] = useState(true);
   const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [timer, setTimer] = useState<string>("");
+  const [roomReady, SetRoomReady] = useState(false);
 
   const socket = useSocket(roomid, teamid);
 
@@ -66,6 +68,10 @@ export default function Room({
 
   if (loading) {
     return <p className="font-bold">Loading room...</p>;
+  }
+
+  if (!roomReady) {
+    return <ReadyView teamid={teamid} />;
   }
 
   return (
