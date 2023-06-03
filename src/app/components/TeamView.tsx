@@ -34,6 +34,7 @@ useEffect(() => {
     console.log("setData - team:", team);
 
     setTeam(team);
+    setIsTurn(team.isTurn);
     setHeroesPool(team ? team.heroes_pool : []);
     setTeamRoom(team ? team.room : null);
   };
@@ -55,10 +56,11 @@ useEffect(() => {
             event: "UPDATE",
             schema: "public",
             table: "teams",
-            filter: `room=eq.${team.room}`,
+            filter: `id=eq.${teamid}`,
           },
           (payload) => {
             const { new: updatedTeam } = payload;
+            console.log("useEffect - payload:", payload);
             setIsTurn(updatedTeam.isTurn);
             setHeroesPool(updatedTeam.heroes_pool);
             //setTeam(updatedTeam);
@@ -71,7 +73,7 @@ useEffect(() => {
         channel.unsubscribe();
       };
     }
-  }, [team, teamid]);
+  },  [team, teamid]);
 
   const handleChampionClick = (championName: string) => {
     console.log("handleChampionClick - championName:", championName);
@@ -93,8 +95,8 @@ useEffect(() => {
           <>
             <h1 className="text-2xl mb-4">Team Color: {team.color}</h1>
             <h2 className="text-xl mb-4">
-              {String(team.isTurn)}
-              {team.isTurn
+              {String(isTurn)}
+              {isTurn
                 ? "It's your turn!"
                 : "Waiting for the other team..."}
             </h2>
@@ -104,7 +106,7 @@ useEffect(() => {
                 className={`border p-4 ${
                   hero.name === selectedChampion ? "bg-gray-800" : ""
                 } ${
-                  hero.selected || !team.isTurn
+                  hero.selected || !isTurn
                     ? "opacity-25 pointer-events-none"
                     : ""
                 }`}

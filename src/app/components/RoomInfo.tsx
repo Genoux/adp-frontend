@@ -57,7 +57,6 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
         },
         (payload) => {
           const { new: team } = payload;
-          console.log("useEffect - team:", team);
           team.color === 'blue' ? setBlueTeam(team) : setRedTeam((team) );
         }
       ).on(
