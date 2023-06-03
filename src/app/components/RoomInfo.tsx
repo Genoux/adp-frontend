@@ -5,10 +5,21 @@ interface RoomInfoProps {
   roomid: any; // Replace with your specific type
 }
 
+interface Hero {
+  name: string;
+  // Add other properties of Hero here as needed
+}
+
+interface Team {
+  [key: string]: any;
+}
+
 const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
-  console.log("roomid:", roomid);
   const [room, setRoom] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [blueTeam, setBlueTeam] = useState<Team | null>(null);
+  const [redTeam, setRedTeam] = useState<Team | null>(null);
+
 
   useEffect(() => {
     const getRoom = async () => {
@@ -17,32 +28,72 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
         .select("*, blue(*), red(*)")
         .eq("id", roomid)
         .single();
-
+  
       if (error) {
         console.error("Error fetching room data:", error);
       } else {
-        console.log("setData - roomData:", roomData);
         setRoom(roomData);
+        setBlueTeam(roomData.blue);
+        setRedTeam(roomData.red);
         setLoading(false);
       }
     };
-
-    if (roomid) {
-      getRoom();
-    }
+  
+    getRoom();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  
+  useEffect(() => {
+    const channel = supabase
+      .channel(roomid)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'teams',
+          filter: `room=eq.${roomid}`,
+        },
+        (payload) => {
+          const { new: team } = payload;
+          console.log("useEffect - team:", team);
+          team.color === 'blue' ? setBlueTeam(team) : setRedTeam((team) );
+        }
+      ).on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'rooms',
+          filter: `id=eq.${roomid}`,
+        },
+        (payload) => {
+          const { new: room } = payload;
+          setRoom(room);
+        })
+      .subscribe();
+  
+    return () => {
+      // Unsubscribe from room updates when component unmounts
+      channel.unsubscribe();
+    };
   }, [roomid]);
-
+  
+  
+  
   return (
     <div>
       {room && (
         <>
           <p>{room?.cycle}</p>
+          <p>{room?.name}</p>
           <h1>Room ID: {room?.id}</h1>
           <div className="flex my-24 gap-12 justify-center">
             <div>
               <h2>Blue Team Selected Heroes:</h2>
-              <div className="grid grid-cols-5 gap-4 mt-6">
-                {room?.blue?.heroes_selected?.map(
+              <div className={`grid grid-cols-5 gap-4 mt-6 ${blueTeam?.isTurn ? 'bg-blue-500' : ''}`}>
+                {blueTeam?.heroes_selected.map(
                   (hero: any, index: number) => (
                     <div key={index} className="border p-4">
                       <pre>Name: {hero.name}</pre>
@@ -53,8 +104,8 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
             </div>
             <div>
               <h2>Red Team Selected Heroes:</h2>
-              <div className="grid grid-cols-5 gap-4 mt-6">
-                {room?.red?.heroes_selected?.map((hero: any, index: number) => (
+              <div className={`grid grid-cols-5 gap-4 mt-6 ${redTeam?.isTurn ? 'bg-red-500' : ''}`}>
+                {redTeam?.heroes_selected.map((hero: any, index: number) => (
                   <div key={index} className="border p-4">
                     <pre>Name: {hero.name}</pre>
                   </div>
