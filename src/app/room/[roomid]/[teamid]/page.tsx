@@ -18,6 +18,7 @@ export default function Room({
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedChampion, setSelectedChampion] = useState<string>("");
+  const [timer, setTimer] = useState<string>("");
 
   const socket = useSocket(roomid, teamid);
 
@@ -42,21 +43,25 @@ export default function Room({
       socket.on("message", (arg: any) => {
         console.log("Server says:", arg);
       });
+      socket.on("TIMER", (arg: any) => {
+        if (arg === "00:00:00") {
+          setSelectedChampion("");
+        }
+        setTimer(arg);
+        console.log("Server says:", arg);
+      });
     }
     findRoom();
   }, [findRoom, roomid, socket]);
 
-  useEffect(() => {
-    if (socket) {
-      socket.on("message", (arg: any) => {
-        console.log("Server says:", arg);
-      });
-    }
-  }, [socket]);
-
   const handleConfirmSelection = async () => {
     socket?.emit('SELECT_CHAMPION', { roomid: roomid, selectedChampion: selectedChampion });
     setSelectedChampion("");
+  };
+
+  const debugTimer = async () => {
+    socket?.emit('ROOM_READY', { roomid: roomid });
+
   };
 
   if (loading) {
@@ -67,6 +72,8 @@ export default function Room({
     <div>
       {!roomNotFound && (
         <>
+          {timer}
+          <button onClick={debugTimer}>start timer</button>
           <RoomInfo roomid={roomid} />
           <TeamView
             teamid={teamid}

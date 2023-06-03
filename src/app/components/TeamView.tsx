@@ -19,7 +19,7 @@ const TeamView: React.FC<TeamViewProps> = ({
 }) => {
   const [team, setTeam] = useState<any>(null);
   const [isTurn, setIsTurn] = useState<boolean>(false);
-const [heroesPool, setHeroesPool] = useState<Array<any>>([]);
+  const [heroesPool, setHeroesPool] = useState<Array<any>>([]);
   const [champions, setChampions] = useState<any>(null);
   const [teamRoom, setTeamRoom] = useState<string | null>(null);
 
@@ -60,10 +60,8 @@ useEffect(() => {
           },
           (payload) => {
             const { new: updatedTeam } = payload;
-            console.log("useEffect - payload:", payload);
             setIsTurn(updatedTeam.isTurn);
             setHeroesPool(updatedTeam.heroes_pool);
-            //setTeam(updatedTeam);
           }
         )
         .subscribe();
@@ -76,7 +74,6 @@ useEffect(() => {
   },  [team, teamid]);
 
   const handleChampionClick = (championName: string) => {
-    console.log("handleChampionClick - championName:", championName);
     setSelectedChampion(championName);
   };
 
