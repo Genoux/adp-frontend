@@ -45,7 +45,11 @@ export default function Room({
       socket.on("message", (arg: any) => {
         console.log("Server says:", arg);
       });
+      socket.on("ROOM_READY", (arg: any) => {
+        SetRoomReady(true);
+      });
       socket.on("TIMER", (arg: any) => {
+        console.log("socket.on - arg:", arg);
         if (arg === "00:00:00") {
           setSelectedChampion("");
         }
@@ -70,15 +74,11 @@ export default function Room({
     return <p className="font-bold">Loading room...</p>;
   }
 
-  if (!roomReady) {
-    return <ReadyView teamid={teamid} />;
-  }
-
   return (
     <div>
       {!roomNotFound && (
         <>
-          {timer}
+          <div> timer: {timer.toString()} </div>
           <button onClick={debugTimer}>start timer</button>
           <RoomInfo roomid={roomid} />
           <TeamView

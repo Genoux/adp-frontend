@@ -57,7 +57,7 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
         },
         (payload) => {
           const { new: team } = payload;
-          team.color === 'blue' ? setBlueTeam(team) : setRedTeam((team) );
+          team.color === 'blue' ? setBlueTeam(team) : setRedTeam((team));
         }
       ).on(
         'postgres_changes',
@@ -79,7 +79,9 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
     };
   }, [roomid]);
   
-  
+  if (!room?.ready) {
+    return <p>Waiting for players to ready up...</p>;
+  }
   
   return (
     <div>

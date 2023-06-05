@@ -1,8 +1,11 @@
 // imports
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import supabase from "@/app/services/supabase";
 import Image from "next/image";
+import ReadyView from "@/app/components/ReadyView";
+import useSocket from "@/app/hooks/useSocket";
+
 
 interface TeamViewProps {
   teamid: string; // Replace with your specific type
@@ -19,9 +22,21 @@ const TeamView: React.FC<TeamViewProps> = ({
 }) => {
   const [team, setTeam] = useState<any>(null);
   const [isTurn, setIsTurn] = useState<boolean>(false);
+  const [isTeamReady, setisTeamReady] = useState<boolean>(false);
+  const [roomReady, setRoomReady] = useState<boolean>(false);
   const [heroesPool, setHeroesPool] = useState<Array<any>>([]);
   const [champions, setChampions] = useState<any>(null);
   const [teamRoom, setTeamRoom] = useState<string | null>(null);
+
+  const socket = useSocket(team?.room, teamid);
+
+  useEffect(() => {
+    if (socket) {
+      console.log("useEffect - socket:", socket);
+      socket.on('ROOM_READY', () => setRoomReady(true));
+    }
+   
+  }, [socket]);
 
 // When you fetch the team data, also update heroesPool and teamRoom
 useEffect(() => {
@@ -37,6 +52,8 @@ useEffect(() => {
     setIsTurn(team.isTurn);
     setHeroesPool(team ? team.heroes_pool : []);
     setTeamRoom(team ? team.room : null);
+
+
   };
 
   const fetchData = async () => {
@@ -58,10 +75,12 @@ useEffect(() => {
             table: "teams",
             filter: `id=eq.${teamid}`,
           },
-          (payload) => {
+          async (payload) => {
             const { new: updatedTeam } = payload;
             setIsTurn(updatedTeam.isTurn);
             setHeroesPool(updatedTeam.heroes_pool);
+
+            // When our team's ready state changes, check if both teams are ready
           }
         )
         .subscribe();
@@ -71,11 +90,27 @@ useEffect(() => {
         channel.unsubscribe();
       };
     }
-  },  [team, teamid]);
+  },  [socket, team, teamid]);
 
   const handleChampionClick = (championName: string) => {
     setSelectedChampion(championName);
   };
+
+  const handleReadyClick = async () => {
+    // Your existing logic to mark the team as ready
+    const { data: team } = await supabase.from('teams').update({ ready: true }).select("*, room(*)").eq('id', teamid).single();
+    socket?.emit('TEAM_READY', { roomid: team.room.id });
+    setisTeamReady(true);
+  };
+
+  if (!roomReady) {
+    return (
+      <>
+        <p>{isTeamReady.toString()}</p>
+        <ReadyView onReadyClick={handleReadyClick} team={team} />
+      </>
+    )
+  }
 
   return (
     <>
