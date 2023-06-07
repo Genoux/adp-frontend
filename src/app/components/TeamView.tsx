@@ -1,5 +1,5 @@
 // imports
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import supabase from "@/app/services/supabase";
 import Image from "next/image";
@@ -23,80 +23,61 @@ const TeamView: React.FC<TeamViewProps> = ({
   setSelectedChampion,
 }) => {
 
-  const [team, setTeam] = useState<any>(null);
   const [isTurn, setIsTurn] = useState<boolean>(false);
-  const [isTeamReady, setisTeamReady] = useState<boolean>(false);
-  //const [roomReady, setRoomReady] = useState<boolean>(false);
+  const [isTeamReady, setIsTeamReady] = useState<boolean>(false);
+  const [teamColor, setTeamColor] = useState<any>(null);
   const [heroesPool, setHeroesPool] = useState<Array<any>>([]);
-  const [champions, setChampions] = useState<any>(null);
-  const [teamRoom, setTeamRoom] = useState<string | null>(null);
-
-  const roomReady = roomStore((state: { roomReady: { [x: string]: any; }; }) => state.roomReady[roomid] || false);
-  console.log("roomReady:", roomReady);
-
-  const socket = useSocket(team?.room, teamid);
-
-  useEffect(() => {
-    if (socket) {
-      console.log("useEffect - socket:", socket);
-      //socket.on('ROOM_READY', () => setRoomReady(true));
-    }
-   
-  }, [socket]);
+  const socket = useSocket(roomid, teamid);
+  const { rooms } = roomStore();
+  const  room  = rooms[roomid]
 
 // When you fetch the team data, also update heroesPool and teamRoom
 useEffect(() => {
-  const setData = async () => {
+  const fetchTeam = async () => {
     const { data: team, error } = await supabase
       .from("teams")
       .select("*")
       .eq("id", teamid)
       .single();
-    console.log("setData - team:", team);
 
-    setTeam(team);
-    setIsTurn(team.isTurn);
-    setHeroesPool(team ? team.heroes_pool : []);
-    setTeamRoom(team ? team.room : null);
-
-
-  };
-
-  const fetchData = async () => {
-    await setData();
-  };
-
-  fetchData();
-}, [teamid]);
-
-  useEffect(() => {
-    if (team && team.room) {
-      const channel = supabase
-        .channel(teamid)
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "teams",
-            filter: `id=eq.${teamid}`,
-          },
-          async (payload) => {
+    const subscription = supabase
+      .channel(teamid)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "teams",
+          filter: `id=eq.${teamid}`,
+        },
+        async (payload) => {
+          try {
             const { new: updatedTeam } = payload;
+            console.log("updatedTeam:", updatedTeam);
+            setIsTeamReady(updatedTeam.ready)
             setIsTurn(updatedTeam.isTurn);
             setHeroesPool(updatedTeam.heroes_pool);
-
-            // When our team's ready state changes, check if both teams are ready
+          } catch (error) {
+            console.error("Error updating team:", error);
           }
-        )
-        .subscribe();
+        }
+      )
+      .subscribe(() => {
+        console.log(`Subscription to team ${teamid} ready.`);
+      });
 
-      return () => {
-        // Unsubscribe from room updates when component unmounts
-        channel.unsubscribe();
-      };
-    }
-  },  [socket, team, teamid]);
+    setIsTeamReady(team.ready)
+    setIsTurn(team.isTurn);
+    setHeroesPool(team.heroes_pool);
+    setTeamColor(team.color);
+    // Cleanup: unsubscribe when component unmounts
+    return () => {
+      subscription.unsubscribe();
+    };
+  };
+
+  fetchTeam();
+}, [teamid]);
 
   const handleChampionClick = (championName: string) => {
     setSelectedChampion(championName);
@@ -106,14 +87,14 @@ useEffect(() => {
     // Your existing logic to mark the team as ready
     const { data: team } = await supabase.from('teams').update({ ready: true }).select("*, room(*)").eq('id', teamid).single();
     socket?.emit('TEAM_READY', { roomid: team.room.id });
-    setisTeamReady(true);
+    setIsTeamReady(true);
   };
 
-  if (!roomReady) {
+  if (!room.ready) {
     return (
       <>
         <p>{isTeamReady.toString()}</p>
-        <ReadyView onReadyClick={handleReadyClick} team={team} />
+        <ReadyView onReadyClick={handleReadyClick} />
       </>
     )
   }
@@ -129,41 +110,31 @@ useEffect(() => {
         Confirm Selection
       </button>
       <div className="grid grid-cols-5 gap-4">
-        {team ? (
-          <>
-            <h1 className="text-2xl mb-4">Team Color: {team.color}</h1>
-            <h2 className="text-xl mb-4">
-              {String(isTurn)}
-              {isTurn
-                ? "It's your turn!"
-                : "Waiting for the other team..."}
-            </h2>
-            {heroesPool.map((hero: any, index: number) => (
-              <div
-                key={index}
-                className={`border p-4 ${
-                  hero.name === selectedChampion ? "bg-gray-800" : ""
-                } ${
-                  hero.selected || !isTurn
-                    ? "opacity-25 pointer-events-none"
-                    : ""
-                }`}
-                onClick={() => handleChampionClick(hero.name)}>
-                <Image
-                  src={`/images/champions/tiles/${hero.name
-                    .replace(/\s/g, "")
-                    .toLowerCase()}.jpg`}
-                  alt={hero.name}
-                  width={60}
-                  height={60}
-                />
-                <pre>{hero.name}</pre>
-              </div>
-            ))}
-          </>
-        ) : (
-          <p>Loading...</p>
-        )}
+        <h1 className="text-2xl mb-4">Team Color: {teamColor}</h1>
+        <h2 className="text-xl mb-4">
+          {String(isTurn)}
+          {isTurn ? "It's your turn!" : "Waiting for the other team..."}
+        </h2>
+        {heroesPool.map((hero: any, index: number) => (
+          <div
+            key={index}
+            className={`border p-4 ${
+              hero.name === selectedChampion ? "bg-gray-800" : ""
+            } ${
+              hero.selected || !isTurn ? "opacity-25 pointer-events-none" : ""
+            }`}
+            onClick={() => handleChampionClick(hero.name)}>
+            <Image
+              src={`/images/champions/tiles/${hero.name
+                .replace(/\s/g, "")
+                .toLowerCase()}.jpg`}
+              alt={hero.name}
+              width={60}
+              height={60}
+            />
+            <pre>{hero.name}</pre>
+          </div>
+        ))}
       </div>
     </>
   );

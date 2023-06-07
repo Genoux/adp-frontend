@@ -8,12 +8,11 @@ interface Team {
 }
 
 interface ReadyRoomProps {
-  team: Team | null; 
   onReadyClick: () => Promise<void>; // onReadyClick is a function that returns a Promise
 }
 
 
-const ReadyView: React.FC<ReadyRoomProps> = ({ team, onReadyClick }) => {
+const ReadyView: React.FC<ReadyRoomProps> = ({ onReadyClick }) => {
 
 
   return (

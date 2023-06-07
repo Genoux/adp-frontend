@@ -4,6 +4,7 @@ import { io, Socket } from "socket.io-client";
 import { getTeam, getRoom } from '../services/api';
 
 export default function useSocket(roomid: string, teamid: string) {
+  console.log("useSocket - roomid:", roomid);
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {

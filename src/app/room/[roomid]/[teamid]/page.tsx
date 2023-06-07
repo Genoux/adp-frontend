@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import supabase from "@/app/services/supabase";
 import RoomInfo from "@/app/components/RoomInfo";
 import TeamView from "@/app/components/TeamView";
 import ReadyView from "@/app/components/ReadyView";
 import useSocket from "@/app/hooks/useSocket";
+import { roomStore } from "@/app/stores/roomStore";
 import { allNamesNotNull } from "@/app/utils/helpers";
 
 export default function Room({
@@ -14,8 +15,9 @@ export default function Room({
 }: {
   params: { roomid: string; teamid: string };
 }) {
-  const roomid = params.roomid;
-  const teamid = params.teamid;
+  const roomid = useRef(params.roomid);
+  const teamid = useRef(params.teamid);
+  //const [room, setRoom] = useState<any>(null); // TODO: replace with your specific type
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedChampion, setSelectedChampion] = useState<string>("");
@@ -25,29 +27,31 @@ export default function Room({
   const [roomState, setRoomState] = useState<any>(null);
 
 
-  const socket = useSocket(roomid, teamid);
+  const socket = useSocket(roomid.current, teamid.current);
+// Use the `setRoom` function from your store
+  const { rooms, setRoom } = roomStore();
+  const room = rooms[roomid.current];
+  const [loadingRoom, setLoadingRoom] = useState(true);
 
-  const findRoom = useCallback(async () => {
+  useEffect(() => {
+    const findRoom = async () => {
+      const { data: room, error } = await supabase
+        .from("rooms")
+        .select('*')
+        .eq("id", roomid.current)
+        .single();
     
-    const { data: room, error } = await supabase
-      .from("rooms")
-      .select('id')
-      .eq("id", roomid)
-      .single();
-  
-    if (error || !room) {
-      console.error("Error fetching data:", error);
-      setRoomNotFound(true);
-    } else {
-      setLoading(false);
-         // Define the new state for the room
-    const newRoomState = {
-      // The new room state goes here
-    };
-
-    setRoomState(roomid);
+      if (error || !room) {
+        console.error("Error fetching data:", error);
+      } else {
+        setRoom(roomid.current, room);
+        setLoadingRoom(false); 
+      }
     }
-  }, [roomid]);
+    findRoom();
+  }, [setRoom]);
+  
+
 
   useEffect(() => {
     if (socket) {
@@ -66,39 +70,38 @@ export default function Room({
         console.log("Server says:", arg);
       });
     }
-    findRoom();
-  }, [findRoom, roomid, socket]);
+  }, [socket, setTimer]);
 
   const handleConfirmSelection = async () => {
-    socket?.emit('SELECT_CHAMPION', { roomid: roomid, selectedChampion: selectedChampion });
+    socket?.emit('SELECT_CHAMPION', { roomid: roomid.current, selectedChampion: selectedChampion });
     setSelectedChampion("");
   };
 
   const debugTimer = async () => {
-    socket?.emit('ROOM_READY', { roomid: roomid });
+    socket?.emit('ROOM_READY', { roomid: roomid.current });
 
   };
 
-  if (loading) {
-    return <p className="font-bold">Loading room...</p>;
+  if (loadingRoom) {
+    return <div>Loading...</div>; // Render a loading spinner while room data is being fetched
+  }
+
+  if (room.status === "done") {
+    return <div>Room is done</div>; // Render a message if the room is done
   }
 
   return (
-    <div>
-      {!roomNotFound && (
-        <>
-          <div> timer: {timer.toString()} </div>
-          <button onClick={debugTimer}>start timer</button>
-          <RoomInfo roomid={roomid} />
-          <TeamView
-            teamid={teamid}
-            roomid={roomid}
-            handleConfirmSelection={handleConfirmSelection}
-            setSelectedChampion={setSelectedChampion}
-            selectedChampion={selectedChampion}
-          />
-        </>
-      )}
-    </div>
+    <>
+      <div> timer: {timer.toString()} </div>
+      <button onClick={debugTimer}>start timer</button>
+      <RoomInfo roomid={roomid.current} />
+      <TeamView
+        teamid={teamid.current}
+        roomid={roomid.current}
+        handleConfirmSelection={handleConfirmSelection}
+        setSelectedChampion={setSelectedChampion}
+        selectedChampion={selectedChampion}
+      />
+    </>
   );
 }

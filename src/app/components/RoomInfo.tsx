@@ -6,40 +6,32 @@ interface RoomInfoProps {
   roomid: any; // Replace with your specific type
 }
 
-interface Hero {
-  name: string;
-  // Add other properties of Hero here as needed
-}
-
 interface Team {
   [key: string]: any;
 }
 
 const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
-  const [room, setRoom] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [blueTeam, setBlueTeam] = useState<Team | null>(null);
   const [redTeam, setRedTeam] = useState<Team | null>(null);
-  const setRoomReady = roomStore((state: { setRoomReady: any; }) => state.setRoomReady);
+
+  const { rooms, setRoom } = roomStore();
+  const  room  = rooms[roomid]
 
   useEffect(() => {
     const getRoom = async () => {
-      const { data: roomData, error } = await supabase
+      const { data: roomTead, error } = await supabase
         .from("rooms")
-        .select("*, blue(*), red(*)")
+        .select("blue(*), red(*)")
         .eq("id", roomid)
         .single();
   
       if (error) {
         console.error("Error fetching room data:", error);
       } else {
-        setRoom(roomData);
-        setBlueTeam(roomData.blue);
-        setRedTeam(roomData.red);
-        setLoading(false);
+        setBlueTeam(roomTead.blue);
+        setRedTeam(roomTead.red);
       }
     };
-  
     getRoom();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -70,8 +62,7 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
         },
         (payload) => {
           const { new: room } = payload;
-          setRoomReady(roomid, payload.new.ready);
-          setRoom(room);
+          setRoom(roomid, room);
         })
       .subscribe();
   
@@ -79,15 +70,20 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
       // Unsubscribe from room updates when component unmounts
       channel.unsubscribe();
     };
-  }, [roomid]);
+  }, [roomid, setRoom]);
+
+
   
-  if (!room?.ready) {
-    return <p>Waiting for players to ready up...</p>;
+  if (!room.ready) {
+    return (
+      <>
+        <pre>room ready: {room.ready.toString()}</pre>
+        <p>Waiting for players to ready up...</p>
+      </>
+    );
   }
   
   return (
-    <div>
-      {room && (
         <>
           <p>{room?.cycle}</p>
           <p>{room?.name}</p>
@@ -117,8 +113,6 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
             </div>
           </div>
         </>
-      )}
-    </div>
   );
 };
 

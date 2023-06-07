@@ -1,20 +1,16 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 
-// Update your RoomStore state
 interface RoomStore {
-  roomReady: Record<string, boolean>; // For each room id, store a boolean value
-  setRoomReady: (roomId: string, isReady: boolean) => void;
-  // Add your other states and functions...
+  rooms: Record<string, any>; // Now a mapping from room ids to room data
+  setRoom: (roomId: string, roomData: any) => void; // Now needs room id as well
 }
 
-// Create your store
 export const roomStore = create<RoomStore>((set) => ({
-  roomReady: {},
-  setRoomReady: (roomId: string, isReady: boolean) => set((state) => ({
-    roomReady: {
-      ...state.roomReady,
-      [roomId]: isReady,
+  rooms: {},
+  setRoom: (roomId: string, roomData: any) => set((state) => ({
+    rooms: {
+      ...state.rooms,
+      [roomId]: roomData, // Sets room data for specific id
     },
   })),
-  // Add your other states and functions...
 }));
