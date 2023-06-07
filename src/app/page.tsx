@@ -22,8 +22,8 @@ function Home() {
   const createRoom = async () => {
 
     //TODO remove this
-    const purge = await purgeAllRooms();
-    console.log("createRoom - purge:", purge);
+    //const purge = await purgeAllRooms();
+   // console.log("createRoom - purge:", purge);
 
     const champions = await randomChampions();
 

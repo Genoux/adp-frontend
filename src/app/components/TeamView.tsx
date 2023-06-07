@@ -103,10 +103,10 @@ useEffect(() => {
     <>
       <button
         className={`${
-          !selectedChampion ? "invisible" : "bg-blue-500"
+          !selectedChampion || !isTurn ? "invisible" : "bg-blue-500"
         }  text-white font-bold py-2 px-4 mt-4`}
         onClick={handleConfirmSelection}
-        disabled={!selectedChampion}>
+        disabled={!selectedChampion || !isTurn}>
         Confirm Selection
       </button>
       <div className="grid grid-cols-5 gap-4">

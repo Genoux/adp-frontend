@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import supabase from "@/app/services/supabase";
 import { roomStore } from "@/app/stores/roomStore";
+import Image from "next/image";
 
 interface RoomInfoProps {
   roomid: any; // Replace with your specific type
@@ -84,35 +85,63 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
   }
   
   return (
-        <>
-          <p>{room?.cycle}</p>
-          <p>{room?.name}</p>
-          <h1>Room ID: {room?.id}</h1>
-          <div className="flex my-24 gap-12 justify-center">
-            <div>
-              <h2>Blue Team Selected Heroes:</h2>
-              <div className={`grid grid-cols-5 gap-4 mt-6 ${blueTeam?.isTurn ? 'bg-blue-500' : ''}`}>
-                {blueTeam?.heroes_selected.map(
-                  (hero: any, index: number) => (
-                    <div key={index} className="border p-4">
-                      <pre>Name: {hero.name}</pre>
-                    </div>
-                  )
+    <>
+      <p>{room?.cycle}</p>
+      <p>{room?.name}</p>
+      <h1>Room ID: {room?.id}</h1>
+      <div className="flex my-24 gap-12 justify-center">
+        <div>
+          <h2>Blue Team Selected Heroes:</h2>
+          <div
+            className={`grid grid-cols-5 gap-4 mt-6 ${
+              blueTeam?.isTurn ? "bg-blue-500" : ""
+            }`}>
+            {blueTeam?.heroes_selected.map((hero: any, index: number) => (
+              <div key={index} className="border p-4 h-32 w-32">
+                {hero.name && (
+                  <>
+                    <pre>{hero.name}</pre>
+                    <Image
+                      src={`/images/champions/tiles/${hero.name
+                        .replace(/\s/g, "")
+                        .toLowerCase()}.jpg`}
+                      alt={hero.name}
+                      width={60}
+                      height={60}
+                    />
+                  </>
                 )}
               </div>
-            </div>
-            <div>
-              <h2>Red Team Selected Heroes:</h2>
-              <div className={`grid grid-cols-5 gap-4 mt-6 ${redTeam?.isTurn ? 'bg-red-500' : ''}`}>
-                {redTeam?.heroes_selected.map((hero: any, index: number) => (
-                  <div key={index} className="border p-4">
-                    <pre>Name: {hero.name}</pre>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
-        </>
+        </div>
+        <div>
+          <h2>Red Team Selected Heroes:</h2>
+          <div
+            className={`grid grid-cols-5 gap-4 mt-6 ${
+              redTeam?.isTurn ? "bg-red-500" : ""
+            }`}>
+            {redTeam?.heroes_selected.map((hero: any, index: number) => (
+              <div key={index} className="border p-4 h-32 w-32">
+                {hero.name && (
+                  <>
+                    <pre>{hero.name}</pre>
+                    <Image
+                      src={`/images/champions/tiles/${hero.name
+                        .replace(/\s/g, "")
+                        .toLowerCase()}.jpg`}
+                      alt={hero.name}
+                      width={60}
+                      height={60}
+                    />
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
