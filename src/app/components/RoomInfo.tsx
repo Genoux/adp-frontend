@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import supabase from "@/app/services/supabase";
+import { roomStore } from "@/app/stores/roomStore";
 
 interface RoomInfoProps {
   roomid: any; // Replace with your specific type
@@ -19,7 +20,7 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
   const [loading, setLoading] = useState(true);
   const [blueTeam, setBlueTeam] = useState<Team | null>(null);
   const [redTeam, setRedTeam] = useState<Team | null>(null);
-
+  const setRoomReady = roomStore((state: { setRoomReady: any; }) => state.setRoomReady);
 
   useEffect(() => {
     const getRoom = async () => {
@@ -69,6 +70,7 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
         },
         (payload) => {
           const { new: room } = payload;
+          setRoomReady(roomid, payload.new.ready);
           setRoom(room);
         })
       .subscribe();

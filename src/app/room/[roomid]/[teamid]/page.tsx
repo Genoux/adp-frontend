@@ -22,6 +22,9 @@ export default function Room({
   const [timer, setTimer] = useState<string>("");
   const [roomReady, SetRoomReady] = useState(false);
 
+  const [roomState, setRoomState] = useState<any>(null);
+
+
   const socket = useSocket(roomid, teamid);
 
   const findRoom = useCallback(async () => {
@@ -37,6 +40,12 @@ export default function Room({
       setRoomNotFound(true);
     } else {
       setLoading(false);
+         // Define the new state for the room
+    const newRoomState = {
+      // The new room state goes here
+    };
+
+    setRoomState(roomid);
     }
   }, [roomid]);
 
@@ -83,6 +92,7 @@ export default function Room({
           <RoomInfo roomid={roomid} />
           <TeamView
             teamid={teamid}
+            roomid={roomid}
             handleConfirmSelection={handleConfirmSelection}
             setSelectedChampion={setSelectedChampion}
             selectedChampion={selectedChampion}

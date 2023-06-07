@@ -5,10 +5,11 @@ import supabase from "@/app/services/supabase";
 import Image from "next/image";
 import ReadyView from "@/app/components/ReadyView";
 import useSocket from "@/app/hooks/useSocket";
-
+import {roomStore} from "@/app/stores/roomStore";
 
 interface TeamViewProps {
   teamid: string; // Replace with your specific type
+  roomid: string;
   selectedChampion: string;
   setSelectedChampion: (championName: string) => void;
   handleConfirmSelection: () => Promise<void>;
@@ -16,24 +17,29 @@ interface TeamViewProps {
 
 const TeamView: React.FC<TeamViewProps> = ({
   teamid,
+  roomid,
   handleConfirmSelection,
   selectedChampion,
   setSelectedChampion,
 }) => {
+
   const [team, setTeam] = useState<any>(null);
   const [isTurn, setIsTurn] = useState<boolean>(false);
   const [isTeamReady, setisTeamReady] = useState<boolean>(false);
-  const [roomReady, setRoomReady] = useState<boolean>(false);
+  //const [roomReady, setRoomReady] = useState<boolean>(false);
   const [heroesPool, setHeroesPool] = useState<Array<any>>([]);
   const [champions, setChampions] = useState<any>(null);
   const [teamRoom, setTeamRoom] = useState<string | null>(null);
+
+  const roomReady = roomStore((state: { roomReady: { [x: string]: any; }; }) => state.roomReady[roomid] || false);
+  console.log("roomReady:", roomReady);
 
   const socket = useSocket(team?.room, teamid);
 
   useEffect(() => {
     if (socket) {
       console.log("useEffect - socket:", socket);
-      socket.on('ROOM_READY', () => setRoomReady(true));
+      //socket.on('ROOM_READY', () => setRoomReady(true));
     }
    
   }, [socket]);
