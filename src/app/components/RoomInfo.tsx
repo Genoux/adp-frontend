@@ -53,18 +53,19 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
           const { new: team } = payload;
           team.color === 'blue' ? setBlueTeam(team) : setRedTeam((team));
         }
-      ).on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'rooms',
-          filter: `id=eq.${roomid}`,
-        },
-        (payload) => {
-          const { new: room } = payload;
-          setRoom(roomid, room);
-        })
+    )
+      // .on(
+      //   'postgres_changes',
+      //   {
+      //     event: 'UPDATE',
+      //     schema: 'public',
+      //     table: 'rooms',
+      //     filter: `id=eq.${roomid}`,
+      //   },
+      //   (payload) => {
+      //     const { new: room } = payload;
+      //     setRoom(roomid, room);
+      //   })
       .subscribe();
   
     return () => {

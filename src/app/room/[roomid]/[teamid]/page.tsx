@@ -9,6 +9,7 @@ import ReadyView from "@/app/components/ReadyView";
 import useSocket from "@/app/hooks/useSocket";
 import { roomStore } from "@/app/stores/roomStore";
 import { allNamesNotNull } from "@/app/utils/helpers";
+import Image from "next/image";
 
 export default function Room({
   params,
@@ -22,7 +23,7 @@ export default function Room({
   const [loading, setLoading] = useState(true);
   const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [timer, setTimer] = useState<string>("");
-  const [roomReady, SetRoomReady] = useState(false);
+  //const [roomReady, SetRoomReady] = useState(false);
 
   const [roomState, setRoomState] = useState<any>(null);
 
@@ -58,19 +59,36 @@ export default function Room({
       socket.on("message", (arg: any) => {
         console.log("Server says:", arg);
       });
-      socket.on("ROOM_READY", (arg: any) => {
-        SetRoomReady(true);
-      });
       socket.on("TIMER", (arg: any) => {
-        console.log("socket.on - arg:", arg);
         if (arg === "00:00:00") {
           setSelectedChampion("");
         }
         setTimer(arg);
-        console.log("Server says:", arg);
       });
     }
   }, [socket, setTimer]);
+
+  useEffect(() => {
+    console.log("useEffect - room.id:", roomid.current);
+
+    const subscription = supabase
+    .channel('*').on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'rooms',
+        filter: `id=eq.${roomid.current}`,
+      },
+      (payload) => {
+        const { new: room } = payload;
+        console.log("useEffect - room:", room);
+        setRoom(roomid.current, room);
+      })
+      .subscribe(() => {
+        console.log('Received event on channel public:rooms');
+      })
+  }, []);
 
   const handleConfirmSelection = async () => {
     socket?.emit('SELECT_CHAMPION', { roomid: roomid.current, selectedChampion: selectedChampion });
@@ -86,6 +104,32 @@ export default function Room({
     return <div>Loading...</div>; // Render a loading spinner while room data is being fetched
   }
 
+  //TODO MAKE THIS A COMPONENT
+  if (room.cycle === 0) {
+    return (
+      <main>
+        <p>{room.cycle.toString()}</p>
+         <div> timer: {timer.toString()} </div>
+        <div className="grid grid-cols-6">
+        {room.heroes_pool.map((hero: any, index: number) => (
+          <div
+            key={index}>
+            <Image
+              src={`/images/champions/tiles/${hero.name
+                .replace(/\s/g, "")
+                .toLowerCase()}.jpg`}
+              alt={hero.name}
+              width={60}
+              height={60}
+            />
+            <pre>{hero.name}</pre>
+          </div>
+        ))}
+        </div>
+      </main>
+    );
+  }
+
   if (room.status === "done") {
     return <div>Room is done</div>; // Render a message if the room is done
   }
@@ -93,7 +137,6 @@ export default function Room({
   return (
     <>
       <div> timer: {timer.toString()} </div>
-      <button onClick={debugTimer}>start timer</button>
       <RoomInfo roomid={roomid.current} />
       <TeamView
         teamid={teamid.current}

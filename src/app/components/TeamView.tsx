@@ -62,9 +62,7 @@ useEffect(() => {
           }
         }
       )
-      .subscribe(() => {
-        console.log(`Subscription to team ${teamid} ready.`);
-      });
+      .subscribe();
 
     setIsTeamReady(team.ready)
     setIsTurn(team.isTurn);
@@ -86,7 +84,7 @@ useEffect(() => {
   const handleReadyClick = async () => {
     // Your existing logic to mark the team as ready
     const { data: team } = await supabase.from('teams').update({ ready: true }).select("*, room(*)").eq('id', teamid).single();
-    socket?.emit('TEAM_READY', { roomid: team.room.id });
+    socket?.emit('TEAM_READY', { roomid: team.room.id, teamid: team.id });
     setIsTeamReady(true);
   };
 

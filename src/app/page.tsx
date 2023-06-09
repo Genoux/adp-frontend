@@ -23,7 +23,6 @@ function Home() {
 
     //TODO remove this
     //const purge = await purgeAllRooms();
-   // console.log("createRoom - purge:", purge);
 
     const champions = await randomChampions();
 
@@ -55,11 +54,10 @@ function Home() {
         name: roomName,
         blue: teamBlueId,
         red: teamRedId,
+        heroes_pool: champions.list,
         status: "waiting",
       });
       
-      //todo room are not assigned to the teams - fix it
-      // for each team, update the room id
       await supabase
         .from("teams")
         .update({
