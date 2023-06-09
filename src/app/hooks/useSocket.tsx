@@ -1,9 +1,13 @@
 // useSocket.ts
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { getTeam, getRoom } from '../services/api';
 
-export default function useSocket(roomid: string, teamid: string) {
+interface SocketHandlers {
+  onMessage?: (msg: any) => void;
+  onTimer?: (timer: string) => void;
+}
+
+export default function useSocket(roomid: string, teamid: string, handlers: SocketHandlers = {}) {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
@@ -14,10 +18,15 @@ export default function useSocket(roomid: string, teamid: string) {
     newSocket.on("connect", async () => {
       console.log("Connected to socket server");
       newSocket.emit('joinRoom', { roomid, teamid });
-      // handle connection...
     });
 
-    
+    if (handlers.onMessage) {
+      newSocket.on("message", handlers.onMessage);
+    }
+
+    if (handlers.onTimer) {
+      newSocket.on("TIMER", handlers.onTimer);
+    }
 
     return () => {
       if (newSocket) {
@@ -25,7 +34,7 @@ export default function useSocket(roomid: string, teamid: string) {
       }
       setSocket(null);
     };
-  }, [roomid, teamid]);
+  }, [handlers.onMessage, handlers.onTimer, roomid, teamid]);
 
   return socket;
 }
