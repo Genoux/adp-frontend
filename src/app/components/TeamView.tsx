@@ -1,14 +1,12 @@
-// imports
-import { use, useEffect, useState, useRef } from "react";
-import { io, Socket } from "socket.io-client";
 import supabase from "@/app/services/supabase";
 import Image from "next/image";
 import ReadyView from "@/app/components/ReadyView";
 import useSocket from "@/app/hooks/useSocket";
-import {roomStore} from "@/app/stores/roomStore";
+import useFetchTeam from "@/app/hooks/useFetchTeam";
+import { roomStore } from "@/app/stores/roomStore";
 
 interface TeamViewProps {
-  teamid: string; // Replace with your specific type
+  teamid: string;
   roomid: string;
   selectedChampion: string;
   setSelectedChampion: (championName: string) => void;
@@ -23,103 +21,63 @@ const TeamView: React.FC<TeamViewProps> = ({
   setSelectedChampion,
 }) => {
 
-  const [isTurn, setIsTurn] = useState<boolean>(false);
-  const [isTeamReady, setIsTeamReady] = useState<boolean>(false);
-  const [teamColor, setTeamColor] = useState<any>(null);
-  const [heroesPool, setHeroesPool] = useState<Array<any>>([]);
   const socket = useSocket(roomid, teamid);
   const { rooms } = roomStore();
-  const  room  = rooms[roomid]
+  const room = rooms[roomid];
 
-// When you fetch the team data, also update heroesPool and teamRoom
-useEffect(() => {
-  const fetchTeam = async () => {
-    const { data: team, error } = await supabase
-      .from("teams")
-      .select("*")
-      .eq("id", teamid)
-      .single();
-
-    const subscription = supabase
-      .channel(teamid)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "teams",
-          filter: `id=eq.${teamid}`,
-        },
-        async (payload) => {
-          try {
-            const { new: updatedTeam } = payload;
-            console.log("updatedTeam:", updatedTeam);
-            setIsTeamReady(updatedTeam.ready)
-            setIsTurn(updatedTeam.isTurn);
-            setHeroesPool(updatedTeam.heroes_pool);
-          } catch (error) {
-            console.error("Error updating team:", error);
-          }
-        }
-      )
-      .subscribe();
-
-    setIsTeamReady(team.ready)
-    setIsTurn(team.isTurn);
-    setHeroesPool(team.heroes_pool);
-    setTeamColor(team.color);
-    // Cleanup: unsubscribe when component unmounts
-    return () => {
-      subscription.unsubscribe();
-    };
-  };
-
-  fetchTeam();
-}, [teamid]);
+  const { data: team, error, isLoading } = useFetchTeam(teamid);
+  if(!team) return null;
 
   const handleChampionClick = (championName: string) => {
     setSelectedChampion(championName);
   };
 
   const handleReadyClick = async () => {
-    // Your existing logic to mark the team as ready
     const { data: team } = await supabase.from('teams').update({ ready: true }).select("*, room(*)").eq('id', teamid).single();
-    socket?.emit('TEAM_READY', { roomid: team.room.id, teamid: team.id });
-    setIsTeamReady(true);
+    socket?.emit("TEAM_READY", { roomid, teamid });
+    team.ready = true;
   };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
   if (!room.ready) {
     return (
       <>
-        <p>{isTeamReady.toString()}</p>
+        <p>{team.heroes_pool.toString()}</p>
         <ReadyView onReadyClick={handleReadyClick} />
       </>
-    )
+    );
   }
 
   return (
     <>
       <button
         className={`${
-          !selectedChampion || !isTurn ? "invisible" : "bg-blue-500"
-        }  text-white font-bold py-2 px-4 mt-4`}
+          !selectedChampion || !team.isTurn ? "invisible" : "bg-blue-500"
+        } text-white font-bold py-2 px-4 mt-4`}
         onClick={handleConfirmSelection}
-        disabled={!selectedChampion || !isTurn}>
+        disabled={!selectedChampion || !team.isTurn}>
         Confirm Selection
       </button>
       <div className="grid grid-cols-5 gap-4">
-        <h1 className="text-2xl mb-4">Team Color: {teamColor}</h1>
+        <h1 className="text-2xl mb-4">Team Color: {team.color}</h1>
         <h2 className="text-xl mb-4">
-          {String(isTurn)}
-          {isTurn ? "It's your turn!" : "Waiting for the other team..."}
+          {String(team.isTurn)}
+          {team.isTurn
+            ? "It's your turn!"
+            : "Waiting for the other team..."}
         </h2>
-        {heroesPool.map((hero: any, index: number) => (
+        {team.heroes_pool.map((hero: any, index: number) => (
           <div
             key={index}
             className={`border p-4 ${
               hero.name === selectedChampion ? "bg-gray-800" : ""
             } ${
-              hero.selected || !isTurn ? "opacity-25 pointer-events-none" : ""
+              hero.selected || !team.isTurn
+                ? "opacity-25 pointer-events-none"
+                : ""
             }`}
             onClick={() => handleChampionClick(hero.name)}>
             <Image
