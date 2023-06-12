@@ -10,13 +10,13 @@ interface TeamViewProps {
   roomid: string;
   selectedChampion: string;
   setSelectedChampion: (championName: string) => void;
-  handleConfirmSelection: () => Promise<void>;
+  //handleConfirmSelection: () => Promise<void>;
 }
 
 const TeamView: React.FC<TeamViewProps> = ({
   teamid,
   roomid,
-  handleConfirmSelection,
+//  handleConfirmSelection,
   selectedChampion,
   setSelectedChampion,
 }) => {
@@ -32,6 +32,31 @@ const TeamView: React.FC<TeamViewProps> = ({
     setSelectedChampion(championName);
   };
 
+
+  const handleConfirmSelection = async () => {
+    socket?.emit("SELECT_CHAMPION", {
+      roomid: roomid,
+      selectedChampion: selectedChampion,
+    });
+
+    const champion = selectedChampion
+
+    setSelectedChampion("");
+    
+    let updated_heroes_pool = team.heroes_pool.map((hero: any) =>
+      hero.name === champion
+        ? { ...hero, selected: true }
+        : hero
+    );
+
+    await supabase.from('teams').update({ heroes_pool: updated_heroes_pool }).eq('id', teamid);
+    
+  };
+
+  const updateTeamPool = async () => {
+   
+  }
+
   const handleReadyClick = async () => {
     const { data: team } = await supabase.from('teams').update({ ready: true }).select("*, room(*)").eq('id', teamid).single();
     socket?.emit("TEAM_READY", { roomid, teamid });
@@ -45,7 +70,7 @@ const TeamView: React.FC<TeamViewProps> = ({
   if (!room.ready || room.cycle === -1) {
     return (
       <>
-        <p>{team.heroes_pool.toString()}</p>
+        <p>{team.ready}</p>
         <ReadyView onReadyClick={handleReadyClick} />
       </>
     );

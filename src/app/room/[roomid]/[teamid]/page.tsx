@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback  } from "react";
+import { useState, useCallback } from "react";
+import supabase from "@/app/services/supabase";
 import RoomInfo from "@/app/components/RoomInfo";
 import TeamView from "@/app/components/TeamView";
 import FinishView from "@/app/components/FinishView";
@@ -37,13 +38,14 @@ export default function Room({
   const { data: room, error, isLoading } = useFetchRoom(roomid);
   if(!room) return null;
 
-  const handleConfirmSelection = async () => {
-    socket?.emit("SELECT_CHAMPION", {
-      roomid: roomid,
-      selectedChampion: selectedChampion,
-    });
-    setSelectedChampion("");
-  };
+  // const handleConfirmSelection = async () => {
+  //   socket?.emit("SELECT_CHAMPION", {
+  //     roomid: roomid,
+  //     selectedChampion: selectedChampion,
+  //   });
+
+  //   setSelectedChampion("");
+  // };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -71,7 +73,6 @@ export default function Room({
           <TeamView
             teamid={teamid}
             roomid={roomid}
-            handleConfirmSelection={handleConfirmSelection}
             setSelectedChampion={setSelectedChampion}
             selectedChampion={selectedChampion}
           />
