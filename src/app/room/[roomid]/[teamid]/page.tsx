@@ -49,7 +49,7 @@ export default function Room({
     return <div>Loading...</div>;
   }
 
-  if (room.cycle === 0 || room.cycle === -1) {
+  if (room.cycle === 0) {
     return (
       <>
         <div> timer: {timer.toString()} </div>
@@ -64,15 +64,19 @@ export default function Room({
 
   return (
     <>
-      <div> timer: {timer.toString()} </div>
-      <RoomInfo roomid={roomid} />
-      <TeamView
-        teamid={teamid}
-        roomid={roomid}
-        handleConfirmSelection={handleConfirmSelection}
-        setSelectedChampion={setSelectedChampion}
-        selectedChampion={selectedChampion}
-      />
+      {room.cycle !== -1 && (
+        <div>
+          <div> timer: {timer.toString()} </div>
+          <RoomInfo roomid={roomid} />
+          <TeamView
+            teamid={teamid}
+            roomid={roomid}
+            handleConfirmSelection={handleConfirmSelection}
+            setSelectedChampion={setSelectedChampion}
+            selectedChampion={selectedChampion}
+          />
+        </div>
+      )}
     </>
   );
 }
