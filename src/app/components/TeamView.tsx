@@ -42,7 +42,7 @@ const TeamView: React.FC<TeamViewProps> = ({
     return <p>Loading...</p>;
   }
 
-  if (!room.ready) {
+  if (!room.ready || room.cycle === -1) {
     return (
       <>
         <p>{team.heroes_pool.toString()}</p>

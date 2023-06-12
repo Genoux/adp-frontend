@@ -64,7 +64,7 @@ export default function Room({
 
   return (
     <>
-      {room.cycle !== -1 && (
+      {room.cycle !== 0 && (
         <div>
           <div> timer: {timer.toString()} </div>
           <RoomInfo roomid={roomid} />
