@@ -23,6 +23,9 @@ export default function Room({
   }, []);
 
   const handleSocketTimer = useCallback((msg: any) => {
+    if(msg === "00:00:00") {
+      setSelectedChampion("");
+    }
     setTimer(msg);
   }, []);
 
