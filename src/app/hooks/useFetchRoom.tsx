@@ -24,7 +24,6 @@ const useFetchRoom = (roomid: string) => {
         },
         (payload) => {
           const { new: room } = payload;
-          console.log("useEffect - room:", room);
           setRoom(roomid, room);
         }
       )

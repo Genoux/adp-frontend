@@ -23,10 +23,10 @@ export default function Room({
   }, []);
 
   const handleSocketTimer = useCallback((msg: any) => {
+    setTimer(msg);
     if(msg === "00:00:00") {
       setSelectedChampion("");
     }
-    setTimer(msg);
   }, []);
 
   const socket = useSocket(roomid, teamid, {
