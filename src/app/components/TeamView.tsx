@@ -60,7 +60,16 @@ const TeamView: React.FC<TeamViewProps> = ({
       selectedChampion: champion,
     });
     
-    await switchTurnAndUpdateCycle(roomid);
+   // await switchTurnAndUpdateCycle(roomid);
+    await fetch(`/api/roomcycle/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        roomid: roomid,
+      }),
+    })
     setCanPick(true)
   };
 
