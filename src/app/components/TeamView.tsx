@@ -1,9 +1,11 @@
+import { useState } from "react";
 import supabase from "@/app/services/supabase";
 import Image from "next/image";
 import ReadyView from "@/app/components/ReadyView";
 import useSocket from "@/app/hooks/useSocket";
 import useFetchTeam from "@/app/hooks/useFetchTeam";
 import { roomStore } from "@/app/stores/roomStore";
+import { switchTurnAndUpdateCycle } from "../utils/roomCycle";
 
 interface TeamViewProps {
   teamid: string;
@@ -25,6 +27,8 @@ const TeamView: React.FC<TeamViewProps> = ({
   const { rooms } = roomStore();
   const room = rooms[roomid];
 
+  const [canPick, setCanPick] = useState<boolean>(true);
+
   const { data: team, error, isLoading } = useFetchTeam(teamid);
   if(!team) return null;
 
@@ -34,6 +38,7 @@ const TeamView: React.FC<TeamViewProps> = ({
 
 
   const handleConfirmSelection = async () => {
+    setCanPick(false)
     socket?.emit("STOP_TIMER", {
       roomid: roomid,
     });
@@ -55,6 +60,8 @@ const TeamView: React.FC<TeamViewProps> = ({
       selectedChampion: champion,
     });
     
+    await switchTurnAndUpdateCycle(roomid);
+    setCanPick(true)
   };
 
   const updateTeamPool = async () => {
@@ -82,12 +89,13 @@ const TeamView: React.FC<TeamViewProps> = ({
 
   return (
     <>
+      <p>{canPick.toString()}</p>
       <button
         className={`${
-          !selectedChampion || !team.isTurn ? "invisible" : "bg-blue-500"
+          !selectedChampion || !team.isTurn || !canPick ? "invisible" : "bg-blue-500"
         } text-white font-bold py-2 px-4 mt-4`}
         onClick={handleConfirmSelection}
-        disabled={!selectedChampion || !team.isTurn}>
+        disabled={!selectedChampion || !team.isTurn || !canPick}>
         Confirm Selection
       </button>
       <div className="grid grid-cols-5 gap-4">
