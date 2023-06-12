@@ -11,8 +11,8 @@ const HeroGrid: React.FC<HeroGridProps> = ({ team, color, useTiles }) => {
 
   return (
     <div
-      className={`grid gap-4 grid-flow-col-dense mt-6  ${
-        team?.isTurn ? `bg-${color}-500` : ""
+      className={`grid gap-4 grid-flow-col-dense mt-6 ${
+        team.isTurn ? `bg-gray-700` : ""
       }`}>
       {team?.heroes_selected.map((hero: any, index: number) => (
         <div key={index} className={`border overflow-hidden ${useTiles ? "w-32 h-32" : "w-38 h-96"}`}>
