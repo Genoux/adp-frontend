@@ -1,4 +1,3 @@
-// useSocket.ts
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -11,7 +10,8 @@ export default function useSocket(roomid: string, teamid: string, handlers: Sock
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:4000");
+    const socketServerUrl = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:4000';
+    const newSocket = io(socketServerUrl);
 
     setSocket(newSocket);
 
