@@ -36,8 +36,7 @@ function Home() {
         color: "red",
         isTurn: false,
         heroes_pool: champions.list,
-        heroes_selected: generateArray("name", 5),
-        number_of_pick: 1,
+        heroes_selected: generateArray("name", 5)
       });
 
       const { blue, blueError } = await supabase.from("teams").insert({
@@ -45,8 +44,7 @@ function Home() {
         color: "blue",
         isTurn: true,
         heroes_pool: champions.list,
-        heroes_selected: generateArray("name", 5),
-        number_of_pick: 1,
+        heroes_selected: generateArray("name", 5)
       });
 
       const { room: newRoom, roomError } = await supabase.from("rooms").insert({

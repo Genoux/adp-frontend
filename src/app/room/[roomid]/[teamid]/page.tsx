@@ -49,7 +49,7 @@ export default function Room({
     return <div>Loading...</div>;
   }
 
-  if (room.cycle === 0) {
+  if (room.cycle === 0 || room.cycle === -1) {
     return (
       <>
         <div> timer: {timer.toString()} </div>
