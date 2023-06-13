@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client"
+
+import { useState, useEffect } from "react";
 import supabase from "@/app/services/supabase";
 import Image from "next/image";
 import ReadyView from "@/app/components/ReadyView";
@@ -36,9 +38,10 @@ const TeamView: React.FC<TeamViewProps> = ({
     setSelectedChampion(championName);
   };
 
-
   const handleConfirmSelection = async () => {
+    
     setCanPick(false)
+
     socket?.emit("STOP_TIMER", {
       roomid: roomid,
     });
@@ -101,7 +104,9 @@ const TeamView: React.FC<TeamViewProps> = ({
   //   // Handle any errors that occurred during the fetch calls
   //   console.error("An error occurred:", error);
   // }
-    setCanPick(true)
+    setTimeout(() => {
+      setCanPick(true)
+    }, 500);
   };
 
   const handleReadyClick = async () => {
@@ -131,7 +136,7 @@ const TeamView: React.FC<TeamViewProps> = ({
           !selectedChampion || !team.isTurn || !canPick ? "invisible" : "bg-blue-500"
         } text-white font-bold py-2 px-4 mt-4`}
         onClick={handleConfirmSelection}
-        disabled={!selectedChampion || !team.isTurn || !canPick}>
+        disabled={!selectedChampion || !team.isTurn }>
         Confirm Selection
       </button>
       <div className="grid grid-cols-5 gap-4">
@@ -148,7 +153,7 @@ const TeamView: React.FC<TeamViewProps> = ({
             className={`border p-4 ${
               hero.name === selectedChampion ? "bg-gray-800" : ""
             } ${
-              hero.selected || !team.isTurn
+              (hero.selected || !team.isTurn) || !canPick
                 ? "opacity-25 pointer-events-none"
                 : ""
             }`}
