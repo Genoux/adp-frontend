@@ -32,12 +32,28 @@ const TeamView: React.FC<TeamViewProps> = ({
   const [canPick, setCanPick] = useState<boolean>(true);
 
   const { data: team, error, isLoading } = useFetchTeam(teamid);
+
+  useEffect(() => {
+    const handleChampionSelected = () => {
+      setCanPick(true)
+    };
+  
+    socket?.on('CHAMPION_SELECTED', handleChampionSelected);
+  
+    // Clean up the event listener
+    return () => {
+      socket?.off('CHAMPION_SELECTED', handleChampionSelected);
+    };
+  }, [socket]); // Add socket to the dependency array
+  
+
   if(!team) return null;
 
   const handleChampionClick = (championName: string) => {
     setSelectedChampion(championName);
   };
 
+;
   const handleConfirmSelection = async () => {
     
     setCanPick(false)
@@ -105,7 +121,7 @@ const TeamView: React.FC<TeamViewProps> = ({
   //   console.error("An error occurred:", error);
   // }
     setTimeout(() => {
-      setCanPick(true)
+      
     }, 500);
   };
 
