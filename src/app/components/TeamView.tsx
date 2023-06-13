@@ -61,7 +61,8 @@ const TeamView: React.FC<TeamViewProps> = ({
     });
     
    // await switchTurnAndUpdateCycle(roomid);
-    await fetch(`/api/roomcycle/`, {
+   try {
+    const response1 = await fetch(`/api/roomcycle/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,13 +70,36 @@ const TeamView: React.FC<TeamViewProps> = ({
       body: JSON.stringify({
         roomid: roomid,
       }),
-    })
+    });
+
+    const data1 = await response1.json();
+    console.log("handleConfirmSelection - data1:", data1);
+    console.log("First fetch is done!");
+
+    // Run the second fetch
+    const response2 = await fetch(`/api/switchteam/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        roomid: roomid,
+        roomCycle: data1.cycle,
+      }),
+    });
+
+    const data2 = await response2.json();
+    console.log("Second fetch is done!");
+
+    // Code to execute after both fetch requests are complete
+    // ...
+
+  } catch (error) {
+    // Handle any errors that occurred during the fetch calls
+    console.error("An error occurred:", error);
+  }
     setCanPick(true)
   };
-
-  const updateTeamPool = async () => {
-   
-  }
 
   const handleReadyClick = async () => {
     const { data: team } = await supabase.from('teams').update({ ready: true }).select("*, room(*)").eq('id', teamid).single();
