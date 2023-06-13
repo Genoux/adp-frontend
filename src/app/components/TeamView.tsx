@@ -166,7 +166,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
         {team.heroes_pool.map((hero: any, index: number) => (
           <div
             key={index}
-            className={`border p-4 ${
+            className={`border p-4  transition ease-in-out ${
               hero.name === selectedChampion ? "bg-gray-800" : ""
             } ${
               hero.selected || !team.isTurn
