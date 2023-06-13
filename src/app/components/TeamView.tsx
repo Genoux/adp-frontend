@@ -28,7 +28,8 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
         setSelectedChampion("");
         setCanSelect(false); // When timer is 0, canSelect becomes false
       } else {
-        setCanSelect(true); // When timer is not 0, canSelect becomes true  
+          //setCanSelect(true);
+         // When timer is not 0, canSelect becomes true  
       }
     },
     [setSelectedChampion]
@@ -44,6 +45,19 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
     };
   }, [socket, handleSocketTimer]);
 
+
+  useEffect(() => {
+    const handleChampionSelected = (msg: boolean) => {
+      setCanSelect(true);
+    };
+
+    socket?.on('CHAMPION_SELECTED', handleChampionSelected);
+
+    // Clean up the event listener
+    return () => {
+      socket?.off('CHAMPION_SELECTED', handleChampionSelected);
+    };
+  }, [setCanSelect, socket]); // Add socket to the dependency array
 
   const { data: team, isLoading } = useFetchTeam(teamid);
 
