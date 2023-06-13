@@ -73,7 +73,6 @@ const TeamView: React.FC<TeamViewProps> = ({
     });
 
     const data1 = await response1.json();
-    console.log("handleConfirmSelection - data1:", data1);
     console.log("First fetch is done!");
 
     // Run the second fetch
@@ -90,9 +89,11 @@ const TeamView: React.FC<TeamViewProps> = ({
 
     const data2 = await response2.json();
     console.log("Second fetch is done!");
-
-    // Code to execute after both fetch requests are complete
-    // ...
+ 
+    socket?.emit("RESET_TIMER", {
+      roomid: roomid,
+    });
+    console.log("Timer reset!");
 
   } catch (error) {
     // Handle any errors that occurred during the fetch calls
