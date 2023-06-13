@@ -107,7 +107,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
 
     const champion = selectedChampion;
 
-    setSelectedChampion("");
+    
 
     
     let updated_heroes_pool = team?.heroes_pool.map((hero: any) =>
@@ -123,6 +123,8 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
       roomid: roomid,
       selectedChampion: champion,
     });
+    
+    setSelectedChampion("");
   };
 
   
