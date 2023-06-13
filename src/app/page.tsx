@@ -1,10 +1,6 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
-import supabase from "@/app/services/supabase";
-import { randomChampions } from "@/app/utils/champions";
-import { generateArray, purgeAllRooms } from "@/app/utils/helpers";
 import Link from "next/link";
 
 interface Room {
@@ -20,74 +16,16 @@ function Home() {
   const [roomData, setRoomData] = useState<Room[] | null>(null);
 
   const createRoom = async () => {
+    const response1 = await fetch(`/api/generateroom/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-    //TODO remove this
-    //const purge = await purgeAllRooms();
+    const data = await response1.json();
 
-    const champions = await randomChampions();
-
-    const teamRedId = Math.floor(Math.random() * 1000000);
-    const teamBlueId = Math.floor(Math.random() * 1000000);
-    const roomID = Math.floor(Math.random() * 1000000);
-    const roomName = Math.random().toString(36).substring(7);
-    try {
-      const { red, redError } = await supabase.from("teams").insert({
-        id: teamRedId,
-        color: "red",
-        isTurn: false,
-        heroes_pool: champions.list,
-        heroes_selected: generateArray("name", 5)
-      });
-
-      const { blue, blueError } = await supabase.from("teams").insert({
-        id: teamBlueId,
-        color: "blue",
-        isTurn: true,
-        heroes_pool: champions.list,
-        heroes_selected: generateArray("name", 5)
-      });
-
-      const { room: newRoom, roomError } = await supabase.from("rooms").insert({
-        id: roomID,
-        name: roomName,
-        blue: teamBlueId,
-        red: teamRedId,
-        heroes_pool: champions.list,
-        status: "waiting",
-      });
-      
-      await supabase
-        .from("teams")
-        .update({
-          room: roomID,
-        })
-        .eq("id", teamRedId);
-
-      await supabase
-        .from("teams")
-        .update({
-          room: roomID,
-        })
-        .eq("id", teamBlueId);
-
-      if (redError || blueError || roomError) {
-        console.log("createRoom - error:", redError, blueError, roomError);
-        return;
-      }
-
-      const { data: rooms, error } = await supabase
-        .from("rooms")
-        .select("id, name, blue, red")
-        .eq("id", roomID);
-      if (error) {
-        console.log("createRoom - error:", error);
-        return;
-      }
-
-      setRoomData(rooms); // Update the room state with the fetched room ID
-    } catch (error) {
-      console.log("createRoom - error:", error);
-    }
+    setRoomData(data.room); // Update the room state with the fetched room ID
   };
 
   return (

@@ -1,126 +1,105 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import supabase from "@/app/services/supabase";
 import Image from "next/image";
-import ReadyView from "@/app/components/ReadyView";
-import useSocket from "@/app/hooks/useSocket";
+import clsx from 'clsx';
 import useFetchTeam from "@/app/hooks/useFetchTeam";
 import { roomStore } from "@/app/stores/roomStore";
-import { switchTurnAndUpdateCycle } from "../utils/roomCycle";
+import SocketContext from "../context/SocketContext";
 
 interface TeamViewProps {
   teamid: string;
   roomid: string;
-  selectedChampion: string;
-  setSelectedChampion: (championName: string) => void;
-  //handleConfirmSelection: () => Promise<void>;
 }
 
-const TeamView: React.FC<TeamViewProps> = ({
-  teamid,
-  roomid,
-//  handleConfirmSelection,
-  selectedChampion,
-  setSelectedChampion,
-}) => {
-
-  const socket = useSocket(roomid, teamid);
+const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
   const { rooms } = roomStore();
   const room = rooms[roomid];
+  const [selectedChampion, setSelectedChampion] = useState<string>("");
+  const [canSelect, setCanSelect] = useState(true);
 
-  const [canPick, setCanPick] = useState<boolean>(true);
+  const socket = useContext(SocketContext);
 
-  const { data: team, error, isLoading } = useFetchTeam(teamid);
-  if(!team) return null;
+  const handleSocketEvents = useCallback(
+    (event: string, msg: any) => {
+      console.log(`${event} - msg:`, msg);
+      setCanSelect(event !== 'TIMER' || msg !== '00:00:00');
+    },
+    []
+  );
 
-  const handleChampionClick = (championName: string) => {
-    setSelectedChampion(championName);
-  };
-
-
-  const handleConfirmSelection = async () => {
-    setCanPick(false)
-    socket?.emit("STOP_TIMER", {
-      roomid: roomid,
+  useEffect(() => {
+    const events = ['TIMER', 'CHAMPION_SELECTED', 'TIMER_RESET'];
+    
+    events.forEach(event => {
+      socket?.on(event, (msg: any) => handleSocketEvents(event, msg));
     });
 
-    const champion = selectedChampion
+    return () => {
+      events.forEach(event => {
+        socket?.off(event, handleSocketEvents);
+      });
+    };
+  }, [socket, handleSocketEvents]);
 
-    setSelectedChampion("");
-    
-    let updated_heroes_pool = team.heroes_pool.map((hero: any) =>
-      hero.name === champion
-        ? { ...hero, selected: true }
-        : hero
+  const handleConfirmSelection = async () => {
+    setCanSelect(false);
+    socket?.emit("STOP_TIMER", { roomid: roomid });
+    const champion = selectedChampion;
+    let updated_heroes_pool = team?.heroes_pool.map((hero: any) =>
+      hero.name === champion ? { ...hero, selected: true } : hero
     );
-
-    await supabase.from('teams').update({ heroes_pool: updated_heroes_pool, pick: true }).eq('id', teamid);
-
+    await supabase
+      .from("teams")
+      .update({ heroes_pool: updated_heroes_pool, pick: true })
+      .eq("id", teamid);
     socket?.emit("SELECT_CHAMPION", {
       roomid: roomid,
       selectedChampion: champion,
     });
-    
-    await switchTurnAndUpdateCycle(roomid);
-    setCanPick(true)
+    setSelectedChampion("");
   };
 
-  const updateTeamPool = async () => {
-   
-  }
-
-  const handleReadyClick = async () => {
-    const { data: team } = await supabase.from('teams').update({ ready: true }).select("*, room(*)").eq('id', teamid).single();
-    socket?.emit("TEAM_READY", { roomid, teamid });
-    team.ready = true;
-  };
-
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
-
-  if (!room.ready || room.cycle === -1) {
-    return (
-      <>
-        <p>{team.ready}</p>
-        <ReadyView onReadyClick={handleReadyClick} />
-      </>
-    );
-  }
+  const { data: team } = useFetchTeam(teamid);
+  
+  useEffect(() => {
+    setCanSelect(team?.isTurn)
+  }, [team?.isTurn])
+  
+  if (!team) return null;
 
   return (
     <>
-      <p>{canPick.toString()}</p>
+      <p>CAN SELECT: {canSelect?.toString()}</p>
+      <p>TURN: { team.isTurn.toString() }</p>
       <button
-        className={`${
-          !selectedChampion || !team.isTurn || !canPick ? "invisible" : "bg-blue-500"
-        } text-white font-bold py-2 px-4 mt-4`}
+        className={clsx("text-white font-bold py-2 px-4 mt-4", {
+          "bg-slate-600 text-gray-400 pointer-events-none": !selectedChampion || !canSelect || !team.isTurn,
+          "bg-blue-500": selectedChampion && canSelect && team.isTurn
+        })}
         onClick={handleConfirmSelection}
-        disabled={!selectedChampion || !team.isTurn || !canPick}>
+        disabled={!selectedChampion || !team.isTurn}>
         Confirm Selection
       </button>
       <div className="grid grid-cols-5 gap-4">
         <h1 className="text-2xl mb-4">Team Color: {team.color}</h1>
         <h2 className="text-xl mb-4">
           {String(team.isTurn)}
-          {team.isTurn
-            ? "It's your turn!"
-            : "Waiting for the other team..."}
+          {team.isTurn ? "It's your turn!" : "Waiting for the other team..."}
         </h2>
         {team.heroes_pool.map((hero: any, index: number) => (
           <div
             key={index}
-            className={`border p-4 ${
-              hero.name === selectedChampion ? "bg-gray-800" : ""
-            } ${
-              hero.selected || !team.isTurn
-                ? "opacity-25 pointer-events-none"
-                : ""
-            }`}
-            onClick={() => handleChampionClick(hero.name)}>
+            className={clsx("border p-4 transition ease-in-out", {
+              "bg-gray-800": hero.name === selectedChampion,
+              "opacity-25 pointer-events-none": hero.selected || !team.isTurn
+            })}
+            onClick={() => {
+              if (canSelect) {
+                setSelectedChampion(hero.name);
+              }
+            }}>
             <Image
-              src={`/images/champions/tiles/${hero.name
-                .replace(/\s/g, "")
-                .toLowerCase()}.jpg`}
+              src={`/images/champions/tiles/${hero.name.replace(/\s/g, "").toLowerCase()}.jpg`}
               alt={hero.name}
               width={60}
               height={60}

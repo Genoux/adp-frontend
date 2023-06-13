@@ -26,25 +26,6 @@ const useFetchTeam = (teamid: string) => {
         if (fetchError) {
           throw fetchError;
         }
-
-        const subscription = supabase
-        .channel(teamid)
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "teams",
-            filter: `id=eq.${teamid}`,
-          },
-          async (payload) => {
-            try {
-              const { new: updatedTeam } = payload;
-              setData(updatedTeam);
-            } catch (error) {
-              console.error("Error updating team:", error);
-            }
-          }).subscribe(() => console.log("Subscription to team updated"));
         setData(team);
       } catch (error) {
         console.log("fetchTeam - error:", error);
@@ -55,6 +36,33 @@ const useFetchTeam = (teamid: string) => {
     };
 
     fetchTeam();
+  }, [teamid]);
+
+  useEffect(() => {
+    const subscription = supabase
+    .channel(teamid)
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "teams",
+        filter: `id=eq.${teamid}`,
+      },
+      async (payload) => {
+        try {
+          const { new: updatedTeam } = payload;
+          setData(updatedTeam);
+        } catch (error) {
+          console.error("Error updating team:", error);
+        }
+      }
+    ).subscribe(() => console.log("Subscription to team updated"));
+
+    return () => {
+      // unsubscribe when the component unmounts
+      subscription.unsubscribe();
+    };
   }, [teamid]);
 
   return { data, error, isLoading };

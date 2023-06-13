@@ -28,12 +28,11 @@ const HeroGrid: React.FC<HeroGridProps> = ({ team, color, useTiles }) => {
                
               ) : (
                 <div
-                className="bg-cover bg-center wfull h-full"
+                className="bg-cover bg-center w-full h-full"
                 style={{
                   backgroundImage: `url('/images/champions/splash/${hero.name.replace(/\s/g, "").toLowerCase()}.jpg')`,
                 }}
               />
-              
               )}
             </>
           )}

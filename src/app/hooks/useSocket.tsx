@@ -36,5 +36,5 @@ export default function useSocket(roomid: string, teamid: string, handlers: Sock
     };
   }, [handlers.onMessage, handlers.onTimer, roomid, teamid]);
 
-  return socket;
+  return socket; // Return the socket
 }
