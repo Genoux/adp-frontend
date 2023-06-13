@@ -59,46 +59,48 @@ const TeamView: React.FC<TeamViewProps> = ({
       roomid: roomid,
       selectedChampion: champion,
     });
-    
+
+    if(!socket) return;
+
    // await switchTurnAndUpdateCycle(roomid);
-   try {
-    const response1 = await fetch(`/api/roomcycle/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        roomid: roomid,
-      }),
-    });
+  //  try {
+  //   const response1 = await fetch(`/api/roomcycle/`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       roomid: roomid,
+  //     }),
+  //   });
 
-    const data1 = await response1.json();
-    console.log("First fetch is done!");
+  //   const data1 = await response1.json();
+  //   console.log("First fetch is done!");
 
-    // Run the second fetch
-    const response2 = await fetch(`/api/switchteam/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        roomid: roomid,
-        roomCycle: data1.cycle,
-      }),
-    });
+  //   // Run the second fetch
+  //   const response2 = await fetch(`/api/switchteam/`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       roomid: roomid,
+  //       roomCycle: data1.cycle,
+  //     }),
+  //   });
 
-    const data2 = await response2.json();
-    console.log("Second fetch is done!");
+  //   const data2 = await response2.json();
+  //   console.log("Second fetch is done!");
  
-    socket?.emit("RESET_TIMER", {
-      roomid: roomid,
-    });
-    console.log("Timer reset!");
+  //   socket?.emit("RESET_TIMER", {
+  //     roomid: roomid,
+  //   });
+  //   console.log("Timer reset!");
 
-  } catch (error) {
-    // Handle any errors that occurred during the fetch calls
-    console.error("An error occurred:", error);
-  }
+  // } catch (error) {
+  //   // Handle any errors that occurred during the fetch calls
+  //   console.error("An error occurred:", error);
+  // }
     setCanPick(true)
   };
 
