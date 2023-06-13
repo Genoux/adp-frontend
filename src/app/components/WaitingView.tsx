@@ -6,14 +6,13 @@ interface WaitingRoomProps {
   roomid: any; // Replace with your specific type
 }
 
-const ReadyView: FC<WaitingRoomProps> = ({roomid}) => {
+const WaitingView: FC<WaitingRoomProps> = ({roomid}) => {
   const { rooms } = roomStore();
   const  room  = rooms[roomid]
 
   return (
     <div>
-         <main>
-        <p>{room.cycle.toString()}</p>
+      <main>
         <div className="grid grid-cols-6">
         {room.heroes_pool.map((hero: any, index: number) => (
           <div
@@ -35,4 +34,4 @@ const ReadyView: FC<WaitingRoomProps> = ({roomid}) => {
   );
 };
 
-export default ReadyView;
+export default WaitingView;

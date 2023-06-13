@@ -75,7 +75,6 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
   if (!roomData || !room.ready) {
     return (
       <>
-        <pre>room ready: {room?.ready.toString()}</pre>
         <p>Waiting for players to ready up...</p>
       </>
     );
