@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import supabase from '@/app/services/supabase';
 import { roomStore } from '@/app/stores/roomStore';
-import Image from 'next/image';
 import HeroGrid from './HeroGrid';
 
-// Replace [key: string]: any; with your actual team fields and types
 interface Team {
   [key: string]: any;
 }
@@ -15,8 +13,8 @@ interface RoomInfoProps {
 
 const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
   const [roomData, setRoomData] = useState<{blue: Team, red: Team} | null>(null);
-  const [error, setError] = useState<any | null>(null);
-  const { rooms, setRoom } = roomStore();
+  const [error, setError] = useState<Error | null>(null);
+  const { rooms } = roomStore();
   const room = rooms[roomid]
 
   useEffect(() => {
@@ -41,51 +39,46 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
   }, [roomid]);
 
   useEffect(() => {
-    const channel = supabase
-      .channel(roomid)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'teams',
-          filter: `room=eq.${roomid}`,
-        },
-        (payload) => {
-          const { new: team } = payload;
+    const channel = supabase.channel(roomid);
+
+    const subscription = channel.on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'teams',
+      filter: `room=eq.${roomid}`
+    }, (payload) => {
+      const { new: team } = payload;
   
-          if (team.color === 'blue') {
-            setRoomData(oldData => oldData ? ({ ...oldData, blue: team }) : { blue: team, red: {} });
-          } else {
-            setRoomData(oldData => oldData ? ({ ...oldData, red: team }) : { blue: {}, red: team });
-          }
-        }
-    ).subscribe();
-  
+      if (team.color === 'blue') {
+        setRoomData(oldData => oldData ? ({ ...oldData, blue: team }) : { blue: team, red: {} });
+      } else {
+        setRoomData(oldData => oldData ? ({ ...oldData, red: team }) : { blue: {}, red: team });
+      }
+    }).subscribe();
+
     return () => {
       // Unsubscribe from room updates when component unmounts
       channel.unsubscribe();
     };
-  }, [roomid, setRoom]);
+  }, [roomid]);
 
   if (error) {
     return <div>Error fetching room data: {error.message}</div>;
   }
 
-  if (!roomData || !room.ready) {
-    return (
-      <>
-        <pre>room ready: {room?.ready.toString()}</pre>
-        <p>Waiting for players to ready up...</p>
-      </>
-    );
+  if (!roomData) {
+    return <p>Loading...</p>;
+  }
+
+  if (!room?.ready) {
+    return <p>Waiting for players to ready up...</p>;
   }
 
   return (
     <>
-      <p>{room?.cycle}</p>
-      <p>{room?.name}</p>
-      <h1>Room ID: {room?.id}</h1>
+      <p>{room.cycle}</p>
+      <p>{room.name}</p>
+      <h1>Room ID: {room.id}</h1>
       <div className="flex my-24 gap-12 justify-center">
         <div>
           <h2>Blue Team Selected Heroes:</h2>

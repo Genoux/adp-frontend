@@ -1,83 +1,75 @@
-"use client";
+"use client"
 
 import { useState, useCallback } from "react";
-import supabase from "@/app/services/supabase";
 import RoomInfo from "@/app/components/RoomInfo";
 import TeamView from "@/app/components/TeamView";
 import FinishView from "@/app/components/FinishView";
 import useSocket from "@/app/hooks/useSocket";
 import WaitingView from "@/app/components/WaitingView";
 import useFetchRoom from "@/app/hooks/useFetchRoom";
+import ReadyView from "@/app/components/ReadyView";
 
-export default function Room({
-  params,
-}: {
-  params: { roomid: string; teamid: string };
-}) {
+import SocketContext from '@/app/context/SocketContext';
+
+interface RoomProps {
+  params: {
+    roomid: string;
+    teamid: string;
+  };
+}
+
+export default function Room({ params }: RoomProps) {
   const roomid = params.roomid;
   const teamid = params.teamid;
-  const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [timer, setTimer] = useState<string>("");
-
-  const handleSocketMessage = useCallback((msg: any) => {
-    console.log("handleSocketMessage - msg:", msg);
-  }, []);
 
   const handleSocketTimer = useCallback((msg: any) => {
     setTimer(msg);
-    if(msg === "00:00:00") {
-      setSelectedChampion("");
-    }
   }, []);
 
   const socket = useSocket(roomid, teamid, {
-    onMessage: handleSocketMessage,
     onTimer: handleSocketTimer
   });
 
   const { data: room, error, isLoading } = useFetchRoom(roomid);
-  if(!room) return null;
-
-  // const handleConfirmSelection = async () => {
-  //   socket?.emit("SELECT_CHAMPION", {
-  //     roomid: roomid,
-  //     selectedChampion: selectedChampion,
-  //   });
-
-  //   setSelectedChampion("");
-  // };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // You can replace this with a loading spinner or some similar component
   }
 
-  if (room.cycle === 0) {
-    return (
-      <>
-        <div> timer: {timer.toString()} </div>
-        <WaitingView roomid={roomid} />
-      </>
-    );
+  if (error) {
+    return <div>Something went wrong: {error.message}</div>; // You can replace this with an error component
   }
 
-  if (room.status === "done") {
-    return <FinishView roomid={roomid} />;
-  }
+  if(!room) return null;
+
+  const isReadyView = room.cycle === -1;
+  const isWaitingView = room.cycle === 0;
+  const isFinishView = room.status === "done";
+  const isRoomView = room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
 
   return (
-    <>
-      {room.cycle !== 0 && (
+    <SocketContext.Provider value={socket}>
+      {isReadyView && (
+        <ReadyView teamid={teamid} roomid={roomid} />
+      )}
+  
+      {isWaitingView && (
+        <>
+          <div>timer: {timer}</div>
+          <WaitingView roomid={roomid} />
+        </>
+      )}
+  
+      {isFinishView && <FinishView roomid={roomid} />}
+  
+      {isRoomView && (
         <div>
-          <div> timer: {timer.toString()} </div>
+          <div>timer: {timer}</div>
           <RoomInfo roomid={roomid} />
-          <TeamView
-            teamid={teamid}
-            roomid={roomid}
-            setSelectedChampion={setSelectedChampion}
-            selectedChampion={selectedChampion}
-          />
+          <TeamView teamid={teamid} roomid={roomid} />
         </div>
       )}
-    </>
+    </SocketContext.Provider>
   );
 }
