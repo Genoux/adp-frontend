@@ -110,14 +110,14 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
     setSelectedChampion("");
 
     
-    // let updated_heroes_pool = team.heroes_pool.map((hero: any) =>
-    //   hero.name === champion ? { ...hero, selected: true } : hero
-    // );
+    let updated_heroes_pool = team?.heroes_pool.map((hero: any) =>
+      hero.name === champion ? { ...hero, selected: true } : hero
+    );
 
-    // await supabase
-    //   .from("teams")
-    //   .update({ heroes_pool: updated_heroes_pool, pick: true })
-    //   .eq("id", teamid);
+    await supabase
+      .from("teams")
+      .update({ heroes_pool: updated_heroes_pool, pick: true })
+      .eq("id", teamid);
 
     socket?.emit("SELECT_CHAMPION", {
       roomid: roomid,
