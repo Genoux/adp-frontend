@@ -1,12 +1,10 @@
-"use client";
-
 import { useState, useEffect, useCallback, useContext } from "react";
 import supabase from "@/app/services/supabase";
 import Image from "next/image";
+import clsx from 'clsx';
 import useFetchTeam from "@/app/hooks/useFetchTeam";
 import { roomStore } from "@/app/stores/roomStore";
-import SocketContext from "../context/SocketContext"; // Import your SocketContext
-
+import SocketContext from "../context/SocketContext";
 
 interface TeamViewProps {
   teamid: string;
@@ -17,144 +15,67 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
   const { rooms } = roomStore();
   const room = rooms[roomid];
   const [selectedChampion, setSelectedChampion] = useState<string>("");
-  const [canSelect, setCanSelect] = useState(true); // Add this line. Assuming you start with canSelect as true.
+  const [canSelect, setCanSelect] = useState(true);
 
-  const socket = useContext(SocketContext); // Get socket from context
+  const socket = useContext(SocketContext);
 
-  const handleSocketTimer = useCallback(
-    (msg: any) => {
-      if (msg === "00:00:00") {
-        console.log("msg:", msg);
-        setSelectedChampion("");
-        setCanSelect(false); // When timer is 0, canSelect becomes false
-      } else {
-        //setCanSelect(true);
-        // When timer is not 0, canSelect becomes true  
-      }
+  const handleSocketEvents = useCallback(
+    (event: string, msg: any) => {
+      console.log(`${event} - msg:`, msg);
+      setCanSelect(event !== 'TIMER' || msg !== '00:00:00');
     },
-    [setSelectedChampion]
+    []
   );
 
   useEffect(() => {
-    // if the 'TIMER' event is emitted, the handleSocketTimer function will be called
-    socket?.on('TIMER', handleSocketTimer);
-  
-    // Clean up the event listener
+    const events = ['TIMER', 'CHAMPION_SELECTED', 'TIMER_RESET'];
+    
+    events.forEach(event => {
+      socket?.on(event, (msg: any) => handleSocketEvents(event, msg));
+    });
+
     return () => {
-      socket?.off('TIMER', handleSocketTimer);
+      events.forEach(event => {
+        socket?.off(event, handleSocketEvents);
+      });
     };
-  }, [socket, handleSocketTimer]);
-
-
-
-  useEffect(() => {
-    const handleChampionSelected = (msg: boolean) => {
-      console.log("handleChampionSelected - msg:", msg);
-      setCanSelect(true);
-    };
-
-    socket?.on('CHAMPION_SELECTED', handleChampionSelected);
-
-    // Clean up the event listener
-    return () => {
-      socket?.off('CHAMPION_SELECTED', handleChampionSelected);
-    };
-  }, [setCanSelect, socket]); // Add socket to the dependency array
-
-  useEffect(() => {
-    const handleTimerReset = (msg: boolean) => {
-      console.log("handleTimerReset - msg:", msg);
-      setCanSelect(true);
-    };
-
-    socket?.on('TIMER_RESET', handleTimerReset);
-
-    // Clean up the event listener
-    return () => {
-      socket?.off('TIMER_RESET', handleTimerReset);
-    };
-  }, [setCanSelect, socket]); // Add socket to the dependency array
-  
-  // This hook will run once when the component mounts
-  useEffect(() => {
-    const fetchTeamData = async () => {
-      const { data, error } = await supabase
-        .from("teams")
-        .select("ready")
-        .eq("id", teamid)
-        .single();
-
-      if (data && !error) {
-        console.log("fetchTeamData - data:", data);
-        setCanSelect(true);
-      }
-    };
-
-    fetchTeamData();
-  }, [setCanSelect, teamid]); // Dependent on teamid
-
-
-
-
-
+  }, [socket, handleSocketEvents]);
 
   const handleConfirmSelection = async () => {
     setCanSelect(false);
-
-    socket?.emit("STOP_TIMER", {
-      roomid: roomid,
-    });
-
+    socket?.emit("STOP_TIMER", { roomid: roomid });
     const champion = selectedChampion;
-
-    
-
-    
     let updated_heroes_pool = team?.heroes_pool.map((hero: any) =>
       hero.name === champion ? { ...hero, selected: true } : hero
     );
-
     await supabase
       .from("teams")
       .update({ heroes_pool: updated_heroes_pool, pick: true })
       .eq("id", teamid);
-
     socket?.emit("SELECT_CHAMPION", {
       roomid: roomid,
       selectedChampion: champion,
     });
-    
     setSelectedChampion("");
   };
 
-  
   const { data: team } = useFetchTeam(teamid);
-
+  
   useEffect(() => {
     setCanSelect(team?.isTurn)
   }, [team?.isTurn])
   
-  // useEffect(() => {
-  //   if (!team) return;
-  //   if (team.isTurn) {
-  //     setTimeout(() => {
-  //       setCanSelect(true);
-  //     }, 1000);
-  //   }
-  // }, [team, setCanSelect]);
-
   if (!team) return null;
 
   return (
     <>
-      <p>CAN SELECT: {canSelect.toString()}</p>
+      <p>CAN SELECT: {canSelect?.toString()}</p>
       <p>TURN: { team.isTurn.toString() }</p>
       <button
-        className={`${
-          !selectedChampion || !canSelect || !team.isTurn
-            ? "bg-slate-600 text-gray-400 pointer-events-none"
-            : "bg-blue-500"
-        } text-white font-bold py-2 px-4 mt-4`}
+        className={clsx("text-white font-bold py-2 px-4 mt-4", {
+          "bg-slate-600 text-gray-400 pointer-events-none": !selectedChampion || !canSelect || !team.isTurn,
+          "bg-blue-500": selectedChampion && canSelect && team.isTurn
+        })}
         onClick={handleConfirmSelection}
         disabled={!selectedChampion || !team.isTurn}>
         Confirm Selection
@@ -168,22 +89,17 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
         {team.heroes_pool.map((hero: any, index: number) => (
           <div
             key={index}
-            className={`border p-4  transition ease-in-out ${
-              hero.name === selectedChampion ? "bg-gray-800" : ""
-            } ${
-              hero.selected || !team.isTurn
-                ? "opacity-25 pointer-events-none"
-                : ""
-            }`}
+            className={clsx("border p-4 transition ease-in-out", {
+              "bg-gray-800": hero.name === selectedChampion,
+              "opacity-25 pointer-events-none": hero.selected || !team.isTurn
+            })}
             onClick={() => {
               if (canSelect) {
                 setSelectedChampion(hero.name);
               }
             }}>
             <Image
-              src={`/images/champions/tiles/${hero.name
-                .replace(/\s/g, "")
-                .toLowerCase()}.jpg`}
+              src={`/images/champions/tiles/${hero.name.replace(/\s/g, "").toLowerCase()}.jpg`}
               alt={hero.name}
               width={60}
               height={60}

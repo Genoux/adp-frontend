@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState, useCallback } from "react";
 import RoomInfo from "@/app/components/RoomInfo";
@@ -11,11 +11,14 @@ import ReadyView from "@/app/components/ReadyView";
 
 import SocketContext from '@/app/context/SocketContext';
 
-export default function Room({
-  params,
-}: {
-  params: { roomid: string; teamid: string };
-}) {
+interface RoomProps {
+  params: {
+    roomid: string;
+    teamid: string;
+  };
+}
+
+export default function Room({ params }: RoomProps) {
   const roomid = params.roomid;
   const teamid = params.teamid;
   const [timer, setTimer] = useState<string>("");
@@ -29,33 +32,38 @@ export default function Room({
   });
 
   const { data: room, error, isLoading } = useFetchRoom(roomid);
+
+  if (isLoading) {
+    return <div>Loading...</div>; // You can replace this with a loading spinner or some similar component
+  }
+
+  if (error) {
+    return <div>Something went wrong: {error.message}</div>; // You can replace this with an error component
+  }
+
   if(!room) return null;
 
-  // const handleConfirmSelection = async () => {
-  //   socket?.emit("SELECT_CHAMPION", {
-  //     roomid: roomid,
-  //     selectedChampion: selectedChampion,
-  //   });
-
-  //   setSelectedChampion("");
-  // };
+  const isReadyView = room.cycle === -1;
+  const isWaitingView = room.cycle === 0;
+  const isFinishView = room.status === "done";
+  const isRoomView = room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
 
   return (
     <SocketContext.Provider value={socket}>
-      {room.cycle === -1 && (
+      {isReadyView && (
         <ReadyView teamid={teamid} roomid={roomid} />
       )}
   
-      {room.cycle === 0 && (
+      {isWaitingView && (
         <>
           <div>timer: {timer}</div>
           <WaitingView roomid={roomid} />
         </>
       )}
   
-      {room.status === "done" && <FinishView roomid={roomid} />}
+      {isFinishView && <FinishView roomid={roomid} />}
   
-      {room.cycle !== 0 && room.cycle !== -1 && room.status !== "done" && (
+      {isRoomView && (
         <div>
           <div>timer: {timer}</div>
           <RoomInfo roomid={roomid} />
@@ -64,5 +72,4 @@ export default function Room({
       )}
     </SocketContext.Provider>
   );
-  
 }
