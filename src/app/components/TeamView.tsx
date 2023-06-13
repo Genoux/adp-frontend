@@ -28,8 +28,8 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
         setSelectedChampion("");
         setCanSelect(false); // When timer is 0, canSelect becomes false
       } else {
-          //setCanSelect(true);
-         // When timer is not 0, canSelect becomes true  
+        //setCanSelect(true);
+        // When timer is not 0, canSelect becomes true  
       }
     },
     [setSelectedChampion]
@@ -59,9 +59,29 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
     };
   }, [setCanSelect, socket]); // Add socket to the dependency array
 
-  const { data: team, isLoading } = useFetchTeam(teamid);
+  
+  // This hook will run once when the component mounts
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      const { data, error } = await supabase
+        .from("teams")
+        .select("ready")
+        .eq("id", teamid)
+        .single();
 
-  if (!team) return null;
+      if (data && !error) {
+        console.log("fetchTeamData - data:", data);
+        setCanSelect(true);
+      }
+    };
+
+    fetchTeamData();
+  }, [setCanSelect, teamid]); // Dependent on teamid
+
+
+
+
+
 
   const handleConfirmSelection = async () => {
     setCanSelect(false);
@@ -74,6 +94,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
 
     setSelectedChampion("");
 
+    
     // let updated_heroes_pool = team.heroes_pool.map((hero: any) =>
     //   hero.name === champion ? { ...hero, selected: true } : hero
     // );
@@ -89,6 +110,19 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
     });
   };
 
+  
+  const { data: team } = useFetchTeam(teamid);
+  
+  useEffect(() => {
+    if (!team) return;
+    if (team.isTurn) {
+      setTimeout(() => {
+        setCanSelect(true);
+      }, 1000);
+    }
+  }, [team, setCanSelect]);
+
+  if (!team) return null;
 
   return (
     <>
