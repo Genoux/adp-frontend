@@ -9,7 +9,7 @@ import WaitingView from "@/app/components/WaitingView";
 import useFetchRoom from "@/app/hooks/useFetchRoom";
 import ReadyView from "@/app/components/ReadyView";
 
-import SocketContext from '@/app/contexts/SocketContext';
+import SocketContext from '@/app/context/SocketContext';
 
 export default function Room({
   params,

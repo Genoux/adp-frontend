@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react"; // Import useContext and useEffect
 import supabase from "../services/supabase";
-import SocketContext from "../contexts/SocketContext"; // Import your SocketContext
+import SocketContext from "../context/SocketContext"; // Import your SocketContext
 
 interface ReadyRoomProps {
   teamid: string;

@@ -5,7 +5,7 @@ import supabase from "@/app/services/supabase";
 import Image from "next/image";
 import useFetchTeam from "@/app/hooks/useFetchTeam";
 import { roomStore } from "@/app/stores/roomStore";
-import SocketContext from "../contexts/SocketContext"; // Import your SocketContext
+import SocketContext from "../context/SocketContext"; // Import your SocketContext
 
 
 interface TeamViewProps {
@@ -46,8 +46,10 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
   }, [socket, handleSocketTimer]);
 
 
+
   useEffect(() => {
     const handleChampionSelected = (msg: boolean) => {
+      console.log("handleChampionSelected - msg:", msg);
       setCanSelect(true);
     };
 
@@ -59,6 +61,19 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
     };
   }, [setCanSelect, socket]); // Add socket to the dependency array
 
+  useEffect(() => {
+    const handleTimerReset = (msg: boolean) => {
+      console.log("handleTimerReset - msg:", msg);
+      setCanSelect(true);
+    };
+
+    socket?.on('TIMER_RESET', handleTimerReset);
+
+    // Clean up the event listener
+    return () => {
+      socket?.off('TIMER_RESET', handleTimerReset);
+    };
+  }, [setCanSelect, socket]); // Add socket to the dependency array
   
   // This hook will run once when the component mounts
   useEffect(() => {
@@ -112,21 +127,26 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
 
   
   const { data: team } = useFetchTeam(teamid);
-  
+
   useEffect(() => {
-    if (!team) return;
-    if (team.isTurn) {
-      setTimeout(() => {
-        setCanSelect(true);
-      }, 1000);
-    }
-  }, [team, setCanSelect]);
+    setCanSelect(team?.isTurn)
+  }, [team?.isTurn])
+  
+  // useEffect(() => {
+  //   if (!team) return;
+  //   if (team.isTurn) {
+  //     setTimeout(() => {
+  //       setCanSelect(true);
+  //     }, 1000);
+  //   }
+  // }, [team, setCanSelect]);
 
   if (!team) return null;
 
   return (
     <>
       <p>CAN SELECT: {canSelect.toString()}</p>
+      <p>TURN: { team.isTurn.toString() }</p>
       <button
         className={`${
           !selectedChampion || !canSelect || !team.isTurn
