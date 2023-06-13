@@ -64,7 +64,7 @@ const TeamView: React.FC<TeamViewProps> = ({
   if (!team) return null;
 
   const handleConfirmSelection = async () => {
-    //setCanSelect(false);
+    setCanSelect(false);
 
     socket?.emit("STOP_TIMER", {
       roomid: roomid,
