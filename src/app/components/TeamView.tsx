@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import supabase from "@/app/services/supabase";
 import Image from "next/image";
 import ReadyView from "@/app/components/ReadyView";
@@ -12,51 +12,59 @@ import { switchTurnAndUpdateCycle } from "../utils/roomCycle";
 interface TeamViewProps {
   teamid: string;
   roomid: string;
-  selectedChampion: string;
-  setSelectedChampion: (championName: string) => void;
-  //handleConfirmSelection: () => Promise<void>;
 }
 
 const TeamView: React.FC<TeamViewProps> = ({
   teamid,
   roomid,
-//  handleConfirmSelection,
-  selectedChampion,
-  setSelectedChampion,
 }) => {
 
-  const socket = useSocket(roomid, teamid);
   const { rooms } = roomStore();
   const room = rooms[roomid];
+  const [selectedChampion, setSelectedChampion] = useState<string>("");
+  const [canSelect, setCanSelect] = useState(true); // Add this line. Assuming you start with canSelect as true.
 
-  const [canPick, setCanPick] = useState<boolean>(true);
 
+ 
+
+  const handleSocketTimer = useCallback((msg: any) => {
+    if(msg === "00:00:00") {
+      console.log("handleSocketTimer - msg:", msg);
+      setSelectedChampion("");
+      setCanSelect(false); // When timer is 0, canSelect becomes false
+    }
+  }, [setSelectedChampion]);
+
+  const socket = useSocket(roomid, teamid, {
+    onTimer: handleSocketTimer
+  });
+
+  // useEffect(() => {
+  //   const handleChampionSelected = (msg: boolean) => {
+  //     console.log("handleChampionSelected - msg:", msg);
+  //     setCanSelect(msg);
+  //   };
+  
+  //   socket?.on('CHAMPION_SELECTED', handleChampionSelected);
+  
+  //   // Clean up the event listener
+  //   return () => {
+  //     socket?.off('CHAMPION_SELECTED', handleChampionSelected);
+  //   };
+  // }, [setCanSelect, socket]); // Add socket to the dependency array
+  
   const { data: team, error, isLoading } = useFetchTeam(teamid);
 
   useEffect(() => {
-    const handleChampionSelected = () => {
-      setCanPick(true)
-    };
-  
-    socket?.on('CHAMPION_SELECTED', handleChampionSelected);
-  
-    // Clean up the event listener
-    return () => {
-      socket?.off('CHAMPION_SELECTED', handleChampionSelected);
-    };
-  }, [socket]); // Add socket to the dependency array
-  
+    if (team) {
+        setCanSelect(team.isTurn);
+    }
+}, [team]);
 
-  if(!team) return null;
+  if (!team) return null;
 
-  const handleChampionClick = (championName: string) => {
-    setSelectedChampion(championName);
-  };
-
-;
   const handleConfirmSelection = async () => {
-    
-    setCanPick(false)
+    //setCanSelect(false);
 
     socket?.emit("STOP_TIMER", {
       roomid: roomid,
@@ -78,51 +86,6 @@ const TeamView: React.FC<TeamViewProps> = ({
       roomid: roomid,
       selectedChampion: champion,
     });
-
-    if(!socket) return;
-
-   // await switchTurnAndUpdateCycle(roomid);
-  //  try {
-  //   const response1 = await fetch(`/api/roomcycle/`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       roomid: roomid,
-  //     }),
-  //   });
-
-  //   const data1 = await response1.json();
-  //   console.log("First fetch is done!");
-
-  //   // Run the second fetch
-  //   const response2 = await fetch(`/api/switchteam/`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       roomid: roomid,
-  //       roomCycle: data1.cycle,
-  //     }),
-  //   });
-
-  //   const data2 = await response2.json();
-  //   console.log("Second fetch is done!");
- 
-  //   socket?.emit("RESET_TIMER", {
-  //     roomid: roomid,
-  //   });
-  //   console.log("Timer reset!");
-
-  // } catch (error) {
-  //   // Handle any errors that occurred during the fetch calls
-  //   console.error("An error occurred:", error);
-  // }
-    setTimeout(() => {
-      
-    }, 500);
   };
 
   const handleReadyClick = async () => {
@@ -146,13 +109,14 @@ const TeamView: React.FC<TeamViewProps> = ({
 
   return (
     <>
-      <p>{canPick.toString()}</p>
+      <p>CAN SELECT: {canSelect.toString()}</p>
       <button
         className={`${
-          !selectedChampion || !team.isTurn || !canPick ? "invisible" : "bg-blue-500"
+          !selectedChampion || !canSelect || !team.isTurn ? "invisible" : "bg-blue-500"
         } text-white font-bold py-2 px-4 mt-4`}
         onClick={handleConfirmSelection}
-        disabled={!selectedChampion || !team.isTurn }>
+        disabled={!selectedChampion || !team.isTurn}
+      >
         Confirm Selection
       </button>
       <div className="grid grid-cols-5 gap-4">
@@ -169,11 +133,12 @@ const TeamView: React.FC<TeamViewProps> = ({
             className={`border p-4 ${
               hero.name === selectedChampion ? "bg-gray-800" : ""
             } ${
-              (hero.selected || !team.isTurn) || !canPick
+              hero.selected || !canSelect ||  !team.isTurn 
                 ? "opacity-25 pointer-events-none"
                 : ""
             }`}
-            onClick={() => handleChampionClick(hero.name)}>
+            onClick={() => setSelectedChampion(hero.name)}
+          >
             <Image
               src={`/images/champions/tiles/${hero.name
                 .replace(/\s/g, "")
@@ -188,6 +153,7 @@ const TeamView: React.FC<TeamViewProps> = ({
       </div>
     </>
   );
+  
 };
 
 export default TeamView;

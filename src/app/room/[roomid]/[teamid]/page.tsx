@@ -18,20 +18,14 @@ export default function Room({
   const teamid = params.teamid;
   const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [timer, setTimer] = useState<string>("");
-
-  const handleSocketMessage = useCallback((msg: any) => {
-    console.log("handleSocketMessage - msg:", msg);
-  }, []);
+  const [canSelect, setCanSelect] = useState(true); // Add this line. Assuming you start with canSelect as true.
+  
 
   const handleSocketTimer = useCallback((msg: any) => {
     setTimer(msg);
-    if(msg === "00:00:00") {
-      setSelectedChampion("");
-    }
   }, []);
 
-  const socket = useSocket(roomid, teamid, {
-    onMessage: handleSocketMessage,
+  useSocket(roomid, teamid, {
     onTimer: handleSocketTimer
   });
 
@@ -73,8 +67,6 @@ export default function Room({
           <TeamView
             teamid={teamid}
             roomid={roomid}
-            setSelectedChampion={setSelectedChampion}
-            selectedChampion={selectedChampion}
           />
         </div>
       )}
