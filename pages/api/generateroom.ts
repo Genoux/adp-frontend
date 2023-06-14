@@ -156,22 +156,10 @@ const champions = [
   { name: "Zyra", selected: false },
 ];
 
-export async function randomChampions() {
-  const shuffledChampions = champions.sort(() => Math.random() - 0.5);
-
-  // Get the first 30 elements from the shuffled array
-  const randomChampions = shuffledChampions.slice(0, 30);
-  return {
-    list: randomChampions,
-  };
-}
-
-//----------------------------------------------------------------------------------------------
-
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import type { NextFetchEvent, NextRequest } from "next/server";
-import { generateArray, purgeAllRooms } from "@/app/utils/helpers";
+import type { NextRequest } from "next/server";
+import { generateArray } from "@/app/utils/helpers";
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -186,24 +174,21 @@ export const config = {
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-
-// Create a single supabase client for interacting with your database
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const customConfig: Config = {
-  dictionaries: [adjectives, colors, animals],
+  dictionaries: [ adjectives, colors, animals],
   separator: " ",
   style: "capital",
 };
 
-export default async function MyEdgeFunction(
-  request: NextRequest,
-  event: NextFetchEvent
-) {
-  // get body from request
-  const { blueTeamName, redTeamName } = await request.json();
-  const room = await generateRoom(blueTeamName, redTeamName);
-  return NextResponse.json({ room });
+export async function randomChampions() {
+  const shuffledChampions = champions.sort(() => Math.random() - 0.5);
+  const randomChampions = shuffledChampions.slice(0, 30);
+
+  return {
+    list: randomChampions,
+  };
 }
 
 async function generateRoom(blueTeamName: string, redTeamName: string) {
@@ -215,7 +200,7 @@ async function generateRoom(blueTeamName: string, redTeamName: string) {
   const roomName: string = uniqueNamesGenerator(customConfig);
 
   try {
-    const { red, redError } = await supabase.from("teams").insert({
+    const { redError } = await supabase.from("teams").insert({
       id: teamRedId,
       color: "red",
       isTurn: false,
@@ -224,7 +209,7 @@ async function generateRoom(blueTeamName: string, redTeamName: string) {
       name: redTeamName,
     });
 
-    const { blue, blueError } = await supabase.from("teams").insert({
+    const { blueError } = await supabase.from("teams").insert({
       id: teamBlueId,
       color: "blue",
       isTurn: true,
@@ -274,4 +259,13 @@ async function generateRoom(blueTeamName: string, redTeamName: string) {
   } catch (error) {
     console.log("createRoom - error:", error);
   }
+}
+
+export default async function MyEdgeFunction(
+  request: NextRequest,
+) {
+  // get body from request
+  const { blueTeamName, redTeamName } = await request.json();
+  const room = await generateRoom(blueTeamName, redTeamName);
+  return NextResponse.json({ room });
 }

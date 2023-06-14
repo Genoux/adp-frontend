@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useContext } from "react";
 import supabase from "@/app/services/supabase";
 import Image from "next/image";
-import clsx from 'clsx';
+import clsx from "clsx";
 import useFetchTeam from "@/app/hooks/useFetchTeam";
 import { roomStore } from "@/app/stores/roomStore";
 import SocketContext from "../context/SocketContext";
@@ -19,23 +19,19 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
 
   const socket = useContext(SocketContext);
 
-  const handleSocketEvents = useCallback(
-    (event: string, msg: any) => {
-      console.log(`${event} - msg:`, msg);
-      setCanSelect(event !== 'TIMER' || msg !== '00:00:00');
-    },
-    []
-  );
+  const handleSocketEvents = useCallback((event: string, msg: any) => {
+    setCanSelect(event !== "TIMER" || msg !== "00:00:00");
+  }, []);
 
   useEffect(() => {
-    const events = ['TIMER', 'CHAMPION_SELECTED', 'TIMER_RESET'];
-    
-    events.forEach(event => {
+    const events = ["TIMER", "CHAMPION_SELECTED", "TIMER_RESET"];
+
+    events.forEach((event) => {
       socket?.on(event, (msg: any) => handleSocketEvents(event, msg));
     });
 
     return () => {
-      events.forEach(event => {
+      events.forEach((event) => {
         socket?.off(event, handleSocketEvents);
       });
     };
@@ -60,21 +56,22 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
   };
 
   const { data: team } = useFetchTeam(teamid);
-  
+
   useEffect(() => {
-    setCanSelect(team?.isTurn)
-  }, [team?.isTurn])
-  
+    setCanSelect(team?.isTurn);
+  }, [team?.isTurn]);
+
   if (!team) return null;
 
   return (
     <>
       <p>CAN SELECT: {canSelect?.toString()}</p>
-      <p>TURN: { team.isTurn.toString() }</p>
+      <p>TURN: {team.isTurn.toString()}</p>
       <button
         className={clsx("text-white font-bold py-2 px-4 mt-4", {
-          "bg-slate-600 text-gray-400 pointer-events-none": !selectedChampion || !canSelect || !team.isTurn,
-          "bg-blue-500": selectedChampion && canSelect && team.isTurn
+          "bg-slate-600 text-gray-400 pointer-events-none":
+            !selectedChampion || !canSelect || !team.isTurn,
+          "bg-blue-500": selectedChampion && canSelect && team.isTurn,
         })}
         onClick={handleConfirmSelection}
         disabled={!selectedChampion || !team.isTurn}>
@@ -91,7 +88,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
             key={index}
             className={clsx("border p-4 transition ease-in-out", {
               "bg-gray-800": hero.name === selectedChampion,
-              "opacity-25 pointer-events-none": hero.selected || !team.isTurn
+              "opacity-25 pointer-events-none": hero.selected || !team.isTurn,
             })}
             onClick={() => {
               if (canSelect) {
@@ -99,7 +96,9 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
               }
             }}>
             <Image
-              src={`/images/champions/tiles/${hero.name.replace(/\s/g, "").toLowerCase()}.jpg`}
+              src={`/images/champions/tiles/${hero.name
+                .replace(/\s/g, "")
+                .toLowerCase()}.jpg`}
               alt={hero.name}
               width={60}
               height={60}
