@@ -21,9 +21,19 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
     const getRoom = async () => {
       const { data: roomTead, error } = await supabase
         .from('rooms')
-        .select('blue(*), red(*)')
-        .eq('id', roomid)
-        .single();
+        .select('*')
+        .eq('id', roomid).single()
+
+      //TODO FIX MISSING BLUE FOREIGN KEY
+        const { data: blue } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('id', roomTead.blue).single()
+      
+        const { data: red } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('id', roomTead.red).single()
 
       if (error) {
         setError(error);
