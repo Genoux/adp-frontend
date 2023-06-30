@@ -1,9 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
+import LoadingCircle from "@/app/components/LoadingCircle";
+import { SunIcon, CopyIcon } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/app/components/ui/tooltip";
 
 interface Room {
   id: number;
@@ -73,63 +82,104 @@ function Home() {
 
   if (loading)
     return (
-      <div className="flex min-h-screen flex-col items-center justify-between p-24">
-        Loading...
+      <div className="flex min-h-screen flex-col items-center justify-center p-24">
+        <LoadingCircle />
       </div>
     );
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      {room ? (
-          <div>
-          <p>Name: {room.name}</p>
-          {room.timer}
-          
-            <p>
-              Blue:
-              <Link href={`/room/${room.id}/${blueTeam?.id}`} target="_blank">
-              {blueTeam?.name}
-              </Link>
-            </p>
-            <p>
-              Red:
-              <Link href={`/room/${room.id}/${redTeam?.id}`} target="_blank">
-                {redTeam?.name}
-              </Link>
-            </p>
-          </div>
+    <main className="flex h-screen flex-col items-center justify-center">
+      {room && blueTeam && redTeam ? (
+        <AnimatePresence mode="wait">
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.2 }}
+            key="home-page" // Add a unique key prop
+          >
+            <div className="flex flex-row gap-6">
+              <div className="border border-blue-700 bg-blue-700 bg-opacity-10 p-4 rounded-md flex flex-col items-center">
+                <h1 className="text-4xl font-medium mb-4">{blueTeam.name}</h1>
+                <div className="flex flex-row justify-center items-center gap-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button>
+                          <CopyIcon className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Copy URL</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <Link
+                    href={`/room/${room.id}/${blueTeam.id}`}
+                    target="_blank">
+                    <Button>Rejoindre Bleue</Button>
+                  </Link>
+                </div>
+              </div>
+              <div className="border border-red-700 bg-red-700 bg-opacity-10 p-4 rounded-md flex flex-col items-center">
+                <h1 className="text-4xl font-medium mb-4">{redTeam.name}</h1>
+                <div className="flex flex-row justify-center items-center gap-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button>
+                          <CopyIcon className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Copy URL</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <Link href={`/room/${room.id}/${redTeam.id}`} target="_blank">
+                    <Button>Rejoindre Rouge</Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       ) : (
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col">
-            Blue team name:
-            <Input
-              type="text"
-              name="blueTeamName"
-              onChange={handleInputChange}
-              value={formData.blueTeamName}
-            />
+        <>
+          <div className="flex flex-col gap-6">
+            <div>
+              <label htmlFor="blueTeamName">Blue team name:</label>
+              <Input
+                type="text"
+                name="blueTeamName"
+                className="bg-blue-600 bg-opacity-10 mt-2"
+                onChange={handleInputChange}
+                value={formData.blueTeamName}
+              />
+            </div>
+            <div>
+              <label htmlFor="redTeamName">Red team name:</label>
+              <Input
+                type="text"
+                name="redTeamName"
+                className="bg-red-600 bg-opacity-10 mt-2"
+                value={formData.redTeamName}
+                onChange={handleInputChange}
+              />
+            </div>
+            <Button
+              variant={"outline"}
+              onClick={createRoom}
+              disabled={!formData.blueTeamName || !formData.redTeamName}
+              className={`mt-6 ${
+                !formData.blueTeamName || !formData.redTeamName
+                  ? "opacity-10"
+                  : ""
+              }`}>
+              Create room
+            </Button>
           </div>
-          <div className="flex flex-col">
-            Red team name:
-            <Input
-              type="text"
-              name="redTeamName"
-              value={formData.redTeamName}
-              onChange={handleInputChange}
-            />
-          </div>
-          <Button
-            variant={"outline"}
-            onClick={createRoom}
-            disabled={!formData.blueTeamName || !formData.redTeamName}
-            className={
-              !formData.blueTeamName || !formData.redTeamName
-                ? "opacity-10"
-                : ""
-            }>
-            Create room
-          </Button>
-        </div>
+        </>
       )}
     </main>
   );
