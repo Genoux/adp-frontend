@@ -80,14 +80,16 @@
 
 .circle-loader {
   animation: rotate 2s linear infinite;
-  height: 26px;
-  width: 26px;
 }
 
 .circle-loader .path {
   stroke-dasharray: 1, 150;
   stroke-dashoffset: 0;
   animation: dash 1.5s ease-in-out infinite;
+}
+
+.circle-loader.black .path {
+  stroke: #000; /* This is black color, change it to match your design */
 }
 
 @keyframes rotate {

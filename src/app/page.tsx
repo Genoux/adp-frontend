@@ -37,6 +37,7 @@ function Home() {
   const [room, setRoom] = useState<Room | null>(null);
   const [redTeam, setRedTeam] = useState<RedTeam | null>(null);
   const [blueTeam, setBlueTeam] = useState<BlueTeam | null>(null);
+  const [copyLink, setCopyLink] = useState<{ [key: string]: boolean }>({});
 
   const [formData, setFormData] = useState({
     blueTeamName: "",
@@ -80,6 +81,22 @@ function Home() {
     setLoading(false);
   };
 
+  const handleCopyLink = (link: string, teamId: string) => {
+    const copy = window.location.href + link;
+
+    setCopyLink((prevState) => ({ ...prevState, [teamId]: true }));
+
+    navigator.clipboard
+      .writeText(copy)
+      .then(() => {
+        setCopyLink((prevState) => ({ ...prevState, [teamId]: false }));
+      })
+      .catch((err) => {
+        console.error("Could not copy text: ", err);
+        setCopyLink((prevState) => ({ ...prevState, [teamId]: false }));
+      });
+  };
+
   if (loading)
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -105,8 +122,18 @@ function Home() {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <Button>
-                          <CopyIcon className="w-4 h-4" />
+                        <Button
+                          onClick={() =>
+                            handleCopyLink(
+                              `/room/${room.id}/${blueTeam.id}`,
+                              `${blueTeam.id}`
+                            )
+                          }>
+                          {copyLink[`${blueTeam.id}`] ? (
+                            <LoadingCircle variant="black" size="w-4 h-4" />
+                          ) : (
+                            <CopyIcon className="w-4 h-4" />
+                          )}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -127,8 +154,18 @@ function Home() {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <Button>
-                          <CopyIcon className="w-4 h-4" />
+                        <Button
+                          onClick={() =>
+                            handleCopyLink(
+                              `/room/${room.id}/${redTeam.id}`,
+                              `${redTeam.id}`
+                            )
+                          }>
+                          {copyLink[`${redTeam.id}`] ? (
+                            <LoadingCircle variant="black" size="w-4 h-4" />
+                          ) : (
+                            <CopyIcon className="w-4 h-4" />
+                          )}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
