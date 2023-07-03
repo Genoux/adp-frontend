@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react"; // Import useContext and useEffect
 import supabase from "../services/supabase";
 import SocketContext from "../context/SocketContext"; // Import your SocketContext
+import { Button } from "@/app/components/ui/button";
 
 interface ReadyRoomProps {
   teamid: string;
@@ -45,9 +46,21 @@ const ReadyView: React.FC<ReadyRoomProps> = ({ teamid, roomid }) => {
 
   return (
     <div>
-      <button onClick={handleReadyClick} disabled={ready}>
-        {ready ? "Waiting for other team..." : "READY"}
-      </button>
+      {ready ? (
+        <div>
+          <span className="pr-0.5">Waiting for other team</span>
+          <div className="sending-animation">
+            <span className="sending-animation-dot">.</span>
+            <span className="sending-animation-dot">.</span>
+            <span className="sending-animation-dot">.</span>
+          </div>
+        </div>
+      ) : (
+        <Button onClick={handleReadyClick} disabled={ready}>
+          {" "}
+          READY{" "}
+        </Button>
+      )}
     </div>
   );
 };
