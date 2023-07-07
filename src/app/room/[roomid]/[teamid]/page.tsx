@@ -58,8 +58,6 @@ export default function Room({ params }: RoomProps) {
   }
 
   if (!room) return null;
-  room.cycle = 6;
-  room.status = "done";
 
   const isReadyView = room.cycle === -1;
   const isWaitingView = room.cycle === 0;
