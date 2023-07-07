@@ -57,8 +57,7 @@ const ReadyView: React.FC<ReadyRoomProps> = ({ teamid, roomid }) => {
         </div>
       ) : (
         <Button onClick={handleReadyClick} disabled={ready}>
-          {" "}
-          READY{" "}
+          READY
         </Button>
       )}
     </div>
