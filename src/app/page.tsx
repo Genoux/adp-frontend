@@ -116,8 +116,8 @@ function Home() {
             key="home-page" // Add a unique key prop
           >
             <div className="flex flex-row gap-6">
-              <div className="border border-blue-700 bg-blue-700 bg-opacity-10 p-4 rounded-md flex flex-col items-center">
-                <h1 className="text-4xl font-medium mb-4">{blueTeam.name}</h1>
+              <div className="border border-blue-700 bg-blue-700 bg-opacity-10 p-4 flex flex-col items-center">
+                <h1 className="text-4xl font-medium mb-4 uppercase">{blueTeam.name}</h1>
                 <div className="flex flex-row justify-center items-center gap-2">
                   <TooltipProvider>
                     <Tooltip>
@@ -148,8 +148,8 @@ function Home() {
                   </Link>
                 </div>
               </div>
-              <div className="border border-red-700 bg-red-700 bg-opacity-10 p-4 rounded-md flex flex-col items-center">
-                <h1 className="text-4xl font-medium mb-4">{redTeam.name}</h1>
+              <div className="border border-red-700 bg-red-700 bg-opacity-10 p-4 flex flex-col items-center">
+                <h1 className="text-4xl font-medium mb-4 uppercase">{redTeam.name}</h1>
                 <div className="flex flex-row justify-center items-center gap-2">
                   <TooltipProvider>
                     <Tooltip>

@@ -102,16 +102,11 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
 
   return (
     <>
-      <p>{room.cycle}</p>
-      <p>{room.name}</p>
-      <h1>Room ID: {room.id}</h1>
-      <div className="flex my-24 gap-12 justify-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 mb-12 gap-6 justify-center">
         <div>
-          <h2>Blue Team Selected Heroes:</h2>
           <HeroGrid team={blue} color="blue" useTiles={true} />
         </div>
-        <div>
-          <h2>Red Team Selected Heroes:</h2>
+        <div className="relative">
           <HeroGrid team={red} color="red" useTiles={true} />
         </div>
       </div>

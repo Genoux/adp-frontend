@@ -34,6 +34,15 @@ export default function Room({ params }: RoomProps) {
 
   const { data: room, error, isLoading } = useFetchRoom(roomid);
 
+  const getBgColor = () => {
+    if (room.red.isTurn) {
+      return "bg-red-600";
+    } else if (room.blue.isTurn) {
+      return "bg-blue-600";
+    }
+    return ""; // Default background color when no team has isTurn set to true
+  };
+
   if (isLoading) {
     return (
       <>
@@ -49,6 +58,8 @@ export default function Room({ params }: RoomProps) {
   }
 
   if (!room) return null;
+  room.cycle = 6;
+  room.status = "done";
 
   const isReadyView = room.cycle === -1;
   const isWaitingView = room.cycle === 0;
@@ -58,7 +69,7 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <>
-      <main className="flex h-screen flex-col items-center justify-center">
+      <main className="">
         <AnimatePresence mode="wait">
           <motion.div
             className="relative"
@@ -68,29 +79,28 @@ export default function Room({ params }: RoomProps) {
             key="home-page" // Add a unique key prop
           >
             <SocketContext.Provider value={socket}>
-              {isReadyView && <ReadyView teamid={teamid} roomid={roomid} />}
-
+              {isReadyView &&
+                <div className="text-center h-screen flex flex-col justify-center w-full">
+                  <ReadyView teamid={teamid} roomid={roomid}/>
+                </div>
+              }
               {isWaitingView && (
-                <div className="text-center">
+                <div className="text-center mt-12 flex flex-col justify-center w-full">
                   <h1 className="text-4xl font-bold mb-2">Planning phase!</h1>
                   <h2 className="text-lg mb-6">
                     Define your selection strategy from the champion pool
                   </h2>
-                  <h1 className="font-bold text-3xl mb-12 border w-fit mx-auto px-4 py-2 rounded-sm">
-                    {timer}
+                  <h1 className="font-bold text-3xl mb-6 border w-fit mx-auto px-4 py-2">
+                    {timer || "00:00"}
                   </h1>
                   <WaitingView roomid={roomid} />
                 </div>
               )}
-
               {isFinishView && <FinishView roomid={roomid} />}
-
               {isRoomView && (
-                <div>
-                  <p>{room.cycle}</p>
-                  <div>timer: {timer}</div>
-                  <RoomInfo roomid={roomid} />
+                <div className="text-center">
                   <TeamView teamid={teamid} roomid={roomid} />
+                  <RoomInfo roomid={roomid} />
                 </div>
               )}
             </SocketContext.Provider>

@@ -45,7 +45,7 @@ const ReadyView: React.FC<ReadyRoomProps> = ({ teamid, roomid }) => {
   };
 
   return (
-    <div>
+    <div className="flex items-center justify-center h-full">
       {ready ? (
         <div>
           <span className="pr-0.5">Waiting for other team</span>
