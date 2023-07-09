@@ -22,6 +22,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
   const [clickedHero, setClickedHero] = useState<string | null>(null);
 
   const socket = useContext(SocketContext);
+  const { data: team } = useFetchTeam(teamid);
 
   function getOppositeColor(color: string) {
     if (color.toLowerCase() === "red") {
@@ -35,7 +36,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
 
   const handleSocketEvents = useCallback((event: string, msg: any) => {
     setCanSelect(event !== "TIMER" || msg !== "00:00");
-    if(event === "CHAMPION_SELECTED") {
+    if (event === "CHAMPION_SELECTED") {
       setSelectedChampion("");
       setClickedHero(null);
     }
@@ -57,6 +58,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
 
   const handleConfirmSelection = async () => {
     setCanSelect(false);
+
     socket?.emit("STOP_TIMER", { roomid: roomid });
     const champion = selectedChampion;
     let updated_heroes_pool = team?.heroes_pool.map((hero: any) =>
@@ -66,6 +68,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
       .from("teams")
       .update({ heroes_pool: updated_heroes_pool, pick: true })
       .eq("id", teamid);
+
     socket?.emit("SELECT_CHAMPION", {
       roomid: roomid,
       selectedChampion: champion,
@@ -74,17 +77,25 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
     setClickedHero(null);
   };
 
+  const handleClickedHero = async (hero: any) => {
+    setClickedHero(hero.name);
+    await supabase
+      .from("teams")
+      .update({ clicked_hero: hero.name })
+      .eq("id", teamid);
+  };
 
-  const { data: team } = useFetchTeam(teamid);
   const getImageSrc = (hero: any, isSplash: boolean) => {
     const heroName = hero.name.replace(/\s/g, "").toLowerCase();
     return `/images/champions/${isSplash ? "splash" : "tiles"}/${heroName}.jpg`;
   };
+
   useEffect(() => {
-    setCanSelect(team?.isTurn);
-    setSelectedChampion("");
-    setClickedHero(null);
-  }, [team?.isTurn]);
+    if (team) {
+      setClickedHero(team.clicked_hero);
+      setSelectedChampion(team.clicked_hero);
+    }
+  }, [team]);
 
   if (!team) return null;
 
@@ -127,8 +138,9 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
               onClick={() => {
                 // Add an additional condition to check if hero is not selected
                 if (canSelect && !hero.selected) {
+                  handleClickedHero(hero);
                   setSelectedChampion(hero.name);
-                  setClickedHero(hero.name);
+                  //setClickedHero(hero.name);
                 }
               }}>
               <div
@@ -161,7 +173,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
                 <div className="flex items-center justify-center my-auto overflow-hidden">
                   <p
                     className={`font-bold text-sm hero-name text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${
-                      hoverIndex === index || hero.name === selectedChampion 
+                      hoverIndex === index || hero.name === selectedChampion
                         ? "z-50 animated-text-hover animated-text-visible"
                         : "z-10 animated-text"
                     }`}>
@@ -169,7 +181,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
                   </p>
                   <div
                     className={`${
-                      hoverIndex === index || hero.name === selectedChampion 
+                      hoverIndex === index || hero.name === selectedChampion
                         ? "bg-gradient-to-t absolute z-10 from-black to-transparent bg-clip-content w-full h-full top-0 left-0"
                         : ""
                     }`}></div>
@@ -195,7 +207,7 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
           <Button
             size="lg"
             className={clsx("py-2 px-4", {
-              "pointer-events-none": !selectedChampion || !canSelect ,
+              "pointer-events-none": !selectedChampion || !canSelect,
             })}
             onClick={handleConfirmSelection}
             disabled={!selectedChampion || !canSelect}>
@@ -206,7 +218,8 @@ const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
             variant="ghost"
             size="lg"
             className={clsx({
-              "pointer-events-none": !selectedChampion || !canSelect || !team.isTurn,
+              "pointer-events-none":
+                !selectedChampion || !canSelect || !team.isTurn,
             })}>
             <p className="pr-0.5 text-xl">{`It's ${getOppositeColor(
               team.color

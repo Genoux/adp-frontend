@@ -1,7 +1,8 @@
-import { useContext, useState, useEffect } from "react"; // Import useContext and useEffect
+import { useContext } from "react";
 import supabase from "../services/supabase";
-import SocketContext from "../context/SocketContext"; // Import your SocketContext
+import SocketContext from "../context/SocketContext";
 import { Button } from "@/app/components/ui/button";
+import useFetchTeam from '@/app/hooks/useFetchTeam'; // Import your custom hook
 
 interface ReadyRoomProps {
   teamid: string;
@@ -9,25 +10,8 @@ interface ReadyRoomProps {
 }
 
 const ReadyView: React.FC<ReadyRoomProps> = ({ teamid, roomid }) => {
-  const socket = useContext(SocketContext); // Get socket from context
-  const [ready, setReady] = useState<boolean>(false);
-
-  // This hook will run once when the component mounts
-  useEffect(() => {
-    const fetchTeamData = async () => {
-      const { data, error } = await supabase
-        .from("teams")
-        .select("ready")
-        .eq("id", teamid)
-        .single();
-
-      if (data && !error) {
-        setReady(data.ready);
-      }
-    };
-
-    fetchTeamData();
-  }, [teamid]); // Dependent on teamid
+  const socket = useContext(SocketContext);
+  const { data: team, error, isLoading } = useFetchTeam(teamid);
 
   const handleReadyClick = async () => {
     const { data, error } = await supabase
@@ -38,15 +22,25 @@ const ReadyView: React.FC<ReadyRoomProps> = ({ teamid, roomid }) => {
       .single();
 
     if (data && !error) {
-      setReady(true);
+      socket?.emit("TEAM_READY", { roomid, teamid });
     }
-
-    socket?.emit("TEAM_READY", { roomid, teamid });
   };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!team) {
+    return <p>Team not found</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
 
   return (
     <div className="flex items-center justify-center h-full">
-      {ready ? (
+      {team.ready ? (
         <div>
           <span className="pr-0.5">Waiting for other team</span>
           <div className="sending-animation">
@@ -56,7 +50,7 @@ const ReadyView: React.FC<ReadyRoomProps> = ({ teamid, roomid }) => {
           </div>
         </div>
       ) : (
-        <Button onClick={handleReadyClick} disabled={ready}>
+        <Button onClick={handleReadyClick} disabled={team.ready}>
           READY
         </Button>
       )}

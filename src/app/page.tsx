@@ -14,6 +14,18 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/app/components/ui/alert-dialog"
+
 interface Room {
   id: number;
   name: string;
@@ -38,6 +50,8 @@ function Home() {
   const [redTeam, setRedTeam] = useState<RedTeam | null>(null);
   const [blueTeam, setBlueTeam] = useState<BlueTeam | null>(null);
   const [copyLink, setCopyLink] = useState<{ [key: string]: boolean }>({});
+
+  const [showAlert, setShowAlert] = useState(true);
 
   const [formData, setFormData] = useState({
     blueTeamName: "",
@@ -105,120 +119,137 @@ function Home() {
     );
 
   return (
-    <main className="flex h-screen flex-col items-center justify-center">
-      {room && blueTeam && redTeam ? (
-        <AnimatePresence mode="wait">
-          <motion.div
-            className="relative"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.2 }}
-            key="home-page" // Add a unique key prop
-          >
-            <div className="flex flex-row gap-6">
-              <div className="border border-blue-700 bg-blue-700 bg-opacity-10 p-4 flex flex-col items-center">
-                <h1 className="text-4xl font-medium mb-4 uppercase">{blueTeam.name}</h1>
-                <div className="flex flex-row justify-center items-center gap-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Button
-                          onClick={() =>
-                            handleCopyLink(
-                              `/room/${room.id}/${blueTeam.id}`,
-                              `${blueTeam.id}`
-                            )
-                          }>
-                          {copyLink[`${blueTeam.id}`] ? (
-                            <LoadingCircle variant="black" size="w-4 h-4" />
-                          ) : (
-                            <CopyIcon className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Copy URL</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <Link
-                    href={`/room/${room.id}/${blueTeam.id}`}
-                    target="_blank">
-                    <Button>Rejoindre Bleue</Button>
-                  </Link>
+    <>
+      <AlertDialog open={showAlert}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your account
+                and remove your data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction onClick={() => setShowAlert(false)}>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
+     
+      <main className="flex h-screen flex-col items-center justify-center">
+        {room && blueTeam && redTeam ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.2 }}
+              key="home-page" // Add a unique key prop
+            >
+              <div className="flex flex-row gap-6">
+                <div className="border border-blue-700 bg-blue-700 bg-opacity-10 p-4 flex flex-col items-center">
+                  <h1 className="text-4xl font-medium mb-4 uppercase">{blueTeam.name}</h1>
+                  <div className="flex flex-row justify-center items-center gap-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            onClick={() =>
+                              handleCopyLink(
+                                `/room/${room.id}/${blueTeam.id}`,
+                                `${blueTeam.id}`
+                              )
+                            }>
+                            {copyLink[`${blueTeam.id}`] ? (
+                              <LoadingCircle variant="black" size="w-4 h-4" />
+                            ) : (
+                              <CopyIcon className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Copy URL</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <Link
+                      href={`/room/${room.id}/${blueTeam.id}`}
+                      target="_blank">
+                      <Button>Rejoindre Bleue</Button>
+                    </Link>
+                  </div>
+                </div>
+                <div className="border border-red-700 bg-red-700 bg-opacity-10 p-4 flex flex-col items-center">
+                  <h1 className="text-4xl font-medium mb-4 uppercase">{redTeam.name}</h1>
+                  <div className="flex flex-row justify-center items-center gap-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            onClick={() =>
+                              handleCopyLink(
+                                `/room/${room.id}/${redTeam.id}`,
+                                `${redTeam.id}`
+                              )
+                            }>
+                            {copyLink[`${redTeam.id}`] ? (
+                              <LoadingCircle variant="black" size="w-4 h-4" />
+                            ) : (
+                              <CopyIcon className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Copy URL</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <Link href={`/room/${room.id}/${redTeam.id}`} target="_blank">
+                      <Button>Rejoindre Rouge</Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
-              <div className="border border-red-700 bg-red-700 bg-opacity-10 p-4 flex flex-col items-center">
-                <h1 className="text-4xl font-medium mb-4 uppercase">{redTeam.name}</h1>
-                <div className="flex flex-row justify-center items-center gap-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Button
-                          onClick={() =>
-                            handleCopyLink(
-                              `/room/${room.id}/${redTeam.id}`,
-                              `${redTeam.id}`
-                            )
-                          }>
-                          {copyLink[`${redTeam.id}`] ? (
-                            <LoadingCircle variant="black" size="w-4 h-4" />
-                          ) : (
-                            <CopyIcon className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Copy URL</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <Link href={`/room/${room.id}/${redTeam.id}`} target="_blank">
-                    <Button>Rejoindre Rouge</Button>
-                  </Link>
-                </div>
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          <>
+            <div className="flex flex-col gap-6">
+              <div>
+                <label htmlFor="blueTeamName">Blue team name:</label>
+                <Input
+                  type="text"
+                  name="blueTeamName"
+                  className="bg-blue-600 bg-opacity-10 mt-2"
+                  onChange={handleInputChange}
+                  value={formData.blueTeamName}
+                />
               </div>
+              <div>
+                <label htmlFor="redTeamName">Red team name:</label>
+                <Input
+                  type="text"
+                  name="redTeamName"
+                  className="bg-red-600 bg-opacity-10 mt-2"
+                  value={formData.redTeamName}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <Button
+                variant={"outline"}
+                onClick={createRoom}
+                disabled={!formData.blueTeamName || !formData.redTeamName}
+                className={`mt-6 ${
+                  !formData.blueTeamName || !formData.redTeamName
+                    ? "opacity-10"
+                    : ""
+                }`}>
+                Create room
+              </Button>
             </div>
-          </motion.div>
-        </AnimatePresence>
-      ) : (
-        <>
-          <div className="flex flex-col gap-6">
-            <div>
-              <label htmlFor="blueTeamName">Blue team name:</label>
-              <Input
-                type="text"
-                name="blueTeamName"
-                className="bg-blue-600 bg-opacity-10 mt-2"
-                onChange={handleInputChange}
-                value={formData.blueTeamName}
-              />
-            </div>
-            <div>
-              <label htmlFor="redTeamName">Red team name:</label>
-              <Input
-                type="text"
-                name="redTeamName"
-                className="bg-red-600 bg-opacity-10 mt-2"
-                value={formData.redTeamName}
-                onChange={handleInputChange}
-              />
-            </div>
-            <Button
-              variant={"outline"}
-              onClick={createRoom}
-              disabled={!formData.blueTeamName || !formData.redTeamName}
-              className={`mt-6 ${
-                !formData.blueTeamName || !formData.redTeamName
-                  ? "opacity-10"
-                  : ""
-              }`}>
-              Create room
-            </Button>
-          </div>
-        </>
-      )}
-    </main>
+          </>
+        )}
+      </main>
+    </>
   );
 }
 

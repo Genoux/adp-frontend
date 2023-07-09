@@ -52,6 +52,7 @@ const useFetchTeam = (teamid: string) => {
       async (payload) => {
         try {
           const { new: updatedTeam } = payload;
+          console.log("updatedTeam:", updatedTeam);
           setData(updatedTeam);
         } catch (error) {
           console.error("Error updating team:", error);
