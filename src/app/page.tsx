@@ -24,7 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/app/components/ui/alert-dialog"
+} from "@/app/components/ui/alert-dialog";
 
 interface Room {
   id: number;
@@ -118,23 +118,39 @@ function Home() {
       </div>
     );
 
-  return (
-    <>
-      <AlertDialog open={showAlert}>
+  if (showAlert) {
+    return (
+      <>
+        <AlertDialog open={showAlert}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogTitle>Disclaimer!</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your account
-                and remove your data from our servers.
+                {`Bienvenue sur HAQ Aram Draft Pick.`}
+                <br />
+                <br />
+                {`Veuillez noter que notre application est actuellement dans la phase initiale de test alpha, il est donc possible que des bugs surviennent de temps à autre. Si vous rencontrez des problèmes de fonctionnalité significatifs, nous vous encourageons à nous contacter sur notre chaîne Discord.`}
+                <br />
+                <br />
+                {`Votre patience, compréhension et retour d'information sont essentiels pour nous aider à améliorer le système. Merci pour votre contribution et soutien continu.`}
+                <br />
+                <br />
+                {`- L'équipe HAQ`}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogAction onClick={() => setShowAlert(false)}>Continue</AlertDialogAction>
+              <AlertDialogAction onClick={() => setShowAlert(false)}>
+                {"J'ai compris"}
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
-      </AlertDialog>
-     
+        </AlertDialog>
+      </>
+    );
+  }
+
+  return (
+    <>
       <main className="flex h-screen flex-col items-center justify-center">
         {room && blueTeam && redTeam ? (
           <AnimatePresence mode="wait">
@@ -142,12 +158,18 @@ function Home() {
               className="relative"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.2 }}
+              transition={{
+                duration: 0.5,
+                ease: [0.4, 0.0, 0.2, 1],
+                delay: 0.2,
+              }}
               key="home-page" // Add a unique key prop
             >
               <div className="flex flex-row gap-6">
                 <div className="border border-blue-700 bg-blue-700 bg-opacity-10 p-4 flex flex-col items-center">
-                  <h1 className="text-4xl font-medium mb-4 uppercase">{blueTeam.name}</h1>
+                  <h1 className="text-4xl font-medium mb-4 uppercase">
+                    {blueTeam.name}
+                  </h1>
                   <div className="flex flex-row justify-center items-center gap-2">
                     <TooltipProvider>
                       <Tooltip>
@@ -179,7 +201,9 @@ function Home() {
                   </div>
                 </div>
                 <div className="border border-red-700 bg-red-700 bg-opacity-10 p-4 flex flex-col items-center">
-                  <h1 className="text-4xl font-medium mb-4 uppercase">{redTeam.name}</h1>
+                  <h1 className="text-4xl font-medium mb-4 uppercase">
+                    {redTeam.name}
+                  </h1>
                   <div className="flex flex-row justify-center items-center gap-2">
                     <TooltipProvider>
                       <Tooltip>
@@ -203,7 +227,9 @@ function Home() {
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                    <Link href={`/room/${room.id}/${redTeam.id}`} target="_blank">
+                    <Link
+                      href={`/room/${room.id}/${redTeam.id}`}
+                      target="_blank">
                       <Button>Rejoindre Rouge</Button>
                     </Link>
                   </div>
