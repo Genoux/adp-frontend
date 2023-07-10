@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "update-types": "npx supabase gen types typescript --local > types/supabase.d.ts",
+    "update-types": "npx supabase gen types typescript --local > ./src/app/types/supabase.ts",
     "deploy": "npx vercel",
     "db:push": "npx supabase migrate up",
     "db:generate": "supabase migrate create",

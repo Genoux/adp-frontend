@@ -1,29 +1,25 @@
 // components/Timer.tsx
-import { useState, useCallback, useEffect } from 'react';
-import useSocket from '@/app/hooks/useSocket';
+import { useState, useCallback, useEffect, useContext } from 'react';
+import SocketContext from "@/app/context/SocketContext";
 
-interface TimerProps {
-  roomid: string;
-  teamid: string;
-}
 
-const Timer = ({ roomid, teamid }: TimerProps) => {
+const Timer = () => {
   const [timer, setTimer] = useState<string>('');
 
-  const handleSocketTimer = useCallback((msg: any) => {
-    setTimer(msg);
+  const socket = useContext(SocketContext);
+
+  const handleSocketEvents = useCallback((event: string,  msg: any ) => {
+    setTimer(event);
   }, []);
 
-  const socket = useSocket(roomid, teamid, {
-    onTimer: handleSocketTimer,
-  });
 
   useEffect(() => {
+    socket?.on("TIMER", handleSocketEvents);
+  
     return () => {
-      // Clean up the socket when the component is unmounted
-      socket?.disconnect();
+        socket?.off("CHAMPION_SELECTED", handleSocketEvents);
     };
-  }, [socket]);
+  }, [handleSocketEvents, socket]);
 
   return (
     <h1 className="font-bold text-3xl border w-fit mx-auto px-4 py-2 mb-6 rounded-sm">

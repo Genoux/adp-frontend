@@ -1,32 +1,31 @@
-interface HeroGridProps {
-  team?: any;
-  room?: any;
-  color: string;
-  useTiles?: boolean;
+import { Database } from "../types/supabase";
+import { roomStore } from "@/app/stores/roomStore";
+
+interface Team {
+  [key: string]: any;
 }
 
-const HeroGrid: React.FC<HeroGridProps> = ({ team, room, color, useTiles }) => {
-  if (!team) return null; // return null when team is null
+interface Hero {
+  name: string;
+  selected: boolean;
+}
+
+const TeamPicks = ({ team }: Team) => {
+  if (!team) return null;
+  
+  const { rooms } = roomStore();
+  const room = rooms[team.room];
 
   return (
     <>
       <div
-        className={`font-semibold uppercase text-xs w-full py-1 ${
-          team.isTurn
-            ? `bg-${team.color}-600`
-            : "text-2xl font-semibold bg-zinc-900 opacity-30"
+        className={`grid grid-cols-5 gap-2 mt-6 h-full w-full ${
+          team.isTurn || room.status === 'done' ? `opacity-100` : "opacity-30"
         }`}>
-        {team.name}
-      </div>
-
-      <div
-        className={`grid grid-cols-5 gap-2 mt-6 ${
-          team.isTurn ? `opacity-100` : "opacity-30"
-        }`}>
-        {team.heroes_selected.map((hero: any, index: number) => (
+        {((team.heroes_selected as unknown) as Hero[]).map((hero: Hero, index: number) => (
           <div
             key={index}
-            className={`h-60 w-full overflow-hidden relative ${
+            className={`h-full w-full overflow-hidden relative ${
               hero.name ? "" : "border border-white border-opacity-10"
             }`}>
             {hero.name && (
@@ -52,4 +51,4 @@ const HeroGrid: React.FC<HeroGridProps> = ({ team, room, color, useTiles }) => {
   );
 };
 
-export default HeroGrid;
+export default TeamPicks;

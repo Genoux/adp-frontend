@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import supabase from '@/app/services/supabase';
+import { Database } from '../types/supabase';
 import { PostgrestError } from '@supabase/supabase-js';
 
-interface Team {
-  // Include the fields for your Team type here
-  [key: string]: any;
-}
+type Team = Database["public"]["Tables"]["teams"]["Row"]
 
 const useFetchTeam = (teamid: string) => {
   const [data, setData] = useState<Team | null>(null);
@@ -52,8 +50,7 @@ const useFetchTeam = (teamid: string) => {
       async (payload) => {
         try {
           const { new: updatedTeam } = payload;
-          console.log("updatedTeam:", updatedTeam);
-          setData(updatedTeam);
+          setData(updatedTeam as Team);
         } catch (error) {
           console.error("Error updating team:", error);
         }

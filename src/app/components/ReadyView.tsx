@@ -1,41 +1,36 @@
 import { useContext } from "react";
-import supabase from "../services/supabase";
-import SocketContext from "../context/SocketContext";
+import supabase from "@/app/services/supabase";
+import SocketContext from "@/app/context/SocketContext";
+import TeamContext from "@/app/context/TeamContext";
 import { Button } from "@/app/components/ui/button";
 import useFetchTeam from '@/app/hooks/useFetchTeam'; // Import your custom hook
 
 interface ReadyRoomProps {
-  teamid: string;
   roomid: string;
 }
 
-const ReadyView: React.FC<ReadyRoomProps> = ({ teamid, roomid }) => {
+const ReadyView: React.FC<ReadyRoomProps> = ({ roomid }) => {
   const socket = useContext(SocketContext);
-  const { data: team, error, isLoading } = useFetchTeam(teamid);
+  const team = useContext(TeamContext);
+
+  if(!team) return null;
 
   const handleReadyClick = async () => {
     const { data, error } = await supabase
       .from("teams")
       .update({ ready: true })
       .select("*, room(*)")
-      .eq("id", teamid)
+      .eq("id", team.id)
       .single();
 
     if (data && !error) {
-      socket?.emit("TEAM_READY", { roomid, teamid });
+      socket?.emit("TEAM_READY", { roomid, teamid: team.id });
     }
   };
 
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
 
   if (!team) {
     return <p>Team not found</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error.message}</p>;
   }
 
   return (
@@ -50,7 +45,7 @@ const ReadyView: React.FC<ReadyRoomProps> = ({ teamid, roomid }) => {
           </div>
         </div>
       ) : (
-        <Button onClick={handleReadyClick} disabled={team.ready}>
+        <Button onClick={handleReadyClick}>
           READY
         </Button>
       )}

@@ -97,6 +97,7 @@ export interface Database {
       }
       teams: {
         Row: {
+          clicked_hero: string | null
           color: string | null
           created_at: string | null
           heroes_pool: Json | null
@@ -105,11 +106,13 @@ export interface Database {
           isTurn: boolean | null
           name: string | null
           number_of_pick: number | null
+          pick: boolean | null
           ready: boolean | null
           room: number | null
           selected_hero: string | null
         }
         Insert: {
+          clicked_hero?: string | null
           color?: string | null
           created_at?: string | null
           heroes_pool?: Json | null
@@ -118,11 +121,13 @@ export interface Database {
           isTurn?: boolean | null
           name?: string | null
           number_of_pick?: number | null
+          pick?: boolean | null
           ready?: boolean | null
           room?: number | null
           selected_hero?: string | null
         }
         Update: {
+          clicked_hero?: string | null
           color?: string | null
           created_at?: string | null
           heroes_pool?: Json | null
@@ -131,6 +136,7 @@ export interface Database {
           isTurn?: boolean | null
           name?: string | null
           number_of_pick?: number | null
+          pick?: boolean | null
           ready?: boolean | null
           room?: number | null
           selected_hero?: string | null

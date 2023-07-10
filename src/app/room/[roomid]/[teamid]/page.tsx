@@ -1,16 +1,20 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, createContext, useContext } from "react";
 import RoomInfo from "@/app/components/RoomInfo";
 import TeamView from "@/app/components/TeamView";
 import FinishView from "@/app/components/FinishView";
-import useSocket from "@/app/hooks/useSocket";
 import WaitingView from "@/app/components/WaitingView";
 import useFetchRoom from "@/app/hooks/useFetchRoom";
 import ReadyView from "@/app/components/ReadyView";
 import { AnimatePresence, motion } from "framer-motion";
 import LoadingCircle from "@/app/components/LoadingCircle";
 import SocketContext from "@/app/context/SocketContext";
+import useSocket from "@/app/hooks/useSocket";
+import Timer from "@/app/components/Timer";
+import useFetchTeam from "@/app/hooks/useFetchTeam";
+import TeamContext from "@/app/context/TeamContext";
+
 
 interface RoomProps {
   params: {
@@ -22,28 +26,12 @@ interface RoomProps {
 export default function Room({ params }: RoomProps) {
   const roomid = params.roomid;
   const teamid = params.teamid;
-  const [timer, setTimer] = useState<string>("");
 
-  const handleSocketTimer = useCallback((msg: any) => {
-    setTimer(msg);
-  }, []);
-
-  const socket = useSocket(roomid, teamid, {
-    onTimer: handleSocketTimer,
-  });
-
+  const socket = useSocket(roomid, teamid);
+  const { data: team, error: teamError, isLoading: isTeamLoading } = useFetchTeam(teamid);
   const { data: room, error, isLoading } = useFetchRoom(roomid);
 
-  const getBgColor = () => {
-    if (room.red.isTurn) {
-      return "bg-red-600";
-    } else if (room.blue.isTurn) {
-      return "bg-blue-600";
-    }
-    return ""; // Default background color when no team has isTurn set to true
-  };
-
-  if (isLoading) {
+  if (isLoading || isTeamLoading) {
     return (
       <>
         <div className="flex min-h-screen flex-col items-center justify-center">
@@ -62,8 +50,7 @@ export default function Room({ params }: RoomProps) {
   const isReadyView = room.cycle === -1;
   const isWaitingView = room.cycle === 0;
   const isFinishView = room.status === "done";
-  const isRoomView =
-    room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
+  const isRoomView = room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
 
   return (
     <>
@@ -77,6 +64,7 @@ export default function Room({ params }: RoomProps) {
             key="home-page" // Add a unique key prop
           >
             <SocketContext.Provider value={socket}>
+              <TeamContext.Provider value={team}>
               {isReadyView &&
                 <div className="text-center h-screen flex flex-col justify-center w-full">
                   <ReadyView teamid={teamid} roomid={roomid}/>
@@ -87,20 +75,19 @@ export default function Room({ params }: RoomProps) {
                   <h1 className="text-4xl font-bold mb-2">Planning phase!</h1>
                   <h2 className="text-lg mb-6">
                     Define your selection strategy from the champion pool
-                  </h2>
-                  <h1 className="font-bold text-3xl mb-6 border w-fit mx-auto px-4 py-2">
-                    {timer || "00:00"}
-                  </h1>
+                    </h2>
+                  <Timer />
                   <WaitingView roomid={roomid} />
                 </div>
               )}
               {isFinishView && <FinishView roomid={roomid} />}
               {isRoomView && (
                 <div className="text-center">
-                  <TeamView teamid={teamid} roomid={roomid} />
+                  <TeamView roomid={roomid} />
                   <RoomInfo roomid={roomid} />
                 </div>
-              )}
+                )}
+                </TeamContext.Provider>
             </SocketContext.Provider>
           </motion.div>
         </AnimatePresence>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import supabase from "@/app/services/supabase";
 import { roomStore } from "@/app/stores/roomStore";
-import HeroGrid from "./HeroGrid";
+import TeamPicks from "@/app/components/TeamPicks";
 
 interface Team {
   [key: string]: any;
@@ -102,12 +102,12 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-2 mb-12 gap-6 justify-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 mb-12 h-64 gap-6 justify-center">
         <div>
-          <HeroGrid team={blue} color="blue" useTiles={true} />
+          <TeamPicks team={blue} color="blue" />
         </div>
         <div className="relative">
-          <HeroGrid team={red} color="red" useTiles={true} />
+          <TeamPicks team={red} color="red" />
         </div>
       </div>
     </>
