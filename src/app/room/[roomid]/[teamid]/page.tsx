@@ -31,8 +31,16 @@ export default function Room({ params }: RoomProps) {
   const teamid = params.teamid;
 
   const socket = useSocket(roomid, teamid);
-  const { data: team, error: teamError, isLoading: isTeamLoading } = useFetchTeam(teamid);
-  const { data: room, error: roomError, isLoading: isRoomLoading } = useFetchRoom(roomid);
+  const {
+    data: team,
+    error: teamError,
+    isLoading: isTeamLoading,
+  } = useFetchTeam(teamid);
+  const {
+    data: room,
+    error: roomError,
+    isLoading: isRoomLoading,
+  } = useFetchRoom(roomid);
 
   if (isTeamLoading || isRoomLoading) {
     return (
@@ -55,7 +63,8 @@ export default function Room({ params }: RoomProps) {
   const isReadyView = room.cycle === -1;
   const isWaitingView = room.cycle === 0;
   const isFinishView = room.status === "done";
-  const isRoomView = room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
+  const isRoomView =
+    room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
 
   return (
     <>
@@ -72,13 +81,13 @@ export default function Room({ params }: RoomProps) {
               <TeamContext.Provider value={team}>
                 <RoomContext.Provider value={room}>
                   {isReadyView && <ReadyView />}
-                  {isWaitingView &&
+                  {isWaitingView && (
                     <>
                       <Timer />
-                      <WaitingView /> 
+                      <WaitingView />
                     </>
-                  }
-                  {isFinishView && <FinishView roomid={room.id}  />}
+                  )}
+                  {isFinishView && <FinishView roomid={room.id} />}
                   {isRoomView && <TeamView />}
                   {isRoomView && <RoomInfo roomid={room.id} />}
                 </RoomContext.Provider>

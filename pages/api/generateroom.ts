@@ -217,7 +217,6 @@
         .insert({
           color: "red",
           isTurn: false,
-          heroes_pool: champions.list,
           heroes_selected: generateArray("name", 5),
           name: redTeamName,
           room: roomId, // Use the room ID here
@@ -231,7 +230,6 @@
         .insert({
           color: "blue",
           isTurn: true,
-          heroes_pool: champions.list,
           heroes_selected: generateArray("name", 5),
           name: blueTeamName,
           room: roomId, // Use the room ID here

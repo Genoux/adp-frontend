@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
-import RoomContext from '@/app/context/RoomContext';
+import RoomContext from "@/app/context/RoomContext";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
 
 const WaitingView = () => {
@@ -29,15 +29,18 @@ const WaitingView = () => {
                 src={getImageSrc(hero, false)}
                 alt={hero.name}
                 sizes="100vw"
-                  width={0}
-                  height={0}
-                  style={{ width: "100%", height: "auto" }}
-                  className="mx-auto"
+                width={0}
+                height={0}
+                style={{ width: "100%", height: "auto" }}
+                className="mx-auto"
               />
 
               <div className="flex items-center justify-center my-auto overflow-hidden">
-              <div className={`mx-auto rounded splash-image  ${
-                    hoverIndex === index ? "splash-image-hover z-10 absolute bg-gradient-to-t from-black  to-transparent bg-clip-content w-full h-full top-0 left-0" : ""
+                <div
+                  className={`mx-auto rounded splash-image  ${
+                    hoverIndex === index
+                      ? "splash-image-hover z-10 absolute bg-gradient-to-t from-black  to-transparent bg-clip-content w-full h-full top-0 left-0"
+                      : ""
                   }`}></div>
                 <Image
                   src={getImageSrc(hero, true)}
@@ -59,7 +62,7 @@ const WaitingView = () => {
               </div>
             </div>
           ))}
-          </div>
+        </div>
       </main>
     </div>
   );

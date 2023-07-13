@@ -4,7 +4,6 @@ import RoomContext from "@/app/context/RoomContext";
 import TeamContext from "@/app/context/TeamContext";
 import { Button } from "@/app/components/ui/button";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
-import { useContext } from "react";
 
 const ReadyView = () => {
   const socket = useEnsureContext(SocketContext);
@@ -36,9 +35,7 @@ const ReadyView = () => {
           </div>
         </div>
       ) : (
-        <Button onClick={handleReadyClick}>
-          READY
-        </Button>
+        <Button onClick={handleReadyClick}>READY</Button>
       )}
     </div>
   );
