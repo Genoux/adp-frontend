@@ -1,13 +1,9 @@
-'use client'
+import { useEffect, useState } from "react";
+import supabase from "@/app/services/supabase";
+import { Database } from "../types/supabase";
+import { PostgrestError } from "@supabase/supabase-js";
 
-import { useEffect, useState } from 'react';
-import supabase from '@/app/services/supabase';
-import { PostgrestError } from '@supabase/supabase-js';
-
-interface Team {
-  // Include the fields for your Team type here
-  [key: string]: any;
-}
+type Team = Database["public"]["Tables"]["teams"]["Row"];
 
 const useFetchTeam = (teamid: string) => {
   const [data, setData] = useState<Team | null>(null);
@@ -18,9 +14,9 @@ const useFetchTeam = (teamid: string) => {
     const fetchTeam = async () => {
       try {
         const { data: team, error: fetchError } = await supabase
-          .from('teams')
-          .select('*')
-          .eq('id', teamid)
+          .from("teams")
+          .select("*")
+          .eq("id", teamid)
           .single();
 
         if (fetchError) {
@@ -40,27 +36,29 @@ const useFetchTeam = (teamid: string) => {
 
   useEffect(() => {
     const subscription = supabase
-    .channel(teamid)
-    .on(
-      "postgres_changes",
-      {
-        event: "UPDATE",
-        schema: "public",
-        table: "teams",
-        filter: `id=eq.${teamid}`,
-      },
-      async (payload) => {
-        try {
-          const { new: updatedTeam } = payload;
-          setData(updatedTeam);
-        } catch (error) {
-          console.error("Error updating team:", error);
+      .channel(teamid)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "teams",
+          filter: `id=eq.${teamid}`,
+        },
+        async (payload) => {
+          try {
+            const { new: updatedTeam } = payload;
+            setData(updatedTeam as Team);
+          } catch (error) {
+            console.error("Error updating team:", error);
+          }
         }
-      }
-    ).subscribe(() => console.log("Subscription to team updated"));
+      )
+      .subscribe(() => console.log("Subscription to team updated"));
 
     return () => {
       // unsubscribe when the component unmounts
+      console.log("unsubscribe from team updates");
       subscription.unsubscribe();
     };
   }, [teamid]);

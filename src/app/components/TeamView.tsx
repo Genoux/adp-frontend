@@ -1,113 +1,127 @@
-import { useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import supabase from "@/app/services/supabase";
-import Image from "next/image";
-import clsx from "clsx";
-import useFetchTeam from "@/app/hooks/useFetchTeam";
-import { roomStore } from "@/app/stores/roomStore";
+import { Database } from "@/app/types/supabase";
 import SocketContext from "../context/SocketContext";
+import Timer from "@/app/components/Timer";
+import TeamContext from "@/app/context/TeamContext";
+import RoomContext from "@/app/context/RoomContext";
+import useEnsureContext from "@/app/hooks/useEnsureContext";
+import HeroPool from "@/app/components/HeroPool";
+import ConfirmButton from "@/app/components/ConfirmButton";
 
-interface TeamViewProps {
-  teamid: string;
-  roomid: string;
-}
+type Team = Database["public"]["Tables"]["teams"]["Row"];
 
-const TeamView: React.FC<TeamViewProps> = ({ teamid, roomid }) => {
-  const { rooms } = roomStore();
-  const room = rooms[roomid];
+const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [canSelect, setCanSelect] = useState(true);
+  const [hoverIndex, setHoverIndex] = useState(-1);
+  const [clickedHero, setClickedHero] = useState<string | null>(null);
 
   const socket = useContext(SocketContext);
-
-  const handleSocketEvents = useCallback((event: string, msg: any) => {
-    setCanSelect(event !== "TIMER" || msg !== "00:00:00");
-  }, []);
+  const team = useEnsureContext(TeamContext);
+  const room = useEnsureContext(RoomContext);
 
   useEffect(() => {
-    const events = ["TIMER", "CHAMPION_SELECTED", "TIMER_RESET"];
+    if (socket) {
+      socket.on("CHAMPION_SELECTED", (data) => {
+        console.log("socket.on - data:", data);
 
-    events.forEach((event) => {
-      socket?.on(event, (msg: any) => handleSocketEvents(event, msg));
-    });
-
-    return () => {
-      events.forEach((event) => {
-        socket?.off(event, handleSocketEvents);
+        setCanSelect(true);
+        setSelectedChampion("");
+        setClickedHero(null);
       });
-    };
-  }, [socket, handleSocketEvents]);
+
+      // Clean up
+      return () => {
+        socket.off("CHAMPION_SELECTED");
+      };
+    }
+  }, [socket]);
 
   const handleConfirmSelection = async () => {
     setCanSelect(false);
-    socket?.emit("STOP_TIMER", { roomid: roomid });
+    socket?.emit("STOP_TIMER", { roomid: room.id });
+
     const champion = selectedChampion;
-    let updated_heroes_pool = team?.heroes_pool.map((hero: any) =>
-      hero.name === champion ? { ...hero, selected: true } : hero
-    );
-    await supabase
-      .from("teams")
-      .update({ heroes_pool: updated_heroes_pool, pick: true })
-      .eq("id", teamid);
+
     socket?.emit("SELECT_CHAMPION", {
-      roomid: roomid,
+      roomid: room.id,
       selectedChampion: champion,
     });
-    setSelectedChampion("");
   };
 
-  const { data: team } = useFetchTeam(teamid);
+  const handleClickedHero = async (hero: any) => {
+    if (!team) return null;
+
+    setClickedHero(hero.name);
+
+    await supabase
+      .from("teams")
+      .update({ clicked_hero: hero.name })
+      .eq("id", team.id);
+  };
 
   useEffect(() => {
-    setCanSelect(team?.isTurn);
-  }, [team?.isTurn]);
+    if (team) {
+      setClickedHero(team.clicked_hero);
+      setSelectedChampion(team.clicked_hero || "");
+    }
+  }, [team]);
+
+  useEffect(() => {
+    if (team.isTurn) {
+      setCanSelect(true);
+    }
+  }, [team.isTurn]);
 
   if (!team) return null;
 
   return (
     <>
-      <p>CAN SELECT: {canSelect?.toString()}</p>
-      <p>TURN: {team.isTurn.toString()}</p>
-      <button
-        className={clsx("text-white font-bold py-2 px-4 mt-4", {
-          "bg-slate-600 text-gray-400 pointer-events-none":
-            !selectedChampion || !canSelect || !team.isTurn,
-          "bg-blue-500": selectedChampion && canSelect && team.isTurn,
-        })}
-        onClick={handleConfirmSelection}
-        disabled={!selectedChampion || !team.isTurn}>
-        Confirm Selection
-      </button>
-      <div className="grid grid-cols-5 gap-4">
-        <h1 className="text-2xl mb-4">Team Color: {team.color}</h1>
-        <h2 className="text-xl mb-4">
-          {String(team.isTurn)}
-          {team.isTurn ? "It's your turn!" : "Waiting for the other team..."}
-        </h2>
-        {team.heroes_pool.map((hero: any, index: number) => (
-          <div
-            key={index}
-            className={clsx("border p-4 transition ease-in-out", {
-              "bg-gray-800": hero.name === selectedChampion,
-              "opacity-25 pointer-events-none": hero.selected || !team.isTurn,
-            })}
-            onClick={() => {
-              if (canSelect) {
-                setSelectedChampion(hero.name);
-              }
-            }}>
-            <Image
-              src={`/images/champions/tiles/${hero.name
-                .replace(/\s/g, "")
-                .toLowerCase()}.jpg`}
-              alt={hero.name}
-              width={60}
-              height={60}
-            />
-            <pre>{hero.name}</pre>
-          </div>
-        ))}
-      </div>
+      <TeamHeader team={team} />
+      <Timer />
+      <HeroPool
+        team={team}
+        selectedChampion={selectedChampion}
+        canSelect={canSelect}
+        handleClickedHero={handleClickedHero}
+        setHoverIndex={setHoverIndex}
+        hoverIndex={hoverIndex}
+      />
+      <ConfirmButton
+        team={team}
+        selectedChampion={selectedChampion}
+        canSelect={canSelect}
+        handleConfirmSelection={handleConfirmSelection}
+      />
     </>
+  );
+};
+
+const TeamHeader = ({ team }: { team: Team }) => {
+  return (
+    <div className="flex mb-6 gap-6">
+      <div
+        className={` z-0 top-0 h-6 w-1/2 left-0 bg-blue-500 ${
+          team.isTurn
+            ? team.color === "blue"
+              ? "opacity-100"
+              : "opacity-25"
+            : team.color === "red"
+            ? "opacity-100"
+            : "opacity-25"
+        }`}></div>
+      <div
+        className={` top-0 h-6 w-1/2 right-0 bg-red-500 ${
+          team.isTurn
+            ? team.color === "red"
+              ? "opacity-100"
+              : "opacity-25"
+            : team.color === "blue"
+            ? "opacity-100"
+            : "opacity-25"
+        }`}></div>
+    </div>
   );
 };
 

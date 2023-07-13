@@ -1,5 +1,5 @@
 import { roomStore } from "@/app/stores/roomStore";
-import HeroGrid from "./HeroGrid";
+import TeamPicks from "./TeamPicks";
 import useFetchTeam from "@/app/hooks/useFetchTeam";
 interface FinishViewProps {
   roomid: string;
@@ -8,18 +8,25 @@ interface FinishViewProps {
 const FinishView: React.FC<FinishViewProps> = ({ roomid }) => {
   const { rooms } = roomStore();
   const room = rooms[roomid];
-  
+
   const { data: blue } = useFetchTeam(room.blue);
   const { data: red } = useFetchTeam(room.red);
 
+  if (!blue || !red) return null;
+
   return (
-    <div>
-      <h1>Room Finished</h1>
-      <div className="grid grid-cols-2 gap-12">
-        <HeroGrid team={blue} color="blue" useTiles={false} />
-        <HeroGrid team={red} color="red" useTiles={false} />
+    <div className="text-center">
+      <h1 className="my-12 text-3xl font-medium">The room has finished</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 h-96 w-full">
+        <div>
+          {blue.name}
+          <TeamPicks team={blue} color="blue" />
+        </div>
+        <div>
+          {red.name}
+          <TeamPicks team={red} color="red" />
+        </div>
       </div>
-      <p>The room {room ? room.name : roomid} has finished.</p>
     </div>
   );
 };

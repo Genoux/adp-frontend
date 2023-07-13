@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react';
-import supabase from '@/app/services/supabase';
-import { PostgrestError } from '@supabase/supabase-js';
+import { useEffect, useState } from "react";
+import supabase from "@/app/services/supabase";
+import { PostgrestError } from "@supabase/supabase-js";
 import { roomStore } from "@/app/stores/roomStore";
 
 const useFetchRoom = (roomid: string) => {
@@ -10,7 +10,7 @@ const useFetchRoom = (roomid: string) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { rooms, setRoom } = roomStore();
   const data = rooms[roomid];
-  
+
   useEffect(() => {
     supabase
       .channel("*")
@@ -27,16 +27,18 @@ const useFetchRoom = (roomid: string) => {
           setRoom(roomid, room);
         }
       )
-      .subscribe();
+      .subscribe(() => {
+        console.log("Subscription to Room updates");
+      });
   }, [roomid, setRoom]);
 
   useEffect(() => {
     const fetchTeam = async () => {
       try {
         const { data: room, error: fetchError } = await supabase
-          .from('rooms')
-          .select('*')
-          .eq('id', roomid)
+          .from("rooms")
+          .select("*")
+          .eq("id", roomid)
           .single();
 
         if (fetchError) {
