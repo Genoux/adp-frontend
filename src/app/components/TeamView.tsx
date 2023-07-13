@@ -1,22 +1,23 @@
-import { useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useCallback, useContext, use } from "react";
 import supabase from "@/app/services/supabase";
-import { Database } from '@/app/types/supabase';
+import { Database } from "@/app/types/supabase";
 import clsx from "clsx";
 import useFetchTeam from "@/app/hooks/useFetchTeam";
-import { roomStore } from "@/app/stores/roomStore";
 import SocketContext from "../context/SocketContext";
 import { Button } from "@/app/components/ui/button";
 import Timer from "@/app/components/Timer";
-import TeamContext from '@/app/context/TeamContext';
+import TeamContext from "@/app/context/TeamContext";
 
-import  HeroPool  from "@/app/components/HeroPool";
+import RoomContext from "@/app/context/RoomContext";
+import useEnsureContext from "@/app/hooks/useEnsureContext";
+import HeroPool from "@/app/components/HeroPool";
 //import { ConfirmButton } from "@/app/components/ConfirmButton";
 
 interface TeamViewProps {
   roomid: string;
 }
 
-type Team = Database["public"]["Tables"]["teams"]["Row"]
+type Team = Database["public"]["Tables"]["teams"]["Row"];
 
 function getOppositeColor(color: string) {
   if (color.toLowerCase() === "red") {
@@ -28,62 +29,56 @@ function getOppositeColor(color: string) {
   }
 }
 
-const TeamView: React.FC<TeamViewProps> = ({ roomid }) => {
+const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [canSelect, setCanSelect] = useState(true);
   const [hoverIndex, setHoverIndex] = useState(-1);
   const [clickedHero, setClickedHero] = useState<string | null>(null);
 
   const socket = useContext(SocketContext);
-  const team = useContext(TeamContext);
-
-  const handleSocketEvents = useCallback(
-    (event: string, msg: any) => {
-      if (event === "CHAMPION_SELECTED") {
-        setCanSelect(true);
-        setSelectedChampion("");
-        setClickedHero(null);
-      }
-    },
-    [setCanSelect]
-  );
+  const team = useEnsureContext(TeamContext);
+  const room = useEnsureContext(RoomContext);
 
   useEffect(() => {
     if (socket) {
-      socket.on("CHAMPION_SELECTED", (msg: any) => {
-        handleSocketEvents("CHAMPION_SELECTED", msg);
+      socket.on("CHAMPION_SELECTED", (data) => {
+        console.log("socket.on - data:", data);
+        // handle the data here
+        setCanSelect(true);
+        setSelectedChampion("");
+        setClickedHero(null);
       });
-  
+
+      // Clean up
       return () => {
         socket.off("CHAMPION_SELECTED");
       };
     }
-  }, [socket, handleSocketEvents]);
+  }, [socket]); // Make sure to include socket in the dependency array
+
 
 
   const handleConfirmSelection = async () => {
     if (!team || !Array.isArray(team.heroes_pool)) return null;
-    
+
     setCanSelect(false);
-    socket?.emit("STOP_TIMER", { roomid: roomid });
+    socket?.emit("STOP_TIMER", { roomid: room.id });
 
     const champion = selectedChampion;
 
-    let updated_heroes_pool = team?.heroes_pool?.map((hero: any) =>
-      hero.name === champion ? { ...hero, selected: true } : hero
-    );
-    
-    await supabase
-      .from("teams")
-      .update({ heroes_pool: updated_heroes_pool, pick: true })
-      .eq("id", team.id);
+    // let updated_heroes_pool = team.heroes_pool?.map((hero: any) =>
+    //   hero.name === champion ? { ...hero, selected: true } : hero
+    // );
+
+    // await supabase
+    //   .from("teams")
+    //   .update({ heroes_pool: updated_heroes_pool, pick: true })
+    //   .eq("id", team.id);
 
     socket?.emit("SELECT_CHAMPION", {
-      roomid: roomid,
+      roomid: room.id,
       selectedChampion: champion,
     });
-    setSelectedChampion("");
-    setClickedHero(null);
   };
 
   const handleClickedHero = async (hero: any) => {
@@ -101,6 +96,9 @@ const TeamView: React.FC<TeamViewProps> = ({ roomid }) => {
     if (team) {
       setClickedHero(team.clicked_hero);
       setSelectedChampion(team.clicked_hero || "");
+      if(team.isTurn) {
+        setCanSelect(true);
+      }
     }
   }, [team]);
 
@@ -108,6 +106,8 @@ const TeamView: React.FC<TeamViewProps> = ({ roomid }) => {
 
   return (
     <>
+    <p>can select: {canSelect.toString()}</p>
+      <p>is turn: {team.isTurn.toString()}</p>
       <TeamHeader team={team} />
       <Timer />
       <HeroPool
@@ -154,7 +154,6 @@ const TeamHeader = ({ team }: { team: Team }) => {
     </div>
   );
 };
-
 
 const ConfirmButton = ({
   team,

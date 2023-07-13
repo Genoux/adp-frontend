@@ -59,6 +59,7 @@ const useFetchTeam = (teamid: string) => {
 
     return () => {
       // unsubscribe when the component unmounts
+      console.log('unsubscribe from team updates')
       subscription.unsubscribe();
     };
   }, [teamid]);

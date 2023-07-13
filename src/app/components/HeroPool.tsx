@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Database } from '@/app/types/supabase';
 import Image from 'next/image';
 import clsx from 'clsx';
+import CircleLoader from './LoadingCircle';
 
 interface Hero {
   name: string;

@@ -27,7 +27,9 @@ const useFetchRoom = (roomid: string) => {
           setRoom(roomid, room);
         }
       )
-      .subscribe();
+      .subscribe(() => {
+        console.log("Subscription to Room updates");
+      });
   }, [roomid, setRoom]);
 
   useEffect(() => {

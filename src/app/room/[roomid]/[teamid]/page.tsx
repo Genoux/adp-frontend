@@ -1,20 +1,27 @@
 "use client";
 
 import { useState, useCallback, createContext, useContext } from "react";
+import { Database } from "@/app/types/supabase";
 import RoomInfo from "@/app/components/RoomInfo";
 import TeamView from "@/app/components/TeamView";
 import FinishView from "@/app/components/FinishView";
 import WaitingView from "@/app/components/WaitingView";
-import useFetchRoom from "@/app/hooks/useFetchRoom";
+
 import ReadyView from "@/app/components/ReadyView";
 import { AnimatePresence, motion } from "framer-motion";
 import LoadingCircle from "@/app/components/LoadingCircle";
-import SocketContext from "@/app/context/SocketContext";
-import useSocket from "@/app/hooks/useSocket";
 import Timer from "@/app/components/Timer";
+
+import useFetchRoom from "@/app/hooks/useFetchRoom";
+import RoomContext from "@/app/context/RoomContext";
+
+import useSocket from "@/app/hooks/useSocket";
+import SocketContext from "@/app/context/SocketContext";
+
 import useFetchTeam from "@/app/hooks/useFetchTeam";
 import TeamContext from "@/app/context/TeamContext";
 
+import useFetchData from "@/app/hooks/useFetchData";
 
 interface RoomProps {
   params: {
@@ -29,23 +36,25 @@ export default function Room({ params }: RoomProps) {
 
   const socket = useSocket(roomid, teamid);
   const { data: team, error: teamError, isLoading: isTeamLoading } = useFetchTeam(teamid);
-  const { data: room, error, isLoading } = useFetchRoom(roomid);
+  const { data: room, error: roomError, isLoading: isRoomLoading } = useFetchRoom(roomid);
 
-  if (isLoading || isTeamLoading) {
+  if (isTeamLoading || isRoomLoading) {
     return (
-      <>
-        <div className="flex min-h-screen flex-col items-center justify-center">
-          <LoadingCircle />
-        </div>
-      </>
-    );
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <LoadingCircle />
+      </div>
+    ); // Replace with your loading component
   }
 
-  if (error) {
-    return <div>Something went wrong: {error.message}</div>; // You can replace this with an error component
+  if (teamError) {
+    return <div>Error fetching team data: {teamError.message}</div>;
   }
 
-  if (!room) return null;
+  if (roomError) {
+    return <div>Error fetching room data: {roomError.message}</div>;
+  }
+
+  if (!room || !team) return null;
 
   const isReadyView = room.cycle === -1;
   const isWaitingView = room.cycle === 0;
@@ -65,29 +74,14 @@ export default function Room({ params }: RoomProps) {
           >
             <SocketContext.Provider value={socket}>
               <TeamContext.Provider value={team}>
-              {isReadyView &&
-                <div className="text-center h-screen flex flex-col justify-center w-full">
-                  <ReadyView teamid={teamid} roomid={roomid}/>
-                </div>
-              }
-              {isWaitingView && (
-                <div className="text-center mt-12 flex flex-col justify-center w-full">
-                  <h1 className="text-4xl font-bold mb-2">Planning phase!</h1>
-                  <h2 className="text-lg mb-6">
-                    Define your selection strategy from the champion pool
-                    </h2>
-                  <Timer />
-                  <WaitingView roomid={roomid} />
-                </div>
-              )}
-              {isFinishView && <FinishView roomid={roomid} />}
-              {isRoomView && (
-                <div className="text-center">
-                  <TeamView roomid={roomid} />
-                  <RoomInfo roomid={roomid} />
-                </div>
-                )}
-                </TeamContext.Provider>
+                <RoomContext.Provider value={room}>
+                  {isReadyView && <ReadyView />}
+                  {isWaitingView && <WaitingView />}
+                  {isFinishView && <FinishView roomid={room.id}  />}
+                  {isRoomView && <TeamView />}
+                  {isRoomView && <RoomInfo roomid={room.id} />}
+                </RoomContext.Provider>
+              </TeamContext.Provider>
             </SocketContext.Provider>
           </motion.div>
         </AnimatePresence>

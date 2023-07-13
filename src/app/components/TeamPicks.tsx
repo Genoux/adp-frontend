@@ -1,6 +1,10 @@
 import { Database } from "../types/supabase";
 import { roomStore } from "@/app/stores/roomStore";
 
+import RoomContext from '@/app/context/RoomContext';
+import useEnsureContext from "@/app/hooks/useEnsureContext";
+import { useContext } from "react";
+
 interface Team {
   [key: string]: any;
 }
@@ -11,10 +15,11 @@ interface Hero {
 }
 
 const TeamPicks = ({ team }: Team) => {
-  if (!team) return null;
   
-  const { rooms } = roomStore();
-  const room = rooms[team.room];
+ // const { rooms } = roomStore();
+  //const room = rooms[team.room];
+
+  const room  = useEnsureContext(RoomContext);
 
   return (
     <>

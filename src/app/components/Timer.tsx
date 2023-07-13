@@ -17,7 +17,7 @@ const Timer = () => {
     socket?.on("TIMER", handleSocketEvents);
   
     return () => {
-        socket?.off("CHAMPION_SELECTED", handleSocketEvents);
+        socket?.off("TIMER", handleSocketEvents);
     };
   }, [handleSocketEvents, socket]);
 
