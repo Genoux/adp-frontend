@@ -107,7 +107,7 @@ const TeamView = () => {
   return (
     <>
     <p>can select: {canSelect.toString()}</p>
-      <p>is turn: {team.isTurn.toString()}</p>
+      <p>is turn: {team?.isTurn?.toString()}</p>
       <TeamHeader team={team} />
       <Timer />
       <HeroPool
