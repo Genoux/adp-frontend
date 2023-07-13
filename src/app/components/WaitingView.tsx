@@ -18,9 +18,8 @@ const WaitingView = () => {
   return (
     <div>
       <main>
-
         <div className="grid grid-cols-6 lg:grid-cols-10 gap-3 cursor-pointer">
-          {room?.heroes_pool?.map((hero: any, index: number) => (
+          {room.heroes_pool.map((hero: any, index: number) => (
             <div
               key={index}
               onMouseEnter={() => setHoverIndex(index)}

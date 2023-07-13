@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useCallback, createContext, useContext } from "react";
-import { Database } from "@/app/types/supabase";
 import RoomInfo from "@/app/components/RoomInfo";
 import TeamView from "@/app/components/TeamView";
 import FinishView from "@/app/components/FinishView";
@@ -20,8 +18,6 @@ import SocketContext from "@/app/context/SocketContext";
 
 import useFetchTeam from "@/app/hooks/useFetchTeam";
 import TeamContext from "@/app/context/TeamContext";
-
-import useFetchData from "@/app/hooks/useFetchData";
 
 interface RoomProps {
   params: {
@@ -63,7 +59,7 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <>
-      <main className="">
+      <main>
         <AnimatePresence mode="wait">
           <motion.div
             className="relative"

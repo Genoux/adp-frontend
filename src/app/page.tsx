@@ -70,6 +70,7 @@ function Home() {
   const createRoom = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
 
+    
     // Check if any of the input fields are empty
     if (!formData.blueTeamName || !formData.redTeamName) {
       alert("Please fill in all the fields.");
