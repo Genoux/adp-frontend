@@ -96,11 +96,15 @@ const TeamView = () => {
     if (team) {
       setClickedHero(team.clicked_hero);
       setSelectedChampion(team.clicked_hero || "");
-      if(team.isTurn) {
-        setCanSelect(true);
-      }
+
     }
   }, [team]);
+
+  useEffect(() => {
+    if(team.isTurn) {
+      setCanSelect(true);
+    }
+  }, [team.isTurn]);
 
   if (!team) return null;
 

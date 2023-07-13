@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import RoomContext from '@/app/context/RoomContext';
 import useEnsureContext from "@/app/hooks/useEnsureContext";
@@ -18,6 +18,7 @@ const WaitingView = () => {
   return (
     <div>
       <main>
+
         <div className="grid grid-cols-6 lg:grid-cols-10 gap-3 cursor-pointer">
           {room?.heroes_pool?.map((hero: any, index: number) => (
             <div

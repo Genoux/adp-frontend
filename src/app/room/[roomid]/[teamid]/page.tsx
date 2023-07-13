@@ -76,7 +76,12 @@ export default function Room({ params }: RoomProps) {
               <TeamContext.Provider value={team}>
                 <RoomContext.Provider value={room}>
                   {isReadyView && <ReadyView />}
-                  {isWaitingView && <WaitingView />}
+                  {isWaitingView &&
+                    <>
+                      <Timer />
+                      <WaitingView /> 
+                    </>
+                  }
                   {isFinishView && <FinishView roomid={room.id}  />}
                   {isRoomView && <TeamView />}
                   {isRoomView && <RoomInfo roomid={room.id} />}
