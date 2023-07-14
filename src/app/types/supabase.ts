@@ -38,45 +38,36 @@ export interface Database {
         Row: {
           blue: number | null
           created_at: string | null
-          cycle: number | null
-          discussion_round: boolean | null
+          cycle: number
           heroes_pool: Json | null
           id: number
           name: string | null
-          nextTimestamp: string | null
           ready: boolean | null
           red: number | null
-          safeGate: boolean | null
           status: string | null
           timer: string | null
         }
         Insert: {
           blue?: number | null
           created_at?: string | null
-          cycle?: number | null
-          discussion_round?: boolean | null
+          cycle?: number
           heroes_pool?: Json | null
           id?: number
           name?: string | null
-          nextTimestamp?: string | null
           ready?: boolean | null
           red?: number | null
-          safeGate?: boolean | null
           status?: string | null
           timer?: string | null
         }
         Update: {
           blue?: number | null
           created_at?: string | null
-          cycle?: number | null
-          discussion_round?: boolean | null
+          cycle?: number
           heroes_pool?: Json | null
           id?: number
           name?: string | null
-          nextTimestamp?: string | null
           ready?: boolean | null
           red?: number | null
-          safeGate?: boolean | null
           status?: string | null
           timer?: string | null
         }
@@ -100,13 +91,11 @@ export interface Database {
           clicked_hero: string | null
           color: string | null
           created_at: string | null
-          heroes_pool: Json | null
+          heroes_ban: Json | null
           heroes_selected: Json | null
           id: number
           isTurn: boolean | null
           name: string | null
-          number_of_pick: number | null
-          pick: boolean | null
           ready: boolean | null
           room: number | null
           selected_hero: string | null
@@ -115,13 +104,11 @@ export interface Database {
           clicked_hero?: string | null
           color?: string | null
           created_at?: string | null
-          heroes_pool?: Json | null
+          heroes_ban?: Json | null
           heroes_selected?: Json | null
           id?: number
           isTurn?: boolean | null
           name?: string | null
-          number_of_pick?: number | null
-          pick?: boolean | null
           ready?: boolean | null
           room?: number | null
           selected_hero?: string | null
@@ -130,13 +117,11 @@ export interface Database {
           clicked_hero?: string | null
           color?: string | null
           created_at?: string | null
-          heroes_pool?: Json | null
+          heroes_ban?: Json | null
           heroes_selected?: Json | null
           id?: number
           isTurn?: boolean | null
           name?: string | null
-          number_of_pick?: number | null
-          pick?: boolean | null
           ready?: boolean | null
           room?: number | null
           selected_hero?: string | null

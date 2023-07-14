@@ -218,6 +218,7 @@
           color: "red",
           isTurn: false,
           heroes_selected: generateArray("name", 5),
+          heroes_ban: generateArray("name", 3),
           name: redTeamName,
           room: roomId, // Use the room ID here
         })
@@ -231,6 +232,7 @@
           color: "blue",
           isTurn: true,
           heroes_selected: generateArray("name", 5),
+          heroes_ban: generateArray("name", 3),
           name: blueTeamName,
           room: roomId, // Use the room ID here
         })

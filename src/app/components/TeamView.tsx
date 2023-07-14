@@ -10,6 +10,7 @@ import HeroPool from "@/app/components/HeroPool";
 import ConfirmButton from "@/app/components/ConfirmButton";
 
 type Team = Database["public"]["Tables"]["teams"]["Row"];
+type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
@@ -19,7 +20,7 @@ const TeamView = () => {
 
   const socket = useContext(SocketContext);
   const team = useEnsureContext(TeamContext);
-  const room = useEnsureContext(RoomContext);
+  const room = useEnsureContext(RoomContext) as Room;
 
   useEffect(() => {
     if (socket) {
@@ -43,6 +44,14 @@ const TeamView = () => {
     socket?.emit("STOP_TIMER", { roomid: room.id });
 
     const champion = selectedChampion;
+
+    if (room.cycle > 0 && room.cycle < 7) {
+      socket?.emit("BAN_CHAMPION", {
+        roomid: room.id,
+        selectedChampion: champion,
+      });
+      return;
+    }
 
     socket?.emit("SELECT_CHAMPION", {
       roomid: room.id,
@@ -78,7 +87,14 @@ const TeamView = () => {
 
   return (
     <>
-      <TeamHeader team={team} />
+      <div className={
+        `w-full top-0 rounded-sm  z-50 mb-4 text-center uppercase font-medium py-1 ${
+          team.color === 'blue' ? 'top-0  bg-blue-700' : 'right-0 bg-red-500'
+        }`
+      }>
+       <p> {team.name}</p>
+      </div>
+  
       <Timer />
       <HeroPool
         team={team}
@@ -88,14 +104,17 @@ const TeamView = () => {
         setHoverIndex={setHoverIndex}
         hoverIndex={hoverIndex}
       />
-      <ConfirmButton
-        team={team}
-        selectedChampion={selectedChampion}
-        canSelect={canSelect}
-        handleConfirmSelection={handleConfirmSelection}
-      />
+      <div className="flex justify-center">
+        <ConfirmButton
+          team={team}
+          selectedChampion={selectedChampion}
+          canSelect={canSelect}
+          handleConfirmSelection={handleConfirmSelection}
+        />
+      </div>
     </>
   );
+  
 };
 
 const TeamHeader = ({ team }: { team: Team }) => {
