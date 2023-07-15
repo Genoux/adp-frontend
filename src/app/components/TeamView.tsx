@@ -45,13 +45,13 @@ const TeamView = () => {
 
     const champion = selectedChampion;
 
-    if (room.cycle > 0 && room.cycle < 7) {
-      socket?.emit("BAN_CHAMPION", {
-        roomid: room.id,
-        selectedChampion: champion,
-      });
-      return;
-    }
+    // if (room.phase === "ban") {
+    //   socket?.emit("BAN_CHAMPION", {
+    //     roomid: room.id,
+    //     selectedChampion: champion,
+    //   });
+    //   return;
+    // }
 
     socket?.emit("SELECT_CHAMPION", {
       roomid: room.id,
