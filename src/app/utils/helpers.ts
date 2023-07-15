@@ -6,7 +6,7 @@ interface Hero {
 }
 
 export function generateArray(key: string, length: number) {
-  return new Array(length).fill({ [key]: null });
+  return new Array(length).fill({ [key]: null, selected: false });
 }
 
 export function allNamesNotNull(array: Hero[]): boolean {
