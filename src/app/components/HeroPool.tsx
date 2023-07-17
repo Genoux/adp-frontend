@@ -26,16 +26,6 @@ const HeroPool: React.FC<HeroPoolProps> = ({
   setHoverIndex,
   hoverIndex,
 }) => {
-  const getImageSrc = (hero: Hero, splash: boolean) => {
-    return splash
-      ? `/images/champions/splash/${hero.name
-          .replace(/\s/g, "")
-          .toLowerCase()}.jpg`
-      : `/images/champions/tiles/${hero.name
-          .replace(/\s/g, "")
-          .toLowerCase()}.jpg`;
-  };
-
   const room = useEnsureContext(RoomContext);
 
   if (!room.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
@@ -74,7 +64,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
                 }}>
                 <div className="relative overflow-hidden">
                   <Image
-                    src={getImageSrc(hero, false)}
+                    src={`/images/champions/tiles/${hero.name}.jpg`}
                     alt={hero.name}
                     sizes="100vw"
                     width={0}
@@ -98,7 +88,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
                           : ""
                       }`}></div>
                     <Image
-                      src={getImageSrc(hero, true)}
+                      src={`/images/champions/splash/${hero.name}.jpg`}
                       alt={hero.name}
                       width={800}
                       height={800}
