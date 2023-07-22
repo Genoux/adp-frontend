@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import supabase from "@/app/services/supabase";
 import TeamPicks from "@/app/components/TeamPicks";
+import TeamBans from "@/app/components/TeamBans";
 import CircleLoader from "./LoadingCircle";
 
 interface Team {
@@ -83,9 +84,11 @@ const RoomInfo: React.FC<RoomInfoProps> = ({ roomid }) => {
     <>
       <div className="grid grid-cols-1 lg:grid-cols-2 mb-12 h-64 gap-6 justify-center">
         <div>
+          <TeamBans team={blue} color="blue" />
           <TeamPicks team={blue} color="blue" />
         </div>
         <div className="relative">
+          <TeamBans team={red} color="red" />
           <TeamPicks team={red} color="red" />
         </div>
       </div>
