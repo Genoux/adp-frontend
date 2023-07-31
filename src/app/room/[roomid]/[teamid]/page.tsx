@@ -1,15 +1,16 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import RoomInfo from "@/app/components/RoomInfo";
+import { AnimatePresence, motion } from "framer-motion";
+
+import DraftView from "@/app/components/DraftView";
 import TeamView from "@/app/components/TeamView";
 import FinishView from "@/app/components/FinishView";
-import WaitingView from "@/app/components/WaitingView";
+import PlanningView from "@/app/components/PlanningView";
+import LobbyView from "@/app/components/LobbyView";
 
-import ReadyView from "@/app/components/ReadyView";
-import { AnimatePresence, motion } from "framer-motion";
-import LoadingCircle from "@/app/components/LoadingCircle";
-import Timer from "@/app/components/Timer";
+import LoadingCircle from "@/app/components/common/LoadingCircle";
+import RoomTimer from "@/app/components/common/RoomTimer";
 
 import useSocket from "@/app/hooks/useSocket";
 import SocketContext from "@/app/context/SocketContext";
@@ -28,16 +29,20 @@ export default function Room({ params }: RoomProps) {
   const roomid = params.roomid;
   const teamid = params.teamid;
 
+  debugger;
+
   const socket = useSocket(roomid, teamid);
   const { teams, fetchTeams, isLoading, error } = teamStore();
-  const { room, error: errorRoom, isLoading: isLoadingRoom, fetchRoom } = roomStore();
+  const { room, fetchRoom, isLoading: isLoadingRoom,  error: errorRoom, } = roomStore();
 
   useEffect(() => {
     fetchTeams(roomid, teamid);
-    fetchRoom(roomid)
-  }, [roomid, teamid, fetchTeams, fetchRoom]);
-
-
+  }, [roomid, teamid, fetchTeams]);
+  
+  useEffect(() => {
+    fetchRoom(roomid);
+  }, [roomid, fetchRoom]);
+ 
   if (isLoading || isLoadingRoom) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
@@ -56,11 +61,10 @@ export default function Room({ params }: RoomProps) {
 
   if (!room || !teams) return null;
 
-  const isReadyView = room.cycle === -1;
-  const isWaitingView = room.cycle === 0;
+  const isLobbyView = room.cycle === -1;
+  const isPlanningView = room.cycle === 0;
   const isFinishView = room.status === "done";
-  const isRoomView =
-    room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
+  const isRoomView = room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
 
   return (
     <>
@@ -73,16 +77,16 @@ export default function Room({ params }: RoomProps) {
             key="home-page" // Add a unique key prop
           >
             <SocketContext.Provider value={socket}>
-              {isReadyView && <ReadyView />}
-              {isWaitingView && (
+              {isLobbyView && <LobbyView />}
+              {isPlanningView && (
                 <>
-                  <Timer />
-                  <WaitingView />
+                  <RoomTimer />
+                  <PlanningView />
                 </>
               )}
               {isFinishView && <FinishView />}
               {isRoomView && <TeamView />}
-              {isRoomView && <RoomInfo />}
+              {isRoomView && <DraftView />}
             </SocketContext.Provider>
           </motion.div>
         </AnimatePresence>

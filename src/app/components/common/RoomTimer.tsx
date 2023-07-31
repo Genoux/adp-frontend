@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useCallback, useEffect } from "react";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
 import SocketContext from "@/app/context/SocketContext";

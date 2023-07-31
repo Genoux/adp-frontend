@@ -8,6 +8,7 @@ interface RoomState {
   room: Room | null;
   isLoading: boolean;
   error: Error | null;
+  handleRoomUpdate: (payload: any, teamId: string) => void;
   fetchRoom: (roomId: string) => Promise<void>;
 }
 
@@ -20,6 +21,7 @@ export const roomStore = create<RoomState>((set) => ({
   room: null,
   isLoading: false,
   error: null,
+  handleRoomUpdate: handleRoomUpdate(set),
   fetchRoom: async (roomId: string) => {
     set({ isLoading: true, error: null });
     try {

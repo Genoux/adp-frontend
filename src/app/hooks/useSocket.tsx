@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -27,9 +25,9 @@ export default function useSocket(
     setSocket(newSocket);
 
     newSocket.on("connect", async () => {
-      console.log("Connected to socket server");
       newSocket.emit("joinRoom", { roomid, teamid });
-      console.log("Successfully joined room");
+      console.log("connected to room id: ", roomid);
+
     });
 
     newSocket.on("testEvent", (data) => {
@@ -37,7 +35,6 @@ export default function useSocket(
     });
 
     if (handlers.eventHandlers) {
-      console.log("useEffect - handlers:", handlers);
       handlers.eventHandlers.forEach(({ eventName, eventHandler }) => {
         newSocket.on(eventName, eventHandler);
       });

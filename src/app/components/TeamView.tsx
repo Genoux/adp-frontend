@@ -1,13 +1,11 @@
-"use client";
-
 import { useState, useEffect, useContext } from "react";
 import supabase from "@/app/services/supabase";
 import { Database } from "@/app/types/supabase";
 import SocketContext from "../context/SocketContext";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
-import Timer from "@/app/components/Timer";
-import HeroPool from "@/app/components/HeroPool";
-import ConfirmButton from "@/app/components/ConfirmButton";
+import Timer from "@/app/components/common/RoomTimer";
+import HeroPool from "@/app/components/common/ChampionsPool";
+import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
@@ -25,7 +23,7 @@ const TeamView = () => {
     isLoading: state.isLoading
   }));
 
-  const { current: team } = useTeams(teamStore);
+  const { current: team, other } = useTeams(teamStore);
 
   useEffect(() => {
     socket.on("CHAMPION_SELECTED", (data) => {
@@ -39,7 +37,6 @@ const TeamView = () => {
       socket.off("CHAMPION_SELECTED");
     };
   }, [socket]);
-
 
 
   const handleConfirmSelection = async () => {
@@ -78,6 +75,11 @@ const TeamView = () => {
     }
   }, [team?.isTurn]);
 
+  const buttonText = team.isTurn
+    ? "Confirm Selection"
+    : `It's ${other.color} team to pick`;
+
+
   if (!team || error) {
     return <div>Team not found</div>;
   }
@@ -102,12 +104,14 @@ const TeamView = () => {
         handleClickedHero={handleClickedHero}
       />
       <div className="flex justify-center">
-        <ConfirmButton
-          team={team}
-          selectedChampion={selectedChampion}
-          canSelect={canSelect}
-          handleConfirmSelection={handleConfirmSelection}
-        />
+
+        <Button
+          size="lg"
+          onClick={handleConfirmSelection}
+          disabled={!selectedChampion || !canSelect || !team.isTurn}
+        >
+          {buttonText}
+        </Button>
       </div>
     </>
   );

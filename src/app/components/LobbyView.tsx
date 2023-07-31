@@ -1,5 +1,4 @@
 import supabase from "@/app/services/supabase";
-import { useContext } from "react";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
 import SocketContext from "@/app/context/SocketContext";
 import { Button } from "@/app/components/ui/button";
@@ -16,13 +15,11 @@ const ReadyView = () => {
     isLoading: state.isLoading
   }));
 
-
   const { current: currentTeam } = useTeams(teamStore);
 
   if (!room || error) {
     return <div>Room not found</div>;
   }
-
   const handleReadyClick = async () => {
     const { data, error } = await supabase
       .from("teams")

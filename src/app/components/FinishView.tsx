@@ -1,4 +1,4 @@
-import TeamPicks from "./TeamPicks";
+import TeamPicks from "./team/TeamPicks";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
 

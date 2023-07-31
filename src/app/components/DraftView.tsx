@@ -1,5 +1,5 @@
-import TeamPicks from "@/app/components/TeamPicks";
-import TeamBans from "@/app/components/TeamBans";
+import TeamPicks from "@/app/components/team/TeamPicks";
+import TeamBans from "@/app/components/team/TeamBans";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
 

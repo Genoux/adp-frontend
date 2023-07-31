@@ -1,5 +1,5 @@
 import { roomStore } from "@/app/stores/roomStore";
-import HeroPool from "./HeroPool";
+import HeroPool from "./common/ChampionsPool";
 
 const WaitingView = () => {
   const { room } = roomStore();
