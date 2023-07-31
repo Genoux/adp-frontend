@@ -1,6 +1,5 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import supabase from "@/app/services/supabase";
-import { Database } from "@/app/types/supabase";
 import SocketContext from "../context/SocketContext";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
 import Timer from "@/app/components/common/RoomTimer";
@@ -40,15 +39,17 @@ const TeamView = () => {
 
 
   const handleConfirmSelection = async () => {
-    setCanSelect(false);
-    socket?.emit("STOP_TIMER", { roomid: room?.id });
+    if (socket) {
+      setCanSelect(false);
+      socket?.emit("STOP_TIMER", { roomid: room?.id });
 
-    const champion = selectedChampion;
+      const champion = selectedChampion;
 
-    socket?.emit("SELECT_CHAMPION", {
-      roomid: room?.id,
-      selectedChampion: champion,
-    });
+      socket?.emit("SELECT_CHAMPION", {
+        roomid: room?.id,
+        selectedChampion: champion,
+      });
+    }
   };
 
   const handleClickedHero = async (hero: any) => {
@@ -104,14 +105,24 @@ const TeamView = () => {
         handleClickedHero={handleClickedHero}
       />
       <div className="flex justify-center">
-
-        <Button
-          size="lg"
-          onClick={handleConfirmSelection}
-          disabled={!selectedChampion || !canSelect || !team.isTurn}
-        >
-          {buttonText}
-        </Button>
+        {team.isTurn ? (
+          <Button
+            size="lg"
+            onClick={handleConfirmSelection}
+            disabled={!selectedChampion || !canSelect || !team.isTurn}
+          >
+            {buttonText}
+          </Button>
+        ) : (
+            <div>
+            <span className="pr-0.5">{`It's ${other.color} team to pick`}</span>
+            <div className="sending-animation">
+              <span className="sending-animation-dot">.</span>
+              <span className="sending-animation-dot">.</span>
+              <span className="sending-animation-dot">.</span>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

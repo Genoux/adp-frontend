@@ -26,12 +26,7 @@ export default function useSocket(
 
     newSocket.on("connect", async () => {
       newSocket.emit("joinRoom", { roomid, teamid });
-      console.log("connected to room id: ", roomid);
-
-    });
-
-    newSocket.on("testEvent", (data) => {
-      console.log(data.message);
+      console.log("Successfully joined room");
     });
 
     if (handlers.eventHandlers) {
@@ -46,7 +41,7 @@ export default function useSocket(
       }
       setSocket(null);
     };
-  }, [handlers, handlers.eventHandlers, roomid, teamid]);
+  }, [handlers.eventHandlers, roomid, teamid]);
 
   return socket; // Return the socket
 }
