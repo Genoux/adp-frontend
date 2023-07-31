@@ -1,6 +1,3 @@
-import RoomContext from "@/app/context/RoomContext";
-import useEnsureContext from "@/app/hooks/useEnsureContext";
-
 interface Team {
   [key: string]: any;
 }
@@ -10,13 +7,11 @@ interface Hero {
   selected: boolean;
 }
 
-const TeamPicks = ({ team }: Team) => {
-  const room = useEnsureContext(RoomContext);
-
+const TeamBans = ({ team }: Team) => {
   return (
     <>
       <div
-        className={`grid grid-cols-5 gap-2 mt-6 h-1/2 w-full`}>
+        className={`grid grid-cols-5 gap-2 mt-6 h-full w-full border`}>
         {(team.heroes_ban as unknown as Hero[]).map(
           (hero: Hero, index: number) => (
             <div
@@ -33,7 +28,7 @@ const TeamPicks = ({ team }: Team) => {
                   <div
                     className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
                     style={{
-                      backgroundImage: `url('/images/champions/splash/${hero.name}_splash.jpg')`,
+                      backgroundImage: `url('/images/champions/splash/${hero.name}.jpg')`,
                     }}
                   />
                 </div>
@@ -46,4 +41,4 @@ const TeamPicks = ({ team }: Team) => {
   );
 };
 
-export default TeamPicks;
+export default TeamBans;

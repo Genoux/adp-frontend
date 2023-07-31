@@ -4,7 +4,6 @@ import { Database } from "../types/supabase";
 
 type Team = Database["public"]["Tables"]["teams"]["Row"];
 
-
 function getOppositeColor(color: string) {
   if (color.toLowerCase() === "red") {
     return "blue";

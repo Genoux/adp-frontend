@@ -1,5 +1,4 @@
-import RoomContext from "@/app/context/RoomContext";
-import useEnsureContext from "@/app/hooks/useEnsureContext";
+import { roomStore } from "@/app/stores/roomStore";
 
 interface Team {
   [key: string]: any;
@@ -11,13 +10,18 @@ interface Hero {
 }
 
 const TeamPicks = ({ team }: Team) => {
-  const room = useEnsureContext(RoomContext);
+
+  const { room } = roomStore(state => ({
+    room: state.room,
+    error: state.error,
+    isLoading: state.isLoading
+  }));
 
   return (
     <>
       <div
-        className={`grid grid-cols-5 gap-2 mt-6 h-full w-full ${
-          team.isTurn || room.status === "done" ? `opacity-100` : "opacity-30"
+        className={`grid grid-cols-5 gap-2 mt-6 h-full w-full border border-yellow-500 ${
+          team.isTurn || room?.status === "done" ? `opacity-100` : "opacity-30"
         }`}>
         {(team.heroes_selected as unknown as Hero[]).map(
           (hero: Hero, index: number) => (

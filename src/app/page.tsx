@@ -45,6 +45,8 @@ interface RedTeam {
   name: string;
 }
 
+
+
 function Home() {
   const [room, setRoom] = useState<Room | null>(null);
   const [redTeam, setRedTeam] = useState<RedTeam | null>(null);

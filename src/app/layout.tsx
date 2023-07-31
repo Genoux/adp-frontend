@@ -14,9 +14,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} container`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+    <html lang="fr" suppressHydrationWarning>
+      <body className={`${inter.className} container p-0 border border-green-600 h-screen`}>
+        <ThemeProvider attribute="class" defaultTheme="dark">
           {children}
         </ThemeProvider>
       </body>

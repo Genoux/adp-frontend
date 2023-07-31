@@ -3,7 +3,7 @@ import { champions } from "@/app/utils/champions";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { generateArray } from "@/app/utils/helpers";
+
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -33,6 +33,10 @@ export async function randomChampions() {
   return {
     list: randomChampions,
   };
+}
+
+function generateArray(key: string, length: number) {
+  return new Array(length).fill({ [key]: null, selected: false });
 }
 
 async function createRoom(blueTeamName: string, redTeamName: string) {

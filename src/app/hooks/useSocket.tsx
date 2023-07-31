@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -47,7 +49,7 @@ export default function useSocket(
       }
       setSocket(null);
     };
-  }, [handlers.eventHandlers, roomid, teamid]);
+  }, [handlers, handlers.eventHandlers, roomid, teamid]);
 
   return socket; // Return the socket
 }
