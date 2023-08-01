@@ -22,7 +22,7 @@ const TeamView = () => {
     isLoading: state.isLoading
   }));
 
-  const { current: team, other } = useTeams(teamStore);
+  const { current: team, other, blue, red } = useTeams(teamStore);
 
   useEffect(() => {
     socket.on("CHAMPION_SELECTED", (data) => {
@@ -97,7 +97,23 @@ const TeamView = () => {
       }>
         <p> {team.name}</p>
       </div>
-      <Timer />
+      <div className="flex justify-between">
+        <div>{blue.name}</div>
+        <div className="flex flex-col items-center">
+          {
+            team.isTurn ? (
+              <p>{team.color}</p>
+            ) : (
+              <p>nope</p>
+            )
+          }
+           <Timer />
+              </div>
+         
+
+    
+        <div>{red.name}</div>
+      </div>
       <HeroPool
         team={team}
         selectedChampion={selectedChampion}
@@ -114,7 +130,7 @@ const TeamView = () => {
             {buttonText}
           </Button>
         ) : (
-            <div>
+          <div>
             <span className="pr-0.5">{`It's ${other.color} team to pick`}</span>
             <div className="sending-animation">
               <span className="sending-animation-dot">.</span>
