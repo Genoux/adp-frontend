@@ -25,6 +25,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
 }) => {
   const [hoverIndex, setHoverIndex] = useState(-1);
   const { room } = roomStore();
+  console.log("room:", room);
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 

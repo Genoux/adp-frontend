@@ -20,7 +20,7 @@ const Timer = () => {
   }, [handleSocketEvents, socket]);
 
   return (
-    <h1 className="font-bold text-3xl border w-fit mx-auto px-4 py-2 mb-6 rounded-sm">
+    <h1 className="font-bold text-5xl  w-fit mx-auto ">
       {timer || "00:00"}
     </h1>
   );

@@ -2,11 +2,11 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -50,11 +50,24 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        draftEmpty: {
+          DEFAULT: "hsl(var(--draft-empty))",
+        },
+        yellow: {
+          DEFAULT: "hsl(var(--yellow))",
+          hover: "hsl(var(--yellow-hover))",
+        },
+        red: {
+          DEFAULT: "hsl(var(--red))",
+        },
+        blue: {
+          DEFAULT: "hsl(var(--blue))",
+        },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "var(--radius + 4px)",
+        md: "calc(var(--radius) + 2px)",
+        sm: "calc(var(--radius))",
       },
       keyframes: {
         "accordion-down": {
@@ -73,4 +86,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};

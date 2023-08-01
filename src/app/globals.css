@@ -33,11 +33,12 @@
  
     --ring: 240 5% 64.9%;
  
-    --radius: 0.5rem;
+    --radius: 2px;
+    
   }
  
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 23% 6%;
     --foreground: 0 0% 98%;
  
     --muted: 240 3.7% 15.9%;
@@ -65,6 +66,16 @@
     --destructive-foreground: 0 85.7% 97.3%;
  
     --ring: 240 3.7% 15.9%;
+
+    --card-empty: 240, 19%, 11%, 1;
+
+    --main: 70, 97%, 60%, 1;
+
+    --yellow: 70, 97%, 60%, 1;
+    --yellow-hover: 70, 97%, 50%, 1;
+
+    --red: 0, 80%, 52%, 1;
+    --blue: 212, 96%, 57%, 1;
   }
 }
  
