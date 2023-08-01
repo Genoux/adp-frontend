@@ -1,62 +1,55 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import supabase from "@/app/services/supabase";
-import { Database } from "@/app/types/supabase";
 import SocketContext from "../context/SocketContext";
-import Timer from "@/app/components/Timer";
-import TeamContext from "@/app/context/TeamContext";
-import RoomContext from "@/app/context/RoomContext";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
-import HeroPool from "@/app/components/HeroPool";
-import ConfirmButton from "@/app/components/ConfirmButton";
-
-type Team = Database["public"]["Tables"]["teams"]["Row"];
-type Room = Database["public"]["Tables"]["rooms"]["Row"];
+import Timer from "@/app/components/common/RoomTimer";
+import HeroPool from "@/app/components/common/ChampionsPool";
+import { Button } from "@/app/components/ui/button";
+import { roomStore } from "@/app/stores/roomStore";
+import { teamStore } from "@/app/stores/teamStore";
+import useTeams from "@/app/hooks/useTeams";
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [canSelect, setCanSelect] = useState(true);
-  const [hoverIndex, setHoverIndex] = useState(-1);
   const [clickedHero, setClickedHero] = useState<string | null>(null);
 
-  const socket = useContext(SocketContext);
-  const team = useEnsureContext(TeamContext);
-  const room = useEnsureContext(RoomContext) as Room;
+  const socket = useEnsureContext(SocketContext);
+
+  const { room, error, isLoading } = roomStore(state => ({
+    room: state.room,
+    error: state.error,
+    isLoading: state.isLoading
+  }));
+
+  const { current: team, other, blue, red } = useTeams(teamStore);
 
   useEffect(() => {
-    if (socket) {
-      socket.on("CHAMPION_SELECTED", (data) => {
-        console.log("socket.on - data:", data);
+    socket.on("CHAMPION_SELECTED", (data) => {
+      setCanSelect(true);
+      setSelectedChampion("");
+      setClickedHero(null);
+    });
 
-        setCanSelect(true);
-        setSelectedChampion("");
-        setClickedHero(null);
-      });
-
-      // Clean up
-      return () => {
-        socket.off("CHAMPION_SELECTED");
-      };
-    }
+    // Clean up
+    return () => {
+      socket.off("CHAMPION_SELECTED");
+    };
   }, [socket]);
 
+
   const handleConfirmSelection = async () => {
-    setCanSelect(false);
-    socket?.emit("STOP_TIMER", { roomid: room.id });
+    if (socket) {
+      setCanSelect(false);
+      socket?.emit("STOP_TIMER", { roomid: room?.id });
 
-    const champion = selectedChampion;
+      const champion = selectedChampion;
 
-    // if (room.phase === "ban") {
-    //   socket?.emit("BAN_CHAMPION", {
-    //     roomid: room.id,
-    //     selectedChampion: champion,
-    //   });
-    //   return;
-    // }
-
-    socket?.emit("SELECT_CHAMPION", {
-      roomid: room.id,
-      selectedChampion: champion,
-    });
+      socket?.emit("SELECT_CHAMPION", {
+        roomid: room?.id,
+        selectedChampion: champion,
+      });
+    }
   };
 
   const handleClickedHero = async (hero: any) => {
@@ -78,70 +71,78 @@ const TeamView = () => {
   }, [team]);
 
   useEffect(() => {
-    if (team.isTurn) {
+    if (team?.isTurn) {
       setCanSelect(true);
     }
-  }, [team.isTurn]);
+  }, [team?.isTurn]);
 
-  if (!team) return null;
+  const buttonText = team.isTurn
+    ? "Confirm Selection"
+    : `It's ${other.color} team to pick`;
+
+
+  if (!team || error) {
+    return <div>Team not found</div>;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
       <div className={
-        `w-full top-0 rounded-sm  z-50 mb-4 text-center uppercase font-medium py-1 ${
-          team.color === 'blue' ? 'top-0  bg-blue-700' : 'right-0 bg-red-500'
+        `w-full top-0 rounded-sm  z-50 mb-4 text-center uppercase font-medium py-1 ${team.color === 'blue' ? 'top-0  bg-blue-700' : 'right-0 bg-red-500'
         }`
       }>
-       <p> {team.name}</p>
+        <p> {team.name}</p>
       </div>
-  
-      <Timer />
+      <div className="flex justify-between">
+        <div>{blue.name}</div>
+        <div className="flex flex-col items-center">
+          {
+            team.isTurn ? (
+              <p>{team.color}</p>
+            ) : (
+              <p>nope</p>
+            )
+          }
+           <Timer />
+              </div>
+         
+
+    
+        <div>{red.name}</div>
+      </div>
       <HeroPool
         team={team}
         selectedChampion={selectedChampion}
         canSelect={canSelect}
         handleClickedHero={handleClickedHero}
-        setHoverIndex={setHoverIndex}
-        hoverIndex={hoverIndex}
       />
       <div className="flex justify-center">
-        <ConfirmButton
-          team={team}
-          selectedChampion={selectedChampion}
-          canSelect={canSelect}
-          handleConfirmSelection={handleConfirmSelection}
-        />
+        {team.isTurn ? (
+          <Button
+            size="lg"
+            onClick={handleConfirmSelection}
+            disabled={!selectedChampion || !canSelect || !team.isTurn}
+          >
+            {buttonText}
+          </Button>
+        ) : (
+          <div>
+            <span className="pr-0.5">{`It's ${other.color} team to pick`}</span>
+            <div className="sending-animation">
+              <span className="sending-animation-dot">.</span>
+              <span className="sending-animation-dot">.</span>
+              <span className="sending-animation-dot">.</span>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
-  
-};
 
-const TeamHeader = ({ team }: { team: Team }) => {
-  return (
-    <div className="flex mb-6 gap-6">
-      <div
-        className={` z-0 top-0 h-6 w-1/2 left-0 bg-blue-500 ${
-          team.isTurn
-            ? team.color === "blue"
-              ? "opacity-100"
-              : "opacity-25"
-            : team.color === "red"
-            ? "opacity-100"
-            : "opacity-25"
-        }`}></div>
-      <div
-        className={` top-0 h-6 w-1/2 right-0 bg-red-500 ${
-          team.isTurn
-            ? team.color === "red"
-              ? "opacity-100"
-              : "opacity-25"
-            : team.color === "blue"
-            ? "opacity-100"
-            : "opacity-25"
-        }`}></div>
-    </div>
-  );
 };
 
 export default TeamView;

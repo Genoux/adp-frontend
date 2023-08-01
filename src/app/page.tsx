@@ -1,10 +1,10 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
-import LoadingCircle from "@/app/components/LoadingCircle";
+import LoadingCircle from "@/app/components/common/LoadingCircle";
 import { SunIcon, CopyIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -14,17 +14,7 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/app/components/ui/alert-dialog";
+import copyToClipboard from "@/app/utils/copyToClipboard"
 
 interface Room {
   id: number;
@@ -45,13 +35,12 @@ interface RedTeam {
   name: string;
 }
 
+
 function Home() {
   const [room, setRoom] = useState<Room | null>(null);
   const [redTeam, setRedTeam] = useState<RedTeam | null>(null);
   const [blueTeam, setBlueTeam] = useState<BlueTeam | null>(null);
   const [copyLink, setCopyLink] = useState<{ [key: string]: boolean }>({});
-
-  const [showAlert, setShowAlert] = useState(true);
 
   const [formData, setFormData] = useState({
     blueTeamName: "",
@@ -70,7 +59,6 @@ function Home() {
   const createRoom = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
 
-    
     // Check if any of the input fields are empty
     if (!formData.blueTeamName || !formData.redTeamName) {
       alert("Please fill in all the fields.");
@@ -96,57 +84,11 @@ function Home() {
     setLoading(false);
   };
 
-  const handleCopyLink = (link: string, teamId: string) => {
-    const copy = window.location.href + link;
-
-    setCopyLink((prevState) => ({ ...prevState, [teamId]: true }));
-
-    navigator.clipboard
-      .writeText(copy)
-      .then(() => {
-        setCopyLink((prevState) => ({ ...prevState, [teamId]: false }));
-      })
-      .catch((err) => {
-        console.error("Could not copy text: ", err);
-        setCopyLink((prevState) => ({ ...prevState, [teamId]: false }));
-      });
-  };
-
-  if (loading)
+  if (loading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-24">
         <LoadingCircle />
       </div>
-    );
-
-  if (showAlert) {
-    return (
-      <>
-        <AlertDialog open={showAlert}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Disclaimer!</AlertDialogTitle>
-              <AlertDialogDescription>
-                {`Bienvenue sur HAQ Aram Draft Pick.`}
-                <br />
-                <br />
-                {`Veuillez noter que notre application est actuellement dans la phase initiale de test alpha, il est donc possible que des bugs surviennent de temps à autre. Si vous rencontrez des problèmes de fonctionnalité significatifs, nous vous encourageons à nous contacter sur notre chaîne Discord.`}
-                <br />
-                <br />
-                {`Votre patience, compréhension et retour d'information sont essentiels pour nous aider à améliorer le système. Merci pour votre contribution et soutien continu.`}
-                <br />
-                <br />
-                {`- L'équipe HAQ`}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogAction onClick={() => setShowAlert(false)}>
-                {"J'ai compris"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </>
     );
   }
 
@@ -176,11 +118,9 @@ function Home() {
                       <Tooltip>
                         <TooltipTrigger>
                           <Button
-                            onClick={() =>
-                              handleCopyLink(
-                                `/room/${room.id}/${blueTeam.id}`,
-                                `${blueTeam.id}`
-                              )
+                            onClick={() => {
+                              copyToClipboard(`/room/${room.id}/${blueTeam.id}`, `${blueTeam.id}`, setCopyLink)
+                            }
                             }>
                             {copyLink[`${blueTeam.id}`] ? (
                               <LoadingCircle variant="black" size="w-4 h-4" />
@@ -211,10 +151,7 @@ function Home() {
                         <TooltipTrigger>
                           <Button
                             onClick={() =>
-                              handleCopyLink(
-                                `/room/${room.id}/${redTeam.id}`,
-                                `${redTeam.id}`
-                              )
+                              copyToClipboard(`/room/${room.id}/${redTeam.id}`, `${redTeam.id}`, setCopyLink)
                             }>
                             {copyLink[`${redTeam.id}`] ? (
                               <LoadingCircle variant="black" size="w-4 h-4" />
@@ -265,11 +202,10 @@ function Home() {
                 variant={"outline"}
                 onClick={createRoom}
                 disabled={!formData.blueTeamName || !formData.redTeamName}
-                className={`mt-6 ${
-                  !formData.blueTeamName || !formData.redTeamName
+                className={`mt-6 ${!formData.blueTeamName || !formData.redTeamName
                     ? "opacity-10"
                     : ""
-                }`}>
+                  }`}>
                 Create room
               </Button>
             </div>

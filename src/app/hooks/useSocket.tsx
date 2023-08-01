@@ -25,17 +25,11 @@ export default function useSocket(
     setSocket(newSocket);
 
     newSocket.on("connect", async () => {
-      console.log("Connected to socket server");
       newSocket.emit("joinRoom", { roomid, teamid });
       console.log("Successfully joined room");
     });
 
-    newSocket.on("testEvent", (data) => {
-      console.log(data.message);
-    });
-
     if (handlers.eventHandlers) {
-      console.log("useEffect - handlers:", handlers);
       handlers.eventHandlers.forEach(({ eventName, eventHandler }) => {
         newSocket.on(eventName, eventHandler);
       });

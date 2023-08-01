@@ -3,7 +3,7 @@ import { champions } from "@/app/utils/champions";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { generateArray } from "@/app/utils/helpers";
+
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -35,6 +35,10 @@ export async function randomChampions() {
   };
 }
 
+function generateArray(key: string, length: number) {
+  return new Array(length).fill({ [key]: null, selected: false });
+}
+
 async function createRoom(blueTeamName: string, redTeamName: string) {
   const champions = await randomChampions();
   const roomName: string = uniqueNamesGenerator(customConfig);
@@ -49,12 +53,10 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
 
     // Check for error
     if (roomError) {
-      console.log("createRoom - error:", roomError);
       return;
     }
 
     const roomId = room.id;
-    console.log("createRoom - room.id:", room.id);
 
     let { data: redTeam, error: redError } = await supabase
       .from("teams")
@@ -84,7 +86,6 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
       .single();
 
     if (redError || blueError) {
-      console.log("createRoom - error:", redError, blueError);
       return;
     }
 

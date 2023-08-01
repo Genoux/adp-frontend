@@ -1,11 +1,11 @@
-// components/Timer.tsx
-import { useState, useCallback, useEffect, useContext } from "react";
+import { useState, useCallback, useEffect } from "react";
+import useEnsureContext from "@/app/hooks/useEnsureContext";
 import SocketContext from "@/app/context/SocketContext";
 
 const Timer = () => {
   const [timer, setTimer] = useState<string>("");
 
-  const socket = useContext(SocketContext);
+  const socket = useEnsureContext(SocketContext);
 
   const handleSocketEvents = useCallback((event: string, msg: any) => {
     setTimer(event);
