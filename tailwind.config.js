@@ -67,7 +67,7 @@ module.exports = {
           'yellow-glow': '0 0 20px rgba(255, 255, 0, 1)', // Adjust the values as needed
         },
         transitionTimingFunction: {
-          'main': 'cubic-bezier(0.5, 1.6, 0.4, 0.7)',
+          'main': 'cubic-bezier(0,.45,.54,1)',
         },
       },
       keyframes: {

@@ -17,7 +17,9 @@ const TeamView = () => {
   const [clickedHero, setClickedHero] = useState<string | null>(null);
 
   const [fade, setFade] = useState(clickedHero !== null);
-
+  const [splashHero, setSplashHero] = useState<string | null>(null);
+  const [transitionInProgress, setTransitionInProgress] = useState(false);
+  const [fadeSplash, setFadeSplash] = useState(true);
 
   const socket = useEnsureContext(SocketContext);
 
@@ -58,27 +60,53 @@ const TeamView = () => {
     }
   };
 
+  useEffect(() => {
+    if (team) {
+      setFadeSplash(false); // Start fade-out
+
+      setSelectedChampion(team.clicked_hero || "");
+      // Delay to allow the fade-out to complete
+      setTimeout(() => {
+        // setSplashHero(other.clicked_hero);
+        setClickedHero(currentTeam.clicked_hero); // Update the splash image
+        setFadeSplash(true); // Start fade-in
+      }, 150); // 500ms matches the CSS transition duration
+    }
+  }, [currentTeam.clicked_hero, other.clicked_hero, team]);
+
   const handleClickedHero = async (hero: any) => {
-    if (!team) return null;
+    if (hero.name === team.clicked_hero) return null;
+    if (!team || transitionInProgress) return null;
 
-    setFade(false); // Start the fade-out
-    setTimeout(() => setFade(true), 500); // Trigger the fade-in
+    // Indicate that a transition is in progress
+    setTransitionInProgress(true);
 
-    setClickedHero(hero.name);
-
+    // Start the fade-out
+    setFade(false);
     await supabase
       .from("teams")
       .update({ clicked_hero: hero.name })
       .eq("id", team.id);
+
+    // Delay to allow the fade-out to complete
+    await new Promise(resolve => setTimeout(resolve, 250)); // 500ms matches the CSS transition duration
+
+    // Update the splash hero
+    //  setSplashHero(hero.name);
+
+    // Start the fade-in
+    setFade(true);
+
+    // Indicate that the transition is complete
+    setTransitionInProgress(false);
   };
 
-  useEffect(() => {
-    if (team) {
-      setFade(true)
-      setClickedHero(team.clicked_hero);
-      setSelectedChampion(team.clicked_hero || "");
-    }
-  }, [team]);
+  // useEffect(() => {
+  //   if (team) {
+  //     setClickedHero(team.clicked_hero);
+  //     setSelectedChampion(team.clicked_hero || "");
+  //   }
+  // }, [team]);
 
   useEffect(() => {
     if (team?.isTurn) {
@@ -101,16 +129,20 @@ const TeamView = () => {
 
   return (
     <>
-      <div className="absolute left-0 top-0 w-3/12 h-full -z-10">
-        <Image
-          src={`/images/champions/splash/${currentTeam.clicked_hero}.jpg`}
-          width={1920}
-          height={1080}
-          alt={`${currentTeam.clicked_hero} splash`}
-          className={`absolute z-10 w-full h-full object-cover object-center ${fade ? 'fade-in' : 'fade-out'}`}
-        />
-      </div>
-
+<div
+  className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10 ${fadeSplash ? 'fade-in' : 'fade-out'}`}
+  style={{ transform: fadeSplash ? 'translateX(0)' : currentTeam.color === 'blue' ? 'translateX(-5px)' : 'translateX(5px)' }}
+>
+  {clickedHero && (
+    <Image
+      src={`/images/champions/splash/${clickedHero}.jpg`}
+      width={1920}
+      height={1080}
+      className={`absolute z-10 w-full h-full object-cover object-center ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+      alt={`${clickedHero} splash`}
+    />
+  )}
+</div>
       <div className="flex justify-between items-center mb-6">
         <div className={`flex flex-col items-center bg-blue text-md px-6 py-2 rounded-full font-bold`}>{blue.name.charAt(0).toUpperCase() + blue.name.slice(1)}</div>
         <div className="flex flex-col items-center">

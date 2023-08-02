@@ -27,8 +27,8 @@ const HeroPool: React.FC<HeroPoolProps> = ({
 
 }) => {
   const [hoverIndex, setHoverIndex] = useState(-1);
+  const [mouseDown, setMouseDown] = useState<number | null>(null);
   const { room } = roomStore();
-  console.log("room:", room);
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
@@ -42,11 +42,19 @@ const HeroPool: React.FC<HeroPoolProps> = ({
             return (
               <div
                 key={index}
-                className={clsx("rounded-xl transition duration-100 ease-main", {
+                className={clsx("rounded-xl transition duration-75 ease-main", {
                   "bg-gray-800": isActive,
-                  "opacity-80 pointer-events-none": hero.selected || (team && !isTurnAvailable),
+                  "grayscale": hero.selected,
+                  "opacity-70 pointer-events-none ": hero.selected || (team && !isTurnAvailable),
+                  "scale-95 p-1 border-opacity-0 border-2 bg-transparent": mouseDown === index,
                   "z-50 border-2 border-opacity-100 border-yellow hero-selected overflow-hidden scale-95 p-1 bg-transparent glow-yellow": hero.name === selectedChampion,
                 })}
+                onMouseDown={() => {
+                  setMouseDown(index);
+                }}
+                onMouseUp={() => {
+                  setMouseDown(null);
+                }}
                 onClick={() => {
                   handleClickedHero(hero);
                 }}
@@ -69,7 +77,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
                   />
                   <div className="flex items-center justify-center my-auto overflow-hidden">
                     <p
-                      className={`font-bold text-sm hero-name text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${isActive
+                      className={`font-bold text-sm text-center hero-name text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${isActive
                         ? "z-50 animated-text-hover animated-text-visible"
                         : "hidden"
                         }`}>
@@ -77,7 +85,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
                     </p>
                     <div
                       className={`${isActive
-                        ? "bg-gradient-to-t absolute z-10 from-yellow to-transparent opacity-30 bg-clip-content w-full h-full top-0 left-0"
+                        ? "bg-gradient-to-t absolute z-10 from-yellow to-transparent opacity-50 bg-clip-content w-full h-full top-0 left-0"
                         : ""
                         }`}></div>
                     <Image

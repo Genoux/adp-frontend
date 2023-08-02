@@ -16,17 +16,16 @@ const TeamBans = ({ team }: Team) => {
           (hero: Hero, index: number) => (
             <div
               key={index}
-              className={`h-full w-full overflow-hidden relative ${
-                hero && hero.selected ? "bg-red-600 bg-opacity-10" : "border border-red-500 border-opacity-10"
+              className={`h-full w-full overflow-hidden relative rounded-md ${
+                hero && hero.selected ? "bg-draftEmpty" : "border border-green-500 border-opacity-10"
                 }`}>
               {hero && hero.name && (
                 <div>
                   <p className="absolute z-50 w-full h-full flex justify-center items-end pb-6 font-medium">
                     {hero.name}
                   </p>
-                  <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-t from-red-800 via-transparent to-transparent bg-clip-content z-40"></div>
                   <div
-                    className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
+                    className="absolute top-0 left-0 w-full h-full bg-cover bg-center grayscale"
                     style={{
                       backgroundImage: `url('/images/champions/splash/${hero.name}.jpg')`,
                     }}
