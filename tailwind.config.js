@@ -63,11 +63,12 @@ module.exports = {
         blue: {
           DEFAULT: "hsl(var(--blue))",
         },
-      },
-      borderRadius: {
-        lg: "var(--radius + 4px)",
-        md: "calc(var(--radius) + 2px)",
-        sm: "calc(var(--radius))",
+        boxShadow: {
+          'yellow-glow': '0 0 20px rgba(255, 255, 0, 1)', // Adjust the values as needed
+        },
+        transitionTimingFunction: {
+          'main': 'cubic-bezier(0.5, 1.6, 0.4, 0.7)',
+        },
       },
       keyframes: {
         "accordion-down": {

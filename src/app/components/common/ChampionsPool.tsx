@@ -7,6 +7,7 @@ import { useState } from "react";
 interface Hero {
   name: string;
   selected: boolean;
+  clicked_hero: boolean;
 }
 
 interface HeroPoolProps {
@@ -14,6 +15,7 @@ interface HeroPoolProps {
   selectedChampion?: string; // optional
   canSelect?: boolean; // optional
   handleClickedHero?: (hero: Hero) => void; // optional
+  clickedHero?: string | null; // optional
 }
 
 const HeroPool: React.FC<HeroPoolProps> = ({
@@ -21,6 +23,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
   selectedChampion,
   canSelect,
   handleClickedHero = () => { },
+  clickedHero,
 
 }) => {
   const [hoverIndex, setHoverIndex] = useState(-1);
@@ -31,7 +34,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
 
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-8 lg:grid-cols-10 gap-3 cursor-pointer px-24">
+      <div className="grid grid-cols-8 lg:grid-cols-10 gap-2 cursor-pointer px-24">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
             const isActive = hoverIndex === index || hero.name === selectedChampion;
@@ -39,10 +42,10 @@ const HeroPool: React.FC<HeroPoolProps> = ({
             return (
               <div
                 key={index}
-                className={clsx("", {
+                className={clsx("rounded-xl transition duration-100 ease-main", {
                   "bg-gray-800": isActive,
-                  "opacity-40 pointer-events-none": hero.selected || (team && !isTurnAvailable),
-                  "border-2 z-50 border-white hero-selected": hero.name === selectedChampion,
+                  "opacity-80 pointer-events-none": hero.selected || (team && !isTurnAvailable),
+                  "z-50 border-2 border-opacity-100 border-yellow hero-selected overflow-hidden scale-95 p-1 bg-transparent glow-yellow": hero.name === selectedChampion,
                 })}
                 onClick={() => {
                   handleClickedHero(hero);
@@ -55,7 +58,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
                     setHoverIndex(-1);
                   }
                 }}>
-                <div className="relative overflow-hidden">
+                <div className="relative overflow-hidden rounded-md">
                   <Image
                     src={`/images/champions/tiles/${hero.name}.jpg`}
                     alt={hero.name}
@@ -74,7 +77,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
                     </p>
                     <div
                       className={`${isActive
-                        ? "bg-gradient-to-t absolute z-10 from-black to-transparent bg-clip-content w-full h-full top-0 left-0"
+                        ? "bg-gradient-to-t absolute z-10 from-yellow to-transparent opacity-30 bg-clip-content w-full h-full top-0 left-0"
                         : ""
                         }`}></div>
                     <Image
@@ -82,7 +85,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
                       alt={hero.name}
                       width={800}
                       height={800}
-                      className={`mx-auto rounded splash-image ${isActive ? "splash-image-hover" : ""
+                      className={`mx-auto splash-image ${isActive ? "splash-image-hover" : ""
                         }`}
                     />
                   </div>

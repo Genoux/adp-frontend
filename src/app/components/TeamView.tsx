@@ -8,11 +8,16 @@ import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
+import clsx from "clsx";
+import Image from "next/image";
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [canSelect, setCanSelect] = useState(true);
   const [clickedHero, setClickedHero] = useState<string | null>(null);
+
+  const [fade, setFade] = useState(clickedHero !== null);
+
 
   const socket = useEnsureContext(SocketContext);
 
@@ -56,6 +61,9 @@ const TeamView = () => {
   const handleClickedHero = async (hero: any) => {
     if (!team) return null;
 
+    setFade(false); // Start the fade-out
+    setTimeout(() => setFade(true), 500); // Trigger the fade-in
+
     setClickedHero(hero.name);
 
     await supabase
@@ -66,6 +74,7 @@ const TeamView = () => {
 
   useEffect(() => {
     if (team) {
+      setFade(true)
       setClickedHero(team.clicked_hero);
       setSelectedChampion(team.clicked_hero || "");
     }
@@ -92,10 +101,20 @@ const TeamView = () => {
 
   return (
     <>
+      <div className="absolute left-0 top-0 w-3/12 h-full -z-10">
+        <Image
+          src={`/images/champions/splash/${currentTeam.clicked_hero}.jpg`}
+          width={1920}
+          height={1080}
+          alt={`${currentTeam.clicked_hero} splash`}
+          className={`absolute z-10 w-full h-full object-cover object-center ${fade ? 'fade-in' : 'fade-out'}`}
+        />
+      </div>
+
       <div className="flex justify-between items-center mb-6">
-      <div className={`flex flex-col items-center bg-blue text-md px-6 py-2 rounded-full font-bold`}>{blue.name.charAt(0).toUpperCase() + blue.name.slice(1)}</div>
+        <div className={`flex flex-col items-center bg-blue text-md px-6 py-2 rounded-full font-bold`}>{blue.name.charAt(0).toUpperCase() + blue.name.slice(1)}</div>
         <div className="flex flex-col items-center">
-          <p className="font-medium text-md  mb-1">
+          <p className="font-medium text-md mb-1">
             {`L'équipe ${currentTeam.name.charAt(0).toUpperCase() + currentTeam.name.slice(1)} entrain de choisir`}
           </p>
           <Timer />
@@ -106,6 +125,7 @@ const TeamView = () => {
         team={team}
         selectedChampion={selectedChampion}
         canSelect={canSelect}
+        clickedHero={clickedHero}
         handleClickedHero={handleClickedHero}
       />
       <div className="flex justify-center">
