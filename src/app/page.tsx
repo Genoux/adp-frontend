@@ -37,7 +37,6 @@ interface RedTeam {
 
 
 function Home() {
-  console.log('d')
   const [room, setRoom] = useState<Room | null>(null);
   const [redTeam, setRedTeam] = useState<RedTeam | null>(null);
   const [blueTeam, setBlueTeam] = useState<BlueTeam | null>(null);

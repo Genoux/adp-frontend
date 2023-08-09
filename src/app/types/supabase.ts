@@ -42,7 +42,6 @@ export interface Database {
           heroes_pool: Json | null
           id: number
           name: string | null
-          phase: string | null
           ready: boolean | null
           red: number | null
           status: string | null
@@ -55,7 +54,6 @@ export interface Database {
           heroes_pool?: Json | null
           id?: number
           name?: string | null
-          phase?: string | null
           ready?: boolean | null
           red?: number | null
           status?: string | null
@@ -68,7 +66,6 @@ export interface Database {
           heroes_pool?: Json | null
           id?: number
           name?: string | null
-          phase?: string | null
           ready?: boolean | null
           red?: number | null
           status?: string | null
