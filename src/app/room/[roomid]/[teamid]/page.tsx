@@ -9,9 +9,6 @@ import FinishView from "@/app/components/FinishView";
 import PlanningView from "@/app/components/PlanningView";
 import LobbyView from "@/app/components/LobbyView";
 
-import LoadingCircle from "@/app/components/common/LoadingCircle";
-import RoomTimer from "@/app/components/common/RoomTimer";
-
 import useSocket from "@/app/hooks/useSocket";
 import SocketContext from "@/app/context/SocketContext";
 
@@ -29,8 +26,6 @@ export default function Room({ params }: RoomProps) {
   const roomid = params.roomid;
   const teamid = params.teamid;
 
-  debugger;
-
   const socket = useSocket(roomid, teamid);
   const { teams, fetchTeams, isLoading, error } = teamStore();
   const { room, fetchRoom, isLoading: isLoadingRoom,  error: errorRoom, } = roomStore();
@@ -46,7 +41,7 @@ export default function Room({ params }: RoomProps) {
   if (isLoading || isLoadingRoom) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        <LoadingCircle />
+        {/* <LoadingCircle /> */}
       </div>
     );
   }
@@ -80,7 +75,6 @@ export default function Room({ params }: RoomProps) {
               {isLobbyView && <LobbyView />}
               {isPlanningView && (
                 <>
-                  <RoomTimer />
                   <PlanningView />
                 </>
               )}

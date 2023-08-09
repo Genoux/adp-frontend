@@ -2,12 +2,16 @@ import { useState, useCallback, useEffect } from "react";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
 import SocketContext from "@/app/context/SocketContext";
 
-const Timer = () => {
+interface TimerProps {
+  className?: string;
+  // other props if needed
+}
+const Timer: React.FC<TimerProps> = ({ className }) => {
   const [timer, setTimer] = useState<string>("");
 
   const socket = useEnsureContext(SocketContext);
 
-  const handleSocketEvents = useCallback((event: string, msg: any) => {
+  const handleSocketEvents = useCallback((event: string) => {
     setTimer(event);
   }, []);
 
@@ -20,9 +24,11 @@ const Timer = () => {
   }, [handleSocketEvents, socket]);
 
   return (
-    <h1 className="font-bold text-5xl  w-fit mx-auto ">
-      {timer || "00:00"}
-    </h1>
+    <div className={className}>
+      <h1 className="font-bold text-5xl  w-fit mx-auto ">
+        {timer || "00:00"}
+      </h1>
+    </div>
   );
 };
 

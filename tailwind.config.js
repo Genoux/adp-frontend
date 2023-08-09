@@ -56,6 +56,7 @@ module.exports = {
         yellow: {
           DEFAULT: "hsl(var(--yellow))",
           hover: "hsl(var(--yellow-hover))",
+          text: "hsl(var(--yellow-text))"
         },
         red: {
           DEFAULT: "hsl(var(--red))",

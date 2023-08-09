@@ -75,6 +75,7 @@
 
     --yellow: 70, 97%, 60%, 1;
     --yellow-hover: 70, 97%, 50%, 1;
+    --yellow-text: 70, 59%, 4%, 1;
 
     --red: 0, 80%, 52%, 1;
     --blue: 212, 96%, 57%, 1;
@@ -219,7 +220,7 @@
 .fade-in {
   opacity: 1;
   transform: translateX(0);
-  transition: all 0.1s cubic-bezier(0,.45,.54,1);
+  transition: all 0.25s cubic-bezier(0,.45,.54,1);
 }
 
 .fade-out {

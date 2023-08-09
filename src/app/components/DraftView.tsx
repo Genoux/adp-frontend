@@ -8,16 +8,19 @@ const RoomInfo = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-2 mb-12 gap-6 justify-center">
-        <div>
-          <TeamBans team={blue} color="blue" />
-          <TeamPicks team={blue} color="blue" />
+
+      <div className="flex flex-col justify-center items-stretch">
+        <div className="flex flex-row justify-between w-full gap-96">
+          <TeamBans team={blue} />
+          <TeamBans team={red} />
         </div>
-        <div className="relative">
-          <TeamBans team={red} color="red" />
-          <TeamPicks team={red} color="red" />
+
+        <div className="flex flex-row justify-between w-full h-full gap-24 mt-4">
+          <TeamPicks team={blue} />
+          <TeamPicks team={red} />
         </div>
       </div>
+
     </>
   );
 };

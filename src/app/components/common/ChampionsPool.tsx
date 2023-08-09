@@ -18,7 +18,7 @@ interface HeroPoolProps {
   clickedHero?: string | null; // optional
 }
 
-const HeroPool: React.FC<HeroPoolProps> = ({
+const ChampionsPool: React.FC<HeroPoolProps> = ({
   team,
   selectedChampion,
   canSelect,
@@ -50,6 +50,7 @@ const HeroPool: React.FC<HeroPoolProps> = ({
                   "z-50 border-2 border-opacity-100 border-yellow hero-selected overflow-hidden scale-95 p-1 bg-transparent glow-yellow": hero.name === selectedChampion,
                 })}
                 onMouseDown={() => {
+                  if (room?.status === "planning") return;
                   setMouseDown(index);
                 }}
                 onMouseUp={() => {
@@ -107,4 +108,4 @@ const HeroPool: React.FC<HeroPoolProps> = ({
   );
 };
 
-export default HeroPool;
+export default ChampionsPool;

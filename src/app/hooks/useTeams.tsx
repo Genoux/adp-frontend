@@ -19,6 +19,6 @@ const useTeams = (teamStore: () => { teams: any; currentTeam: any }) => {
     return teams?.find((team: { id: any; }) => team.id !== currentTeam.id);
   }, [currentTeam.id, teams]);
 
-  return { current, other, blue, red };
+  return {teams, current, other, blue, red };
 };
 export default useTeams;

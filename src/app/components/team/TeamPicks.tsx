@@ -20,13 +20,13 @@ const TeamPicks = ({ team }: Team) => {
   return (
     <>
       <div
-        className={`grid grid-cols-5 gap-2 mt-6 h-full w-full border border-yellow-500 ${team.isTurn || room?.status === "done" ? `opacity-100` : "opacity-30"
+        className={`grid grid-cols-5 gap-2 h-full w-full min-h-[210px] ${team.isTurn || room?.status === "done" ? `opacity-100` : "opacity-30"
           }`}>
         {(team.heroes_selected as unknown as Hero[]).map(
           (hero: Hero, index: number) => (
             <div
               key={index}
-              className={`h-full w-full overflow-hidden relative ${hero.name ? "" : "border border-white border-opacity-10"
+              className={`h-full w-full rounded-md  overflow-hidden relative ${hero.name ? "" : "border border-white border-opacity-10"
                 }`}>
               {hero.name && (
                 <div>
@@ -37,9 +37,10 @@ const TeamPicks = ({ team }: Team) => {
                   <div
                     className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
                     style={{
-                      backgroundImage: `url('/images/champions/splash/${hero.name}.jpg')`,
+                      backgroundImage: `url("/images/champions/splash/${hero.name}.jpg")`,
                     }}
                   />
+                  {hero.name.toLowerCase()}
                 </div>
               )}
             </div>

@@ -3,7 +3,7 @@ import supabase from "@/app/services/supabase";
 import SocketContext from "../context/SocketContext";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
 import Timer from "@/app/components/common/RoomTimer";
-import HeroPool from "@/app/components/common/ChampionsPool";
+import ChampionsPool from "@/app/components/common/ChampionsPool";
 import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
@@ -34,9 +34,12 @@ const TeamView = () => {
 
   useEffect(() => {
     socket.on("CHAMPION_SELECTED", (data) => {
-      setCanSelect(true);
-      setSelectedChampion("");
-      setClickedHero(null);
+      console.log("socket.on - data:", data);
+      setTimeout(() => {
+        setSelectedChampion("");
+        setClickedHero(null);
+        setCanSelect(true);
+      }, 500);
     });
 
     // Clean up
@@ -49,6 +52,7 @@ const TeamView = () => {
   const handleConfirmSelection = async () => {
     if (socket) {
       setCanSelect(false);
+      setClickedHero(null);
       socket?.emit("STOP_TIMER", { roomid: room?.id });
 
       const champion = selectedChampion;
@@ -63,11 +67,8 @@ const TeamView = () => {
   useEffect(() => {
     if (team) {
       setFadeSplash(false); // Start fade-out
-
       setSelectedChampion(team.clicked_hero || "");
-      // Delay to allow the fade-out to complete
       setTimeout(() => {
-        // setSplashHero(other.clicked_hero);
         setClickedHero(currentTeam.clicked_hero); // Update the splash image
         setFadeSplash(true); // Start fade-in
       }, 150); // 500ms matches the CSS transition duration
@@ -89,7 +90,7 @@ const TeamView = () => {
       .eq("id", team.id);
 
     // Delay to allow the fade-out to complete
-    await new Promise(resolve => setTimeout(resolve, 250)); // 500ms matches the CSS transition duration
+    await new Promise(resolve => setTimeout(resolve, 150)); // 500ms matches the CSS transition duration
 
     // Update the splash hero
     //  setSplashHero(hero.name);
@@ -111,6 +112,10 @@ const TeamView = () => {
   useEffect(() => {
     if (team?.isTurn) {
       setCanSelect(true);
+    } else {
+      setSelectedChampion("");
+      setCanSelect(false);
+      setClickedHero(null);
     }
   }, [team?.isTurn]);
 
@@ -129,55 +134,62 @@ const TeamView = () => {
 
   return (
     <>
-<div
-  className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10 ${fadeSplash ? 'fade-in' : 'fade-out'}`}
-  style={{ transform: fadeSplash ? 'translateX(0)' : currentTeam.color === 'blue' ? 'translateX(-5px)' : 'translateX(5px)' }}
->
-  {clickedHero && (
-    <Image
-      src={`/images/champions/splash/${clickedHero}.jpg`}
-      width={1920}
-      height={1080}
-      className={`absolute z-10 w-full h-full object-cover object-center ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
-      alt={`${clickedHero} splash`}
-    />
-  )}
-</div>
+      <div
+        className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10 ${fadeSplash ? 'fade-in' : 'fade-out'}`}
+        style={{ transform: fadeSplash ? 'translateX(0)' : currentTeam.color === 'blue' ? 'translateX(-5px)' : 'translateX(5px)' }}
+      >
+        {clickedHero && (
+          <Image
+            src={`/images/champions/splash/${clickedHero}.jpg`}
+            width={1920}
+            height={1080}
+            className={`absolute z-10 w-full h-full object-cover object-center ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+            alt={`${clickedHero} splash`}
+          />
+        )}
+      </div>
       <div className="flex justify-between items-center mb-6">
         <div className={`flex flex-col items-center bg-blue text-md px-6 py-2 rounded-full font-bold`}>{blue.name.charAt(0).toUpperCase() + blue.name.slice(1)}</div>
         <div className="flex flex-col items-center">
           <p className="font-medium text-md mb-1">
-            {`L'équipe ${currentTeam.name.charAt(0).toUpperCase() + currentTeam.name.slice(1)} entrain de choisir`}
+            {currentTeam === team
+              ? `C\'est à vous de choisir, vous êtes l\'équipe ${currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1)}`
+              : `L'équipe ${currentTeam.name.charAt(0).toUpperCase() + currentTeam.name.slice(1)} entrain de choisir`}
           </p>
           <Timer />
         </div>
         <div className={`flex flex-col items-center bg-red text-md px-6 py-2 rounded-full font-bold`}>{red.name.charAt(0).toUpperCase() + red.name.slice(1)}</div>
       </div>
-      <HeroPool
+      <ChampionsPool
         team={team}
         selectedChampion={selectedChampion}
         canSelect={canSelect}
         clickedHero={clickedHero}
         handleClickedHero={handleClickedHero}
       />
-      <div className="flex justify-center">
+      <div className="flex justify-center my-6">
         {team.isTurn ? (
           <Button
             size="lg"
-            className="bg-yellow hover:bg-yellow-hover rounded-sm"
+            className="bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold"
             onClick={handleConfirmSelection}
             disabled={!selectedChampion || !canSelect || !team.isTurn}
           >
             {buttonText}
           </Button>
         ) : (
-          <div>
-            <span className="pr-0.5">{`It's ${other.color} team to pick`}</span>
-            <div className="sending-animation">
-              <span className="sending-animation-dot">.</span>
-              <span className="sending-animation-dot">.</span>
-              <span className="sending-animation-dot">.</span>
+          <div className="h-[44px] flex items-center">
+            <div className="flex flex-col justify-center items-center">
+              <p className="text-sm mb-1 pr-3 opacity-80">Ce n’est pas votre tour</p>
+              <p className="text-lg font-medium">{`En attente de l'équipe ${other.color}`}
+                <div className="sending-animation pl-1">
+                  <span className="sending-animation-dot">.</span>
+                  <span className="sending-animation-dot">.</span>
+                  <span className="sending-animation-dot">.</span>
+                </div>
+              </p>
             </div>
+
           </div>
         )}
       </div>
