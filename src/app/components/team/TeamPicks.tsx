@@ -26,7 +26,7 @@ const TeamPicks = ({ team }: Team) => {
           (hero: Hero, index: number) => (
             <div
               key={index}
-              className={`h-full w-full rounded-md  overflow-hidden relative ${hero.name ? "" : "border border-white border-opacity-10"
+              className={`h-full w-full rounded-sm overflow-hidden relative ${hero.name ? "" : "border border-white border-opacity-10"
                 }`}>
               {hero.name && (
                 <div>

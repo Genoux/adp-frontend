@@ -68,7 +68,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     setHoverIndex(-1);
                   }
                 }}>
-                <div className="relative overflow-hidden rounded-md">
+                <div className="relative overflow-hidden rounded-sm">
                   <Image
                     src={`/images/champions/tiles/${hero.name}.jpg`}
                     alt={hero.name}

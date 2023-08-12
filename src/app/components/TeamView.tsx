@@ -184,7 +184,7 @@ const TeamView = () => {
         ) : (
           <div className="h-[44px] flex items-center">
             <div className="flex flex-col justify-center items-center">
-              <p className="text-sm mb-1 pr-3 opacity-80">Ce n’est pas votre tour</p>
+              <p className="text-sm pr-3 opacity-80">Ce n’est pas votre tour</p>
               <p className="text-lg font-medium">{`En attente de l'équipe ${other.color}`}
                 <div className="sending-animation pl-1">
                   <span className="sending-animation-dot">.</span>
