@@ -39,7 +39,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
         <h1 className="text-5xl uppercase font-bold">Aram Draft Pick</h1>
       </div>
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 items-center">
         <div className="flex flex-row gap-6">
           {teams.map(team => (
             <div key={team.id} className="flex flex-col gap-2">
