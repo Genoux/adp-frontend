@@ -34,22 +34,22 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
 
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-8 lg:grid-cols-10 gap-2 cursor-pointer px-24">
+      <div className="grid grid-cols-8 md:grid-cols-6 lg:grid-cols-10 gap-2 cursor-pointer px-24">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
             const isActive = hoverIndex === index || hero.name === selectedChampion;
             const isturnAvailable = team ? team.isturn : true;
             return (
               <div
-                key={index}
-                className={clsx("rounded-xl transition duration-75 ease-main", {
-                  "bg-gray-800": isActive,
-                  "grayscale": hero.selected,
-                  "opacity-70": hero.selected || (team && !isturnAvailable),
-                  "pointer-events-none": !canSelect || hero.selected || (team && !isturnAvailable),
-                  "scale-95 p-1 border-opacity-0 border-2 bg-transparent": mouseDown === index,
-                  "z-50 border-2 border-opacity-100 border-yellow hero-selected overflow-hidden scale-95 p-1 bg-transparent glow-yellow": hero.name === selectedChampion,
-                })}
+              key={index}
+              className={clsx("rounded-xl transition duration-75 ease-main", {
+                "bg-gray-800": isActive,
+                "grayscale": hero.selected,
+                "opacity-70": hero.selected || (team && !isturnAvailable),
+                "pointer-events-none": (room.status !== "planning" && !canSelect) || hero.selected || (team && !isturnAvailable),
+                "scale-95 p-1 border-opacity-0 border-2 bg-transparent": mouseDown === index,
+                "z-50 border-2 border-opacity-100 border-yellow hero-selected overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion,
+              })}
                 onMouseDown={() => {
                   if (room?.status === "planning") return;
                   setMouseDown(index);

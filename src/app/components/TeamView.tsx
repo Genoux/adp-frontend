@@ -38,7 +38,6 @@ const TeamView = () => {
       setSelectedChampion("");
       setClickedHero(null);
       setTimeout(() => {
-        
         setCanSelect(true);
       }, 500);
     });
@@ -69,12 +68,12 @@ const TeamView = () => {
 
   useEffect(() => {
     if (team) {
-      setFadeSplash(false); // Start fade-out
       setSelectedChampion(team.clicked_hero || "");
+      setClickedHero(currentTeam.clicked_hero); // Update the splash image
       setTimeout(() => {
-        setClickedHero(currentTeam.clicked_hero); // Update the splash image
-        setFadeSplash(true); // Start fade-in
-      }, 150); // 500ms matches the CSS transition duration
+        setFadeSplash(true); // Start fade-out
+        setTransitionInProgress(false)
+      }, 200); // 500ms matches the CSS transition duration
     }
   }, [currentTeam.clicked_hero, other.clicked_hero, team]);
 
@@ -83,26 +82,28 @@ const TeamView = () => {
     if (!team || transitionInProgress) return null;
 
     // Indicate that a transition is in progress
+    setFadeSplash(false); // Start fade-in
     setTransitionInProgress(true);
 
     // Start the fade-out
-    setFade(false);
+    //setFade(false);
     await supabase
       .from("teams")
       .update({ clicked_hero: hero.name })
       .eq("id", team.id);
 
     // Delay to allow the fade-out to complete
-    await new Promise(resolve => setTimeout(resolve, 150)); // 500ms matches the CSS transition duration
+    await new Promise(resolve => setTimeout(resolve, 200)); // loadimage wait for fade out
+    setClickedHero(hero.name); // Update the splash image
 
     // Update the splash hero
     //  setSplashHero(hero.name);
 
     // Start the fade-in
-    setFade(true);
+    // setFade(true);
 
     // Indicate that the transition is complete
-    setTransitionInProgress(false);
+    // setTransitionInProgress(false);
   };
 
   // useEffect(() => {
@@ -137,7 +138,6 @@ const TeamView = () => {
 
   return (
     <>
-      Can select -  {canSelect.toString()}
       <div
         className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10 ${fadeSplash ? 'fade-in' : 'fade-out'}`}
         style={{ transform: fadeSplash ? 'translateX(0)' : currentTeam.color === 'blue' ? 'translateX(-5px)' : 'translateX(5px)' }}
