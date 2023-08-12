@@ -1,6 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.my-input {
+  @apply rounded-sm;
+}
  
 @layer base {
   :root {
