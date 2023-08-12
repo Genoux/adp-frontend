@@ -42,7 +42,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
             return (
               <div
               key={index}
-              className={clsx("rounded-xl transition duration-75 ease-main", {
+              className={clsx("rounded-sm transition duration-75 ease-main", {
                 "bg-gray-800": isActive,
                 "grayscale": hero.selected,
                 "opacity-70": hero.selected || (team && !isturnAvailable),

@@ -73,7 +73,7 @@ const TeamView = () => {
       setTimeout(() => {
         setFadeSplash(true); // Start fade-out
         setTransitionInProgress(false)
-      }, 200); // 500ms matches the CSS transition duration
+      }, 400); // 500ms matches the CSS transition duration
     }
   }, [currentTeam.clicked_hero, other.clicked_hero, team]);
 
@@ -147,6 +147,7 @@ const TeamView = () => {
             src={`/images/champions/splash/${clickedHero}.jpg`}
             width={1920}
             height={1080}
+            rel="preload"
             className={`absolute z-10 w-full h-full object-cover object-center ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
             alt={`${clickedHero} splash`}
           />
