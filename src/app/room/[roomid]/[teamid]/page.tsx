@@ -15,11 +15,39 @@ import SocketContext from "@/app/context/SocketContext";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
 
+import { setWaiting, setPlanning, setBan, setSelect, setFinish } from "@/app/utils/stateController";
+
+interface StateControllerButtonsProps {
+  roomid: string;
+}
+
 interface RoomProps {
   params: {
     roomid: string;
     teamid: string;
   };
+}
+
+const StateControllerButtons: React.FC<StateControllerButtonsProps> = ({ roomid }) => {
+  return (
+    <div className="flex flex-row gap-4">
+      <button className="btn btn-primary" onClick={() => setWaiting(roomid)}>
+        Set Waiting
+      </button>
+      <button className="btn btn-primary" onClick={() => setPlanning(roomid)}>
+        Set Planning
+      </button>
+      <button className="btn btn-primary" onClick={() => setBan(roomid)}>
+        Set Ban
+      </button>
+      <button className="btn btn-primary" onClick={() => setSelect(roomid)}>
+        Set Select
+      </button>
+      <button className="btn btn-primary" onClick={() => setFinish(roomid)}>
+        Set Finish
+      </button>
+    </div>
+  );
 }
 
 export default function Room({ params }: RoomProps) {
@@ -64,6 +92,8 @@ export default function Room({ params }: RoomProps) {
   return (
     <>
       <main>
+      <StateControllerButtons roomid={roomid} />
+
         <AnimatePresence mode="wait">
           <motion.div
             initial={{ top: 10, opacity: 0 }}

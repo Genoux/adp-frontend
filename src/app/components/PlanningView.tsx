@@ -11,7 +11,7 @@ const WaitingView = () => {
 
   return (
     <>
-      <div className="text-center mb-6 mt-6">
+      <div className="text-center my-6">
         <h1 className="text-2xl font-bold mb-1">Phase de planification</h1>
         <p>{"Analyse de la sélection de champions"}</p>
 

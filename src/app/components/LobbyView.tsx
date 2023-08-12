@@ -15,7 +15,7 @@ const ReadyView = () => {
     isLoading: state.isLoading
   }));
 
-  const { current: currentTeam } = useTeams(teamStore);
+  const { current: currentTeam, other: otherTeam } = useTeams(teamStore);
 
   if (!room || error) {
     return <div>Room not found</div>;
@@ -34,10 +34,10 @@ const ReadyView = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-full">
+<div className="flex items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-y-hidden text-3xl">
       {currentTeam.ready ? (
         <div>
-          <span className="pr-0.5">Waiting for other team</span>
+        <span className="pr-0.5">{`En attende de ${otherTeam.name}`}</span>
           <div className="sending-animation">
             <span className="sending-animation-dot">.</span>
             <span className="sending-animation-dot">.</span>
@@ -45,7 +45,13 @@ const ReadyView = () => {
           </div>
         </div>
       ) : (
-        <Button onClick={handleReadyClick}>READY</Button>
+        <Button
+          size="lg"
+          className={`bg-yellow hover:bg-yellow-hover px-24 text-sm uppercase text-yellow-text rounded-sm font-bold mt-6`}
+          onClick={handleReadyClick}
+        >
+          {"Nous sommes prêt"}
+        </Button>
       )}
     </div>
   );
