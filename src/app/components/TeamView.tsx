@@ -30,14 +30,15 @@ const TeamView = () => {
   }));
 
   const { current: team, other, blue, red } = useTeams(teamStore);
-  const currentTeam = team.isTurn ? team : other;
+  const currentTeam = team.isturn ? team : other;
 
   useEffect(() => {
     socket.on("CHAMPION_SELECTED", (data) => {
       console.log("socket.on - data:", data);
+      setSelectedChampion("");
+      setClickedHero(null);
       setTimeout(() => {
-        setSelectedChampion("");
-        setClickedHero(null);
+        
         setCanSelect(true);
       }, 500);
     });
@@ -56,8 +57,10 @@ const TeamView = () => {
       socket?.emit("STOP_TIMER", { roomid: room?.id });
 
       const champion = selectedChampion;
+      console.log("handleConfirmSelection - champion:", champion);
 
       socket?.emit("SELECT_CHAMPION", {
+        teamid: team?.id,
         roomid: room?.id,
         selectedChampion: champion,
       });
@@ -110,16 +113,16 @@ const TeamView = () => {
   // }, [team]);
 
   useEffect(() => {
-    if (team?.isTurn) {
+    if (team?.isturn) {
       setCanSelect(true);
     } else {
       setSelectedChampion("");
       setCanSelect(false);
       setClickedHero(null);
     }
-  }, [team?.isTurn]);
+  }, [team?.isturn]);
 
-  const buttonText = team.isTurn
+  const buttonText = team.isturn
     ? "Confirm Selection"
     : `It's ${other.color} team to pick`;
 
@@ -134,6 +137,7 @@ const TeamView = () => {
 
   return (
     <>
+      Can select -  {canSelect.toString()}
       <div
         className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10 ${fadeSplash ? 'fade-in' : 'fade-out'}`}
         style={{ transform: fadeSplash ? 'translateX(0)' : currentTeam.color === 'blue' ? 'translateX(-5px)' : 'translateX(5px)' }}
@@ -168,12 +172,12 @@ const TeamView = () => {
         handleClickedHero={handleClickedHero}
       />
       <div className="flex justify-center my-6">
-        {team.isTurn ? (
+        {team.isturn ? (
           <Button
             size="lg"
             className="bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold"
             onClick={handleConfirmSelection}
-            disabled={!selectedChampion || !canSelect || !team.isTurn}
+            disabled={!selectedChampion || !canSelect || !team.isturn}
           >
             {buttonText}
           </Button>

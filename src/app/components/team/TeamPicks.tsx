@@ -20,7 +20,7 @@ const TeamPicks = ({ team }: Team) => {
   return (
     <>
       <div
-        className={`grid grid-cols-5 gap-2 h-full w-full min-h-[210px] ${team.isTurn || room?.status === "done" ? `opacity-100` : "opacity-30"
+        className={`grid grid-cols-5 gap-2 h-full w-full min-h-[210px] ${team.isturn || room?.status === "done" ? `opacity-100` : "opacity-30"
           }`}>
         {(team.heroes_selected as unknown as Hero[]).map(
           (hero: Hero, index: number) => (

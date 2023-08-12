@@ -62,7 +62,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
       .from("teams")
       .insert({
         color: "red",
-        isTurn: false,
+        isturn: false,
         heroes_selected: generateArray("name", 5),
         heroes_ban: generateArray("name", 3),
         name: redTeamName,
@@ -76,7 +76,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
       .from("teams")
       .insert({
         color: "blue",
-        isTurn: true,
+        isturn: true,
         heroes_selected: generateArray("name", 5),
         heroes_ban: generateArray("name", 3),
         name: blueTeamName,
@@ -127,7 +127,7 @@ async function generateRoom(blueTeamName: string, redTeamName: string) {
     const { redError } = await supabase.from("teams").insert({
       id: teamRedId,
       color: "red",
-      isTurn: false,
+      isturn: false,
       heroes_pool: champions.list,
       heroes_selected: generateArray("name", 5),
       name: redTeamName,
@@ -136,7 +136,7 @@ async function generateRoom(blueTeamName: string, redTeamName: string) {
     const { blueError } = await supabase.from("teams").insert({
       id: teamBlueId,
       color: "blue",
-      isTurn: true,
+      isturn: true,
       heroes_pool: champions.list,
       heroes_selected: generateArray("name", 5),
       name: blueTeamName,

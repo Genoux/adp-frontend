@@ -38,14 +38,15 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
             const isActive = hoverIndex === index || hero.name === selectedChampion;
-            const isTurnAvailable = team ? team.isTurn : true;
+            const isturnAvailable = team ? team.isturn : true;
             return (
               <div
                 key={index}
                 className={clsx("rounded-xl transition duration-75 ease-main", {
                   "bg-gray-800": isActive,
                   "grayscale": hero.selected,
-                  "opacity-70 pointer-events-none ": hero.selected || (team && !isTurnAvailable),
+                  "opacity-70": hero.selected || (team && !isturnAvailable),
+                  "pointer-events-none": !canSelect || hero.selected || (team && !isturnAvailable),
                   "scale-95 p-1 border-opacity-0 border-2 bg-transparent": mouseDown === index,
                   "z-50 border-2 border-opacity-100 border-yellow hero-selected overflow-hidden scale-95 p-1 bg-transparent glow-yellow": hero.name === selectedChampion,
                 })}

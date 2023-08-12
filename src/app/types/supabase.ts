@@ -94,7 +94,7 @@ export interface Database {
           heroes_ban: Json | null
           heroes_selected: Json | null
           id: number
-          isTurn: boolean | null
+          isturn: boolean | null
           name: string | null
           ready: boolean | null
           room: number | null
@@ -107,7 +107,7 @@ export interface Database {
           heroes_ban?: Json | null
           heroes_selected?: Json | null
           id?: number
-          isTurn?: boolean | null
+          isturn?: boolean | null
           name?: string | null
           ready?: boolean | null
           room?: number | null
@@ -120,7 +120,7 @@ export interface Database {
           heroes_ban?: Json | null
           heroes_selected?: Json | null
           id?: number
-          isTurn?: boolean | null
+          isturn?: boolean | null
           name?: string | null
           ready?: boolean | null
           room?: number | null
