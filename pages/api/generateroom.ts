@@ -121,7 +121,5 @@ export default async function MyEdgeFunction(request: NextRequest) {
   // get body from request
   const { blueTeamName, redTeamName } = await request.json();
   const value = await createRoom(blueTeamName, redTeamName);
-  console.log("MyEdgeFunction - value:", value);
-  // const room = await generateRoom(blueTeamName, redTeamName);
-  return NextResponse.json({ value });
+  return NextResponse.json(value);
 }

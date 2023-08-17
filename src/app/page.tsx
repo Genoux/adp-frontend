@@ -57,12 +57,6 @@ function Home() {
     btnText: 'Rejoindre Rouge'
   });
 
-
-  useEffect(() => {
-    createRoomLogic("Team 1", "Team 2")
-  }, [])
-
-
   const createRoomLogic = async (blueTeamName: string, redTeamName: string) => {
     if (!blueTeamName || !redTeamName) {
       alert("Please fill in all the fields.");
@@ -83,16 +77,16 @@ function Home() {
     console.log("createRoomLogic - data:", data);
 
     //setRoom(data.value.room); // Update the room state with the fetched room ID
-    const mappedBlueTeam = mapToBlueTeamStructure(data.value.blue);
+    const mappedBlueTeam = mapToBlueTeamStructure(data.blue);
     setBlueTeam(mappedBlueTeam);
 
-    const mappedRedTeam = mapToRedTeamStructure(data.value.red);
+    const mappedRedTeam = mapToRedTeamStructure(data.red);
     setRedTeam(mappedRedTeam);
 
     const modifiedRoom = {
-      ...data.value.room,
-      blue: mapToBlueTeamStructure(data.value.blue),
-      red: mapToRedTeamStructure(data.value.red)
+      ...data.room,
+      blue: mapToBlueTeamStructure(data.blue),
+      red: mapToRedTeamStructure(data.red)
     };
 
     setRoom(modifiedRoom);
