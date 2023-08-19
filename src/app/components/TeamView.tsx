@@ -132,7 +132,7 @@ const TeamView = () => {
       >
         {clickedHero && (
           <Image
-            src={`/images/champions/splash/${clickedHero}.jpg`}
+            src={`/images/champions/splash/${clickedHero.toLowerCase().replace(/\s+/g, '')}.jpg`}
             width={1920}
             height={1080}
             rel="preload"

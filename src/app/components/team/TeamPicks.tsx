@@ -37,7 +37,7 @@ const TeamPicks = ({ team }: Team) => {
                   <div
                     className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
                     style={{
-                      backgroundImage: `url("/images/champions/splash/${hero.name}.jpg")`,
+                      backgroundImage: `url("/images/champions/splash/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg")`,
                     }}
                   />
                   {hero.name.toLowerCase()}
