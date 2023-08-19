@@ -69,8 +69,9 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                   }
                 }}>
                 <div className="relative overflow-hidden rounded-sm">
+                {hero.name}
                   <Image
-                    src={`/images/champions/tiles/${hero.name}.jpg`}
+                    src={`/images/champions/tiles/${hero.name.toLowerCase()}.jpg`}
                     alt={hero.name}
                     sizes="100vw"
                     width={500}
@@ -91,7 +92,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                         : ""
                         }`}></div>
                     <Image
-                      src={`/images/champions/splash/${hero.name}.jpg`}
+                      src={`/images/champions/splash/${hero.name.toLowerCase()}.jpg`}
                       alt={hero.name}
                       width={800}
                       height={800}
