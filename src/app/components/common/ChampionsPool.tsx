@@ -69,7 +69,6 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                   }
                 }}>
                 <div className="relative overflow-hidden rounded-sm">
-                {hero.name}
                   <Image
                     src={`/images/champions/tiles/${hero.name.toLowerCase()}.jpg`}
                     alt={hero.name}
