@@ -59,7 +59,7 @@ function Home() {
 
 
   useEffect(() => {
-    createRoomLogic("Team 1", "Team 2")
+    //createRoomLogic("Team 1", "Team 2")
   }, [])
 
 

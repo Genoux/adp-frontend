@@ -8,16 +8,13 @@ import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
-import clsx from "clsx";
+import { motion } from 'framer-motion';
 import Image from "next/image";
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [canSelect, setCanSelect] = useState(true);
   const [clickedHero, setClickedHero] = useState<string | null>(null);
-
-  const [fade, setFade] = useState(clickedHero !== null);
-  const [splashHero, setSplashHero] = useState<string | null>(null);
   const [transitionInProgress, setTransitionInProgress] = useState(false);
   const [fadeSplash, setFadeSplash] = useState(true);
 
@@ -96,22 +93,7 @@ const TeamView = () => {
     await new Promise(resolve => setTimeout(resolve, 200)); // loadimage wait for fade out
     setClickedHero(hero.name); // Update the splash image
 
-    // Update the splash hero
-    //  setSplashHero(hero.name);
-
-    // Start the fade-in
-    // setFade(true);
-
-    // Indicate that the transition is complete
-    // setTransitionInProgress(false);
   };
-
-  // useEffect(() => {
-  //   if (team) {
-  //     setClickedHero(team.clicked_hero);
-  //     setSelectedChampion(team.clicked_hero || "");
-  //   }
-  // }, [team]);
 
   useEffect(() => {
     if (team?.isturn) {
@@ -136,6 +118,12 @@ const TeamView = () => {
     return <div>Loading...</div>;
   }
 
+  const slideVariants = {
+    initial: { scaleY: '32px' },
+    animate: { y: '0%' },
+    exit: { y: '100%' }
+  };
+
   return (
     <>
       <div
@@ -156,22 +144,32 @@ const TeamView = () => {
       <div className="flex justify-between items-center mb-6">
         <div className={`flex flex-col items-center bg-blue text-md px-6 py-2 rounded-full font-bold`}>{blue.name.charAt(0).toUpperCase() + blue.name.slice(1)}</div>
         <div className="flex flex-col items-center">
-          <p className="font-medium text-md mb-1">
-            {currentTeam === team
-              ? `C\'est à vous de choisir, vous êtes l\'équipe ${currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1)}`
-              : `L'équipe ${currentTeam.name.charAt(0).toUpperCase() + currentTeam.name.slice(1)} entrain de choisir`}
-          </p>
-          <Timer />
+            <Timer />
+            <p className="font-medium text-md mt-2">
+              {currentTeam === team
+                ? `C\'est à vous de choisir, vous êtes l\'équipe ${currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1)}`
+                : `L'équipe ${currentTeam.name.charAt(0).toUpperCase() + currentTeam.name.slice(1)} entrain de choisir`}
+            </p>
         </div>
         <div className={`flex flex-col items-center bg-red text-md px-6 py-2 rounded-full font-bold`}>{red.name.charAt(0).toUpperCase() + red.name.slice(1)}</div>
       </div>
-      <ChampionsPool
-        team={team}
-        selectedChampion={selectedChampion}
-        canSelect={canSelect}
-        clickedHero={clickedHero}
-        handleClickedHero={handleClickedHero}
-      />
+      <div className="team">
+        <motion.div
+          layout={false}
+          exit="exit"
+          initial={{ scale: 1.05 }}  // start at half the size
+          animate={{ scale: 1 }}    // animate to full size
+          transition={{ delay: 0, duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
+        >
+          <ChampionsPool
+            team={team}
+            selectedChampion={selectedChampion}
+            canSelect={canSelect}
+            clickedHero={clickedHero}
+            handleClickedHero={handleClickedHero}
+          />
+        </motion.div>
+      </div>
       <div className="flex justify-center my-6">
         {team.isturn ? (
           <Button

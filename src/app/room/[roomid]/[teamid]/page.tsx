@@ -56,16 +56,16 @@ export default function Room({ params }: RoomProps) {
 
   const socket = useSocket(roomid, teamid);
   const { teams, fetchTeams, isLoading, error } = teamStore();
-  const { room, fetchRoom, isLoading: isLoadingRoom,  error: errorRoom, } = roomStore();
+  const { room, fetchRoom, isLoading: isLoadingRoom, error: errorRoom, } = roomStore();
 
   useEffect(() => {
     fetchTeams(roomid, teamid);
   }, [roomid, teamid, fetchTeams]);
-  
+
   useEffect(() => {
     fetchRoom(roomid);
   }, [roomid, fetchRoom]);
- 
+
   if (isLoading || isLoadingRoom) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
@@ -92,28 +92,27 @@ export default function Room({ params }: RoomProps) {
   return (
     <>
       <main>
-      <StateControllerButtons roomid={roomid} />
+        <StateControllerButtons roomid={roomid} />
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            initial={{ top: 10, opacity: 0 }}
-            animate={{ top: 0, opacity: 1 }}
-            transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.2 }}
-            key="home-page" // Add a unique key prop
-          >
-            <SocketContext.Provider value={socket}>
-              {isLobbyView && <LobbyView />}
-              {isPlanningView && (
-                <>
-                  <PlanningView />
-                </>
-              )}
-              {isFinishView && <FinishView />}
+
+        <motion.div
+          initial={{ top: 10, opacity: 0 }}
+          animate={{ top: 0, opacity: 1 }}
+          transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.2 }}
+          key="home-page" // Add a unique key prop
+        >
+          <SocketContext.Provider value={socket}>
+            {isLobbyView && <LobbyView />}
+            <AnimatePresence>
+              {isPlanningView && <PlanningView />}
               {isRoomView && <TeamView />}
-              {isRoomView && <DraftView />}
-            </SocketContext.Provider>
-          </motion.div>
-        </AnimatePresence>
+            </AnimatePresence>
+            {isRoomView && <DraftView />}
+
+            {isFinishView && <FinishView />}
+
+          </SocketContext.Provider>
+        </motion.div>
       </main>
     </>
   );
