@@ -91,7 +91,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                         : ""
                         }`}></div>
                     <Image
-                      src={`/images/champions/tiles/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
+                      src={`/images/champions/splash/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
                       alt={hero.name}
                       width={800}
                       height={800}
