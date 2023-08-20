@@ -10,8 +10,6 @@ import {
 import copyToClipboard from "@/app/utils/copyToClipboard";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
-import LoadingCircle from "@/app/components/common/LoadingCircle";
-import { Database } from "@/app/types/supabase";
 
 interface Room {
   id: number;

@@ -2,8 +2,8 @@ import { Database } from "@/app/types/supabase";
 import Image from "next/image";
 import clsx from "clsx";
 import { roomStore } from "@/app/stores/roomStore";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { motion } from 'framer-motion';
 interface Hero {
   name: string;
   selected: boolean;
@@ -39,17 +39,20 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
           (hero: Hero, index: number) => {
             const isActive = hoverIndex === index || hero.name === selectedChampion;
             const isturnAvailable = team ? team.isturn : true;
+            const shouldFade = hero.selected || (team && !isturnAvailable);
             return (
-              <div
-              key={index}
-              className={clsx("rounded-sm transition duration-75 ease-main", {
-                "bg-gray-800": isActive,
-                "grayscale": hero.selected,
-                "opacity-70": hero.selected || (team && !isturnAvailable),
-                "pointer-events-none": (room.status !== "planning" && !canSelect) || hero.selected || (team && !isturnAvailable),
-                "scale-95 p-1 border-opacity-0 border-2 bg-transparent": mouseDown === index,
-                "z-50 border-2 border-opacity-100 border-yellow hero-selected overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion,
-              })}
+              <motion.div
+                initial={{ opacity: 1 }}
+                animate={{ opacity: shouldFade ? 0.7 : 1 }}
+                transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
+                key={index}
+                className={clsx("rounded-sm", {
+                  "bg-gray-800": isActive,
+                  "grayscale": hero.selected,
+                  "pointer-events-none": hero.selected || !isturnAvailable,
+                  "border-opacity-0 bg-transparent": mouseDown === index,
+                  "z-50 border-2 border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion,
+                })}
                 onMouseDown={() => {
                   if (room?.status === "planning") return;
                   setMouseDown(index);
@@ -57,9 +60,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 onMouseUp={() => {
                   setMouseDown(null);
                 }}
-                onClick={() => {
-                  handleClickedHero(hero);
-                }}
+                onClick={canSelect ? () => handleClickedHero(hero) : undefined}
                 onMouseEnter={() => {
                   setHoverIndex(index);
                 }}
@@ -100,9 +101,10 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     />
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           }
+
         )}
       </div>
     </div>

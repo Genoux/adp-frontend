@@ -17,6 +17,8 @@ import { teamStore } from "@/app/stores/teamStore";
 
 import { setWaiting, setPlanning, setBan, setSelect, setFinish } from "@/app/utils/stateController";
 
+import LoadingCircle from "@/app/components/common/LoadingCircle";
+
 interface StateControllerButtonsProps {
   roomid: string;
 }
@@ -55,6 +57,7 @@ export default function Room({ params }: RoomProps) {
   const teamid = params.teamid;
 
   const socket = useSocket(roomid, teamid);
+  console.log("Room - socket:", socket);
   const { teams, fetchTeams, isLoading, error } = teamStore();
   const { room, fetchRoom, isLoading: isLoadingRoom, error: errorRoom, } = roomStore();
 
@@ -66,10 +69,10 @@ export default function Room({ params }: RoomProps) {
     fetchRoom(roomid);
   }, [roomid, fetchRoom]);
 
-  if (isLoading || isLoadingRoom) {
+  if (isLoading || isLoadingRoom || !socket) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        {/* <LoadingCircle /> */}
+        {<LoadingCircle /> }
       </div>
     );
   }
@@ -92,27 +95,18 @@ export default function Room({ params }: RoomProps) {
   return (
     <>
       <main>
-        <StateControllerButtons roomid={roomid} />
-
-
-        <motion.div
-          initial={{ top: 10, opacity: 0 }}
-          animate={{ top: 0, opacity: 1 }}
-          transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.2 }}
-          key="home-page" // Add a unique key prop
-        >
+        <AnimatePresence mode="wait">
+          <StateControllerButtons roomid={roomid} />
           <SocketContext.Provider value={socket}>
             {isLobbyView && <LobbyView />}
-            <AnimatePresence>
+            <div className='container'>
               {isPlanningView && <PlanningView />}
               {isRoomView && <TeamView />}
-            </AnimatePresence>
-            {isRoomView && <DraftView />}
-
+              {isRoomView && <DraftView />}
+            </div>
             {isFinishView && <FinishView />}
-
           </SocketContext.Provider>
-        </motion.div>
+        </AnimatePresence>
       </main>
     </>
   );

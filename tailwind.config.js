@@ -16,6 +16,14 @@ module.exports = {
       },
     },
     extend: {
+      backgroundColor: {
+        red: {
+          DEFAULT: "hsl(var(--red))",
+        },
+        blue: {
+          DEFAULT: "hsl(var(--blue))",
+        },
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -56,7 +64,11 @@ module.exports = {
         yellow: {
           DEFAULT: "hsl(var(--yellow))",
           hover: "hsl(var(--yellow-hover))",
-          text: "hsl(var(--yellow-text))"
+          text: "hsl(var(--yellow-text))",
+          transparent: "hsl(var(--yellow-transparent))",
+        },
+        yellowSecond: {
+          DEFAULT: "hsl(var(--yellow-second))",
         },
         red: {
           DEFAULT: "hsl(var(--red))",
@@ -66,6 +78,7 @@ module.exports = {
         },
         boxShadow: {
           'yellow-glow': '0 0 20px rgba(255, 255, 0, 1)', // Adjust the values as needed
+          'yellow-glow-10': '0 0 10px 5px rgba(255, 255, 0, 1)', // Adjust the values as needed
         },
         transitionTimingFunction: {
           'main': 'cubic-bezier(0,.45,.54,1)',

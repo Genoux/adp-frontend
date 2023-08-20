@@ -1,5 +1,6 @@
 import { roomStore } from "@/app/stores/roomStore";
-
+import { motion } from 'framer-motion';
+import { defaultTransition } from '@/app/lib/animationConfig'
 interface Team {
   [key: string]: any;
 }
@@ -16,11 +17,21 @@ const TeamPicks = ({ team }: Team) => {
     error: state.error,
     isLoading: state.isLoading
   }));
+  
+  const heightVariants = {
+    collapsed: {y:100, height: "0px" },
+    expanded: { y:-50, height: "210px" }
+  };
+
 
   return (
     <>
-      <div
-        className={`grid grid-cols-5 gap-2 h-full w-full min-h-[210px] ${team.isturn || room?.status === "done" ? `opacity-100` : "opacity-30"
+      <motion.div
+         initial="collapsed"
+         animate="expanded"
+         transition={defaultTransition}
+         variants={heightVariants}
+        className={`grid grid-cols-5 gap-2 h-full w-full ${team.isturn || room?.status === "done" ? `opacity-100` : "opacity-30"
           }`}>
         {(team.heroes_selected as unknown as Hero[]).map(
           (hero: Hero, index: number) => (
@@ -46,7 +57,7 @@ const TeamPicks = ({ team }: Team) => {
             </div>
           )
         )}
-      </div>
+      </motion.div>
     </>
   );
 };

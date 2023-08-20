@@ -1,7 +1,7 @@
 import "./globals.css";
 import { Bai_Jamjuree  } from "next/font/google";
 import { ThemeProvider } from "@/app/components/ui/theme-provider";
-const inter = Bai_Jamjuree({
+const bai_jamjuree = Bai_Jamjuree({
   subsets: ["latin-ext"],
   weight: "500"
 })
@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={`${inter.className} container pb-6 overflow-x-hidden`}>
+      <body className={`${bai_jamjuree.className}  p-2 overflow-x-hidden`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
         </ThemeProvider>

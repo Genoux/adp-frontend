@@ -80,6 +80,8 @@
     --yellow: 70, 97%, 60%, 1;
     --yellow-hover: 70, 97%, 50%, 1;
     --yellow-text: 70, 59%, 4%, 1;
+    --yellow-second: 61, 100%, 40%, 1;
+    --yellow-transparent : 70, 97%, 60%, .2;
 
     --red: 0, 80%, 52%, 1;
     --blue: 212, 96%, 57%, 1;
@@ -175,7 +177,11 @@
 /* ... rest of the CSS code ... */
 
 .glow-yellow {
-  box-shadow: 0 0 10px rgba(220, 252, 53,.5);
+  box-shadow: 0 0 10px rgba(220, 252, 53, .5);
+}
+
+.glow-yellow-10 {
+  box-shadow: 0 0 5px rgba(220, 252, 53, .5);
 }
 
 .image-container {
