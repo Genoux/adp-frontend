@@ -85,7 +85,7 @@ export const teamStore = create<TeamState>((set, get) => ({
             })
           .subscribe((status, err) => {
             if (!err) {
-              console.log('Received event TEAM:: ', status);
+              console.log('Received event TEAM: ', status);
             } else {
               console.log(".subscribe - err TEAM:", err);
             }

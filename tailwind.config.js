@@ -16,14 +16,6 @@ module.exports = {
       },
     },
     extend: {
-      backgroundColor: {
-        red: {
-          DEFAULT: "hsl(var(--red))",
-        },
-        blue: {
-          DEFAULT: "hsl(var(--blue))",
-        },
-      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

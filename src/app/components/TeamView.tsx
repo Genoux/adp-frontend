@@ -32,6 +32,8 @@ const TeamView = () => {
   }));
 
   const { current: team, other, blue, red } = useTeams(teamStore);
+  console.log("TeamView - red:", red);
+  console.log("TeamView - blue:", blue);
   const currentTeam = team.isturn ? team : other;
 
   const handleImageChange = (newImage: string) => {
@@ -75,7 +77,6 @@ const TeamView = () => {
       socket?.emit("STOP_TIMER", { roomid: room?.id });
 
       const champion = selectedChampion;
-      console.log("handleConfirmSelection - champion:", champion);
 
       socket?.emit("SELECT_CHAMPION", {
         teamid: team?.id,

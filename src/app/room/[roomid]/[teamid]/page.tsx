@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { AnimatePresence, motion } from "framer-motion";
-
+import Link from 'next/link'
 import DraftView from "@/app/components/DraftView";
 import TeamView from "@/app/components/TeamView";
 import FinishView from "@/app/components/FinishView";
@@ -15,13 +15,10 @@ import SocketContext from "@/app/context/SocketContext";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
 
-import { setWaiting, setPlanning, setBan, setSelect, setFinish } from "@/app/utils/stateController";
+import StateControllerButtons from "@/app/components/common/StateControllerButtons";
 
 import LoadingCircle from "@/app/components/common/LoadingCircle";
-
-interface StateControllerButtonsProps {
-  roomid: string;
-}
+import { Button } from '@/app/components/ui/button';
 
 interface RoomProps {
   params: {
@@ -30,34 +27,11 @@ interface RoomProps {
   };
 }
 
-const StateControllerButtons: React.FC<StateControllerButtonsProps> = ({ roomid }) => {
-  return (
-    <div className="flex flex-row gap-4">
-      <button className="btn btn-primary" onClick={() => setWaiting(roomid)}>
-        Set Waiting
-      </button>
-      <button className="btn btn-primary" onClick={() => setPlanning(roomid)}>
-        Set Planning
-      </button>
-      <button className="btn btn-primary" onClick={() => setBan(roomid)}>
-        Set Ban
-      </button>
-      <button className="btn btn-primary" onClick={() => setSelect(roomid)}>
-        Set Select
-      </button>
-      <button className="btn btn-primary" onClick={() => setFinish(roomid)}>
-        Set Finish
-      </button>
-    </div>
-  );
-}
-
 export default function Room({ params }: RoomProps) {
   const roomid = params.roomid;
   const teamid = params.teamid;
 
-  const socket = useSocket(roomid, teamid);
-  console.log("Room - socket:", socket);
+  const { socket, connectionError } = useSocket(roomid, teamid);
   const { teams, fetchTeams, isLoading, error } = teamStore();
   const { room, fetchRoom, isLoading: isLoadingRoom, error: errorRoom, } = roomStore();
 
@@ -69,6 +43,16 @@ export default function Room({ params }: RoomProps) {
     fetchRoom(roomid);
   }, [roomid, fetchRoom]);
 
+
+  if (connectionError || error || errorRoom) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen w-full gap-5">
+        <p>Unable to connect to the server. Please try again later.</p>
+        <Link href='/'><Button variant={'outline'}>Go back</Button></Link>
+      </div>
+    );
+  }
+
   if (isLoading || isLoadingRoom || !socket) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
@@ -77,15 +61,10 @@ export default function Room({ params }: RoomProps) {
     );
   }
 
-  if (error) {
-    return <div>Error fetching team data: {error.message}</div>;
-  }
-
-  if (errorRoom) {
-    return <div>Error fetching room data: {errorRoom.message}</div>;
-  }
-
   if (!room || !teams) return null;
+  
+  console.log("Room - socket:", socket);
+
 
   const isLobbyView = room.cycle === -1;
   const isPlanningView = room.cycle === 0;

@@ -50,7 +50,7 @@ export const roomStore = create<RoomState>((set) => ({
       })
       .subscribe((status, err) => {
         if (!err) {
-          console.log('Received event ROOM:: ', status);
+          console.log('Received event ROOM: ', status);
           return
         } else {
           console.log(".subscribe - err ROOM:", err);

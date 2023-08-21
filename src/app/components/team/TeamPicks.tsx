@@ -1,6 +1,7 @@
 import { roomStore } from "@/app/stores/roomStore";
 import { motion } from 'framer-motion';
-import { defaultTransition } from '@/app/lib/animationConfig'
+import { defaultTransition } from '@/app/lib/animationConfig';
+
 interface Team {
   [key: string]: any;
 }
@@ -19,26 +20,25 @@ const TeamPicks = ({ team }: Team) => {
   }));
   
   const heightVariants = {
-    collapsed: {y:100, height: "0px" },
-    expanded: { y:-50, height: "210px" }
+    initial: { height: "0px", y: 0 },
+    notDone: { height: "210px", y: -45 },  
+    done: { height: "500px", y: 0 }  
   };
 
+  const isDone = room?.status === "done";
 
   return (
-    <>
-      <motion.div
-         initial="collapsed"
-         animate="expanded"
-         transition={defaultTransition}
-         variants={heightVariants}
-        className={`grid grid-cols-5 gap-2 h-full w-full ${team.isturn || room?.status === "done" ? `opacity-100` : "opacity-30"
-          }`}>
-        {(team.heroes_selected as unknown as Hero[]).map(
+    <motion.div
+       initial="initial"
+       animate={isDone ? "done" : "notDone"}
+       transition={defaultTransition}
+       variants={heightVariants}
+      className={`grid grid-cols-5 gap-2 h-full w-full ${team.isturn || isDone ? `opacity-100` : "opacity-30"}`}>
+      {(team.heroes_selected as unknown as Hero[]).map(
           (hero: Hero, index: number) => (
             <div
               key={index}
-              className={`h-full w-full rounded-sm overflow-hidden relative ${hero.name ? "" : "border border-white border-opacity-10"
-                }`}>
+              className={`h-full w-full rounded-sm overflow-hidden relative ${hero.name ? "" : "border border-white border-opacity-10"}`}>
               {hero.name && (
                 <div>
                   <p className="absolute z-50 w-full h-full flex justify-center items-end pb-6 font-medium">
@@ -57,8 +57,7 @@ const TeamPicks = ({ team }: Team) => {
             </div>
           )
         )}
-      </motion.div>
-    </>
+    </motion.div>
   );
 };
 

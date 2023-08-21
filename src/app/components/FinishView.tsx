@@ -3,10 +3,25 @@ import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
 import { defaultTransition } from '@/app/lib/animationConfig'
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 const FinishView = () => {
   let { blue, red } = useTeams(teamStore);
 
+  // useEffect(() => {
+  //   const sendDataToDiscord = async () => {
+  //     await fetch(`/api/sendToDiscord/`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ blue, red }),
+  //     });
+  //   };
+  
+  //   sendDataToDiscord();
+  // }, []);  // Remember to include dependency array if required
+  
   return (
 
     <div className="px-6 lg:px-12">

@@ -34,7 +34,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
 
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-8 md:grid-cols-6 lg:grid-cols-10 gap-2 cursor-pointer px-24">
+      <div className="grid grid-cols-10 gap-2 cursor-pointer px-24">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
             const isActive = hoverIndex === index || hero.name === selectedChampion;

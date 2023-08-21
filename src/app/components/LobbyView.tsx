@@ -44,7 +44,7 @@ const ReadyView = () => {
   return (
     <div className="flex flex-col items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-y-hidden text-3xl">
       <div className="text-center mb-6">
-        <h1 className="text-4xl font-bold mb-2">{`Salle d'Attente`}</h1>
+        <h1 className="text-4xl font-bold mb-2">{`Salle d'attente`}</h1>
         <p className="text-base">{`Les joueurs attendent dans la salle jusqu'à ce que tout le monde soit prêt.`}</p>
         <div className="flex items-center mt-6 justify-center">
           <div className={`h-6 w-1 bg-${currentTeam.color} rounded-full`}></div>
