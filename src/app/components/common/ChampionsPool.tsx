@@ -15,7 +15,6 @@ interface HeroPoolProps {
   selectedChampion?: string; // optional
   canSelect?: boolean; // optional
   handleClickedHero?: (hero: Hero) => void; // optional
-  clickedHero?: string | null; // optional
 }
 
 const ChampionsPool: React.FC<HeroPoolProps> = ({
@@ -37,10 +36,11 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
 
   
   useEffect(() => {
-    if (selectedChampion && hoverIndex !== previousActiveIndex.current) {
+    
+    if (!canSelect && room?.status !== 'planning') {
         setHoverState(-1);
     }
-}, [hoverIndex, selectedChampion, setHoverState]);
+}, [canSelect, room?.status, setHoverState]);
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
@@ -74,11 +74,11 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 }}
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
                 onMouseEnter={() => {
-                  setHoverState(index);
+                  setHoverIndex(index);
                 }}
                 onMouseLeave={() => {
                   if (!hero.selected) {
-                    setHoverState(-1);
+                    setHoverIndex(-1);
                   }
                 }}>
                 <div className="relative overflow-hidden rounded-sm">

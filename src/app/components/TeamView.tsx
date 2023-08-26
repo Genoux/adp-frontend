@@ -36,7 +36,7 @@ const TeamView = () => {
 
   const handleImageChange = (newImage: string) => {
     setFadeSplash(false);
-    setCanSelect(false);
+   // setCanSelect(false);
     const handleAnimationComplete = () => {
       setCurrentImage(newImage);
       setLoadingImage(true);
@@ -46,7 +46,7 @@ const TeamView = () => {
 
   useEffect(() => {
     if (!loadingImage && currentImage) {
-      setCanSelect(true);
+      //setCanSelect(true);
       setFadeSplash(true);
     }
   }, [loadingImage, currentImage, team.clicked_hero]);
@@ -55,9 +55,9 @@ const TeamView = () => {
     socket.on("CHAMPION_SELECTED", (data) => {
       setSelectedChampion("");
       setClickedHero(null);
-      setTimeout(() => {
-        setCanSelect(true);
-      }, 500);
+      // setTimeout(() => {
+      //   setCanSelect(true);
+      // }, 500);
     });
 
     return () => {
@@ -85,12 +85,13 @@ const TeamView = () => {
 
   useEffect(() => {
     if (team) {
-      setCanSelect(team.isturn);
+      setTimeout(() => {
+        setCanSelect(team.isturn);
+      }, 500);
       setSelectedChampion(team.clicked_hero || "");
       setCurrentImage(team.clicked_hero || "");
       setClickedHero(currentTeam.clicked_hero); // Update the splash image
       handleImageChange(currentTeam.clicked_hero);
-      //setTimeout(onAnimationComplete, 200);
     }
   }, [currentTeam.clicked_hero, other.clicked_hero, team, team.clicked_hero]);
 
@@ -104,18 +105,7 @@ const TeamView = () => {
       .eq("id", team.id);
 
     setClickedHero(hero.name); // Update the splash image
-
   };
-
-  useEffect(() => {
-    if (team.isturn) {
-      setCanSelect(team.isturn);
-    } else {
-      setSelectedChampion("");
-      setCanSelect(false);
-      setClickedHero(null);
-    }
-  }, [team, team.isturn]);
 
   const buttonText = team.isturn
     ? "Confirm Selection"
@@ -161,6 +151,8 @@ const TeamView = () => {
             />
           )}
         </motion.div>
+      {canSelect.toString()}
+
         <motion.div
           exit="exit"
           initial={{ y: "30px", opacity: 0 }}  // start at half the size
@@ -185,12 +177,14 @@ const TeamView = () => {
           </div>
           <p className={`flex items-center gap-2 justify-end`}>
             <TeamStatus team={red} showReadyState={false} />
+
             <span className="text-2xl">{truncateString(red.name.toUpperCase(), 6)} </span>
             <motion.div
               initial={red.isturn ? "isTurn" : "notTurn"}
               animate={red.isturn ? "isTurn" : "notTurn"}
               variants={widthVariants}
               className={`h-6 w-1 bg-${red.color} rounded-full`}></motion.div>
+
           </p>
         </motion.div>
       </motion.div>
@@ -203,7 +197,6 @@ const TeamView = () => {
           team={team}
           selectedChampion={selectedChampion}
           canSelect={canSelect}
-          clickedHero={clickedHero}
           handleClickedHero={handleClickedHero}
         />
       </motion.div>
