@@ -32,13 +32,11 @@ const TeamView = () => {
   }));
 
   const { current: team, other, blue, red } = useTeams(teamStore);
-  console.log("TeamView - red:", red);
-  console.log("TeamView - blue:", blue);
   const currentTeam = team.isturn ? team : other;
 
   const handleImageChange = (newImage: string) => {
     setFadeSplash(false);
-    setCanSelect(false);
+   // setCanSelect(false);
     const handleAnimationComplete = () => {
       setCurrentImage(newImage);
       setLoadingImage(true);
@@ -48,7 +46,7 @@ const TeamView = () => {
 
   useEffect(() => {
     if (!loadingImage && currentImage) {
-      setCanSelect(true);
+      //setCanSelect(true);
       setFadeSplash(true);
     }
   }, [loadingImage, currentImage, team.clicked_hero]);
@@ -78,7 +76,7 @@ const TeamView = () => {
 
       const champion = selectedChampion;
 
-      socket?.emit("SELECT_CHAMPION", {
+      socket.emit("SELECT_CHAMPION", {
         teamid: team?.id,
         roomid: room?.id,
         selectedChampion: champion,
@@ -87,16 +85,14 @@ const TeamView = () => {
   };
 
   useEffect(() => {
-    //if (team) {
-    //  setCanSelect(team.itTurn);
-    setSelectedChampion(team.clicked_hero || "");
-    // setCurrentImage(team.clicked_hero || "");
-    setClickedHero(currentTeam.clicked_hero); // Update the splash image
-    handleImageChange(currentTeam.clicked_hero);
-
-    //setTimeout(onAnimationComplete, 200);
-    // }
-  }, [currentTeam.clicked_hero, other.clicked_hero, team.clicked_hero]);
+    if (team) {
+      setCanSelect(team.isturn);
+      setSelectedChampion(team.clicked_hero || "");
+      setCurrentImage(team.clicked_hero || "");
+      setClickedHero(currentTeam.clicked_hero); // Update the splash image
+      handleImageChange(currentTeam.clicked_hero);
+    }
+  }, [currentTeam.clicked_hero, other.clicked_hero, team, team.clicked_hero]);
 
   const handleClickedHero = async (hero: any) => {
     if (hero.name === team.clicked_hero) return null;
@@ -108,23 +104,21 @@ const TeamView = () => {
       .eq("id", team.id);
 
     setClickedHero(hero.name); // Update the splash image
-
   };
 
-  useEffect(() => {
-    if (team?.isturn) {
-      setCanSelect(true);
-    } else {
-      setSelectedChampion("");
-      setCanSelect(false);
-      setClickedHero(null);
-    }
-  }, [team?.isturn]);
+useEffect(() => {
+  if (!team.isturn) {
+    setSelectedChampion("");
+    setCanSelect(false);
+    setClickedHero(null);
+  } else {
+    setCanSelect(true);
+  }
+}, [team.isturn]);
 
   const buttonText = team.isturn
     ? "Confirm Selection"
     : `It's ${other.color} team to pick`;
-
 
   if (!team || error) {
     return <div>Team not found</div>;
@@ -209,7 +203,6 @@ const TeamView = () => {
           team={team}
           selectedChampion={selectedChampion}
           canSelect={canSelect}
-          clickedHero={clickedHero}
           handleClickedHero={handleClickedHero}
         />
       </motion.div>
@@ -220,6 +213,7 @@ const TeamView = () => {
         transition={defaultTransition}
       >
         <div className="flex justify-center my-6">
+
           {team.isturn ? (
             <Button
               size="lg"
@@ -227,6 +221,7 @@ const TeamView = () => {
               onClick={handleConfirmSelection}
               disabled={!selectedChampion || !canSelect || !team.isturn}
             >
+  
               {!canSelect ? (<LoadingCircle color="black" />) : (<>{buttonText}</>)}
             </Button>
           ) : (

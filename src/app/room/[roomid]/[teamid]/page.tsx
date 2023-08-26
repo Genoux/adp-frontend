@@ -63,9 +63,6 @@ export default function Room({ params }: RoomProps) {
 
   if (!room || !teams) return null;
   
-  console.log("Room - socket:", socket);
-
-
   const isLobbyView = room.cycle === -1;
   const isPlanningView = room.cycle === 0;
   const isFinishView = room.status === "done";
