@@ -111,6 +111,8 @@ useEffect(() => {
     setSelectedChampion("");
     setCanSelect(false);
     setClickedHero(null);
+  } else {
+    setCanSelect(true);
   }
 }, [team.isturn]);
 
