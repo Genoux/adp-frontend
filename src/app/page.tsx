@@ -104,7 +104,7 @@ function Home() {
 
   return (
     <>
-      <main className="p-24 absolute w-full top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <main className="p-24 h-screen flex items-center justify-center">
         {room && blueTeam && redTeam ? (
           <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} copyLink={copyLink} setCopyLink={setCopyLink} />
         ) : (

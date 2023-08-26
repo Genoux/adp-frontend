@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge"
 import Image from "next/image";
 import clsx from "clsx";
-
+import { motion } from "framer-motion";
+import { defaultTransition } from '@/app/lib/animationConfig'
 interface RoomCreationFormProps {
   onCreate: (blueTeamName: string, redTeamName: string) => void;
 }
@@ -37,15 +37,26 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
 
   return (
     <div className="flex flex-col">
-      <div className="text-center justify-end items-end mx-auto flex flex-col  mb-24">
+      <motion.div
+        initial={{  opacity: 0  }}
+        animate={{  opacity: 1 }}
+        transition={defaultTransition}
+        className="text-center justify-end items-end mx-auto flex flex-col mb-12"
+      >
         <Image
           src={`/home-logo.svg`}
           width={460}
           height={0} alt={""}/>
-      </div>
-  
+      </motion.div>
       <div className="flex flex-col gap-6 items-center">
-        <div className="flex flex-row gap-6">
+      <motion.div
+        initial={{  opacity: 0, y: 10  }}
+        animate={{  opacity: 1, y: 0 }}
+        transition={{  delay: 0.5,
+          duration: 0.3,
+          ease: [0.585, 0.535, 0.230, 0.850]}}
+        className="flex flex-row gap-6"
+      >
           {teams.map(team => (
             <div key={team.id} className="flex flex-col gap-2">
               <label htmlFor={team.id}>{team.label}</label>
@@ -63,14 +74,23 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
               />
             </div>
           ))}
-        </div>
+        </motion.div> 
+        <motion.div
+        initial={{  opacity: 0, y: 10  }}
+        animate={{  opacity: 1, y: 0 }}
+        transition={{  delay: 0.8,
+          duration: 0.4,
+          ease: [0.585, 0.535, 0.230, 0.850]}}
+        className="flex flex-row gap-6"
+      >
         <Button
           size="lg"
           className={`bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold mt-6 ${!formData.blueTeamName || !formData.redTeamName ? "opacity-10" : ""}`}
           onClick={handleSubmit}
         >
           {"Créer une salle"}
-        </Button>
+          </Button>
+          </motion.div> 
       </div>
 
 
