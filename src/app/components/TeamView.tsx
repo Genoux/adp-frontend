@@ -53,11 +53,12 @@ const TeamView = () => {
 
   useEffect(() => {
     socket.on("CHAMPION_SELECTED", (data) => {
+      console.log("socket.on - data:", data);
       setSelectedChampion("");
       setClickedHero(null);
-      // setTimeout(() => {
-      //   setCanSelect(true);
-      // }, 500);
+      setTimeout(() => {
+        setCanSelect(true);
+      }, 500);
     });
 
     return () => {
@@ -85,9 +86,7 @@ const TeamView = () => {
 
   useEffect(() => {
     if (team) {
-      setTimeout(() => {
-        setCanSelect(team.isturn);
-      }, 500);
+
       setSelectedChampion(team.clicked_hero || "");
       setCurrentImage(team.clicked_hero || "");
       setClickedHero(currentTeam.clicked_hero); // Update the splash image
@@ -107,10 +106,17 @@ const TeamView = () => {
     setClickedHero(hero.name); // Update the splash image
   };
 
+useEffect(() => {
+  if (!team.isturn) {
+    setSelectedChampion("");
+    setCanSelect(false);
+    setClickedHero(null);
+  }
+}, [team.isturn]);
+
   const buttonText = team.isturn
     ? "Confirm Selection"
     : `It's ${other.color} team to pick`;
-
 
   if (!team || error) {
     return <div>Team not found</div>;

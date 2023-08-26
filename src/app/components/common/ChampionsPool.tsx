@@ -36,9 +36,9 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
 
   
   useEffect(() => {
-    
     if (!canSelect && room?.status !== 'planning') {
-        setHoverState(-1);
+      setHoverState(-1);
+      setMouseDown(null);
     }
 }, [canSelect, room?.status, setHoverState]);
 
@@ -49,7 +49,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
       <div className="grid grid-cols-10 gap-2 cursor-pointer px-24">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
-            const isActive = hoverIndex === index || hero.name === selectedChampion;
+            const isActive = hoverIndex === index || hero.name === selectedChampion && team?.isturn;
             const isturnAvailable = team ? team.isturn : true;
             const shouldFade = hero.selected || (team && !isturnAvailable);
             return (
@@ -62,8 +62,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                   "bg-gray-800": isActive,
                   "grayscale": hero.selected,
                   "pointer-events-none": hero.selected || !isturnAvailable,
-                  "border-opacity-0 bg-transparent": mouseDown === index,
-                  "z-50 border-2 border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion,
+                  "z-50 border-2 border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion && team?.isturn,
                 })}
                 onMouseDown={() => {
                   if (room?.status === "planning") return;
