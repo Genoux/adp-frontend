@@ -1,6 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.my-input {
+  @apply rounded-sm;
+}
  
 @layer base {
   :root {
@@ -33,11 +37,12 @@
  
     --ring: 240 5% 64.9%;
  
-    --radius: 0.5rem;
+    --radius: 2px;
+    
   }
  
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 23% 6%;
     --foreground: 0 0% 98%;
  
     --muted: 240 3.7% 15.9%;
@@ -65,6 +70,21 @@
     --destructive-foreground: 0 85.7% 97.3%;
  
     --ring: 240 3.7% 15.9%;
+
+    --card-empty: 240, 19%, 11%, 1;
+
+    --main: 70, 97%, 60%, 1;
+
+    --draft-empty: 240, 19%, 11%, 1;
+
+    --yellow: 70, 97%, 60%, 1;
+    --yellow-hover: 70, 97%, 50%, 1;
+    --yellow-text: 70, 59%, 4%, 1;
+    --yellow-second: 61, 100%, 40%, 1;
+    --yellow-transparent : 70, 97%, 60%, .2;
+
+    --red: 0, 80%, 52%, 1;
+    --blue: 212, 96%, 57%, 1;
   }
 }
  
@@ -156,6 +176,14 @@
 
 /* ... rest of the CSS code ... */
 
+.glow-yellow {
+  box-shadow: 0 0 10px rgba(220, 252, 53, .5);
+}
+
+.glow-yellow-10 {
+  box-shadow: 0 0 5px rgba(220, 252, 53, .5);
+}
+
 .image-container {
   position: relative;
 }
@@ -164,13 +192,13 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(3);
+  transform: translate(-50%, -50%) scale(4);
   opacity: 0;
-  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: transform 0.1s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .splash-image-hover {
-  transform: translate(-50%, -50%) scale(2);
+  transform: translate(-50%, -50%) scale(3);
   opacity: 1;
 }
 
@@ -182,13 +210,42 @@
 
 .animated-text-hover {
   opacity: 0;
-  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .animated-text-visible {
   opacity: 1;
 }
 
-.hero-selected{
-  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1)
+.fade-gradient-left {
+  mask-image: linear-gradient(to right, black 50%, transparent);
+  -webkit-mask-image: linear-gradient(to right, black 50%, transparent);
+}
+
+.fade-gradient-right {
+  mask-image: linear-gradient(to left, black 50%, transparent);
+  -webkit-mask-image: linear-gradient(to left, black 50%, transparent);
+}
+
+.fade-in {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.2s cubic-bezier(0,.45,.54,1);
+}
+
+.fade-out {
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: all 0.2s cubic-bezier(0,.45,.54,1);
+}
+
+.planning .champion-pool {
+  position: absolute;
+  top: 0;
+}
+
+.team .champion-pool {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-10%);
 }

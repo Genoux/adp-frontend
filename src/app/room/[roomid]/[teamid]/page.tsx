@@ -1,16 +1,24 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import RoomInfo from "@/app/components/RoomInfo";
+import React, { useEffect } from 'react';
+import { AnimatePresence, motion } from "framer-motion";
+import Link from 'next/link'
+import DraftView from "@/app/components/DraftView";
 import TeamView from "@/app/components/TeamView";
 import FinishView from "@/app/components/FinishView";
+import PlanningView from "@/app/components/PlanningView";
+import LobbyView from "@/app/components/LobbyView";
+
 import useSocket from "@/app/hooks/useSocket";
-import WaitingView from "@/app/components/WaitingView";
-import useFetchRoom from "@/app/hooks/useFetchRoom";
-import ReadyView from "@/app/components/ReadyView";
-import { AnimatePresence, motion } from "framer-motion";
-import LoadingCircle from "@/app/components/LoadingCircle";
 import SocketContext from "@/app/context/SocketContext";
+
+import { roomStore } from "@/app/stores/roomStore";
+import { teamStore } from "@/app/stores/teamStore";
+
+import StateControllerButtons from "@/app/components/common/StateControllerButtons";
+
+import LoadingCircle from "@/app/components/common/LoadingCircle";
+import { Button } from '@/app/components/ui/button';
 
 interface RoomProps {
   params: {
@@ -22,87 +30,61 @@ interface RoomProps {
 export default function Room({ params }: RoomProps) {
   const roomid = params.roomid;
   const teamid = params.teamid;
-  const [timer, setTimer] = useState<string>("");
 
-  const handleSocketTimer = useCallback((msg: any) => {
-    setTimer(msg);
-  }, []);
+  const { socket, connectionError } = useSocket(roomid, teamid);
+  const { teams, fetchTeams, isLoading, error } = teamStore();
+  const { room, fetchRoom, isLoading: isLoadingRoom, error: errorRoom, } = roomStore();
 
-  const socket = useSocket(roomid, teamid, {
-    onTimer: handleSocketTimer,
-  });
+  useEffect(() => {
+    fetchTeams(roomid, teamid);
+  }, [roomid, teamid, fetchTeams]);
 
-  const { data: room, error, isLoading } = useFetchRoom(roomid);
+  useEffect(() => {
+    fetchRoom(roomid);
+  }, [roomid, fetchRoom]);
 
-  const getBgColor = () => {
-    if (room.red.isTurn) {
-      return "bg-red-600";
-    } else if (room.blue.isTurn) {
-      return "bg-blue-600";
-    }
-    return ""; // Default background color when no team has isTurn set to true
-  };
 
-  if (isLoading) {
+  if (connectionError || error || errorRoom) {
     return (
-      <>
-        <div className="flex min-h-screen flex-col items-center justify-center">
-          <LoadingCircle />
-        </div>
-      </>
+      <div className="flex flex-col items-center justify-center h-screen w-full gap-5">
+        <p>Unable to connect to the server. Please try again later.</p>
+        <Link href='/'><Button variant={'outline'}>Go back</Button></Link>
+      </div>
     );
   }
 
-  if (error) {
-    return <div>Something went wrong: {error.message}</div>; // You can replace this with an error component
+  if (isLoading || isLoadingRoom || !socket) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        {<LoadingCircle /> }
+      </div>
+    );
   }
 
-  if (!room) return null;
+  if (!room || !teams) return null;
+  
+  console.log("Room - socket:", socket);
 
-  const isReadyView = room.cycle === -1;
-  const isWaitingView = room.cycle === 0;
+
+  const isLobbyView = room.cycle === -1;
+  const isPlanningView = room.cycle === 0;
   const isFinishView = room.status === "done";
-  const isRoomView =
-    room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
+  const isRoomView = room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
 
   return (
     <>
-      <main className="">
+      <main>
         <AnimatePresence mode="wait">
-          <motion.div
-            className="relative"
-            initial={{ top: 10, opacity: 0 }}
-            animate={{ top: 0, opacity: 1 }}
-            transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.2 }}
-            key="home-page" // Add a unique key prop
-          >
-            <SocketContext.Provider value={socket}>
-              {isReadyView &&
-                <div className="text-center h-screen flex flex-col justify-center w-full">
-                  <ReadyView teamid={teamid} roomid={roomid}/>
-                </div>
-              }
-              {isWaitingView && (
-                <div className="text-center mt-12 flex flex-col justify-center w-full">
-                  <h1 className="text-4xl font-bold mb-2">Planning phase!</h1>
-                  <h2 className="text-lg mb-6">
-                    Define your selection strategy from the champion pool
-                  </h2>
-                  <h1 className="font-bold text-3xl mb-6 border w-fit mx-auto px-4 py-2">
-                    {timer || "00:00"}
-                  </h1>
-                  <WaitingView roomid={roomid} />
-                </div>
-              )}
-              {isFinishView && <FinishView roomid={roomid} />}
-              {isRoomView && (
-                <div className="text-center">
-                  <TeamView teamid={teamid} roomid={roomid} />
-                  <RoomInfo roomid={roomid} />
-                </div>
-              )}
-            </SocketContext.Provider>
-          </motion.div>
+          <StateControllerButtons roomid={roomid} />
+          <SocketContext.Provider value={socket}>
+            {isLobbyView && <LobbyView />}
+            <div className='container'>
+              {isPlanningView && <PlanningView />}
+              {isRoomView && <TeamView />}
+              {isRoomView && <DraftView />}
+            </div>
+            {isFinishView && <FinishView />}
+          </SocketContext.Provider>
         </AnimatePresence>
       </main>
     </>

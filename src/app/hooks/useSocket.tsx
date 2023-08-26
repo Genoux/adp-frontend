@@ -1,40 +1,76 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-interface SocketHandlers {
-  onMessage?: (msg: any) => void;
-  onTimer?: (timer: string) => void;
+interface EventHandlers {
+  eventName: string;
+  eventHandler: (data: any) => void;
 }
 
-export default function useSocket(roomid: string, teamid: string, handlers: SocketHandlers = {}) {
+interface SocketHandlers {
+  eventHandlers?: EventHandlers[];
+}
+
+export default function useSocket(
+  roomid: string,
+  teamid: string,
+  handlers: SocketHandlers = {}
+) {
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [connectionError, setConnectionError] = useState<boolean>(false);
+  const MAX_RETRIES = 2; // Maximum retries
+  const RETRY_INTERVAL = 2000; // Retry every 5 seconds
 
   useEffect(() => {
-    const socketServerUrl = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:4000';
+    const socketServerUrl =
+      process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || "http://localhost:4000";
     const newSocket = io(socketServerUrl);
 
-    setSocket(newSocket);
+    let retryCount = 0;
+    let retryInterval: any;
+
+    const tryConnect = () => {
+      if (retryCount >= MAX_RETRIES) {
+        console.error("Max retries reached. Giving up on connecting.");
+        setConnectionError(true);  // Set the error state here
+        clearInterval(retryInterval);
+        return;
+      }
+
+      if (!newSocket.connected) {
+        console.log("Attempting to reconnect...");
+        newSocket.connect();
+        retryCount++;
+      } else {
+        clearInterval(retryInterval);
+      }
+    };
 
     newSocket.on("connect", async () => {
-      console.log("Connected to socket server");
-      newSocket.emit('joinRoom', { roomid, teamid });
+      clearInterval(retryInterval); // Clear retry interval upon successful connection
+      setSocket(newSocket);
+      newSocket.emit("joinRoom", { roomid, teamid });
+      console.log("Successfully joined room");
     });
 
-    if (handlers.onMessage) {
-      newSocket.on("message", handlers.onMessage);
-    }
+    newSocket.on("connect_error", () => {
+      console.error("Connection failed. Retrying in a few seconds...");
+      retryInterval = setInterval(tryConnect, RETRY_INTERVAL);
+    });
 
-    if (handlers.onTimer) {
-      newSocket.on("TIMER", handlers.onTimer);
+    if (handlers.eventHandlers) {
+      handlers.eventHandlers.forEach(({ eventName, eventHandler }) => {
+        newSocket.on(eventName, eventHandler);
+      });
     }
 
     return () => {
+      clearInterval(retryInterval); // Clear retry interval upon cleanup
       if (newSocket) {
         newSocket.disconnect();
       }
       setSocket(null);
     };
-  }, [handlers.onMessage, handlers.onTimer, roomid, teamid]);
+  }, [handlers.eventHandlers, roomid, teamid]);
 
-  return socket; // Return the socket
+  return { socket, connectionError }; // Return the socket
 }

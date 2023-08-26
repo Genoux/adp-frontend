@@ -1,57 +1,64 @@
-import { roomStore } from "@/app/stores/roomStore";
-import HeroGrid from "./HeroGrid";
-import useFetchTeam from "@/app/hooks/useFetchTeam";
-interface FinishViewProps {
-  roomid: string;
-}
+import TeamPicks from "./team/TeamPicks";
+import { teamStore } from "@/app/stores/teamStore";
+import useTeams from "@/app/hooks/useTeams";
+import { defaultTransition } from '@/app/lib/animationConfig'
+import { motion } from "framer-motion";
+import { useEffect } from "react";
 
-const FinishView: React.FC<FinishViewProps> = ({ roomid }) => {
-  const { rooms } = roomStore();
-  const room = rooms[roomid];
+const FinishView = () => {
+  let { blue, red } = useTeams(teamStore);
 
-  const { data: blue } = useFetchTeam(room.blue);
-  const { data: red } = useFetchTeam(room.red);
-
-  if (!blue || !red) return null;
-
-  return (
-    <div className="text-center">
-    <h1 className="my-12 text-3xl font-medium">
-      The room has finished
-    </h1>
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      {[blue, red].map((team) => (
-        <div key={team.name}>
-          <h1 className={`text-left text-3xl font-semibold mb-4 bg-${team.color}-600 bg-opacity-10 px-4 py-2 rounded-sm`}>{team.name}</h1>
-          <div className="grid grid-cols-5 gap-2">
-            {team.heroes_selected.map((hero: any, index: number) => (
-              <div
-                key={index}
-                className="h-96 w-full overflow-hidden relative"
-              >
-                {hero.name && (
-                  <div>
-                    <p className="absolute z-50 w-full h-full flex justify-center items-end pb-6 font-medium">
-                      {hero.name}
-                    </p>
-                    <div
-                      className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
-                      style={{
-                        backgroundImage: `url('/images/champions/splash/${hero.name
-                          .replace(/\s/g, "")
-                          .toLowerCase()}.jpg')`,
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
+  // useEffect(() => {
+  //   const sendDataToDiscord = async () => {
+  //     await fetch(`/api/sendToDiscord/`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ blue, red }),
+  //     });
+  //   };
   
+  //   sendDataToDiscord();
+  // }, []);  // Remember to include dependency array if required
+  
+  return (
+
+    <div className="px-6 lg:px-12">
+      <motion.div
+        initial={{ y: "-10px", opacity: 0 }}  // start at half the size
+        animate={{ y: "0px", opacity: 1 }}    // animate to full size
+        transition={defaultTransition}
+        className="mb-6 text-center"
+      >
+        <h1 className="text-4xl font-bold">{"Draft terminé!"}</h1>
+        <p className="font-medium text-md mt-2">Voici les selections de chaque équipe</p>
+      </motion.div>
+      <div className="grid grid-row-2 lg:grid-cols-2 gap-12 w-full">
+        <motion.div
+          initial={{ left: '-120px', opacity: 0 }}
+          animate={{ left: '0%', opacity: 1 }}
+          transition={defaultTransition}
+          className="relative"
+        >
+          <h1 className={`text-2xl py-1 uppercase mb-4 rounded-sm text-center bg-${blue.color}`}> {blue.name}</h1>
+          <div className="h-96">
+            <TeamPicks team={blue} />
+          </div>
+        </motion.div>
+        <motion.div
+          initial={{ left: '120px', opacity: 0 }}
+          animate={{ left: '0%', opacity: 1 }}
+          transition={defaultTransition}
+          className="relative"
+        >
+          <h1 className={`text-2xl py-1 uppercase mb-4 rounded-sm text-center bg-${red.color}`}> {red.name}</h1>
+          <div className="h-96">
+            <TeamPicks team={red} />
+          </div>
+        </motion.div>
+      </div>
+    </div>
   );
 };
 
