@@ -85,12 +85,12 @@ const TeamView = () => {
 
   useEffect(() => {
     if (team) {
-    setCanSelect(team.iturn);
-    setSelectedChampion(team.clicked_hero || "");
-    // setCurrentImage(team.clicked_hero || "");
-    setClickedHero(currentTeam.clicked_hero); // Update the splash image
-    handleImageChange(currentTeam.clicked_hero);
-    //setTimeout(onAnimationComplete, 200);
+      setCanSelect(team.isturn);
+      setSelectedChampion(team.clicked_hero || "");
+      // setCurrentImage(team.clicked_hero || "");
+      setClickedHero(currentTeam.clicked_hero); // Update the splash image
+      handleImageChange(currentTeam.clicked_hero);
+      //setTimeout(onAnimationComplete, 200);
     }
   }, [currentTeam.clicked_hero, other.clicked_hero, team, team.clicked_hero]);
 
@@ -108,14 +108,14 @@ const TeamView = () => {
   };
 
   useEffect(() => {
-    if (team?.isturn) {
+    if (team.isturn) {
       setCanSelect(true);
     } else {
       setSelectedChampion("");
       setCanSelect(false);
       setClickedHero(null);
     }
-  }, [team?.isturn]);
+  }, [team.isturn]);
 
   const buttonText = team.isturn
     ? "Confirm Selection"
