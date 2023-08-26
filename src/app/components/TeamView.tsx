@@ -32,8 +32,6 @@ const TeamView = () => {
   }));
 
   const { current: team, other, blue, red } = useTeams(teamStore);
-  console.log("TeamView - red:", red);
-  console.log("TeamView - blue:", blue);
   const currentTeam = team.isturn ? team : other;
 
   const handleImageChange = (newImage: string) => {
@@ -55,7 +53,6 @@ const TeamView = () => {
 
   useEffect(() => {
     socket.on("CHAMPION_SELECTED", (data) => {
-      console.log("socket.on - data:", data);
       setSelectedChampion("");
       setClickedHero(null);
       setTimeout(() => {
@@ -87,16 +84,15 @@ const TeamView = () => {
   };
 
   useEffect(() => {
-    //if (team) {
-    //  setCanSelect(team.itTurn);
+    if (team) {
+    setCanSelect(team.iturn);
     setSelectedChampion(team.clicked_hero || "");
     // setCurrentImage(team.clicked_hero || "");
     setClickedHero(currentTeam.clicked_hero); // Update the splash image
     handleImageChange(currentTeam.clicked_hero);
-
     //setTimeout(onAnimationComplete, 200);
-    // }
-  }, [currentTeam.clicked_hero, other.clicked_hero, team.clicked_hero]);
+    }
+  }, [currentTeam.clicked_hero, other.clicked_hero, team, team.clicked_hero]);
 
   const handleClickedHero = async (hero: any) => {
     if (hero.name === team.clicked_hero) return null;
