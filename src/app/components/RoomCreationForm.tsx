@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
+import { Badge } from "@/app/components/ui/badge"
 import Image from "next/image";
 import clsx from "clsx";
 
@@ -36,10 +37,13 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
 
   return (
     <div className="flex flex-col">
-      <div className="text-center flex flex-col gap-2 mb-24">
-        <h1 className="text-5xl uppercase font-bold">Aram Draft Pick</h1>
+      <div className="text-center justify-end items-end mx-auto flex flex-col  mb-24">
+        <Image
+          src={`/home-logo.svg`}
+          width={460}
+          height={0} alt={""}/>
       </div>
-
+  
       <div className="flex flex-col gap-6 items-center">
         <div className="flex flex-row gap-6">
           {teams.map(team => (
@@ -69,14 +73,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
         </Button>
       </div>
 
-      <div className="mx-auto mt-24 text-center flex flex-col gap-2">
-        <Image
-          src={`/home-logo.svg`}
-          width={200}
-          height={0} alt={""}
-          className="" />
-        <p className="opacity-50 text-xs">Alpha 1.0.3</p>
-      </div>
+
     </div>
   );
 }
