@@ -2,7 +2,7 @@ import { Database } from "@/app/types/supabase";
 import Image from "next/image";
 import clsx from "clsx";
 import { roomStore } from "@/app/stores/roomStore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from 'framer-motion';
 interface Hero {
   name: string;
@@ -23,12 +23,24 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   selectedChampion,
   canSelect,
   handleClickedHero = () => { },
-  clickedHero,
-
 }) => {
   const [hoverIndex, setHoverIndex] = useState(-1);
   const [mouseDown, setMouseDown] = useState<number | null>(null);
   const { room } = roomStore();
+
+  const previousActiveIndex = useRef<number | null>(null);
+
+  const setHoverState = useCallback((index: number) => {
+    previousActiveIndex.current = hoverIndex;
+    setHoverIndex(index);
+}, [hoverIndex]);
+
+  
+  useEffect(() => {
+    if (selectedChampion && hoverIndex !== previousActiveIndex.current) {
+        setHoverState(-1);
+    }
+}, [hoverIndex, selectedChampion, setHoverState]);
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
@@ -62,11 +74,11 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 }}
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
                 onMouseEnter={() => {
-                  setHoverIndex(index);
+                  setHoverState(index);
                 }}
                 onMouseLeave={() => {
                   if (!hero.selected) {
-                    setHoverIndex(-1);
+                    setHoverState(-1);
                   }
                 }}>
                 <div className="relative overflow-hidden rounded-sm">

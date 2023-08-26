@@ -75,7 +75,7 @@ const TeamView = () => {
 
       const champion = selectedChampion;
 
-      socket?.emit("SELECT_CHAMPION", {
+      socket.emit("SELECT_CHAMPION", {
         teamid: team?.id,
         roomid: room?.id,
         selectedChampion: champion,
@@ -87,7 +87,7 @@ const TeamView = () => {
     if (team) {
       setCanSelect(team.isturn);
       setSelectedChampion(team.clicked_hero || "");
-      // setCurrentImage(team.clicked_hero || "");
+      setCurrentImage(team.clicked_hero || "");
       setClickedHero(currentTeam.clicked_hero); // Update the splash image
       handleImageChange(currentTeam.clicked_hero);
       //setTimeout(onAnimationComplete, 200);
@@ -109,13 +109,13 @@ const TeamView = () => {
 
   useEffect(() => {
     if (team.isturn) {
-      setCanSelect(true);
+      setCanSelect(team.isturn);
     } else {
       setSelectedChampion("");
       setCanSelect(false);
       setClickedHero(null);
     }
-  }, [team.isturn]);
+  }, [team, team.isturn]);
 
   const buttonText = team.isturn
     ? "Confirm Selection"
@@ -185,14 +185,12 @@ const TeamView = () => {
           </div>
           <p className={`flex items-center gap-2 justify-end`}>
             <TeamStatus team={red} showReadyState={false} />
-
             <span className="text-2xl">{truncateString(red.name.toUpperCase(), 6)} </span>
             <motion.div
               initial={red.isturn ? "isTurn" : "notTurn"}
               animate={red.isturn ? "isTurn" : "notTurn"}
               variants={widthVariants}
               className={`h-6 w-1 bg-${red.color} rounded-full`}></motion.div>
-
           </p>
         </motion.div>
       </motion.div>
@@ -216,6 +214,7 @@ const TeamView = () => {
         transition={defaultTransition}
       >
         <div className="flex justify-center my-6">
+
           {team.isturn ? (
             <Button
               size="lg"
@@ -223,6 +222,7 @@ const TeamView = () => {
               onClick={handleConfirmSelection}
               disabled={!selectedChampion || !canSelect || !team.isturn}
             >
+  
               {!canSelect ? (<LoadingCircle color="black" />) : (<>{buttonText}</>)}
             </Button>
           ) : (
