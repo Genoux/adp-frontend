@@ -86,7 +86,7 @@ const TeamView = () => {
 
   useEffect(() => {
     if (team) {
-
+      setCanSelect(team.isturn);
       setSelectedChampion(team.clicked_hero || "");
       setCurrentImage(team.clicked_hero || "");
       setClickedHero(currentTeam.clicked_hero); // Update the splash image
