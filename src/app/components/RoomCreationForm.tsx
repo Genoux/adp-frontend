@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import Image from "next/image";
+import clsx from "clsx";
 
 interface RoomCreationFormProps {
   onCreate: (blueTeamName: string, redTeamName: string) => void;
@@ -25,7 +26,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
     event.preventDefault();
     if (formData.blueTeamName && formData.redTeamName) {
       onCreate(formData.blueTeamName, formData.redTeamName);
-    } 
+    }
   };
 
   const teams = [
@@ -44,7 +45,11 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
           {teams.map(team => (
             <div key={team.id} className="flex flex-col gap-2">
               <label htmlFor={team.id}>{team.label}</label>
-              <div className={`w-full h-2 bg-${team.color}`}></div>
+              <div className={clsx("w-full h-2", {
+                "bg-blue": team.color === 'blue',
+                "bg-red": team.color === 'red'
+              })
+              }></div>
               <Input
                 type="text"
                 name={team.id}

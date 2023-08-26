@@ -10,6 +10,7 @@ import {
 import copyToClipboard from "@/app/utils/copyToClipboard";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
+import clsx from 'clsx';
 
 interface Room {
   id: number;
@@ -53,7 +54,29 @@ const TeamDisplay: React.FC<{
 
 
   return (
-    <div className={`bg-${team.color}-500 ${team.borderColor} bg-opacity-5 hover:bg-opacity-10 border border-l-white border-b-white border-r-white border-opacity-10 rounded-sm flex flex-col items-center justify-between w-full p-12`}>
+    <div className={clsx(
+      team.borderColor,
+      'hover:bg-opacity-10',
+      'border',
+      'border-l-white',
+      'border-b-white',
+      'border-r-white',
+      'border-opacity-10',
+      'rounded-sm',
+      'flex',
+      'flex-col',
+      'items-center',
+      'justify-between',
+      'w-full',
+      'p-12',
+      'transition-all',
+      'ease-in-out',
+      {
+        'bg-blue-500 bg-opacity-5': team.color === 'blue',
+        'bg-red-500 bg-opacity-5': team.color === 'red'
+      }
+    )}>
+
       <h1 className="text-4xl font-medium mb-4 uppercase">{team.name}</h1>
       <div className="flex flex-row justify-center items-center gap-2">
       <Link href={`/room/${roomId}/${team.id}`} target="_blank">
