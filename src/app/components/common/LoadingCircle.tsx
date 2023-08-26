@@ -1,11 +1,13 @@
 interface LoaderProps {
   variant?: string;
   size?: string;
+  color?: string;
 }
 
 const CircleLoader: React.FC<LoaderProps> = ({
   variant = "",
   size = "w-6 h-6",
+  color = "#D9D9D9",
 }) => (
   <svg className={`circle-loader ${variant} ${size}`} viewBox="0 0 50 50">
     <circle
@@ -14,7 +16,7 @@ const CircleLoader: React.FC<LoaderProps> = ({
       cy="25"
       r="20"
       fill="none"
-      stroke="#D9D9D9"
+      stroke={color}
       strokeWidth="4"
     />
   </svg>

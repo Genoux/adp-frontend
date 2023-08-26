@@ -5,6 +5,14 @@ import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
+import TeamStatus from "@/app/components/common/TeamStatus";
+
+import { Inter } from "next/font/google";
+const inter = Inter({
+  subsets: ["latin-ext"],
+  weight: "500"
+})
+
 
 const ReadyView = () => {
   const socket = useEnsureContext(SocketContext);
@@ -15,7 +23,7 @@ const ReadyView = () => {
     isLoading: state.isLoading
   }));
 
-  const { current: currentTeam } = useTeams(teamStore);
+  const { current: currentTeam, other: otherTeam, red, blue } = useTeams(teamStore);
 
   if (!room || error) {
     return <div>Room not found</div>;
@@ -34,10 +42,31 @@ const ReadyView = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-full">
+    <div className="flex flex-col items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-y-hidden text-3xl">
+      <div className="text-center mb-6">
+        <h1 className="text-4xl font-bold mb-2">{`Salle d'attente`}</h1>
+        <p className="text-base">{`Les joueurs attendent dans la salle jusqu'à ce que tout le monde soit prêt.`}</p>
+        <div className="flex items-center mt-6 justify-center">
+          <div className={`h-6 w-1 bg-${currentTeam.color} rounded-full`}></div>
+          <p className={`${inter.className}  text-white text-base font-bold p-2 rounded-md`}>{`Vous êtes l'équipe ${currentTeam.name.toUpperCase()}`}</p>
+          <div className={`h-6 w-1 bg-${currentTeam.color} rounded-full`}></div>
+
+        </div>
+      </div>
+
+      <div className="border border-opacity-10 rounded-md w-full mb-12">
+        <div className="grid grid-cols-2 text-base">
+          <p className={`${inter.className} flex flex-col items-center gap-2 p-6 border-r`}>{blue.name.toUpperCase()}<TeamStatus team={blue} showReadyState={true} />
+          </p>
+
+          <p className={`${inter.className} flex flex-col items-center gap-2 p-6`}>{red.name.toUpperCase()}<TeamStatus team={red} showReadyState={true} />
+          </p>
+        </div>
+      </div>
+
       {currentTeam.ready ? (
         <div>
-          <span className="pr-0.5">Waiting for other team</span>
+          <span className="pr-0.5 text-base">{`En attende de ${otherTeam.name}`}</span>
           <div className="sending-animation">
             <span className="sending-animation-dot">.</span>
             <span className="sending-animation-dot">.</span>
@@ -45,7 +74,13 @@ const ReadyView = () => {
           </div>
         </div>
       ) : (
-        <Button onClick={handleReadyClick}>READY</Button>
+        <Button
+          size="lg"
+          className={`bg-yellow hover:bg-yellow-hover px-24 text-sm uppercase text-yellow-text rounded-sm font-bold mt-6`}
+          onClick={handleReadyClick}
+        >
+          {"Nous sommes prêt"}
+        </Button>
       )}
     </div>
   );

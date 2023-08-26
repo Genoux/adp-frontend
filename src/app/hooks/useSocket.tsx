@@ -16,17 +16,45 @@ export default function useSocket(
   handlers: SocketHandlers = {}
 ) {
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [connectionError, setConnectionError] = useState<boolean>(false);
+  const MAX_RETRIES = 2; // Maximum retries
+  const RETRY_INTERVAL = 2000; // Retry every 5 seconds
 
   useEffect(() => {
     const socketServerUrl =
       process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || "http://localhost:4000";
     const newSocket = io(socketServerUrl);
 
-    setSocket(newSocket);
+    let retryCount = 0;
+    let retryInterval: any;
+
+    const tryConnect = () => {
+      if (retryCount >= MAX_RETRIES) {
+        console.error("Max retries reached. Giving up on connecting.");
+        setConnectionError(true);  // Set the error state here
+        clearInterval(retryInterval);
+        return;
+      }
+
+      if (!newSocket.connected) {
+        console.log("Attempting to reconnect...");
+        newSocket.connect();
+        retryCount++;
+      } else {
+        clearInterval(retryInterval);
+      }
+    };
 
     newSocket.on("connect", async () => {
+      clearInterval(retryInterval); // Clear retry interval upon successful connection
+      setSocket(newSocket);
       newSocket.emit("joinRoom", { roomid, teamid });
       console.log("Successfully joined room");
+    });
+
+    newSocket.on("connect_error", () => {
+      console.error("Connection failed. Retrying in a few seconds...");
+      retryInterval = setInterval(tryConnect, RETRY_INTERVAL);
     });
 
     if (handlers.eventHandlers) {
@@ -36,6 +64,7 @@ export default function useSocket(
     }
 
     return () => {
+      clearInterval(retryInterval); // Clear retry interval upon cleanup
       if (newSocket) {
         newSocket.disconnect();
       }
@@ -43,5 +72,5 @@ export default function useSocket(
     };
   }, [handlers.eventHandlers, roomid, teamid]);
 
-  return socket; // Return the socket
+  return { socket, connectionError }; // Return the socket
 }

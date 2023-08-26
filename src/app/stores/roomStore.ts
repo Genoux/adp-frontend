@@ -38,21 +38,25 @@ export const roomStore = create<RoomState>((set) => ({
       set({ room });
 
       // Setting up the subscription for the room
-      const subscription = supabase
-        .channel(roomId)
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'rooms',
-            filter: `id=eq.${roomId}`,
-          },
-          (payload) => {
-            handleRoomUpdate(set)(payload);
-          }
-        )
-        .subscribe(() => console.log(`Realtime room ${roomId} update subscription has been set up.`));
+      supabase
+      .channel(roomId)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'rooms',
+        filter: `id=eq.${roomId}`,
+      }, (payload) => {
+        handleRoomUpdate(set)(payload);
+      })
+      .subscribe((status, err) => {
+        if (!err) {
+          console.log('Received event ROOM: ', status);
+          return
+        } else {
+          console.log(".subscribe - err ROOM:", err);
+        }
+      });
+
 
     } catch (error) {
       set({ error } as any);

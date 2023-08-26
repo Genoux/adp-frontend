@@ -2,11 +2,11 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -50,11 +50,31 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        draftEmpty: {
+          DEFAULT: "hsl(var(--draft-empty))",
+        },
+        yellow: {
+          DEFAULT: "hsl(var(--yellow))",
+          hover: "hsl(var(--yellow-hover))",
+          text: "hsl(var(--yellow-text))",
+          transparent: "hsl(var(--yellow-transparent))",
+        },
+        yellowSecond: {
+          DEFAULT: "hsl(var(--yellow-second))",
+        },
+        red: {
+          DEFAULT: "hsl(var(--red))",
+        },
+        blue: {
+          DEFAULT: "hsl(var(--blue))",
+        },
+        boxShadow: {
+          'yellow-glow': '0 0 20px rgba(255, 255, 0, 1)', // Adjust the values as needed
+          'yellow-glow-10': '0 0 10px 5px rgba(255, 255, 0, 1)', // Adjust the values as needed
+        },
+        transitionTimingFunction: {
+          'main': 'cubic-bezier(0,.45,.54,1)',
+        },
       },
       keyframes: {
         "accordion-down": {
@@ -73,4 +93,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};

@@ -2,22 +2,30 @@ import TeamPicks from "@/app/components/team/TeamPicks";
 import TeamBans from "@/app/components/team/TeamBans";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
+import { motion } from 'framer-motion';
+import { defaultTransition } from '@/app/lib/animationConfig'
 
 const RoomInfo = () => {
   const { blue, red } = useTeams(teamStore);
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-2 mb-12 gap-6 justify-center">
-        <div>
-          <TeamBans team={blue} color="blue" />
-          <TeamPicks team={blue} color="blue" />
+      <motion.div
+       initial={{ opacity:.5 }}  // start at half the size
+        animate={{opacity: 1 }}    // animate to full size
+        transition={defaultTransition}>
+        <div className="flex flex-col justify-center ">
+          <div className="flex flex-row justify-between w-full gap-96">
+            <TeamBans team={blue} />
+            <TeamBans team={red} />
+          </div>
+
+          <div className="flex flex-row justify-between w-full h-full gap-24 mt-4">
+            <TeamPicks team={blue} />
+            <TeamPicks team={red} />
+          </div>
         </div>
-        <div className="relative">
-          <TeamBans team={red} color="red" />
-          <TeamPicks team={red} color="red" />
-        </div>
-      </div>
+      </motion.div>
     </>
   );
 };

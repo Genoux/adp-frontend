@@ -83,7 +83,13 @@ export const teamStore = create<TeamState>((set, get) => ({
             (payload) => {
               get().handleTeamUpdate(payload, team.id);
             })
-          .subscribe(() => console.log(`Realtime team ${team.id} update subscription has been set up.`));
+          .subscribe((status, err) => {
+            if (!err) {
+              console.log('Received event TEAM: ', status);
+            } else {
+              console.log(".subscribe - err TEAM:", err);
+            }
+          });
       });
 
     } catch (error) {

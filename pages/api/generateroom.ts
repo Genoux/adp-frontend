@@ -40,6 +40,8 @@ function generateArray(key: string, length: number) {
 }
 
 async function createRoom(blueTeamName: string, redTeamName: string) {
+  console.log("createRoom - redTeamName:", redTeamName);
+  console.log("createRoom - blueTeamName:", blueTeamName);
   const champions = await randomChampions();
   const roomName: string = uniqueNamesGenerator(customConfig);
 
@@ -62,7 +64,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
       .from("teams")
       .insert({
         color: "red",
-        isTurn: false,
+        isturn: false,
         heroes_selected: generateArray("name", 5),
         heroes_ban: generateArray("name", 3),
         name: redTeamName,
@@ -76,7 +78,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
       .from("teams")
       .insert({
         color: "blue",
-        isTurn: true,
+        isturn: true,
         heroes_selected: generateArray("name", 5),
         heroes_ban: generateArray("name", 3),
         name: blueTeamName,
@@ -115,80 +117,9 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
   }
 }
 
-async function generateRoom(blueTeamName: string, redTeamName: string) {
-  const champions = await randomChampions();
-
-  const teamRedId = Math.floor(Math.random() * 1000000);
-  const teamBlueId = Math.floor(Math.random() * 1000000);
-  const roomID = Math.floor(Math.random() * 1000000);
-  const roomName: string = uniqueNamesGenerator(customConfig);
-
-  try {
-    const { redError } = await supabase.from("teams").insert({
-      id: teamRedId,
-      color: "red",
-      isTurn: false,
-      heroes_pool: champions.list,
-      heroes_selected: generateArray("name", 5),
-      name: redTeamName,
-    });
-
-    const { blueError } = await supabase.from("teams").insert({
-      id: teamBlueId,
-      color: "blue",
-      isTurn: true,
-      heroes_pool: champions.list,
-      heroes_selected: generateArray("name", 5),
-      name: blueTeamName,
-    });
-
-    const { room: newRoom, roomError } = await supabase.from("rooms").insert({
-      id: roomID,
-      name: roomName,
-      blue: teamBlueId,
-      red: teamRedId,
-      heroes_pool: champions.list,
-      status: "waiting",
-    });
-
-    await supabase
-      .from("teams")
-      .update({
-        room: roomID,
-      })
-      .eq("id", teamRedId);
-
-    await supabase
-      .from("teams")
-      .update({
-        room: roomID,
-      })
-      .eq("id", teamBlueId);
-
-    if (redError || blueError || roomError) {
-      console.log("createRoom - error:", redError, blueError, roomError);
-      return;
-    }
-
-    const { data: room, error } = await supabase
-      .from("rooms")
-      .select("id, name, blue(id, name), red(id, name)")
-      .eq("id", roomID);
-    if (error) {
-      console.log("createRoom - error:", error);
-      return;
-    }
-
-    return room;
-  } catch (error) {
-    console.log("createRoom - error:", error);
-  }
-}
-
 export default async function MyEdgeFunction(request: NextRequest) {
   // get body from request
   const { blueTeamName, redTeamName } = await request.json();
   const value = await createRoom(blueTeamName, redTeamName);
-  // const room = await generateRoom(blueTeamName, redTeamName);
-  return NextResponse.json({ value });
+  return NextResponse.json(value);
 }

@@ -1,22 +1,62 @@
 import TeamPicks from "./team/TeamPicks";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
+import { defaultTransition } from '@/app/lib/animationConfig'
+import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 const FinishView = () => {
-  const { blue, red } = useTeams(teamStore);
+  let { blue, red } = useTeams(teamStore);
 
+  // useEffect(() => {
+  //   const sendDataToDiscord = async () => {
+  //     await fetch(`/api/sendToDiscord/`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ blue, red }),
+  //     });
+  //   };
+  
+  //   sendDataToDiscord();
+  // }, []);  // Remember to include dependency array if required
+  
   return (
-    <div className="text-center">
-      <h1 className="my-12 text-3xl font-medium">The room has finished</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 h-96 w-full">
-        <div>
-          {blue?.name}
-          <TeamPicks team={blue} color="blue" />
-        </div>
-        <div>
-          {red?.name}
-          <TeamPicks team={red} color="red" />
-        </div>
+
+    <div className="px-6 lg:px-12">
+      <motion.div
+        initial={{ y: "-10px", opacity: 0 }}  // start at half the size
+        animate={{ y: "0px", opacity: 1 }}    // animate to full size
+        transition={defaultTransition}
+        className="mb-6 text-center"
+      >
+        <h1 className="text-4xl font-bold">{"Draft terminé!"}</h1>
+        <p className="font-medium text-md mt-2">Voici les selections de chaque équipe</p>
+      </motion.div>
+      <div className="grid grid-row-2 lg:grid-cols-2 gap-12 w-full">
+        <motion.div
+          initial={{ left: '-120px', opacity: 0 }}
+          animate={{ left: '0%', opacity: 1 }}
+          transition={defaultTransition}
+          className="relative"
+        >
+          <h1 className={`text-2xl py-1 uppercase mb-4 rounded-sm text-center bg-${blue.color}`}> {blue.name}</h1>
+          <div className="h-96">
+            <TeamPicks team={blue} />
+          </div>
+        </motion.div>
+        <motion.div
+          initial={{ left: '120px', opacity: 0 }}
+          animate={{ left: '0%', opacity: 1 }}
+          transition={defaultTransition}
+          className="relative"
+        >
+          <h1 className={`text-2xl py-1 uppercase mb-4 rounded-sm text-center bg-${red.color}`}> {red.name}</h1>
+          <div className="h-96">
+            <TeamPicks team={red} />
+          </div>
+        </motion.div>
       </div>
     </div>
   );
