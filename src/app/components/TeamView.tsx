@@ -151,8 +151,6 @@ const TeamView = () => {
             />
           )}
         </motion.div>
-      {canSelect.toString()}
-
         <motion.div
           exit="exit"
           initial={{ y: "30px", opacity: 0 }}  // start at half the size
