@@ -44,7 +44,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
         className="text-center justify-end items-end mx-auto flex flex-col mb-12"
       >
         <Image
-          src={`/home-logo.svg`}
+          src={`https://glrkarkczaqmuwkhnvoh.supabase.co/storage/v1/object/public/Brand/aram-header.svg`}
           width={460}
           height={0} alt={""}/>
       </motion.div>
