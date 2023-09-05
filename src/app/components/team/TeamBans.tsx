@@ -11,8 +11,8 @@ interface Hero {
 
 const TeamBans = ({ team }: Team) => {
   const heightVariants = {
-    collapsed: {y:100, height: "0px" },
-    expanded: {y:-50, height: "80px" }
+    collapsed: {y:0, height: "0px", opacity: 0 },
+    expanded: {y:-50, height: "80px", opacity: 1  }
   };
 
   return (

@@ -20,7 +20,7 @@ const TeamPicks = ({ team }: Team) => {
   }));
   
   const heightVariants = {
-    initial: { height: "0px", y: 0 },
+    initial: { y: 0 },
     notDone: { height: "210px", y: -45 },  
     done: { height: "500px", y: 0 }  
   };
@@ -38,7 +38,7 @@ const TeamPicks = ({ team }: Team) => {
           (hero: Hero, index: number) => (
             <div
               key={index}
-              className={`h-full w-full rounded-sm overflow-hidden relative ${hero.name ? "" : "border border-white border-opacity-10"}`}>
+              className={`h-full w-full rounded-md overflow-hidden relative ${hero.name ? "" : "border border-white border-opacity-10"}`}>
               {hero.name && (
                 <div>
                   <p className="absolute z-50 w-full h-full flex justify-center items-end pb-6 font-medium">
