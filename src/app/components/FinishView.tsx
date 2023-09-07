@@ -41,8 +41,8 @@ const FinishView = () => {
           className="bg-gradient-to-r from-blue to-transparent absolute left-0 top-0 h-full w-1/2 opacity-25"></motion.div>
 
         <motion.div
-          initial={{ left: '-120px', opacity: 0 }}
-          animate={{ left: '0%', opacity: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={defaultTransition}
           className="relative"
         >
@@ -61,8 +61,8 @@ const FinishView = () => {
         >
         </motion.div>
         <motion.div
-          initial={{ left: '120px', opacity: 0 }}
-          animate={{ left: '0%', opacity: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{  opacity: 1 }}
           transition={defaultTransition}
           className="relative"
         >

@@ -41,7 +41,7 @@ const TeamBans = ({ team }: Team) => {
                   ) : (
                     // Show splash image when hero.name is not null and hero.selected is true
                     <div>
-                      <p className="absolute z-50 w-full h-full flex justify-center items-end pb-6 font-medium">
+                      <p className="absolute z-50 w-full h-full flex justify-center items-center font-medium">
                         {hero.name}
                       </p>
                       <div

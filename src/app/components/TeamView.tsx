@@ -34,23 +34,6 @@ const TeamView = () => {
   const { current: team, other, blue, red } = useTeams(teamStore);
   const currentTeam = team.isturn ? team : other;
 
-  const handleImageChange = (newImage: string) => {
-    setFadeSplash(false);
-   // setCanSelect(false);
-    const handleAnimationComplete = () => {
-      setCurrentImage(newImage);
-      setLoadingImage(true);
-    }
-    setTimeout(handleAnimationComplete, 200); // 500ms matches the transition duration
-  };
-
-  useEffect(() => {
-    if (!loadingImage && currentImage) {
-      //setCanSelect(true);
-      setFadeSplash(true);
-    }
-  }, [loadingImage, currentImage, team.clicked_hero]);
-
   useEffect(() => {
     socket.on("CHAMPION_SELECTED", (data) => {
       console.log("socket.on - data:", data);
@@ -88,9 +71,8 @@ const TeamView = () => {
     if (team) {
       setCanSelect(team.isturn);
       setSelectedChampion(team.clicked_hero || "");
-      setCurrentImage(team.clicked_hero || "");
+      setCurrentImage(currentTeam.clicked_hero || "");
       setClickedHero(currentTeam.clicked_hero); // Update the splash image
-      handleImageChange(currentTeam.clicked_hero);
     }
   }, [currentTeam.clicked_hero, other.clicked_hero, team, team.clicked_hero]);
 
@@ -106,15 +88,15 @@ const TeamView = () => {
     setClickedHero(hero.name); // Update the splash image
   };
 
-useEffect(() => {
-  if (!team.isturn) {
-    setSelectedChampion("");
-    setCanSelect(false);
-    setClickedHero(null);
-  } else {
-    setCanSelect(true);
-  }
-}, [team.isturn]);
+  useEffect(() => {
+    if (!team.isturn) {
+      setSelectedChampion("");
+      setCanSelect(false);
+      setClickedHero(null);
+    } else {
+      setCanSelect(true);
+    }
+  }, [team.isturn]);
 
   const buttonText = team.isturn
     ? "Confirm Selection"
@@ -143,28 +125,25 @@ useEffect(() => {
       >
         <motion.div
           className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: fadeSplash ? 1 : 0 }}
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
           transition={defaultTransition}
         >
-          {currentImage && (
-            <Image
-              src={`/images/champions/splash/${currentImage?.toLowerCase().replace(/\s+/g, '')}.jpg`}
-              width={1920}
-              height={1080}
-              rel="preload"
-              className={`absolute z-10 w-full h-full object-cover object-center ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
-              alt={`${clickedHero} splash`}
-              onLoad={() => setLoadingImage(false)} // Step 3: Wait for the New Image to Load
-            />
-          )}
+          <Image
+            src={`/images/champions/splash/${currentImage?.toLowerCase().replace(/\s+/g, '')}.jpg`}
+            width={1920}
+            height={1080}
+            rel="preload"
+            className={`absolute z-10 w-full h-full object-cover object-center ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+            alt={``}
+          />
         </motion.div>
         <motion.div
           exit="exit"
           initial={{ y: "30px", opacity: 0 }}  // start at half the size
           animate={{ y: "0px", opacity: 1 }}    // animate to full size
           transition={defaultTransition}
-          className="grid grid-cols-3 items-center mb-6">
+          className="grid grid-cols-3 items-center mb-3">
           <p className={`flex items-center gap-2 justify-start`}>
             <motion.div
               initial={blue.isturn ? "isTurn" : "notTurn"}
@@ -175,7 +154,7 @@ useEffect(() => {
             <TeamStatus team={blue} showReadyState={false} /></p>
           <div className="flex flex-col items-center">
             <Timer />
-            <p className="font-medium text-md mt-2">
+            <p className="font-medium text-sm">
               {currentTeam === team
                 ? `C\'est à vous de choisir, vous êtes l\'équipe ${currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1)}`
                 : `L'équipe ${currentTeam.name.charAt(0).toUpperCase() + currentTeam.name.slice(1)} entrain de choisir`}
@@ -195,7 +174,7 @@ useEffect(() => {
         </motion.div>
       </motion.div>
       <motion.div
-        initial={{ y: "76px", scale: 1.05 }}  // start at half the size
+        initial={{ y: "92px", scale: 1.05 }}  // start at half the size
         animate={{ y: "0px", scale: 1 }}    // animate to full size
         transition={defaultTransition}
       >
@@ -209,11 +188,10 @@ useEffect(() => {
       <motion.div
         exit="exit"
         initial={{ y: 70, opacity: 0 }}  // start at half the size
-        animate={{ y: 35, opacity: 1 }}
+        animate={{ y: 15, opacity: 1 }}
         transition={defaultTransition}
       >
         <div className="flex justify-center my-6">
-
           {team.isturn ? (
             <Button
               size="lg"
@@ -221,7 +199,7 @@ useEffect(() => {
               onClick={handleConfirmSelection}
               disabled={!selectedChampion || !canSelect || !team.isturn}
             >
-  
+
               {!canSelect ? (<LoadingCircle color="black" />) : (<>{buttonText}</>)}
             </Button>
           ) : (

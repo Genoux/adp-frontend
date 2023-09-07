@@ -21,8 +21,8 @@ const TeamPicks = ({ team }: Team) => {
   
   const heightVariants = {
     initial: { y: 0 },
-    notDone: { height: "210px", y: -45 },  
-    done: { height: "500px", y: 0 }  
+    notDone: { height: "225px", y: -45 },  
+    done: { height: "300px", y: 0 }  
   };
 
   const isDone = room?.status === "done";
@@ -41,7 +41,7 @@ const TeamPicks = ({ team }: Team) => {
               className={`h-full w-full rounded-md overflow-hidden relative ${hero.name ? "" : "border border-white border-opacity-10"}`}>
               {hero.name && (
                 <div>
-                  <p className="absolute z-50 w-full h-full flex justify-center items-end pb-6 font-medium">
+                  <p className="absolute z-50 w-full h-full flex justify-center items-center font-medium">
                     {hero.name}
                   </p>
                   <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-t from-black via-transparent to-transparent bg-clip-content z-40"></div>
