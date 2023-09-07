@@ -7,23 +7,8 @@ import { useEffect } from "react";
 
 const FinishView = () => {
   let { blue, red } = useTeams(teamStore);
-
-  // useEffect(() => {
-  //   const sendDataToDiscord = async () => {
-  //     await fetch(`/api/sendToDiscord/`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ blue, red }),
-  //     });
-  //   };
-  
-  //   sendDataToDiscord();
-  // }, []);  // Remember to include dependency array if required
   
   return (
-
     <div className="px-6 lg:px-12">
       <motion.div
         initial={{ y: "-10px", opacity: 0 }}  // start at half the size
@@ -41,8 +26,8 @@ const FinishView = () => {
           className="bg-gradient-to-r from-blue to-transparent absolute left-0 top-0 h-full w-1/2 opacity-25"></motion.div>
 
         <motion.div
-          initial={{ left: '-120px', opacity: 0 }}
-          animate={{ left: '0%', opacity: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={defaultTransition}
           className="relative"
         >
@@ -61,8 +46,8 @@ const FinishView = () => {
         >
         </motion.div>
         <motion.div
-          initial={{ left: '120px', opacity: 0 }}
-          animate={{ left: '0%', opacity: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={defaultTransition}
           className="relative"
         >

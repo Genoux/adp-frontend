@@ -8,7 +8,7 @@ import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
-import { motion } from 'framer-motion';
+import { delay, motion, useAnimation } from 'framer-motion';
 import { defaultTransition } from '@/app/lib/animationConfig'
 import Image from "next/image";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
@@ -19,8 +19,6 @@ const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [canSelect, setCanSelect] = useState(true);
   const [clickedHero, setClickedHero] = useState<string | null>(null);
-  const [fadeSplash, setFadeSplash] = useState(true);
-  const [loadingImage, setLoadingImage] = useState(false);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
 
   const socket = useEnsureContext(SocketContext);
@@ -33,23 +31,40 @@ const TeamView = () => {
 
   const { current: team, other, blue, red } = useTeams(teamStore);
   const currentTeam = team.isturn ? team : other;
+  type AnimationState = {
+    zIndex: number;
+    opacity: number;
+};
 
-  const handleImageChange = (newImage: string) => {
-    setFadeSplash(false);
-   // setCanSelect(false);
-    const handleAnimationComplete = () => {
-      setCurrentImage(newImage);
-      setLoadingImage(true);
-    }
-    setTimeout(handleAnimationComplete, 200); // 500ms matches the transition duration
-  };
+const [animationState, setAnimationState] = useState<AnimationState>({ 
+  zIndex: 50, 
+  opacity: 0 
+});
 
   useEffect(() => {
-    if (!loadingImage && currentImage) {
-      //setCanSelect(true);
-      setFadeSplash(true);
+    console.log(room?.status)
+
+    if (room?.status === "ban" || room?.status === "select") {
+      setAnimationState({ opacity: 1, zIndex: 50 });
+
+      // Start the first timeout for the opacity animation
+      const opacityTimeout = setTimeout(() => {
+        setAnimationState(prev => ({ ...prev, opacity: 0}));
+
+        // Start a second timeout for changing the zIndex after the opacity animation completes
+        const zIndexTimeout = setTimeout(() => {
+          setAnimationState(prev => ({ ...prev, zIndex: 0 }));
+        }, 300);  // Assuming the opacity animation duration is 300ms
+
+        // Clear the zIndex timeout when the component is unmounted or if the effect runs again
+        return () => clearTimeout(zIndexTimeout);
+      }, 2000);
+
+      // Clear the opacity timeout when the component is unmounted or if the effect runs again
+      return () => clearTimeout(opacityTimeout);
     }
-  }, [loadingImage, currentImage, team.clicked_hero]);
+  }, [room?.status]);
+
 
   useEffect(() => {
     socket.on("CHAMPION_SELECTED", (data) => {
@@ -88,9 +103,8 @@ const TeamView = () => {
     if (team) {
       setCanSelect(team.isturn);
       setSelectedChampion(team.clicked_hero || "");
-      setCurrentImage(team.clicked_hero || "");
+      setCurrentImage(currentTeam.clicked_hero || "");
       setClickedHero(currentTeam.clicked_hero); // Update the splash image
-      handleImageChange(currentTeam.clicked_hero);
     }
   }, [currentTeam.clicked_hero, other.clicked_hero, team, team.clicked_hero]);
 
@@ -106,19 +120,24 @@ const TeamView = () => {
     setClickedHero(hero.name); // Update the splash image
   };
 
-useEffect(() => {
-  if (!team.isturn) {
-    setSelectedChampion("");
-    setCanSelect(false);
-    setClickedHero(null);
-  } else {
-    setCanSelect(true);
-  }
-}, [team.isturn]);
+  useEffect(() => {
+    if (!team.isturn) {
+      setSelectedChampion("");
+      setCanSelect(false);
+      setClickedHero(null);
+    } else {
+      setCanSelect(true);
+    }
+  }, [team.isturn]);
+
+  const isBanPhase = room?.status === 'ban';
 
   const buttonText = team.isturn
-    ? "Confirm Selection"
-    : `It's ${other.color} team to pick`;
+  ? isBanPhase
+      ? "Confirmer le Ban"
+      : "Confirmer la Selection"
+  : `C'est à l'équipe ${other.color} de ${isBanPhase ? 'bannir' : 'choisir'}`;
+
 
   if (!team || error) {
     return <div>Team not found</div>;
@@ -133,8 +152,40 @@ useEffect(() => {
     isTurn: { width: "125px" } // you can adjust this value to what you want
   };
 
+
+
   return (
     <>
+
+      {isBanPhase && (
+        <motion.div
+          exit="exit"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            delay: .2,
+            duration: 0.3,
+            ease: [0.585, 0.535, 0.230, 0.850]
+          }}
+          className="absolute top-0 left-0 border-[6px] h-full w-full border-red-500 blur-2xl -z-50"></motion.div>
+      )}
+      <motion.div
+        exit="exit"
+        initial={{ x: 0, opacity: 0, zIndex: 50 }}
+        animate={animationState}
+        transition={{
+          delay: .2,
+          duration: 0.3,
+          ease: [0.585, 0.535, 0.230, 0.850]
+        }}
+        className="absolute top-0 left-0 w-full h-full">
+        <div className="flex items-center justify-center h-full w-full">
+          <div className={`w-1/2 rounded-sm shadow-xl py-6 font-bold text-center ${isBanPhase ? 'bg-red-600 text-red-950' : 'bg-yellow text-yellow-text'}`}>
+            <h1 className="text-8xl font-bold">{isBanPhase ? 'BAN PHASE' : 'PICK PHASE'}</h1>
+          </div>
+        </div>
+      </motion.div>
+
       <motion.div
         exit="exit"
         initial={{ opacity: 0 }}  // start at half the size
@@ -143,8 +194,8 @@ useEffect(() => {
       >
         <motion.div
           className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: fadeSplash ? 1 : 0 }}
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
           transition={defaultTransition}
         >
           {currentImage && (
@@ -154,17 +205,15 @@ useEffect(() => {
               height={1080}
               rel="preload"
               className={`absolute z-10 w-full h-full object-cover object-center ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
-              alt={`${clickedHero} splash`}
-              onLoad={() => setLoadingImage(false)} // Step 3: Wait for the New Image to Load
-            />
-          )}
+              alt={``}
+            />)}
         </motion.div>
         <motion.div
           exit="exit"
           initial={{ y: "30px", opacity: 0 }}  // start at half the size
           animate={{ y: "0px", opacity: 1 }}    // animate to full size
           transition={defaultTransition}
-          className="grid grid-cols-3 items-center mb-6">
+          className="grid grid-cols-3 items-center my-3">
           <p className={`flex items-center gap-2 justify-start`}>
             <motion.div
               initial={blue.isturn ? "isTurn" : "notTurn"}
@@ -175,9 +224,11 @@ useEffect(() => {
             <TeamStatus team={blue} showReadyState={false} /></p>
           <div className="flex flex-col items-center">
             <Timer />
-            <p className="font-medium text-md mt-2">
+            <p className="font-medium text-sm">
               {currentTeam === team
-                ? `C\'est à vous de choisir, vous êtes l\'équipe ${currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1)}`
+                ? isBanPhase
+                  ? `C'est à vous de bannir, vous êtes l'équipe ${currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1)}`
+                  : `C'est à vous de choisir, vous êtes l'équipe ${currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1)}`
                 : `L'équipe ${currentTeam.name.charAt(0).toUpperCase() + currentTeam.name.slice(1)} entrain de choisir`}
             </p>
           </div>
@@ -195,7 +246,7 @@ useEffect(() => {
         </motion.div>
       </motion.div>
       <motion.div
-        initial={{ y: "76px", scale: 1.05 }}  // start at half the size
+        initial={{ y: "90px", scale: 1.05 }}  // start at half the size
         animate={{ y: "0px", scale: 1 }}    // animate to full size
         transition={defaultTransition}
       >
@@ -209,11 +260,10 @@ useEffect(() => {
       <motion.div
         exit="exit"
         initial={{ y: 70, opacity: 0 }}  // start at half the size
-        animate={{ y: 35, opacity: 1 }}
+        animate={{ y: 25, opacity: 1 }}
         transition={defaultTransition}
       >
-        <div className="flex justify-center my-6">
-
+        <div className="flex justify-center my-4">
           {team.isturn ? (
             <Button
               size="lg"
@@ -221,7 +271,7 @@ useEffect(() => {
               onClick={handleConfirmSelection}
               disabled={!selectedChampion || !canSelect || !team.isturn}
             >
-  
+
               {!canSelect ? (<LoadingCircle color="black" />) : (<>{buttonText}</>)}
             </Button>
           ) : (
