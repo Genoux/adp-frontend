@@ -246,7 +246,7 @@ const [animationState, setAnimationState] = useState<AnimationState>({
         </motion.div>
       </motion.div>
       <motion.div
-        initial={{ y: "90px", scale: 1.05 }}  // start at half the size
+        initial={{ y: "80px", scale: 1.05 }}  // start at half the size
         animate={{ y: "0px", scale: 1 }}    // animate to full size
         transition={defaultTransition}
       >

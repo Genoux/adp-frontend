@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={`${bai_jamjuree.className} w-[1220px] mx-auto overflow-hidden`}>
+      <body className={`${bai_jamjuree.className} sm:w-[1024px] lg:w-[1280px] mx-auto overflow-hidden`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
         </ThemeProvider>
