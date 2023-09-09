@@ -8,12 +8,13 @@ import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
-import { delay, motion, useAnimation } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { defaultTransition } from '@/app/lib/animationConfig'
 import Image from "next/image";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
 import TeamStatus from "@/app/components/common/TeamStatus";
 import { truncateString } from "@/app/lib/utils";
+import BannerPhase from "@/app/components/common/BannerPhase"
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
@@ -34,12 +35,12 @@ const TeamView = () => {
   type AnimationState = {
     zIndex: number;
     opacity: number;
-};
+  };
 
-const [animationState, setAnimationState] = useState<AnimationState>({ 
-  zIndex: 50, 
-  opacity: 0 
-});
+  const [animationState, setAnimationState] = useState<AnimationState>({
+    zIndex: 50,
+    opacity: 0
+  });
 
   useEffect(() => {
     console.log(room?.status)
@@ -47,20 +48,16 @@ const [animationState, setAnimationState] = useState<AnimationState>({
     if (room?.status === "ban" || room?.status === "select") {
       setAnimationState({ opacity: 1, zIndex: 50 });
 
-      // Start the first timeout for the opacity animation
       const opacityTimeout = setTimeout(() => {
-        setAnimationState(prev => ({ ...prev, opacity: 0}));
+        setAnimationState(prev => ({ ...prev, opacity: 0 }));
 
-        // Start a second timeout for changing the zIndex after the opacity animation completes
         const zIndexTimeout = setTimeout(() => {
           setAnimationState(prev => ({ ...prev, zIndex: 0 }));
-        }, 300);  // Assuming the opacity animation duration is 300ms
+        }, 300);
 
-        // Clear the zIndex timeout when the component is unmounted or if the effect runs again
         return () => clearTimeout(zIndexTimeout);
       }, 2000);
 
-      // Clear the opacity timeout when the component is unmounted or if the effect runs again
       return () => clearTimeout(opacityTimeout);
     }
   }, [room?.status]);
@@ -130,13 +127,15 @@ const [animationState, setAnimationState] = useState<AnimationState>({
     }
   }, [team.isturn]);
 
+
+
   const isBanPhase = room?.status === 'ban';
 
   const buttonText = team.isturn
-  ? isBanPhase
+    ? isBanPhase
       ? "Confirmer le Ban"
       : "Confirmer la Selection"
-  : `C'est à l'équipe ${other.color} de ${isBanPhase ? 'bannir' : 'choisir'}`;
+    : `C'est à l'équipe ${other.color} de ${isBanPhase ? 'bannir' : 'choisir'}`;
 
 
   if (!team || error) {
@@ -149,10 +148,8 @@ const [animationState, setAnimationState] = useState<AnimationState>({
 
   const widthVariants = {
     notTurn: { width: "6px" },
-    isTurn: { width: "125px" } // you can adjust this value to what you want
+    isTurn: { width: "125px" }
   };
-
-
 
   return (
     <>
@@ -169,22 +166,11 @@ const [animationState, setAnimationState] = useState<AnimationState>({
           }}
           className="absolute top-0 left-0 border-[6px] h-full w-full border-red-500 blur-2xl -z-50"></motion.div>
       )}
-      <motion.div
-        exit="exit"
-        initial={{ x: 0, opacity: 0, zIndex: 50 }}
-        animate={animationState}
-        transition={{
-          delay: .2,
-          duration: 0.3,
-          ease: [0.585, 0.535, 0.230, 0.850]
-        }}
-        className="absolute top-0 left-0 w-full h-full">
-        <div className="flex items-center justify-center h-full w-full">
-          <div className={`w-1/2 rounded-sm shadow-xl py-6 font-bold text-center ${isBanPhase ? 'bg-red-600 text-red-950' : 'bg-yellow text-yellow-text'}`}>
-            <h1 className="text-8xl font-bold">{isBanPhase ? 'BAN PHASE' : 'PICK PHASE'}</h1>
-          </div>
-        </div>
-      </motion.div>
+
+      <BannerPhase
+        roomStatus={room?.status}
+        onBannerVisibleChange={(visible: boolean) => { }}
+      />
 
       <motion.div
         exit="exit"
