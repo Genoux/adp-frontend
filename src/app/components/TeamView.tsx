@@ -14,7 +14,8 @@ import Image from "next/image";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
 import TeamStatus from "@/app/components/common/TeamStatus";
 import { truncateString } from "@/app/lib/utils";
-import BannerPhase from "@/app/components/common/BannerPhase"
+//import BannerPhase from "@/app/components/common/BannerPhase"
+import ArrowAnimation from '@/app/components/common/ArrowAnimation'; // Adjust the import path accordingly
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
@@ -157,26 +158,27 @@ const TeamView = () => {
       {isBanPhase && (
         <motion.div
           exit="exit"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity:0   }}
+          animate={{ opacity: .05 }}
           transition={{
             delay: .2,
-            duration: 0.3,
-            ease: [0.585, 0.535, 0.230, 0.850]
+            duration: 1,
+            ease: "linear"
           }}
-          className="absolute top-0 left-0 border-[6px] h-full w-full border-red-500 blur-2xl -z-50"></motion.div>
+          className="absolute h-full w-full bg-red-900 opacity-5 top-0 left-0 -z-50"></motion.div>
       )}
 
-      <BannerPhase
+      {/* <BannerPhase
         roomStatus={room?.status}
         onBannerVisibleChange={(visible: boolean) => { }}
-      />
+      /> */}
 
       <motion.div
         exit="exit"
         initial={{ opacity: 0 }}  // start at half the size
         animate={{ opacity: 1 }}    // animate to full size
         transition={defaultTransition}
+        className="py-2"
       >
         <motion.div
           className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}
@@ -187,10 +189,10 @@ const TeamView = () => {
           {currentImage && (
             <Image
               src={`/images/champions/splash/${currentImage?.toLowerCase().replace(/\s+/g, '')}.jpg`}
-              width={1920}
-              height={1080}
+              width={3840}
+              height={1440}
               rel="preload"
-              className={`absolute z-10 w-full h-full object-cover object-center ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+              className={`w-full h-full object-cover object-center ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
               alt={``}
             />)}
         </motion.div>
@@ -199,16 +201,18 @@ const TeamView = () => {
           initial={{ y: "30px", opacity: 0 }}  // start at half the size
           animate={{ y: "0px", opacity: 1 }}    // animate to full size
           transition={defaultTransition}
-          className="grid grid-cols-3 items-center my-3">
-          <p className={`flex items-center gap-2 justify-start`}>
+          className="grid grid-cols-3 items-center my-3 w-full">
+          <div className={`flex items-center gap-2 justify-start`}>
             <motion.div
               initial={blue.isturn ? "isTurn" : "notTurn"}
               animate={blue.isturn ? "isTurn" : "notTurn"}
               variants={widthVariants}
-              className={`h-6 w-1 bg-${blue.color} rounded-full`}></motion.div>
-            <span className="text-2xl">{truncateString(blue.name.toUpperCase(), 6)} </span>
-            <TeamStatus team={blue} showReadyState={false} /></p>
-          <div className="flex flex-col items-center">
+              className={`h-6 w-1 bg-${blue.color} rounded-full`}>
+            </motion.div>
+            <span className="text-2xl mr-2">{truncateString(blue.name.toUpperCase(), 6)}</span>
+            <ArrowAnimation roomStatus={room?.status} teamIsTurn={blue.isturn} orientation="right" />
+          </div>
+          <div className="flex flex-col w-full items-center">
             <Timer />
             <p className="font-medium text-sm">
               {currentTeam === team
@@ -219,9 +223,8 @@ const TeamView = () => {
             </p>
           </div>
           <p className={`flex items-center gap-2 justify-end`}>
-            <TeamStatus team={red} showReadyState={false} />
-
-            <span className="text-2xl">{truncateString(red.name.toUpperCase(), 6)} </span>
+          <ArrowAnimation roomStatus={room?.status} teamIsTurn={red.isturn} orientation="left" />
+            <span className="text-2xl ml-2">{truncateString(red.name.toUpperCase(), 6)} </span>
             <motion.div
               initial={red.isturn ? "isTurn" : "notTurn"}
               animate={red.isturn ? "isTurn" : "notTurn"}
@@ -232,7 +235,7 @@ const TeamView = () => {
         </motion.div>
       </motion.div>
       <motion.div
-        initial={{ y: "80px", scale: 1.05 }}  // start at half the size
+        initial={{ y: "72px", scale: 1.05 }}  // start at half the size
         animate={{ y: "0px", scale: 1 }}    // animate to full size
         transition={defaultTransition}
       >
@@ -245,7 +248,7 @@ const TeamView = () => {
       </motion.div>
       <motion.div
         exit="exit"
-        initial={{ y: 70, opacity: 0 }}  // start at half the size
+        initial={{ y: -10, opacity: 0 }}  // start at half the size
         animate={{ y: 25, opacity: 1 }}
         transition={defaultTransition}
       >

@@ -1,6 +1,7 @@
 import { roomStore } from "@/app/stores/roomStore";
 import { motion } from 'framer-motion';
 import { defaultTransition } from '@/app/lib/animationConfig';
+import { useState, useEffect } from 'react';
 
 interface Team {
   [key: string]: any;
@@ -27,36 +28,61 @@ const TeamPicks = ({ team }: Team) => {
 
   const isDone = room?.status === "done";
 
+  const [borderIndex, setBorderIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (team.isturn && room?.status === 'select') {
+      const firstUnselectedHeroIndex = (team.heroes_selected as unknown as Hero[]).findIndex(hero => !hero.selected);
+      setBorderIndex(firstUnselectedHeroIndex);
+    }
+    
+    return () => {
+      setBorderIndex(null); // Remove the border when it's not the team's turn
+    };
+  }, [room?.status, team.heroes_selected, team.isturn]);
+
   return (
     <motion.div
        initial="initial"
        animate={isDone ? "done" : "notDone"}
        transition={defaultTransition}
        variants={heightVariants}
-      className={`grid grid-cols-5 gap-2 h-full w-full ${team.isturn || isDone ? `opacity-100` : "opacity-30"}`}>
-      {(team.heroes_selected as unknown as Hero[]).map(
-          (hero: Hero, index: number) => (
-            <div
-              key={index}
-              className={`h-full w-full rounded-md overflow-hidden relative ${hero.name ? "" : "border border-white border-opacity-10"}`}>
-              {hero.name && (
-                <div>
-                  <p className="absolute z-50 w-full h-full flex justify-center items-center font-medium">
-                    {hero.name}
-                  </p>
-                  <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-t from-black via-transparent to-transparent bg-clip-content z-40"></div>
-                  <div
-                    className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
-                    style={{
-                      backgroundImage: `url("/images/champions/splash/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg")`,
-                    }}
-                  />
-                  {hero.name.toLowerCase()}
-                </div>
-              )}
+       className={`grid grid-cols-5 gap-2 h-full w-full ${team.isturn || isDone ? `opacity-100` : "opacity-30"}`}>
+      {(team.heroes_selected as unknown as Hero[]).map((hero: Hero, index: number) => (
+        <div
+          key={index}
+          className={`h-full w-full rounded-md overflow-hidden transition-all delay-500 relative ${hero.name ? "" : (index === borderIndex ? "border ease-in-out animate-pulse bg-yellow-300 bg-opacity-10 border-yellow glow-yellow" : "border border-white border-opacity-10")}`}>
+          {hero.name && (
+            <div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                  delay: .1,
+                  duration: .5,
+                  ease: "easeInOut"
+                }}
+                className="absolute z-50 w-full h-full flex justify-center items-center font-medium opacity-0">
+                {hero.name}
+              </motion.div>
+              <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-t from-black via-transparent to-transparent bg-clip-content z-40"></div>
+              <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{
+                    delay: .1,
+                    duration: .2,
+                    ease: "easeInOut"
+                  }}
+                className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
+                style={{
+                  backgroundImage: `url("/images/champions/splash/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg")`,
+                }}
+              />
             </div>
-          )
-        )}
+          )}
+        </div>
+      ))}
     </motion.div>
   );
 };

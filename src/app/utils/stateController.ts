@@ -28,29 +28,29 @@ export async function setSelect(roomid: string) {
 
 export async function setFinish(roomid: string) {
   // Get 10 random champions using the function you provided
-  const randomSet = await randomChampions();
-  const anotherSet = await randomChampions();
-  
-  const allChampions = [...randomSet.list, ...anotherSet.list].slice(0, 10);
+  // const randomSet = await randomChampions();
+  // const anotherSet = await randomChampions();
 
-  // Split the 10 champions into two sets of 5
-  const blueChampions = allChampions.slice(0, 5);
-  const redChampions = allChampions.slice(5, 10);
+  // const allChampions = [...randomSet.list, ...anotherSet.list].slice(0, 10);
 
-  // Modify the list to set selected to true
-  const blueChampionsToUpdate = blueChampions.map(champ => ({
-    ...champ,
-    selected: true
-  }));
+  // // Split the 10 champions into two sets of 5
+  // const blueChampions = allChampions.slice(0, 5);
+  // const redChampions = allChampions.slice(5, 10);
 
-  const redChampionsToUpdate = redChampions.map(champ => ({
-    ...champ,
-    selected: true
-  }));
+  // // Modify the list to set selected to true
+  // const blueChampionsToUpdate = blueChampions.map(champ => ({
+  //   ...champ,
+  //   selected: true
+  // }));
 
-  // Update the teams with the selected champions.
-  await supabase.from("teams").update({ heroes_selected: blueChampionsToUpdate }).eq("room", roomid).eq("color", "blue");
-  await supabase.from("teams").update({ heroes_selected: redChampionsToUpdate }).eq("room", roomid).eq("color", "red");
+  // const redChampionsToUpdate = redChampions.map(champ => ({
+  //   ...champ,
+  //   selected: true
+  // }));
+
+  // // Update the teams with the selected champions.
+  // await supabase.from("teams").update({ heroes_selected: blueChampionsToUpdate }).eq("room", roomid).eq("color", "blue");
+  // await supabase.from("teams").update({ heroes_selected: redChampionsToUpdate }).eq("room", roomid).eq("color", "red");
 
   // ... Rest of the function remains unchanged ...
   await supabase.from("rooms").update({ cycle: 17, status: "done" }).eq("id", roomid);
