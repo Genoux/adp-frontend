@@ -46,7 +46,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
 
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-10 gap-2 cursor-pointer px-24">
+      <div className="grid grid-cols-10 gap-2 cursor-pointer">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
             const isActive = hoverIndex === index || hero.name === selectedChampion && team?.isturn;
@@ -58,7 +58,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 animate={{ opacity: shouldFade ? 0.7 : 1 }}
                 transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
                 key={index}
-                className={clsx("rounded-sm", {
+                className={clsx("rounded-xl", {
                   "bg-gray-800": isActive,
                   "grayscale": hero.selected,
                   "pointer-events-none": hero.selected || !isturnAvailable,
@@ -80,7 +80,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     setHoverIndex(-1);
                   }
                 }}>
-                <div className="relative overflow-hidden rounded-sm">
+                <div className="relative overflow-hidden rounded-md">
                   <Image
                     src={`/images/champions/tiles/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
                     alt={hero.name}

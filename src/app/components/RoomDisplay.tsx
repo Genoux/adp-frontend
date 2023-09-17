@@ -44,10 +44,9 @@ const TeamDisplay: React.FC<{
   setCopyLink: React.Dispatch<React.SetStateAction<{ [key: string]: boolean }>>;
 }> = ({ team, roomId, copyLink, setCopyLink }) => {
   const [copied, setCopied] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
 
   const handleCopyClick = () => {
-    copyToClipboard(`/room/${roomId}/${team.id}`, `${team.id}`, setCopyLink);
+    copyToClipboard(`room/${roomId}/${team.id}`, `${team.id}`, setCopyLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
   };
