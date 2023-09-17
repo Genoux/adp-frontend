@@ -98,11 +98,11 @@ const TeamView = () => {
   };
 
   useEffect(() => {
-    if (team) {
-      setCanSelect(team.isturn);
+    if (team && team.isturn) {
+     // setCanSelect(team.isturn);
       setSelectedChampion(team.clicked_hero || "");
-      setCurrentImage(currentTeam.clicked_hero || "");
       setClickedHero(currentTeam.clicked_hero); // Update the splash image
+      setCurrentImage(currentTeam.clicked_hero || "");
     }
   }, [currentTeam.clicked_hero, other.clicked_hero, team, team.clicked_hero]);
 
@@ -120,9 +120,9 @@ const TeamView = () => {
 
   useEffect(() => {
     if (!team.isturn) {
-      setSelectedChampion("");
+      //setSelectedChampion("");
       setCanSelect(false);
-      setClickedHero(null);
+      //setClickedHero(null);
     } else {
       setCanSelect(true);
     }
