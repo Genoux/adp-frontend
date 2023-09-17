@@ -87,9 +87,8 @@ const ReadyView = () => {
       ) : (
         <Button
         size="lg"
-        className={`bg-yellow hover:bg-yellow-hover px-24 text-sm uppercase text-yellow-text rounded-sm font-bold mt-6 ${!connected ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`bg-yellow hover:bg-yellow-hover px-24 text-sm uppercase text-yellow-text rounded-sm font-bold mt-6`}
         onClick={handleReadyClick}
-        disabled={!connected} // Button will be disabled if connected is false
       >
         {"Nous sommes prêt"}
       </Button>
