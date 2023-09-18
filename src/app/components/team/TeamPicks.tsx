@@ -34,12 +34,10 @@ const TeamPicks = ({ team }: Team) => {
     if (team.isturn && room?.status === 'select') {
       const firstUnselectedHeroIndex = (team.heroes_selected as unknown as Hero[]).findIndex(hero => !hero.selected);
       setBorderIndex(firstUnselectedHeroIndex);
-    }
-    
-    return () => {
+    } else {
       setBorderIndex(null); // Remove the border when it's not the team's turn
-    };
-  }, [room?.status, team.heroes_selected, team.isturn]);
+    }
+  }, [team.isturn]);
 
   return (
     <motion.div
