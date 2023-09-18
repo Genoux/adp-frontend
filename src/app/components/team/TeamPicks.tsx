@@ -51,7 +51,7 @@ const TeamPicks = ({ team }: Team) => {
       {(team.heroes_selected as unknown as Hero[]).map((hero: Hero, index: number) => (
         <div
           key={index}
-          className={`h-full w-full rounded-md overflow-hidden transition-all delay-500 relative ${hero.name ? "" : (index === borderIndex ? "border ease-in-out animate-pulse bg-yellow-300 bg-opacity-10 border-yellow glow-yellow" : "border border-white border-opacity-10")}`}>
+          className={`h-full w-full rounded-md overflow-hidden transition-all relative ${hero.name ? "" : (index === borderIndex ? "border ease-in-out animate-pulse bg-yellow-300 bg-opacity-10 border-yellow glow-yellow" : "border border-white border-opacity-10")}`}>
           {hero.name && (
             <div>
               <motion.div
