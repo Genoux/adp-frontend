@@ -98,7 +98,7 @@ const TeamView = () => {
   };
 
   useEffect(() => {
-    if (team && team.isturn) {
+    if (team) {
      // setCanSelect(team.isturn);
       setSelectedChampion(team.clicked_hero || "");
       setClickedHero(currentTeam.clicked_hero); // Update the splash image
@@ -178,7 +178,7 @@ const TeamView = () => {
         initial={{ opacity: 0 }}  // start at half the size
         animate={{ opacity: 1 }}    // animate to full size
         transition={defaultTransition}
-        className="py-2"
+        className="pb-2"
       >
         <motion.div
           className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}
@@ -192,7 +192,7 @@ const TeamView = () => {
               width={3840}
               height={1440}
               rel="preload"
-              className={`w-full h-full object-cover object-center ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+              className={`w-full h-full object-cover object-center opacity-50 ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
               alt={``}
             />)}
         </motion.div>
@@ -214,7 +214,7 @@ const TeamView = () => {
           </div>
           <div className="flex flex-col w-full items-center">
             <Timer />
-            <p className="font-medium text-sm">
+            <p className="font-medium text-xs text-center">
               {currentTeam === team
                 ? isBanPhase
                   ? `C'est à vous de bannir, vous êtes l'équipe ${currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1)}`
@@ -230,7 +230,6 @@ const TeamView = () => {
               animate={red.isturn ? "isTurn" : "notTurn"}
               variants={widthVariants}
               className={`h-6 w-1 bg-${red.color} rounded-full`}></motion.div>
-
           </p>
         </motion.div>
       </motion.div>
@@ -267,7 +266,7 @@ const TeamView = () => {
             <div className="h-[44px] flex items-center">
               <div className="flex flex-col justify-center items-center">
                 <p className="text-sm pr-3 opacity-80">Ce n’est pas votre tour</p>
-                <p className="text-lg font-medium">{`En attente de l'équipe ${other.color}`}
+                <p className="text-md font-medium">{`En attente de l'équipe ${other.color}`}
                   <div className="sending-animation pl-1">
                     <span className="sending-animation-dot">.</span>
                     <span className="sending-animation-dot">.</span>

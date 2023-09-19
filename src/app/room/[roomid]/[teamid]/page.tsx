@@ -77,7 +77,7 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <>
-      <main>
+      <main className='px-0 lg:px-12 '>
         <AnimatePresence mode="wait">
           <SocketContext.Provider value={socket}>
             {isLobbyView && <LobbyView />}

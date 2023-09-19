@@ -14,13 +14,13 @@ const RoomInfo = () => {
        initial={{ opacity:.5 }}  // start at half the size
         animate={{opacity: 1 }}    // animate to full size
         transition={defaultTransition}>
-        <div className="flex flex-col justify-center ">
-          <div className="flex flex-row justify-between w-full gap-96">
+        <div className="flex flex-col justify-center">
+          <div className="flex flex-row justify-between w-full gap-80">
             <TeamBans team={blue} />
             <TeamBans team={red} />
           </div>
 
-          <div className="flex flex-row justify-between w-full h-full gap-24 mt-2">
+          <div className="flex flex-row justify-between w-full h-full gap-12 mt-2">
             <TeamPicks team={blue} />
             <TeamPicks team={red} />
           </div>

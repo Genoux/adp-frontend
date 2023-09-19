@@ -22,7 +22,7 @@ const TeamPicks = ({ team }: Team) => {
   
   const heightVariants = {
     initial: { y: 0, height: 0, originY: 0 },
-    notDone: { height: "225px", y: -45 },  
+    notDone: { height: "150px", y: -45 },  
     done: { height: "300px", y: 0 }  
   };
 
@@ -45,7 +45,7 @@ const TeamPicks = ({ team }: Team) => {
        animate={isDone ? "done" : "notDone"}
        transition={defaultTransition}
        variants={heightVariants}
-       className={`grid grid-cols-5 gap-2 h-full w-full ${team.isturn || isDone ? `opacity-100` : "opacity-30"}`}>
+       className={`grid grid-cols-5 gap-2 h-full w-full ${team.isturn || isDone ? `opacity-100` : "opacity-60"}`}>
       {(team.heroes_selected as unknown as Hero[]).map((hero: Hero, index: number) => (
         <div
           key={index}

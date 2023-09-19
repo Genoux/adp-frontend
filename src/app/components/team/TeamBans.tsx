@@ -15,7 +15,7 @@ interface Hero {
 const TeamBans = ({ team }: Team) => {
   const heightVariants = {
     collapsed: { y: 0, height: "0px", opacity: 0 },
-    expanded: { y: -50, height: "80px", opacity: 1 }
+    expanded: { y: -50, height: "70px", opacity: 1 }
   };
 
   const { room } = roomStore(state => ({
