@@ -120,7 +120,7 @@ const TeamView = () => {
       {isBanPhase && (
         <motion.div
           exit="exit"
-          initial={{ opacity:0   }}
+          initial={{ opacity: 0 }}
           animate={{ opacity: .05 }}
           transition={{
             delay: .2,
@@ -180,7 +180,7 @@ const TeamView = () => {
             </p>
           </div>
           <p className={`flex items-center gap-2 justify-end`}>
-          <ArrowAnimation roomStatus={room?.status} teamIsTurn={red.isturn} orientation="left" />
+            <ArrowAnimation roomStatus={room?.status} teamIsTurn={red.isturn} orientation="left" />
             <span className="text-2xl ml-2">{truncateString(red.name.toUpperCase(), 6)} </span>
             <motion.div
               initial={red.isturn ? "isTurn" : "notTurn"}
@@ -191,7 +191,7 @@ const TeamView = () => {
         </motion.div>
       </motion.div>
       <motion.div
-        initial={{ y: "72px", scale: 1.05 }}  // start at half the size
+        initial={{ y: "85px", scale: 1.05 }}  // start at half the size
         animate={{ y: "0px", scale: 1 }}    // animate to full size
         transition={defaultTransition}
       >

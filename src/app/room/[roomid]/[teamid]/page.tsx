@@ -13,7 +13,9 @@ import useSocket from "@/app/hooks/useSocket";
 import SocketContext from "@/app/context/SocketContext";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
+import StateControllerButtons from "@/app/components/common/StateControllerButtons";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
+import ChampionsPool from "@/app/components/common/ChampionsPool";
 import { Button } from '@/app/components/ui/button';
 
 interface RoomProps {
@@ -76,6 +78,7 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <>
+      <StateControllerButtons  roomid={roomid}/>
       <main className='px-0 lg:px-12 '>
         <AnimatePresence mode="wait">
           <SocketContext.Provider value={socket}>

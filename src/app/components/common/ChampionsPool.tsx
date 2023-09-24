@@ -4,6 +4,10 @@ import clsx from "clsx";
 import { roomStore } from "@/app/stores/roomStore";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from 'framer-motion';
+import { Blurhash } from 'react-blurhash';
+import { useImages } from '@/app/context/ImageContext';  // Import the useImages hook
+import MyImage from "./MyImage";
+
 interface Hero {
   name: string;
   selected: boolean;
@@ -25,24 +29,25 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
 }) => {
   const [hoverIndex, setHoverIndex] = useState(-1);
   const [mouseDown, setMouseDown] = useState<number | null>(null);
+
+  const { loadedImages, markAsLoaded } = useImages();
+
   const { room } = roomStore();
 
-  const previousActiveIndex = useRef<number | null>(null);
 
   const setHoverState = useCallback((index: number) => {
-    previousActiveIndex.current = hoverIndex;
     setHoverIndex(index);
-}, [hoverIndex]);
+  }, []);
 
-  
   useEffect(() => {
     if (!canSelect && room?.status !== 'planning') {
       setHoverState(-1);
       setMouseDown(null);
     }
-}, [canSelect, room?.status, setHoverState]);
+  }, [canSelect, room?.status, setHoverState]);
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
+  const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj"; // Replace with your actual Blurhash string
 
   return (
     <div className="flex flex-col">
@@ -73,7 +78,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 }}
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
                 onMouseEnter={() => {
-                  if(!canSelect && room?.status != 'planning') return
+                  if (!canSelect && room?.status != 'planning') return
                   setHoverIndex(index);
                 }}
                 onMouseLeave={() => {
@@ -81,7 +86,12 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     setHoverIndex(-1);
                   }
                 }}>
+
                 <div className="relative overflow-hidden rounded-md">
+                  {/* <MyImage
+                    src={`/images/champions/tiles/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
+                   alt={hero.name}
+                  /> */}
                   <Image
                     src={`/images/champions/tiles/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
                     alt={hero.name}
@@ -89,8 +99,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     width={500}
                     height={500}
                     placeholder="blur"
-                    blurDataURL="LEHLk~WB2yk8pyo0adR*.7kCMdnj"
-                    className="mx-auto"
+                   blurDataURL={blurhash}
                   />
                   <div className="flex items-center justify-center my-auto overflow-hidden">
                     <p
