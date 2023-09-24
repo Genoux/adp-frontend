@@ -33,6 +33,7 @@ const TeamBans = ({ team }: Team) => {
     } else {
       setBorderIndex(null); // Remove the border when it's not the team's turn
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [team.isturn]);
 
   return (
@@ -47,7 +48,7 @@ const TeamBans = ({ team }: Team) => {
         {(team.heroes_ban as unknown as Hero[]).map((hero: Hero, index: number) => (
           <div
             key={index}
-            className={`h-full w-full transition-all relative overflow-hidden rounded-md ${hero.selected && "border-1" } ${index === borderIndex ? "border border-red-600 ease-in-out animate-pulse bg-red-500 bg-opacity-20 border-opacity-70" : "opacity-50 bg-draftEmpty border border-white border-opacity-0 "}`}
+            className={`h-full w-full transition-all relative overflow-hidden rounded-md ${hero.selected && "bg-transparent"} ${!team.isturn && "opacity-50"} ${(index === borderIndex && !hero.selected) ? "border border-red-600 ease-in-out animate-pulse bg-red-500 bg-opacity-20 border-opacity-70" : "bg-draftEmpty border border-white border-opacity-0"}`}
           >
             {
               hero && hero.selected ? (
@@ -59,15 +60,32 @@ const TeamBans = ({ team }: Team) => {
                   </div>
                 ) : (
                   <div>
-                    <p className="absolute z-50 w-full h-full flex justify-center items-center font-medium">
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        delay: .1,
+                        duration: .5,
+                        ease: "easeInOut"
+                      }}
+                      className="absolute z-50 w-full h-full flex justify-center items-center font-medium">
                       {hero.name}
-                    </p>
-                    <div
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        delay: .1,
+                        duration: .2,
+                        ease: "easeInOut"
+                      }}
+
                       className="absolute top-0 left-0 w-full h-full bg-cover bg-center grayscale"
                       style={{
                         backgroundImage: `url("/images/champions/splash/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg")`,
                       }}
-                    />
+                    >
+                    </motion.div>
                   </div>
                 )
               ) : null

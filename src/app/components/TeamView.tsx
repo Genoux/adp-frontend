@@ -12,10 +12,8 @@ import { motion } from 'framer-motion';
 import { defaultTransition } from '@/app/lib/animationConfig'
 import Image from "next/image";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
-import TeamStatus from "@/app/components/common/TeamStatus";
 import { truncateString } from "@/app/lib/utils";
-//import BannerPhase from "@/app/components/common/BannerPhase"
-import ArrowAnimation from '@/app/components/common/ArrowAnimation'; // Adjust the import path accordingly
+import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
@@ -33,36 +31,6 @@ const TeamView = () => {
 
   const { current: team, other, blue, red } = useTeams(teamStore);
   const currentTeam = team.isturn ? team : other;
-  type AnimationState = {
-    zIndex: number;
-    opacity: number;
-  };
-
-  const [animationState, setAnimationState] = useState<AnimationState>({
-    zIndex: 50,
-    opacity: 0
-  });
-
-  useEffect(() => {
-    console.log(room?.status)
-
-    if (room?.status === "ban" || room?.status === "select") {
-      setAnimationState({ opacity: 1, zIndex: 50 });
-
-      const opacityTimeout = setTimeout(() => {
-        setAnimationState(prev => ({ ...prev, opacity: 0 }));
-
-        const zIndexTimeout = setTimeout(() => {
-          setAnimationState(prev => ({ ...prev, zIndex: 0 }));
-        }, 300);
-
-        return () => clearTimeout(zIndexTimeout);
-      }, 2000);
-
-      return () => clearTimeout(opacityTimeout);
-    }
-  }, [room?.status]);
-
 
   useEffect(() => {
     socket.on("CHAMPION_SELECTED", (data) => {
@@ -71,7 +39,7 @@ const TeamView = () => {
       setClickedHero(null);
       setTimeout(() => {
         setCanSelect(true);
-      }, 500);
+      }, 250);
     });
 
     return () => {
@@ -99,7 +67,6 @@ const TeamView = () => {
 
   useEffect(() => {
     if (team) {
-     // setCanSelect(team.isturn);
       setSelectedChampion(team.clicked_hero || "");
       setClickedHero(currentTeam.clicked_hero); // Update the splash image
       setCurrentImage(currentTeam.clicked_hero || "");
@@ -120,15 +87,11 @@ const TeamView = () => {
 
   useEffect(() => {
     if (!team.isturn) {
-      //setSelectedChampion("");
       setCanSelect(false);
-      //setClickedHero(null);
     } else {
       setCanSelect(true);
     }
   }, [team.isturn]);
-
-
 
   const isBanPhase = room?.status === 'ban';
 
@@ -154,7 +117,6 @@ const TeamView = () => {
 
   return (
     <>
-
       {isBanPhase && (
         <motion.div
           exit="exit"
@@ -167,11 +129,6 @@ const TeamView = () => {
           }}
           className="absolute h-full w-full bg-red-900 opacity-5 top-0 left-0 -z-50"></motion.div>
       )}
-
-      {/* <BannerPhase
-        roomStatus={room?.status}
-        onBannerVisibleChange={(visible: boolean) => { }}
-      /> */}
 
       <motion.div
         exit="exit"

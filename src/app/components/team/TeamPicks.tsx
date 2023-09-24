@@ -25,10 +25,11 @@ const TeamPicks = ({ team }: Team) => {
     notDone: { height: "150px", y: -45 },  
     done: { height: "300px", y: 0 }  
   };
-
+  
   const isDone = room?.status === "done";
 
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
+
 
   useEffect(() => {
     if (team.isturn && room?.status === 'select') {
@@ -37,7 +38,9 @@ const TeamPicks = ({ team }: Team) => {
     } else {
       setBorderIndex(null); // Remove the border when it's not the team's turn
     }
-  }, [team.isturn]);
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [room?.status, room?.cycle, team.isturn]);
 
   return (
     <motion.div

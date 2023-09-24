@@ -73,6 +73,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 }}
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
                 onMouseEnter={() => {
+                  if(!canSelect && room?.status != 'planning') return
                   setHoverIndex(index);
                 }}
                 onMouseLeave={() => {
@@ -87,6 +88,8 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     sizes="100vw"
                     width={500}
                     height={500}
+                    placeholder="blur"
+                    blurDataURL="LEHLk~WB2yk8pyo0adR*.7kCMdnj"
                     className="mx-auto"
                   />
                   <div className="flex items-center justify-center my-auto overflow-hidden">
