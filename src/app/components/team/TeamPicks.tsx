@@ -22,7 +22,7 @@ const TeamPicks = ({ team }: Team) => {
 
   const heightVariants = {
     initial: { y: 0, height: 0, originY: 0 },
-    notDone: { height: "150px", y: -45 },
+    notDone: { height: "250px", y: -45 },
     done: { height: "300px", y: 0 }
   };
 

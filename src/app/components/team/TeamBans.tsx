@@ -48,7 +48,7 @@ const TeamBans = ({ team }: Team) => {
         {(team.heroes_ban as unknown as Hero[]).map((hero: Hero, index: number) => (
           <div
             key={index}
-            className={`h-full w-full transition-all relative overflow-hidden rounded-md ${hero.selected && "bg-transparent"} ${!team.isturn && "opacity-50"} ${(index === borderIndex && !hero.selected) ? "border border-red-600 ease-in-out animate-pulse bg-red-500 bg-opacity-20 border-opacity-70" : "bg-draftEmpty border border-white border-opacity-0"}`}
+            className={`h-full w-full transition-all relative overflow-hidden rounded-md ${hero.selected && "bg-transparent"} ${!team.isturn && "opacity-50"} ${(index === borderIndex && !hero.selected) ? "border border-red-600 ease-in-out animate-pulse bg-red-500 bg-opacity-20 border-opacity-70" : "bg-[#161620] border border-white border-opacity-0"}`}
           >
             {
               hero && hero.selected ? (
