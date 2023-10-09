@@ -38,25 +38,26 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
   return (
     <div className="flex flex-col">
       <motion.div
-        initial={{  opacity: 0  }}
-        animate={{  opacity: 1 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={defaultTransition}
         className="text-center justify-end items-end mx-auto flex flex-col mb-12"
       >
         <Image
           src={`https://glrkarkczaqmuwkhnvoh.supabase.co/storage/v1/object/public/Brand/aram-header.svg`}
           width={460}
-          height={0} alt={""}/>
+          height={0} alt={""} />
       </motion.div>
       <div className="flex flex-col gap-6 items-center">
-      <motion.div
-        initial={{  opacity: 0, y: 10  }}
-        animate={{  opacity: 1, y: 0 }}
-        transition={{  delay: 0.5,
-          duration: 0.3,
-          ease: [0.585, 0.535, 0.230, 0.850]}}
-        className="flex flex-row gap-6"
-      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            duration: 0.3,
+            ease: [0.585, 0.535, 0.230, 0.850]
+          }}
+          className="flex flex-row gap-6"
+        >
           {teams.map(team => (
             <div key={team.id} className="flex flex-col gap-2">
               <label htmlFor={team.id}>{team.label}</label>
@@ -74,23 +75,24 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
               />
             </div>
           ))}
-        </motion.div> 
+        </motion.div>
         <motion.div
-        initial={{  opacity: 0, y: 10  }}
-        animate={{  opacity: 1, y: 0 }}
-        transition={{  delay: 0.8,
-          duration: 0.4,
-          ease: [0.585, 0.535, 0.230, 0.850]}}
-        className="flex flex-row gap-6"
-      >
-        <Button
-          size="lg"
-          className={`bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold mt-6 ${!formData.blueTeamName || !formData.redTeamName ? "opacity-10" : ""}`}
-          onClick={handleSubmit}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            duration: 0.4,
+            ease: [0.585, 0.535, 0.230, 0.850]
+          }}
+          className="flex flex-row gap-6"
         >
-          {"Créer une salle"}
+          <Button
+            size="lg"
+            className={`bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold mt-6 ${!formData.blueTeamName || !formData.redTeamName ? "opacity-10" : ""}`}
+            onClick={handleSubmit}
+          >
+            {"Créer une salle"}
           </Button>
-          </motion.div> 
+        </motion.div>
       </div>
 
 

@@ -114,7 +114,7 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({ room, blueTeam, redTea
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.2 }}
+      transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1]}}
       key="home-page"
     >
       <div className="flex flex-row w-full justify-center gap-6">
