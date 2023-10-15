@@ -32,7 +32,7 @@ const TeamPicks = ({ team }: Team) => {
 
 
   useEffect(() => {
-    if (team.isturn && team.nb_turn > 0) {
+    if (team.isturn && room?.status === 'select' && team.nb_turn > 0) {
       const firstUnselectedHeroIndex = (team.heroes_selected as unknown as Hero[]).findIndex(hero => !hero.selected);
       setBorderIndex(firstUnselectedHeroIndex);
     } else {
