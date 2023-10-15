@@ -127,8 +127,6 @@ const TeamView = () => {
 
   return (
     <>
-      TURN: {team.nb_turn.toString()}
-      CYCLE: {room?.cycle.toString()}
       {isBanPhase && (
         <motion.div
           exit="exit"
