@@ -32,7 +32,7 @@ const TeamPicks = ({ team }: Team) => {
 
 
   useEffect(() => {
-    if (team.isturn && room?.status === 'select') {
+    if (team.nb_turn > 0) {
       const firstUnselectedHeroIndex = (team.heroes_selected as unknown as Hero[]).findIndex(hero => !hero.selected);
       setBorderIndex(firstUnselectedHeroIndex);
     } else {
@@ -40,7 +40,7 @@ const TeamPicks = ({ team }: Team) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room?.status, room?.cycle, team.isturn]);
+  }, [team.nb_turn]);
 
   return (
     <motion.div

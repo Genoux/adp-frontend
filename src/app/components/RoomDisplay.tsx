@@ -53,7 +53,8 @@ const TeamDisplay: React.FC<{
 
 
   return (
-    <div className={clsx(
+    <>
+     <div className={clsx(
       team.borderColor,
       'hover:bg-opacity-10',
       'border',
@@ -75,7 +76,7 @@ const TeamDisplay: React.FC<{
         'bg-red-500 bg-opacity-5': team.color === 'red'
       }
     )}>
-
+      
       <h1 className="text-4xl font-medium mb-4 uppercase">{team.name}</h1>
       <div className="flex flex-row justify-center items-center gap-2">
       <Link href={`/room/${roomId}/${team.id}`} target="_blank">
@@ -105,6 +106,7 @@ const TeamDisplay: React.FC<{
         </TooltipProvider>
       </div>
     </div>
+    </>
   );
 };
 

@@ -32,20 +32,30 @@ const TeamView = () => {
   const { current: team, other, blue, red } = useTeams(teamStore);
   const currentTeam = team.isturn ? team : other;
 
+  // useEffect(() => {
+  //   socket.on("CHAMPION_SELECTED", (data) => {
+  //     console.log("socket.on - data:", data);
+  //     setSelectedChampion("");
+  //     setClickedHero(null);
+  //     setTimeout(() => {
+  //       setCanSelect(true);
+  //     }, 250);
+  //   });
+
+  //   return () => {
+  //     socket.off("CHAMPION_SELECTED");
+  //   };
+  // }, [socket]);
+
   useEffect(() => {
-    socket.on("CHAMPION_SELECTED", (data) => {
-      console.log("socket.on - data:", data);
+    if (team.nb_turn > 0) {
       setSelectedChampion("");
       setClickedHero(null);
       setTimeout(() => {
         setCanSelect(true);
       }, 250);
-    });
-
-    return () => {
-      socket.off("CHAMPION_SELECTED");
-    };
-  }, [socket]);
+    }
+  }, [team.nb_turn]);
 
 
   const handleConfirmSelection = async () => {
@@ -117,6 +127,8 @@ const TeamView = () => {
 
   return (
     <>
+      TURN: {team.nb_turn.toString()}
+      CYCLE: {room?.cycle.toString()}
       {isBanPhase && (
         <motion.div
           exit="exit"
