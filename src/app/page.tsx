@@ -47,14 +47,14 @@ function Home() {
     ...blueTeam,
     borderColor: 'border-blue border-t-4',
     color: blueTeam.color,
-    btnText: 'Rejoindre Bleue'
+    btnText: 'Rejoindre'
   });
 
   const mapToRedTeamStructure = (redTeam: RedTeam): Team => ({
     ...redTeam,
     borderColor: 'border-red border-t-4',
     color: redTeam.color,
-    btnText: 'Rejoindre Rouge'
+    btnText: 'Rejoindre'
   });
 
   const createRoomLogic = async (blueTeamName: string, redTeamName: string) => {
@@ -74,9 +74,6 @@ function Home() {
     });
 
     const data = await response1.json();
-    console.log("createRoomLogic - data:", data);
-
-    //setRoom(data.value.room); // Update the room state with the fetched room ID
     const mappedBlueTeam = mapToBlueTeamStructure(data.blue);
     setBlueTeam(mappedBlueTeam);
 
@@ -104,7 +101,7 @@ function Home() {
 
   return (
     <>
-      <main className="p-24 absolute w-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <main className="h-screen flex items-center justify-center">
         {room && blueTeam && redTeam ? (
           <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} copyLink={copyLink} setCopyLink={setCopyLink} />
         ) : (

@@ -2,8 +2,12 @@ import { Database } from "@/app/types/supabase";
 import Image from "next/image";
 import clsx from "clsx";
 import { roomStore } from "@/app/stores/roomStore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from 'framer-motion';
+import { Blurhash } from 'react-blurhash';
+import { useImages } from '@/app/context/ImageContext';  // Import the useImages hook
+import MyImage from "./MyImage";
+
 interface Hero {
   name: string;
   selected: boolean;
@@ -15,7 +19,6 @@ interface HeroPoolProps {
   selectedChampion?: string; // optional
   canSelect?: boolean; // optional
   handleClickedHero?: (hero: Hero) => void; // optional
-  clickedHero?: string | null; // optional
 }
 
 const ChampionsPool: React.FC<HeroPoolProps> = ({
@@ -23,21 +26,35 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   selectedChampion,
   canSelect,
   handleClickedHero = () => { },
-  clickedHero,
-
 }) => {
   const [hoverIndex, setHoverIndex] = useState(-1);
   const [mouseDown, setMouseDown] = useState<number | null>(null);
+
+  const { loadedImages, markAsLoaded } = useImages();
+
   const { room } = roomStore();
 
+
+  const setHoverState = useCallback((index: number) => {
+    setHoverIndex(index);
+  }, []);
+
+  useEffect(() => {
+    if (!canSelect && room?.status !== 'planning') {
+      setHoverState(-1);
+      setMouseDown(null);
+    }
+  }, [canSelect, room?.status, setHoverState]);
+
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
+  const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj"; // Replace with your actual Blurhash string
 
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-10 gap-2 cursor-pointer px-24">
+      <div className="grid grid-cols-10 px-12 gap-2 cursor-pointer">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
-            const isActive = hoverIndex === index || hero.name === selectedChampion;
+            const isActive = hoverIndex === index || hero.name === selectedChampion && team?.isturn;
             const isturnAvailable = team ? team.isturn : true;
             const shouldFade = hero.selected || (team && !isturnAvailable);
             return (
@@ -46,12 +63,11 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 animate={{ opacity: shouldFade ? 0.7 : 1 }}
                 transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
                 key={index}
-                className={clsx("rounded-sm", {
+                className={clsx("rounded-xl", {
                   "bg-gray-800": isActive,
                   "grayscale": hero.selected,
                   "pointer-events-none": hero.selected || !isturnAvailable,
-                  "border-opacity-0 bg-transparent": mouseDown === index,
-                  "z-50 border-2 border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion,
+                  "z-50 border-2 border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion && team?.isturn,
                 })}
                 onMouseDown={() => {
                   if (room?.status === "planning") return;
@@ -62,6 +78,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 }}
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
                 onMouseEnter={() => {
+                  if (!canSelect && room?.status != 'planning') return
                   setHoverIndex(index);
                 }}
                 onMouseLeave={() => {
@@ -69,14 +86,20 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     setHoverIndex(-1);
                   }
                 }}>
-                <div className="relative overflow-hidden rounded-sm">
+
+                <div className="relative overflow-hidden rounded-md">
+                  {/* <MyImage
+                    src={`/images/champions/tiles/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
+                   alt={hero.name}
+                  /> */}
                   <Image
                     src={`/images/champions/tiles/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
                     alt={hero.name}
                     sizes="100vw"
                     width={500}
                     height={500}
-                    className="mx-auto"
+                    placeholder="blur"
+                   blurDataURL={blurhash}
                   />
                   <div className="flex items-center justify-center my-auto overflow-hidden">
                     <p

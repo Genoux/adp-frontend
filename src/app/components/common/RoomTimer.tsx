@@ -25,7 +25,7 @@ const Timer: React.FC<TimerProps> = ({ className }) => {
 
   return (
     <div className={className}>
-      <h1 className="font-bold text-5xl  w-fit mx-auto ">
+      <h1 className="font-bold text-3xl w-fit mx-auto ">
         {timer || "00:00"}
       </h1>
     </div>

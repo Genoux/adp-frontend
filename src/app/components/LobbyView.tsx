@@ -1,3 +1,5 @@
+'use client'
+
 import supabase from "@/app/services/supabase";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
 import SocketContext from "@/app/context/SocketContext";
@@ -6,6 +8,7 @@ import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
 import TeamStatus from "@/app/components/common/TeamStatus";
+import { useState, useEffect } from 'react'
 
 import { Inter } from "next/font/google";
 const inter = Inter({
@@ -13,9 +16,9 @@ const inter = Inter({
   weight: "500"
 })
 
-
 const ReadyView = () => {
   const socket = useEnsureContext(SocketContext);
+  const [connected, setConnected] = useState<boolean | null>(false);
 
   const { room, error } = roomStore(state => ({
     room: state.room,
@@ -24,6 +27,16 @@ const ReadyView = () => {
   }));
 
   const { current: currentTeam, other: otherTeam, red, blue } = useTeams(teamStore);
+
+  useEffect(() => {
+    if (red.connected && blue.connected) { 
+      setConnected(true)
+    } else {
+      setConnected(false)
+    }
+   
+  }, [red.connected, blue.connected]);
+  
 
   if (!room || error) {
     return <div>Room not found</div>;
@@ -53,7 +66,6 @@ const ReadyView = () => {
 
         </div>
       </div>
-
       <div className="border border-opacity-10 rounded-md w-full mb-12">
         <div className="grid grid-cols-2 text-base">
           <p className={`${inter.className} flex flex-col items-center gap-2 p-6 border-r`}>{blue.name.toUpperCase()}<TeamStatus team={blue} showReadyState={true} />
@@ -63,7 +75,6 @@ const ReadyView = () => {
           </p>
         </div>
       </div>
-
       {currentTeam.ready ? (
         <div>
           <span className="pr-0.5 text-base">{`En attende de ${otherTeam.name}`}</span>
@@ -75,12 +86,12 @@ const ReadyView = () => {
         </div>
       ) : (
         <Button
-          size="lg"
-          className={`bg-yellow hover:bg-yellow-hover px-24 text-sm uppercase text-yellow-text rounded-sm font-bold mt-6`}
-          onClick={handleReadyClick}
-        >
-          {"Nous sommes prêt"}
-        </Button>
+        size="lg"
+        className={`bg-yellow hover:bg-yellow-hover px-24 text-sm uppercase text-yellow-text rounded-sm font-bold mt-6`}
+        onClick={handleReadyClick}
+      >
+        {"Nous sommes prêt"}
+      </Button>
       )}
     </div>
   );

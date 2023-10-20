@@ -44,17 +44,17 @@ const TeamDisplay: React.FC<{
   setCopyLink: React.Dispatch<React.SetStateAction<{ [key: string]: boolean }>>;
 }> = ({ team, roomId, copyLink, setCopyLink }) => {
   const [copied, setCopied] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
 
   const handleCopyClick = () => {
-    copyToClipboard(`/room/${roomId}/${team.id}`, `${team.id}`, setCopyLink);
+    copyToClipboard(`room/${roomId}/${team.id}`, `${team.id}`, setCopyLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
   };
 
 
   return (
-    <div className={clsx(
+    <>
+     <div className={clsx(
       team.borderColor,
       'hover:bg-opacity-10',
       'border',
@@ -76,7 +76,7 @@ const TeamDisplay: React.FC<{
         'bg-red-500 bg-opacity-5': team.color === 'red'
       }
     )}>
-
+      
       <h1 className="text-4xl font-medium mb-4 uppercase">{team.name}</h1>
       <div className="flex flex-row justify-center items-center gap-2">
       <Link href={`/room/${roomId}/${team.id}`} target="_blank">
@@ -106,6 +106,7 @@ const TeamDisplay: React.FC<{
         </TooltipProvider>
       </div>
     </div>
+    </>
   );
 };
 
@@ -115,7 +116,7 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({ room, blueTeam, redTea
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.2 }}
+      transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1]}}
       key="home-page"
     >
       <div className="flex flex-row w-full justify-center gap-6">

@@ -27,7 +27,7 @@ const customConfig: Config = {
 };
 
 export async function randomChampions() {
-  const shuffledChampions = champions.sort(() => Math.random() - 0.5);
+  const shuffledChampions = [...champions].sort(() => Math.random() - 0.5);
   const randomChampions = shuffledChampions.slice(0, 30);
 
   return {
@@ -40,8 +40,6 @@ function generateArray(key: string, length: number) {
 }
 
 async function createRoom(blueTeamName: string, redTeamName: string) {
-  console.log("createRoom - redTeamName:", redTeamName);
-  console.log("createRoom - blueTeamName:", blueTeamName);
   const champions = await randomChampions();
   const roomName: string = uniqueNamesGenerator(customConfig);
 
