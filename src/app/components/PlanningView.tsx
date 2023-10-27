@@ -27,7 +27,7 @@ export const WaitingView = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={defaultTransition}>
         <div className="scale-105">
-          <ChampionsPool />
+          <ChampionsPool canHoverToShowName={true} />
         </div>
       </motion.div>
     </>

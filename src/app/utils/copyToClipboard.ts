@@ -1,4 +1,4 @@
-const copyToClipboard = (link: string, teamId: string, setCopyLink: (prevState: { [key: string]: any }) => void) => {
+const copyToClipboard = (link: string) => {
   const copy = window.location.href + link;
 
   navigator.clipboard

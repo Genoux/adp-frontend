@@ -4,7 +4,7 @@ import { defaultTransition } from '@/app/lib/animationConfig'
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 
-const FinishView = () => {
+export const FinishView = () => {
   const { redTeam, blueTeam } = useTeams();
 
   if(!redTeam || !blueTeam) return null;

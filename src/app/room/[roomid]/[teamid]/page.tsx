@@ -87,7 +87,7 @@ export default function Room({ params }: RoomProps) {
             <div className='container'>
               {isPlanningView && <PlanningView />}
               {isRoomView && <TeamView />}
-              {isRoomView && <DraftView />}
+              {isRoomView && <DraftView applyHeightVariants={true} />}
             </div>
             {isFinishView && <FinishView />}
           </SocketContext.Provider>

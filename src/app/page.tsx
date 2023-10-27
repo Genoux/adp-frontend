@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
 import { RoomDisplay } from "./components/RoomDisplay";
 import { RoomCreationForm } from "./components/RoomCreationForm";
-import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
 
 interface Room {
   id: number;
@@ -41,8 +39,6 @@ function Home() {
   const [room, setRoom] = useState<Room | null>(null);
   const [redTeam, setRedTeam] = useState<Team | null>(null);
   const [blueTeam, setBlueTeam] = useState<Team | null>(null);
-
-  const [copyLink, setCopyLink] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState(false);
 
   const mapToBlueTeamStructure = (blueTeam: BlueTeam): Team => ({
@@ -62,7 +58,7 @@ function Home() {
   const createRoomLogic = async (blueTeamName: string, redTeamName: string) => {
     if (!blueTeamName || !redTeamName) {
       alert("Please fill in all the fields.");
-      return; // Stop form submission
+      return;
     }
 
     setLoading(true);
@@ -105,20 +101,7 @@ function Home() {
     <>
       <main className="h-screen flex items-center justify-center">
         {room && blueTeam && redTeam ? (
-          <>
-          <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} copyLink={copyLink} setCopyLink={setCopyLink} />
-            <div>
-              <Link href={`/room/${room.id}/spectator`} target="_blank">
-            <Button
-              size="lg"
-              className={`bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold`}
-            >
-           Spectator
-            </Button>
-          </Link>
-          </div>
-          </>
-  
+          <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
         ) : (
           <RoomCreationForm onCreate={createRoomLogic} />
         )}

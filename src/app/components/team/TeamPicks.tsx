@@ -50,11 +50,8 @@ const TeamPicks: React.FC<Team> = ({ team, applyHeightVariants = true }) => {
 
   return (
     <motion.div
-      initial="initial"
-      animate={isDone ? "done" : "notDone"}
-      variants={heightVariants}
-      transition={defaultTransition}
-      className={`grid grid-cols-5 gap-2 h-full w-full ${team.isturn || isDone ? `opacity-100` : "opacity-60"}`}>
+
+      className={`grid grid-cols-5 h-56 gap-2 w-full ${team.isturn || isDone ? `opacity-100` : "opacity-60"}`}>
       {(team.heroes_selected as unknown as Hero[]).map((hero: Hero, index: number) => (
         <div
           key={index}

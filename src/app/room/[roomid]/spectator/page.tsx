@@ -17,7 +17,10 @@ import { useState } from "react";
 import { motion } from 'framer-motion';
 import { truncateString } from "@/app/lib/utils";
 import ArrowAnimation from '@/app/components/common/ArrowAnimation';
-import PlanningView from '@/app/components/PlanningView';
+import FinishView from '@/app/components/FinishView';
+
+import Planningview from "@/app/components/PlanningView";
+import DraftView from "@/app/components/DraftView";
 
 interface SpectatorProps {
   params: {
@@ -31,11 +34,9 @@ const Spectator = ({ params }: SpectatorProps) => {
   const { teams, fetchTeams, isLoading: loadTeam } = useTeamStore();
   const { room, fetchRoom, isLoading, error: errorRoom, } = roomStore();
   const { redTeam, blueTeam } = useTeams();
-  console.log("Spectator - blueTeam:", blueTeam);
-  console.log("Spectator - redTeam:", redTeam);
+
 
   const [selectedChampion, setSelectedChampion] = useState<string>("");
-  const [canSelect, setCanSelect] = useState(true);
   const [clickedHero, setClickedHero] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [currentTeam, setCurrentTeam] = useState<any | null>(null);
@@ -45,15 +46,17 @@ const Spectator = ({ params }: SpectatorProps) => {
     isTurn: { width: "125px" }
   };
 
+  useEffect(() => {
+    console.log(room?.status)
+  }, [room?.status]);
 
   useEffect(() => {
-    fetchTeams(roomid);
     fetchRoom(roomid);
+    fetchTeams(roomid);
   }, []);
 
   useEffect(() => {
     if (teams) {
-      console.log("useEffect - teams:", teams);
       const currentTeam = teams.find(team => team.isturn);
       if (currentTeam) {
         setCurrentImage(currentTeam.clicked_hero || "");
@@ -78,26 +81,53 @@ const Spectator = ({ params }: SpectatorProps) => {
 
   if (room?.status === "waiting") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <h1 className="text-2xl">Waiting for team ready...</h1>
+      <div className="flex min-h-screen items-center justify-center">
+        <span className="pr-0.5 text-base">{`En attende des équipes`}</span>
+        <div className="sending-animation">
+          <span className="sending-animation-dot">.</span>
+          <span className="sending-animation-dot">.</span>
+          <span className="sending-animation-dot">.</span>
+        </div>
       </div>
     );
   }
 
   if (room?.status === "planning") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center container">
-        <ChampionsPool />
-        <h1 className="text-2xl">Planning...</h1>
+      <SocketContext.Provider value={socket}>
+        <div className='flex flex-col items-center justify-center container'>
+          <Planningview />
+        </div>
+      </SocketContext.Provider>
+    );
+  }
+
+  if (room?.status === "done") {
+    return (
+      <div className='px-6 lg:px-12'>
+        <FinishView />
       </div>
     );
   }
 
   return (
+
     <SocketContext.Provider value={socket}>
-      <div
-        className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}
-      >
+
+      {room?.status === 'ban' && (
+        <motion.div
+          exit="exit"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: .05 }}
+          transition={{
+            delay: .2,
+            duration: 1,
+            ease: "linear"
+          }}
+          className="absolute h-full w-full bg-red-900 opacity-5 top-0 left-0 -z-50"></motion.div>
+      )}
+
+      <div className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}>
         {currentImage && (
           <Image
             src={`/images/champions/splash/${currentImage?.toLowerCase().replace(/\s+/g, '')}.jpg`}
@@ -137,19 +167,8 @@ const Spectator = ({ params }: SpectatorProps) => {
             </motion.div>
           </div>
         </div>
-   
-        <ChampionsPool selectedChampion={selectedChampion} />
-        <div className="flex flex-col justify-center mt-6">
-          <div className="flex flex-row justify-between w-full gap-80">
-            <TeamBans team={blueTeam} applyHeightVariants={false} />
-            <TeamBans team={redTeam} applyHeightVariants={false} />
-          </div>
-
-          <div className="flex flex-row justify-between w-full h-full gap-12 mt-2">
-            <TeamPicks team={blueTeam} applyHeightVariants={false} />
-            <TeamPicks team={redTeam} applyHeightVariants={false} />
-          </div>
-        </div>
+        <div className='mb-6'><ChampionsPool selectedChampion={selectedChampion} canHoverToShowName={true} canSelect={true} /></div>
+        <DraftView applyHeightVariants={false} />
       </div>
     </SocketContext.Provider>
   );

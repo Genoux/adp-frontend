@@ -13,7 +13,6 @@ interface RoomState {
 }
 
 const handleRoomUpdate = (set: any) => (payload: any) => {
-  // Update the room data in your state based on the payload
   set({ room: { ...payload.new } });
 };
 

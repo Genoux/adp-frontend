@@ -9,7 +9,7 @@ const useTeam = () => {
   }, [teams, currentTeamId]);
 
   const otherTeam = useMemo(() => {
-    return teams?.find((team: { id: any}) => team.id !== currentTeamId);
+    return teams?.find((team: { id: any}) => team.id.toString() !== currentTeamId);
   }, [teams, currentTeamId]);
 
   const redTeam = useMemo(() => {

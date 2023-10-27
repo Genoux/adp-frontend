@@ -74,7 +74,6 @@ const useTeamStore = create<TeamState>((set, get) => ({
       set({ currentTeamId: payload.new.id });
     }
   },
-  
 }));
 
 export default useTeamStore;

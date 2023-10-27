@@ -41,11 +41,7 @@ const TeamBans: React.FC<Team> = ({ team, applyHeightVariants = true }) => {
   return (
     <>
       <motion.div
-        initial="collapsed"
-        animate="expanded"
-        transition={defaultTransition}
-        variants={heightVariants}
-        className="flex gap-2 w-full overflow-hidden"
+        className="flex justify-between gap-2 w-full overflow-hidden h-20"
       >
         {(team.heroes_ban as unknown as Hero[]).map((hero: Hero, index: number) => (
           <div

@@ -32,7 +32,9 @@ const TeamView = () => {
 
   //const { team, other, blue, red } = useTeams(teamid as string);
   const { currentTeam : team, otherTeam, redTeam, blueTeam } = useTeams();
+  console.log("TeamView - otherTeam:", otherTeam);
   const currentTeam = team?.isturn ? team : otherTeam;
+  console.log("TeamView - currentTeam:", currentTeam);
 
   useEffect(() => {
     if (team?.nb_turn! > 0) {
@@ -47,6 +49,8 @@ const TeamView = () => {
 
   const handleConfirmSelection = async () => {
     if (socket) {
+      console.log("handleConfirmSelection - selectedChampion:", selectedChampion);
+
       setCanSelect(false);
       setClickedHero(null);
       setCurrentImage(null)
@@ -64,6 +68,7 @@ const TeamView = () => {
 
   useEffect(() => {
     if (team) {
+      console.log("useEffect - team:", team);
       setSelectedChampion(team?.clicked_hero || "");
       setClickedHero(currentTeam?.clicked_hero || "");
       setCurrentImage(currentTeam?.clicked_hero || "");
@@ -199,15 +204,16 @@ const TeamView = () => {
           selectedChampion={selectedChampion}
           canSelect={canSelect}
           handleClickedHero={handleClickedHero}
+          canHoverToShowName={true}
         />
       </motion.div>
       <motion.div
         exit="exit"
         initial={{ y: -10, opacity: 0 }}  // start at half the size
-        animate={{ y: 25, opacity: 1 }}
+        animate={{ y: 28, opacity: 1 }}
         transition={defaultTransition}
       >
-        <div className="flex justify-center my-4">
+        <div className="flex justify-center my-4 z-50">
           {team?.isturn ? (
             <Button
               size="lg"
@@ -215,14 +221,13 @@ const TeamView = () => {
               onClick={handleConfirmSelection}
               disabled={!selectedChampion || !canSelect || !team?.isturn}
             >
-
               {!canSelect ? (<LoadingCircle color="black" />) : (<>{buttonText}</>)}
             </Button>
           ) : (
             <div className="h-[44px] flex items-center">
               <div className="flex flex-col justify-center items-center">
                 <p className="text-sm pr-3 opacity-80">Ce n’est pas votre tour</p>
-                <p className="text-md font-medium">{`En attente de l'équipe ${otherTeam.color}`}
+                <p className="text-md font-medium">{`En attente de l'équipe ${otherTeam.name}`}
                   <div className="sending-animation pl-1">
                     <span className="sending-animation-dot">.</span>
                     <span className="sending-animation-dot">.</span>
