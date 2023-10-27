@@ -10,6 +10,7 @@ import MyImage from "./MyImage";
 
 interface Hero {
   name: string;
+  id: string;
   selected: boolean;
   clicked_hero: boolean;
 }
@@ -88,12 +89,8 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 }}>
 
                 <div className="relative overflow-hidden rounded-md">
-                  {/* <MyImage
-                    src={`/images/champions/tiles/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
-                   alt={hero.name}
-                  /> */}
                   <Image
-                    src={`/images/champions/tiles/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
+                    src={`/images/champions/tiles/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
                     alt={hero.name}
                     sizes="100vw"
                     width={500}
@@ -115,7 +112,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                         : ""
                         }`}></div>
                     <Image
-                      src={`/images/champions/splash/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
+                      src={`/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
                       alt={hero.name}
                       width={800}
                       height={800}
