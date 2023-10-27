@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
 import { RoomDisplay } from "./components/RoomDisplay";
 import { RoomCreationForm } from "./components/RoomCreationForm";
+import Link from "next/link";
+import { Button } from "@/app/components/ui/button";
 
 interface Room {
   id: number;
@@ -103,7 +105,20 @@ function Home() {
     <>
       <main className="h-screen flex items-center justify-center">
         {room && blueTeam && redTeam ? (
+          <>
           <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} copyLink={copyLink} setCopyLink={setCopyLink} />
+            <div>
+              <Link href={`/room/${room.id}/spectator`} target="_blank">
+            <Button
+              size="lg"
+              className={`bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold`}
+            >
+           Spectator
+            </Button>
+          </Link>
+          </div>
+          </>
+  
         ) : (
           <RoomCreationForm onCreate={createRoomLogic} />
         )}

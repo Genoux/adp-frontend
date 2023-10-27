@@ -54,58 +54,59 @@ const TeamDisplay: React.FC<{
 
   return (
     <>
-     <div className={clsx(
-      team.borderColor,
-      'hover:bg-opacity-10',
-      'border',
-      'border-l-white',
-      'border-b-white',
-      'border-r-white',
-      'border-opacity-10',
-      'rounded-sm',
-      'flex',
-      'flex-col',
-      'items-center',
-      'justify-between',
-      'w-full',
-      'p-12',
-      'transition-all',
-      'ease-in-out',
-      {
-        'bg-blue-500 bg-opacity-5': team.color === 'blue',
-        'bg-red-500 bg-opacity-5': team.color === 'red'
-      }
-    )}>
-      
-      <h1 className="text-4xl font-medium mb-4 uppercase">{team.name}</h1>
-      <div className="flex flex-row justify-center items-center gap-2">
-      <Link href={`/room/${roomId}/${team.id}`} target="_blank">
-          <Button
-            size="lg"
-            className={`bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold`}
-          >
-            {team.btnText}
-          </Button>
-        </Link>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <div className="bg-transparent text-yellow hover:opacity-90 border-yellow border rounded-sm p-3" onMouseLeave={() => setCopied(false)} onClick={handleCopyClick}>
-                {copied ? (
-                  <CheckIcon className="w-4 h-4" />
-                ) : (
-                  <CopyIcon className="w-4 h-4" />
-                )}
-              </div>
+      <div className={clsx(
+        team.borderColor,
+        'hover:bg-opacity-10',
+        'border',
+        'border-l-white',
+        'border-b-white',
+        'border-r-white',
+        'border-opacity-10',
+        'rounded-md',
+        'flex',
+        'flex-col',
+        'items-center',
+        'justify-between',
+        'w-full',
+        'p-12',
+        'transition-all',
+        'ease-in-out',
+        {
+          'bg-blue-500 bg-opacity-5': team.color === 'blue',
+          'bg-red-500 bg-opacity-5': team.color === 'red'
+        }
+      )}>
 
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{"Copier l'URL"}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <h1 className="text-4xl font-medium mb-4 uppercase">{team.name}</h1>
+        <div className="flex flex-row justify-center items-center gap-2">
+          <Link href={`/room/${roomId}/${team.id}`} target="_blank">
+            <Button
+              size="lg"
+              className={`bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold`}
+            >
+              {team.btnText}
+            </Button>
+          </Link>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <div className="bg-transparent text-yellow hover:opacity-90 border-yellow border rounded-sm p-3" onMouseLeave={() => setCopied(false)} onClick={handleCopyClick}>
+                  {copied ? (
+                    <CheckIcon className="w-4 h-4" />
+                  ) : (
+                    <CopyIcon className="w-4 h-4" />
+                  )}
+                </div>
+
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{"Copier l'URL"}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </div>
-    </div>
+
     </>
   );
 };
@@ -116,7 +117,7 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({ room, blueTeam, redTea
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1]}}
+      transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }}
       key="home-page"
     >
       <div className="flex flex-row w-full justify-center gap-6">

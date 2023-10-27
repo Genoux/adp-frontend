@@ -17,6 +17,7 @@ import { useState } from "react";
 import { motion } from 'framer-motion';
 import { truncateString } from "@/app/lib/utils";
 import ArrowAnimation from '@/app/components/common/ArrowAnimation';
+import PlanningView from '@/app/components/PlanningView';
 
 interface SpectatorProps {
   params: {
@@ -71,6 +72,23 @@ const Spectator = ({ params }: SpectatorProps) => {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         {<LoadingCircle />}
+      </div>
+    );
+  }
+
+  if (room?.status === "waiting") {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <h1 className="text-2xl">Waiting for team ready...</h1>
+      </div>
+    );
+  }
+
+  if (room?.status === "planning") {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center container">
+        <ChampionsPool />
+        <h1 className="text-2xl">Planning...</h1>
       </div>
     );
   }

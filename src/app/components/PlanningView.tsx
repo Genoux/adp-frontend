@@ -4,7 +4,7 @@ import Timer from "@/app/components/common/RoomTimer";
 import { motion } from "framer-motion";
 import { defaultTransition } from '@/app/lib/animationConfig'
 
-const WaitingView = () => {
+export const WaitingView = () => {
   const { room } = roomStore();
 
   if (!room) {
@@ -13,7 +13,6 @@ const WaitingView = () => {
 
   return (
     <>
-
       <motion.div
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -23,7 +22,6 @@ const WaitingView = () => {
         <p className="mb-4">{"Analyse de la sélection de champions"}</p>
         <Timer />
       </motion.div>
-
       <motion.div
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
