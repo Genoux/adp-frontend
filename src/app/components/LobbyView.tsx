@@ -5,7 +5,6 @@ import useEnsureContext from "@/app/hooks/useEnsureContext";
 import SocketContext from "@/app/context/SocketContext";
 import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
-import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
 import TeamStatus from "@/app/components/common/TeamStatus";
 import { useState, useEffect } from 'react'
@@ -26,31 +25,33 @@ const ReadyView = () => {
     isLoading: state.isLoading
   }));
 
-  const { current: currentTeam, other: otherTeam, red, blue } = useTeams(teamStore);
+  const { currentTeam, otherTeam, redTeam, blueTeam } = useTeams();
 
   useEffect(() => {
-    if (red.connected && blue.connected) { 
+    if (redTeam?.connected && blueTeam?.connected) { 
       setConnected(true)
     } else {
       setConnected(false)
     }
    
-  }, [red.connected, blue.connected]);
-  
+  }, [redTeam?.connected, blueTeam?.connected]);
 
   if (!room || error) {
     return <div>Room not found</div>;
   }
+
+  if(!currentTeam || !otherTeam || !redTeam || !blueTeam) return <div>Team not found</div>
+
   const handleReadyClick = async () => {
     const { data, error } = await supabase
       .from("teams")
       .update({ ready: true })
       .select("*, room(*)")
-      .eq("id", currentTeam.id)
+      .eq("id", currentTeam?.id)
       .single();
 
     if (data && !error) {
-      socket.emit("TEAM_READY", { roomid: room.id, teamid: currentTeam.id });
+      socket.emit("TEAM_READY", { roomid: room.id, teamid: currentTeam?.id });
     }
   };
 
@@ -68,10 +69,10 @@ const ReadyView = () => {
       </div>
       <div className="border border-opacity-10 rounded-md w-full mb-12">
         <div className="grid grid-cols-2 text-base">
-          <p className={`${inter.className} flex flex-col items-center gap-2 p-6 border-r`}>{blue.name.toUpperCase()}<TeamStatus team={blue} showReadyState={true} />
+          <p className={`${inter.className} flex flex-col items-center gap-2 p-6 border-r`}>{blueTeam.name.toUpperCase()}<TeamStatus team={blueTeam} showReadyState={true} />
           </p>
 
-          <p className={`${inter.className} flex flex-col items-center gap-2 p-6`}>{red.name.toUpperCase()}<TeamStatus team={red} showReadyState={true} />
+          <p className={`${inter.className} flex flex-col items-center gap-2 p-6`}>{redTeam.name.toUpperCase()}<TeamStatus team={redTeam} showReadyState={true} />
           </p>
         </div>
       </div>

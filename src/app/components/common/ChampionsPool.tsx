@@ -30,11 +30,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
 }) => {
   const [hoverIndex, setHoverIndex] = useState(-1);
   const [mouseDown, setMouseDown] = useState<number | null>(null);
-
-  const { loadedImages, markAsLoaded } = useImages();
-
   const { room } = roomStore();
-
 
   const setHoverState = useCallback((index: number) => {
     setHoverIndex(index);
@@ -55,7 +51,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
       <div className="grid grid-cols-10 px-12 gap-2 cursor-pointer">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
-            const isActive = hoverIndex === index || hero.name === selectedChampion && team?.isturn;
+            const isActive = hoverIndex === index || hero.name === selectedChampion  /* && team?.isturn */;
             const isturnAvailable = team ? team.isturn : true;
             const shouldFade = hero.selected || (team && !isturnAvailable);
             return (
@@ -68,7 +64,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                   "bg-gray-800": isActive,
                   "grayscale": hero.selected,
                   "pointer-events-none": hero.selected || !isturnAvailable,
-                  "z-50 border-2 border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion && team?.isturn,
+                  "z-50 border-2 border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion /* && team?.isturn */,
                 })}
                 onMouseDown={() => {
                   if (room?.status === "planning") return;
@@ -87,7 +83,6 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     setHoverIndex(-1);
                   }
                 }}>
-
                 <div className="relative overflow-hidden rounded-md">
                   <Image
                     src={`/images/champions/tiles/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
@@ -95,8 +90,6 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     sizes="100vw"
                     width={500}
                     height={500}
-                    placeholder="blur"
-                   blurDataURL={blurhash}
                   />
                   <div className="flex items-center justify-center my-auto overflow-hidden">
                     <p

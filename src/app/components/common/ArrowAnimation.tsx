@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 interface ArrowAnimationProps {
   roomStatus: "ban" | "select" | string | null | undefined;
-  teamIsTurn?: boolean;
+  teamIsTurn?: boolean | null | undefined;
   orientation?: "left" | "right";
 }
 

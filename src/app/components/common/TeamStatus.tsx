@@ -3,8 +3,7 @@ import { CheckIcon } from 'lucide-react'; // Update with your import path for Ch
 
 interface TeamStatusProps {
   team: {
-    ready: boolean;
-    name: string;
+    [key: string]: any;
   };
   showReadyState?: boolean; // if true, will show the 'ready' state if the team is ready
 }

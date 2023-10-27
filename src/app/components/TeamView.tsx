@@ -6,7 +6,7 @@ import Timer from "@/app/components/common/RoomTimer";
 import ChampionsPool from "@/app/components/common/ChampionsPool";
 import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
-import { teamStore } from "@/app/stores/teamStore";
+import teamStore from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
 import { motion } from 'framer-motion';
 import { defaultTransition } from '@/app/lib/animationConfig'
@@ -14,6 +14,7 @@ import Image from "next/image";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
 import { truncateString } from "@/app/lib/utils";
 import ArrowAnimation from '@/app/components/common/ArrowAnimation';
+
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
@@ -29,33 +30,19 @@ const TeamView = () => {
     isLoading: state.isLoading
   }));
 
-  const { current: team, other, blue, red } = useTeams(teamStore);
-  const currentTeam = team.isturn ? team : other;
-
-  // useEffect(() => {
-  //   socket.on("CHAMPION_SELECTED", (data) => {
-  //     console.log("socket.on - data:", data);
-  //     setSelectedChampion("");
-  //     setClickedHero(null);
-  //     setTimeout(() => {
-  //       setCanSelect(true);
-  //     }, 250);
-  //   });
-
-  //   return () => {
-  //     socket.off("CHAMPION_SELECTED");
-  //   };
-  // }, [socket]);
+  //const { team, other, blue, red } = useTeams(teamid as string);
+  const { currentTeam : team, otherTeam, redTeam, blueTeam } = useTeams();
+  const currentTeam = team?.isturn ? team : otherTeam;
 
   useEffect(() => {
-    if (team.nb_turn > 0) {
+    if (team?.nb_turn! > 0) {
       setSelectedChampion("");
       setClickedHero(null);
       setTimeout(() => {
         setCanSelect(true);
       }, 250);
     }
-  }, [team.nb_turn]);
+  }, [team?.nb_turn]);
 
 
   const handleConfirmSelection = async () => {
@@ -77,39 +64,41 @@ const TeamView = () => {
 
   useEffect(() => {
     if (team) {
-      setSelectedChampion(team.clicked_hero || "");
-      setClickedHero(currentTeam.clicked_hero); // Update the splash image
-      setCurrentImage(currentTeam.clicked_hero || "");
+      setSelectedChampion(team?.clicked_hero || "");
+      setClickedHero(currentTeam?.clicked_hero || "");
+      setCurrentImage(currentTeam?.clicked_hero || "");
     }
-  }, [currentTeam.clicked_hero, other.clicked_hero, team, team.clicked_hero]);
+  }, [currentTeam?.clicked_hero, otherTeam?.clicked_hero, team, team?.clicked_hero]);
 
   const handleClickedHero = async (hero: any) => {
-    if (hero.name === team.clicked_hero) return null;
+    if (hero.name === team?.clicked_hero) return null;
     if (!team) return null;
 
     await supabase
       .from("teams")
       .update({ clicked_hero: hero.name })
-      .eq("id", team.id);
+      .eq("id", team?.id);
 
-    setClickedHero(hero.name); // Update the splash image
+    setClickedHero(hero.name);
   };
 
   useEffect(() => {
-    if (!team.isturn) {
+    if (!team?.isturn) {
       setCanSelect(false);
     } else {
       setCanSelect(true);
     }
-  }, [team.isturn]);
+  }, [team?.isturn]);
+
+  if(!currentTeam || !otherTeam || !redTeam || !blueTeam) return <div>Team not found</div>
 
   const isBanPhase = room?.status === 'ban';
 
-  const buttonText = team.isturn
+  const buttonText = team?.isturn
     ? isBanPhase
       ? "Confirmer le Ban"
       : "Confirmer la Selection"
-    : `C'est à l'équipe ${other.color} de ${isBanPhase ? 'bannir' : 'choisir'}`;
+    : `C'est à l'équipe ${otherTeam.color} de ${isBanPhase ? 'bannir' : 'choisir'}`;
 
 
   if (!team || error) {
@@ -148,7 +137,7 @@ const TeamView = () => {
         className="pb-2"
       >
         <motion.div
-          className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}
+          className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={defaultTransition}
@@ -159,7 +148,7 @@ const TeamView = () => {
               width={3840}
               height={1440}
               rel="preload"
-              className={`w-full h-full object-cover object-center opacity-50 ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+              className={`w-full h-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
               alt={``}
             />)}
         </motion.div>
@@ -171,32 +160,32 @@ const TeamView = () => {
           className="grid grid-cols-3 items-center my-3 w-full">
           <div className={`flex items-center gap-2 justify-start`}>
             <motion.div
-              initial={blue.isturn ? "isTurn" : "notTurn"}
-              animate={blue.isturn ? "isTurn" : "notTurn"}
+              initial={blueTeam.isturn ? "isTurn" : "notTurn"}
+              animate={blueTeam.isturn ? "isTurn" : "notTurn"}
               variants={widthVariants}
-              className={`h-6 w-1 bg-${blue.color} rounded-full`}>
+              className={`h-6 w-1 bg-${blueTeam.color} rounded-full`}>
             </motion.div>
-            <span className="text-2xl mr-2">{truncateString(blue.name.toUpperCase(), 6)}</span>
-            <ArrowAnimation roomStatus={room?.status} teamIsTurn={blue.isturn} orientation="right" />
+            <span className="text-2xl mr-2">{truncateString(blueTeam.name.toUpperCase(), 6)}</span>
+            <ArrowAnimation roomStatus={room?.status} teamIsTurn={blueTeam.isturn} orientation="right" />
           </div>
           <div className="flex flex-col w-full items-center">
             <Timer />
             <p className="font-medium text-xs text-center">
               {currentTeam === team
                 ? isBanPhase
-                  ? `C'est à vous de bannir, vous êtes l'équipe ${currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1)}`
-                  : `C'est à vous de choisir, vous êtes l'équipe ${currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1)}`
-                : `L'équipe ${currentTeam.name.charAt(0).toUpperCase() + currentTeam.name.slice(1)} entrain de choisir`}
+                  ? `C'est à vous de bannir, vous êtes l'équipe ${currentTeam?.color.charAt(0).toUpperCase() + currentTeam?.color.slice(1)}`
+                  : `C'est à vous de choisir, vous êtes l'équipe ${currentTeam?.color.charAt(0).toUpperCase() + currentTeam?.color.slice(1)}`
+                : `L'équipe ${currentTeam?.name.charAt(0).toUpperCase() + currentTeam?.name.slice(1)} entrain de choisir`}
             </p>
           </div>
           <p className={`flex items-center gap-2 justify-end`}>
-            <ArrowAnimation roomStatus={room?.status} teamIsTurn={red.isturn} orientation="left" />
-            <span className="text-2xl ml-2">{truncateString(red.name.toUpperCase(), 6)} </span>
+            <ArrowAnimation roomStatus={room?.status} teamIsTurn={redTeam.isturn} orientation="left" />
+            <span className="text-2xl ml-2">{truncateString(redTeam.name.toUpperCase(), 6)} </span>
             <motion.div
-              initial={red.isturn ? "isTurn" : "notTurn"}
-              animate={red.isturn ? "isTurn" : "notTurn"}
+              initial={redTeam.isturn ? "isTurn" : "notTurn"}
+              animate={redTeam.isturn ? "isTurn" : "notTurn"}
               variants={widthVariants}
-              className={`h-6 w-1 bg-${red.color} rounded-full`}></motion.div>
+              className={`h-6 w-1 bg-${redTeam.color} rounded-full`}></motion.div>
           </p>
         </motion.div>
       </motion.div>
@@ -219,12 +208,12 @@ const TeamView = () => {
         transition={defaultTransition}
       >
         <div className="flex justify-center my-4">
-          {team.isturn ? (
+          {team?.isturn ? (
             <Button
               size="lg"
               className={`bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold w-64`}
               onClick={handleConfirmSelection}
-              disabled={!selectedChampion || !canSelect || !team.isturn}
+              disabled={!selectedChampion || !canSelect || !team?.isturn}
             >
 
               {!canSelect ? (<LoadingCircle color="black" />) : (<>{buttonText}</>)}
@@ -233,7 +222,7 @@ const TeamView = () => {
             <div className="h-[44px] flex items-center">
               <div className="flex flex-col justify-center items-center">
                 <p className="text-sm pr-3 opacity-80">Ce n’est pas votre tour</p>
-                <p className="text-md font-medium px-12">{`En attente de l'autre équipe`}
+                <p className="text-md font-medium">{`En attente de l'équipe ${otherTeam.color}`}
                   <div className="sending-animation pl-1">
                     <span className="sending-animation-dot">.</span>
                     <span className="sending-animation-dot">.</span>

@@ -12,7 +12,7 @@ import { ServerCrash } from 'lucide-react';
 import useSocket from "@/app/hooks/useSocket";
 import SocketContext from "@/app/context/SocketContext";
 import { roomStore } from "@/app/stores/roomStore";
-import { teamStore } from "@/app/stores/teamStore";
+import useTeamStore from "@/app/stores/teamStore";
 import StateControllerButtons from "@/app/components/common/StateControllerButtons";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
 import ChampionsPool from "@/app/components/common/ChampionsPool";
@@ -29,13 +29,14 @@ export default function Room({ params }: RoomProps) {
   const roomid = params.roomid;
   const teamid = params.teamid;
 
-  const { socket, connectionError } = useSocket(roomid, teamid);
-  const { teams, fetchTeams, isLoading, error } = teamStore();
+  const { socket, connectionError } = useSocket(roomid);
+  const { teams, fetchTeams, isLoading, error, setCurrentTeamId } = useTeamStore();
   const { room, fetchRoom, isLoading: isLoadingRoom, error: errorRoom, } = roomStore();
 
   useEffect(() => {
-    fetchTeams(roomid, teamid);
-  }, [roomid, teamid, fetchTeams]);
+    fetchTeams(roomid);
+    setCurrentTeamId(teamid);
+  }, [roomid, fetchTeams, setCurrentTeamId, teamid]);
 
   useEffect(() => {
     fetchRoom(roomid);

@@ -11,7 +11,6 @@ const WaitingView = () => {
     return null;
   }
 
-
   return (
     <>
 

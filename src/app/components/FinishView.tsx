@@ -1,12 +1,13 @@
 import TeamPicks from "./team/TeamPicks";
-import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
 import { defaultTransition } from '@/app/lib/animationConfig'
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 
 const FinishView = () => {
-  let { blue, red } = useTeams(teamStore);
+  const { redTeam, blueTeam } = useTeams();
+
+  if(!redTeam || !blueTeam) return null;
   
   return (
     <div className="px-6 lg:px-12">
@@ -31,9 +32,9 @@ const FinishView = () => {
           transition={defaultTransition}
           className="relative"
         >
-          <h1 className={`text-xl py-1 w-fit px-8 uppercase mb-6 rounded-full text-center bg-${blue.color}`}> {blue.name}</h1>
+          <h1 className={`text-xl py-1 w-fit px-8 uppercase mb-6 rounded-full text-center bg-${blueTeam.color}`}> {blueTeam.name}</h1>
           <div className="border-t border-white border-opacity-40 pt-6">
-            <TeamPicks team={blue} />
+            <TeamPicks team={blueTeam} />
           </div>
         </motion.div>
 
@@ -51,9 +52,9 @@ const FinishView = () => {
           transition={defaultTransition}
           className="relative"
         >
-          <h1 className={`text-xl py-1 w-fit px-8 uppercase mb-6 rounded-full text-center ml-auto bg-${red.color}`}> {red.name}</h1>
+          <h1 className={`text-xl py-1 w-fit px-8 uppercase mb-6 rounded-full text-center ml-auto bg-${redTeam.color}`}> {redTeam.name}</h1>
           <div className="border-t border-white border-opacity-40 pt-6">
-            <TeamPicks team={red} />
+            <TeamPicks team={redTeam} />
           </div>
         </motion.div>
       </div>
