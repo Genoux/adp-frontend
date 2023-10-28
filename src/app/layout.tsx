@@ -26,6 +26,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </ImageProvider>
+       <div className="flex absolute  w-full justify-end bottom-0 items-center pb-2 pr-4 font-medium text-sm">Beta 0.2.0</div>
       </body>
     </html>
   );
