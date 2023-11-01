@@ -139,7 +139,6 @@ const TeamView = () => {
         initial={{ opacity: 0 }}  // start at half the size
         animate={{ opacity: 1 }}    // animate to full size
         transition={defaultTransition}
-        className="pb-2"
       >
         <motion.div
           className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}

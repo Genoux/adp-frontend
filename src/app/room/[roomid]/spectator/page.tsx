@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { Database } from "@/app/types/supabase";
 import { roomStore } from "@/app/stores/roomStore";
 import useTeamStore from "@/app/stores/teamStore";
 import ChampionsPool from "@/app/components/common/ChampionsPool";
@@ -94,11 +93,13 @@ const Spectator = ({ params }: SpectatorProps) => {
 
   if (room?.status === "planning") {
     return (
-      <SocketContext.Provider value={socket}>
-        <div className='flex flex-col items-center justify-center container'>
-          <Planningview />
-        </div>
-      </SocketContext.Provider>
+      <div className='container px-12'>
+        <SocketContext.Provider value={socket}>
+          <div className='flex flex-col items-center justify-center container'>
+            <Planningview />
+          </div>
+        </SocketContext.Provider>
+      </div>
     );
   }
 
@@ -111,66 +112,67 @@ const Spectator = ({ params }: SpectatorProps) => {
   }
 
   return (
+    <div className='container px-12'>
+      <SocketContext.Provider value={socket}>
 
-    <SocketContext.Provider value={socket}>
+        {room?.status === 'ban' && (
+          <motion.div
+            exit="exit"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: .05 }}
+            transition={{
+              delay: .2,
+              duration: 1,
+              ease: "linear"
+            }}
+            className="absolute h-full w-full bg-red-900 opacity-5 top-0 left-0 -z-50"></motion.div>
+        )}
 
-      {room?.status === 'ban' && (
-        <motion.div
-          exit="exit"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: .05 }}
-          transition={{
-            delay: .2,
-            duration: 1,
-            ease: "linear"
-          }}
-          className="absolute h-full w-full bg-red-900 opacity-5 top-0 left-0 -z-50"></motion.div>
-      )}
-
-      <div className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}>
-        {currentImage && (
-          <Image
-            src={`/images/champions/splash/${currentImage?.toLowerCase().replace(/\s+/g, '')}.jpg`}
-            width={3840}
-            height={1440}
-            rel="preload"
-            className={`w-full h-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
-            alt={``}
-          />)}
-      </div>
-      <div className='container'>
-        <div className='grid grid-cols-3 items-center justify-center my-3 w-full pb-2'>
-          <div className={`flex items-center gap-2 justify-start`}>
-            <motion.div
-              initial={blueTeam?.isturn ? "isTurn" : "notTurn"}
-              animate={blueTeam?.isturn ? "isTurn" : "notTurn"}
-              variants={widthVariants}
-              className={`h-6 w-1 bg-${blueTeam?.color} rounded-full`}>
-            </motion.div>
-            <span className="text-2xl mr-2">{truncateString(blueTeam?.name.toUpperCase(), 6)}</span>
-            <ArrowAnimation roomStatus={room?.status} teamIsTurn={blueTeam?.isturn} orientation="right" />
-          </div>
-          <div className="flex flex-col w-full items-center">
-            <Timer />
-            <p className="font-medium text-xs text-center">
-              Vous êtes spectateur de {blueTeam?.name.toUpperCase()} vs {redTeam?.name.toUpperCase()}
-            </p>
-          </div>
-          <div className={`flex items-center gap-2 justify-end`}>
-            <ArrowAnimation roomStatus={room?.status} teamIsTurn={redTeam?.isturn} orientation="left" />
-            <span className="text-2xl ml-2">{truncateString(redTeam?.name.toUpperCase(), 6)}</span>
-            <motion.div
-              initial={redTeam?.isturn ? "isTurn" : "notTurn"}
-              animate={redTeam?.isturn ? "isTurn" : "notTurn"}
-              variants={widthVariants}
-              className={`h-6 w-1 bg-${redTeam?.color} rounded-full`}>
-            </motion.div>
-          </div>
+        <div className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}>
+          {currentImage && (
+            <Image
+              src={`/images/champions/splash/${currentImage?.toLowerCase().replace(/\s+/g, '')}.jpg`}
+              width={3840}
+              height={1440}
+              rel="preload"
+              className={`w-full h-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+              alt={``}
+            />)}
         </div>
-        <div className='mb-6'><ChampionsPool selectedChampion={selectedChampion} canHoverToShowName={true} canSelect={true} /></div>
-        <DraftView applyHeightVariants={false} />
-      </div>
-    </SocketContext.Provider>
+        <div className='container'>
+          <div className='grid grid-cols-3 items-center justify-center my-3 w-full pb-2'>
+            <div className={`flex items-center gap-2 justify-start`}>
+              <motion.div
+                initial={blueTeam?.isturn ? "isTurn" : "notTurn"}
+                animate={blueTeam?.isturn ? "isTurn" : "notTurn"}
+                variants={widthVariants}
+                className={`h-6 w-1 bg-${blueTeam?.color} rounded-full`}>
+              </motion.div>
+              <span className="text-2xl mr-2">{truncateString(blueTeam?.name.toUpperCase(), 6)}</span>
+              <ArrowAnimation roomStatus={room?.status} teamIsTurn={blueTeam?.isturn} orientation="right" />
+            </div>
+            <div className="flex flex-col w-full items-center">
+              <Timer />
+              <p className="font-medium text-xs text-center">
+                Vous êtes spectateur de {blueTeam?.name.toUpperCase()} vs {redTeam?.name.toUpperCase()}
+              </p>
+            </div>
+            <div className={`flex items-center gap-2 justify-end`}>
+              <ArrowAnimation roomStatus={room?.status} teamIsTurn={redTeam?.isturn} orientation="left" />
+              <span className="text-2xl ml-2">{truncateString(redTeam?.name.toUpperCase(), 6)}</span>
+              <motion.div
+                initial={redTeam?.isturn ? "isTurn" : "notTurn"}
+                animate={redTeam?.isturn ? "isTurn" : "notTurn"}
+                variants={widthVariants}
+                className={`h-6 w-1 bg-${redTeam?.color} rounded-full`}>
+              </motion.div>
+            </div>
+          </div>
+          <div className='mb-6'><ChampionsPool selectedChampion={selectedChampion} canHoverToShowName={true} canSelect={true} /></div>
+          <DraftView applyHeightVariants={false} />
+        </div>
+      </SocketContext.Provider>
+    </div>
   );
 };
 

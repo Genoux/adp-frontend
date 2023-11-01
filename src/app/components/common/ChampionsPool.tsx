@@ -45,11 +45,9 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
-  const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj"; // Replace with your actual Blurhash string
-
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-10 px-12 gap-2">
+      <div className="grid grid-cols-10 px-24 gap-2">
         {(room.heroes_pool as unknown as Hero[]).map((hero: Hero, index: number) => {
           const isActive = hoverIndex === index || hero.name === selectedChampion && team?.isturn;
           const isturnAvailable = team ? team.isturn : true;

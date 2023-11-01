@@ -14,12 +14,8 @@ interface Hero {
   selected: boolean;
 }
 
-
 const TeamBans: React.FC<Team> = ({ team, applyHeightVariants = true }) => {
-  const heightVariants = {
-    collapsed: { height: "0px", opacity: 0, ...(applyHeightVariants ? { y: 0 } : {}) },
-    expanded: { height: "70px", opacity: 1, ...(applyHeightVariants ? { y: -50 } : {}) }
-  };
+
   const { room } = roomStore(state => ({
     room: state.room,
     error: state.error,

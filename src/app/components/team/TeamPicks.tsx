@@ -22,17 +22,6 @@ const TeamPicks: React.FC<Team> = ({ team, applyHeightVariants = true }) => {
     isLoading: state.isLoading
   }));
 
-  const heightVariants = applyHeightVariants ? {
-    initial: { y: 0, height: 0, originY: 0 },
-    notDone: { height: "250px", y: -45 },
-    done: { height: "300px", y: 0 }
-  } : {
-    initial: { height: 0 },
-    notDone: { height: "250px" },
-    done: { height: "300px"}
-  };
-
-
   const isDone = room?.status === "done";
 
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
@@ -51,7 +40,7 @@ const TeamPicks: React.FC<Team> = ({ team, applyHeightVariants = true }) => {
   return (
     <motion.div
 
-      className={`grid grid-cols-5 h-56 gap-2 w-full ${team.isturn || isDone ? `opacity-100` : "opacity-60"}`}>
+      className={`grid grid-cols-5 h-48 pb-4 gap-2 w-full ${team.isturn || isDone ? `opacity-100` : "opacity-60"}`}>
       {(team.heroes_selected as unknown as Hero[]).map((hero: Hero, index: number) => (
         <div
           key={index}
