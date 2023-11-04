@@ -3,16 +3,6 @@ import Link from 'next/link';
 import { Button } from '@/app/components/ui/button';
 import { ServerCrash } from 'lucide-react';
 
-interface ServerCrashProps {
-  size: number;
-}
-
-interface ButtonProps {
-  variant: 'outline' | 'secondary';
-  onClick?: () => void;
-}
-
-// Assuming you have a type for your handleRefresh function
 const handleRefresh: () => void = () => {
   window.location.reload();
 };

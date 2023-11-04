@@ -28,12 +28,11 @@ const Spectator = ({ params }: SpectatorProps) => {
 
   const { socket, connectionError } = useSocket(roomid);
   const { teams, fetchTeams, isLoading: loadTeam } = useTeamStore();
-  const { room, fetchRoom, isLoading, error: errorRoom, } = roomStore();
+  const { room, fetchRoom, isLoading } = roomStore();
   const { redTeam, blueTeam } = useTeams();
 
 
   const [selectedChampion, setSelectedChampion] = useState<string>("");
-  const [clickedHero, setClickedHero] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [currentTeam, setCurrentTeam] = useState<any | null>(null);
 
@@ -49,6 +48,7 @@ const Spectator = ({ params }: SpectatorProps) => {
   useEffect(() => {
     fetchRoom(roomid);
     fetchTeams(roomid);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -57,7 +57,6 @@ const Spectator = ({ params }: SpectatorProps) => {
       if (currentTeam) {
         setCurrentImage(currentTeam.clicked_hero || "");
         setCurrentTeam(currentTeam);
-        setClickedHero(currentTeam.clicked_hero)
         setSelectedChampion(currentTeam.clicked_hero || "");
       }
     }

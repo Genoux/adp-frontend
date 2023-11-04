@@ -28,7 +28,6 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   handleClickedHero = () => { },
 }) => {
   const [hoverIndex, setHoverIndex] = useState(-1);
-  const [mouseDown, setMouseDown] = useState<number | null>(null);
   const { room } = roomStore();
 
   const setHoverState = useCallback((index: number) => {
@@ -38,7 +37,6 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   useEffect(() => {
     if (!canSelect && room?.status !== 'planning') {
       setHoverState(-1);
-      setMouseDown(null);
     }
   }, [canSelect, room?.status, setHoverState]);
 
@@ -65,11 +63,6 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 "pointer-events-none": hero.selected || !isturnAvailable,
                 "z-50 border-2 border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion && team?.isturn,
               })}
-              onMouseDown={() => {
-                if (room?.status === "planning") return;
-                setMouseDown(index);
-              }}
-              onMouseUp={() => setMouseDown(null)}
               onClick={canSelect ? () => handleClickedHero(hero) : undefined}
               onMouseEnter={() => {
                 if (!canSelect && room?.status !== 'planning') return

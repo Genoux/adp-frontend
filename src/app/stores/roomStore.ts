@@ -24,7 +24,7 @@ export const roomStore = create<RoomState>((set) => ({
   fetchRoom: async (roomId: string) => {
     set({ isLoading: true, error: null });
     try {
-      let { data: room, error } = await supabase
+      const { data: room, error } = await supabase
         .from('rooms')
         .select('*')
         .eq('id', roomId)

@@ -7,7 +7,6 @@ import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
 import useTeams from "@/app/hooks/useTeams";
 import TeamStatus from "@/app/components/common/TeamStatus";
-import { useState, useEffect } from 'react'
 
 import { Inter } from "next/font/google";
 const inter = Inter({
@@ -17,7 +16,6 @@ const inter = Inter({
 
 const ReadyView = () => {
   const socket = useEnsureContext(SocketContext);
-  const [connected, setConnected] = useState<boolean | null>(false);
 
   const { room, error } = roomStore(state => ({
     room: state.room,
@@ -26,15 +24,6 @@ const ReadyView = () => {
   }));
 
   const { currentTeam, otherTeam, redTeam, blueTeam } = useTeams();
-
-  useEffect(() => {
-    if (redTeam?.connected && blueTeam?.connected) { 
-      setConnected(true)
-    } else {
-      setConnected(false)
-    }
-   
-  }, [redTeam?.connected, blueTeam?.connected]);
 
   if (!room || error) {
     return <div>Room not found</div>;

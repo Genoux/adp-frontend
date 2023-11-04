@@ -2,26 +2,19 @@ import { useState, useEffect } from "react";
 import supabase from "@/app/services/supabase";
 import SocketContext from "../context/SocketContext";
 import useEnsureContext from "@/app/hooks/useEnsureContext";
-import Timer from "@/app/components/common/RoomTimer";
 import ChampionsPool from "@/app/components/common/ChampionsPool";
 import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
-import teamStore from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
 import { motion } from 'framer-motion';
 import { defaultTransition } from '@/app/lib/animationConfig'
 import Image from "next/image";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
-import { truncateString } from "@/app/lib/utils";
-import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 import GameStatusBar from "@/app/components/common/RoomHeader";
-
-
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>("");
   const [canSelect, setCanSelect] = useState(true);
-  const [clickedHero, setClickedHero] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
 
   const socket = useEnsureContext(SocketContext);
@@ -32,29 +25,23 @@ const TeamView = () => {
     isLoading: state.isLoading
   }));
 
-  //const { team, other, blue, red } = useTeams(teamid as string);
   const { currentTeam: team, otherTeam, redTeam, blueTeam } = useTeams();
-  console.log("TeamView - otherTeam:", otherTeam);
   const currentTeam = team?.isturn ? team : otherTeam;
-  console.log("TeamView - currentTeam:", currentTeam);
 
   useEffect(() => {
     if (team?.nb_turn! > 0) {
       setSelectedChampion("");
-      setClickedHero(null);
       setTimeout(() => {
         setCanSelect(true);
       }, 250);
     }
   }, [team?.nb_turn]);
 
-
   const handleConfirmSelection = async () => {
     if (socket) {
       console.log("handleConfirmSelection - selectedChampion:", selectedChampion);
 
       setCanSelect(false);
-      setClickedHero(null);
       setCurrentImage(null)
       socket?.emit("STOP_TIMER", { roomid: room?.id });
 
@@ -72,7 +59,6 @@ const TeamView = () => {
     if (team) {
       console.log("useEffect - team:", team);
       setSelectedChampion(team?.clicked_hero || "");
-      setClickedHero(currentTeam?.clicked_hero || "");
       setCurrentImage(currentTeam?.clicked_hero || "");
     }
   }, [currentTeam?.clicked_hero, otherTeam?.clicked_hero, team, team?.clicked_hero]);
@@ -85,8 +71,6 @@ const TeamView = () => {
       .from("teams")
       .update({ clicked_hero: hero.name })
       .eq("id", team?.id);
-
-    setClickedHero(hero.name);
   };
 
   useEffect(() => {

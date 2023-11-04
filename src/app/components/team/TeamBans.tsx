@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from "@/app/stores/roomStore";
 import { useState, useEffect } from 'react';
 
@@ -14,7 +13,7 @@ interface Hero {
   selected: boolean;
 }
 
-const TeamBans: React.FC<Team> = ({ team, applyHeightVariants = true }) => {
+const TeamBans: React.FC<Team> = ({ team }) => {
 
   const { room } = roomStore(state => ({
     room: state.room,

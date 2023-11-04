@@ -1,8 +1,6 @@
 import { roomStore } from "@/app/stores/roomStore";
 import { motion } from 'framer-motion';
-import { defaultTransition } from '@/app/lib/animationConfig';
 import { useState, useEffect } from 'react';
-import MyImage from '@/app/components/common/MyImage';
 interface Team {
   [key: string]: any;
   applyHeightVariants?: boolean;
@@ -14,7 +12,7 @@ interface Hero {
   selected: boolean;
 }
 
-const TeamPicks: React.FC<Team> = ({ team, applyHeightVariants = true }) => {
+const TeamPicks: React.FC<Team> = ({ team }) => {
 
   const { room } = roomStore(state => ({
     room: state.room,

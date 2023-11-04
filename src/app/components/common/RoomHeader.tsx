@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import Timer from '@/app/components/common/RoomTimer';
 import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 import { truncateString } from "@/app/lib/utils";
-import { stat } from 'fs';
 
 interface Team {
   [key: string]: any;
@@ -17,7 +16,7 @@ interface TeamIndicatorProps {
   team: Team;
   orientation: 'left' | 'right';
   roomStatus: string;
-  widthVariants: any; // Define the correct type for your variants
+  widthVariants: any;
 }
 
 interface GameStatusBarProps {
