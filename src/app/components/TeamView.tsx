@@ -14,6 +14,8 @@ import Image from "next/image";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
 import { truncateString } from "@/app/lib/utils";
 import ArrowAnimation from '@/app/components/common/ArrowAnimation';
+import GameStatusBar from "@/app/components/common/RoomHeader";
+
 
 
 const TeamView = () => {
@@ -31,7 +33,7 @@ const TeamView = () => {
   }));
 
   //const { team, other, blue, red } = useTeams(teamid as string);
-  const { currentTeam : team, otherTeam, redTeam, blueTeam } = useTeams();
+  const { currentTeam: team, otherTeam, redTeam, blueTeam } = useTeams();
   console.log("TeamView - otherTeam:", otherTeam);
   const currentTeam = team?.isturn ? team : otherTeam;
   console.log("TeamView - currentTeam:", currentTeam);
@@ -70,7 +72,7 @@ const TeamView = () => {
     if (team) {
       console.log("useEffect - team:", team);
       setSelectedChampion(team?.clicked_hero || "");
-      setClickedHero(currentTeam?.clicked_hero || "");
+      setClickedHero(currentTeam?.clicked_hero || "");
       setCurrentImage(currentTeam?.clicked_hero || "");
     }
   }, [currentTeam?.clicked_hero, otherTeam?.clicked_hero, team, team?.clicked_hero]);
@@ -95,7 +97,7 @@ const TeamView = () => {
     }
   }, [team?.isturn]);
 
-  if(!currentTeam || !otherTeam || !redTeam || !blueTeam) return <div>Team not found</div>
+  if (!currentTeam || !otherTeam || !redTeam || !blueTeam) return <div>Team not found</div>
 
   const isBanPhase = room?.status === 'ban';
 
@@ -105,6 +107,8 @@ const TeamView = () => {
       : "Confirmer la Selection"
     : `C'est à l'équipe ${otherTeam.color} de ${isBanPhase ? 'bannir' : 'choisir'}`;
 
+
+  if (!room) return <div>Room not found</div>
 
   if (!team || error) {
     return <div>Team not found</div>;
@@ -161,36 +165,18 @@ const TeamView = () => {
           initial={{ y: "30px", opacity: 0 }}  // start at half the size
           animate={{ y: "0px", opacity: 1 }}    // animate to full size
           transition={defaultTransition}
-          className="grid grid-cols-3 items-center my-3 w-full">
-          <div className={`flex items-center gap-2 justify-start`}>
-            <motion.div
-              initial={blueTeam.isturn ? "isTurn" : "notTurn"}
-              animate={blueTeam.isturn ? "isTurn" : "notTurn"}
-              variants={widthVariants}
-              className={`h-6 w-1 bg-${blueTeam.color} rounded-full`}>
-            </motion.div>
-            <span className="text-2xl mr-2">{truncateString(blueTeam.name.toUpperCase(), 6)}</span>
-            <ArrowAnimation roomStatus={room?.status} teamIsTurn={blueTeam.isturn} orientation="right" />
-          </div>
-          <div className="flex flex-col w-full items-center">
-            <Timer />
-            <p className="font-medium text-xs text-center">
-              {currentTeam === team
-                ? isBanPhase
-                  ? `C'est à vous de bannir, vous êtes l'équipe ${currentTeam?.color.charAt(0).toUpperCase() + currentTeam?.color.slice(1)}`
-                  : `C'est à vous de choisir, vous êtes l'équipe ${currentTeam?.color.charAt(0).toUpperCase() + currentTeam?.color.slice(1)}`
-                : `L'équipe ${currentTeam?.name.charAt(0).toUpperCase() + currentTeam?.name.slice(1)} entrain de choisir`}
-            </p>
-          </div>
-          <p className={`flex items-center gap-2 justify-end`}>
-            <ArrowAnimation roomStatus={room?.status} teamIsTurn={redTeam.isturn} orientation="left" />
-            <span className="text-2xl ml-2">{truncateString(redTeam.name.toUpperCase(), 6)} </span>
-            <motion.div
-              initial={redTeam.isturn ? "isTurn" : "notTurn"}
-              animate={redTeam.isturn ? "isTurn" : "notTurn"}
-              variants={widthVariants}
-              className={`h-6 w-1 bg-${redTeam.color} rounded-full`}></motion.div>
-          </p>
+        >
+          <GameStatusBar
+            blueTeam={blueTeam}
+            redTeam={redTeam}
+            room={room}
+            widthVariants={widthVariants}
+            statusText={currentTeam === team
+              ? isBanPhase
+                ? `C'est à vous de bannir, vous êtes l'équipe ${currentTeam?.color.charAt(0).toUpperCase() + currentTeam?.color.slice(1)}`
+                : `C'est à vous de choisir, vous êtes l'équipe ${currentTeam?.color.charAt(0).toUpperCase() + currentTeam?.color.slice(1)}`
+              : `L'équipe ${currentTeam?.name.charAt(0).toUpperCase() + currentTeam?.name.slice(1)} entrain de choisir`}
+          />
         </motion.div>
       </motion.div>
       <motion.div

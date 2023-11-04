@@ -4,7 +4,6 @@ import SocketContext from "@/app/context/SocketContext";
 
 interface TimerProps {
   className?: string;
-  // other props if needed
 }
 const Timer: React.FC<TimerProps> = ({ className }) => {
   const [timer, setTimer] = useState<string>("");

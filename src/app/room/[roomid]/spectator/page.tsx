@@ -5,21 +5,18 @@ import { roomStore } from "@/app/stores/roomStore";
 import useTeamStore from "@/app/stores/teamStore";
 import ChampionsPool from "@/app/components/common/ChampionsPool";
 import useTeams from "@/app/hooks/useTeams";
-import Timer from "@/app/components/common/RoomTimer";
 import useSocket from "@/app/hooks/useSocket";
 import SocketContext from "@/app/context/SocketContext";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
-import TeamPicks from "@/app/components/team/TeamPicks";
-import TeamBans from "@/app/components/team/TeamBans";
 import Image from "next/image";
 import { useState } from "react";
 import { motion } from 'framer-motion';
-import { truncateString } from "@/app/lib/utils";
-import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 import FinishView from '@/app/components/FinishView';
 
 import Planningview from "@/app/components/PlanningView";
 import DraftView from "@/app/components/DraftView";
+import GameStatusBar from '@/app/components/common/RoomHeader';
+import ErrorMessage from '@/app/components/common/ErrorMessage';
 
 interface SpectatorProps {
   params: {
@@ -64,10 +61,13 @@ const Spectator = ({ params }: SpectatorProps) => {
         setSelectedChampion(currentTeam.clicked_hero || "");
       }
     }
+
   }, [teams]);
 
-  if (connectionError) {
-    return <div>Error connecting to server</div>;
+  if(!blueTeam || !redTeam || !room || connectionError) {
+    return (
+      <ErrorMessage />
+    )
   }
 
   if (!socket || isLoading || loadTeam) {
@@ -112,6 +112,7 @@ const Spectator = ({ params }: SpectatorProps) => {
   }
 
   return (
+    
     <div className='container px-12'>
       <SocketContext.Provider value={socket}>
 
@@ -140,34 +141,12 @@ const Spectator = ({ params }: SpectatorProps) => {
             />)}
         </div>
         <div className='container'>
-          <div className='grid grid-cols-3 items-center justify-center my-3 w-full pb-2'>
-            <div className={`flex items-center gap-2 justify-start`}>
-              <motion.div
-                initial={blueTeam?.isturn ? "isTurn" : "notTurn"}
-                animate={blueTeam?.isturn ? "isTurn" : "notTurn"}
-                variants={widthVariants}
-                className={`h-6 w-1 bg-${blueTeam?.color} rounded-full`}>
-              </motion.div>
-              <span className="text-2xl mr-2">{truncateString(blueTeam?.name.toUpperCase(), 6)}</span>
-              <ArrowAnimation roomStatus={room?.status} teamIsTurn={blueTeam?.isturn} orientation="right" />
-            </div>
-            <div className="flex flex-col w-full items-center">
-              <Timer />
-              <p className="font-medium text-xs text-center">
-                Vous êtes spectateur de {blueTeam?.name.toUpperCase()} vs {redTeam?.name.toUpperCase()}
-              </p>
-            </div>
-            <div className={`flex items-center gap-2 justify-end`}>
-              <ArrowAnimation roomStatus={room?.status} teamIsTurn={redTeam?.isturn} orientation="left" />
-              <span className="text-2xl ml-2">{truncateString(redTeam?.name.toUpperCase(), 6)}</span>
-              <motion.div
-                initial={redTeam?.isturn ? "isTurn" : "notTurn"}
-                animate={redTeam?.isturn ? "isTurn" : "notTurn"}
-                variants={widthVariants}
-                className={`h-6 w-1 bg-${redTeam?.color} rounded-full`}>
-              </motion.div>
-            </div>
-          </div>
+        <GameStatusBar
+          blueTeam={blueTeam}
+          redTeam={redTeam}
+          room={room}
+          widthVariants={widthVariants}
+            statusText={`Vous êtes spectateur de ${blueTeam?.name.toUpperCase()} vs ${redTeam?.name.toUpperCase()}`} />
           <div className='mb-6'><ChampionsPool selectedChampion={selectedChampion} canHoverToShowName={true} canSelect={true} /></div>
           <DraftView applyHeightVariants={false} />
         </div>

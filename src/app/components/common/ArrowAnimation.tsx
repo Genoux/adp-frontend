@@ -20,7 +20,6 @@ const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
 
   const text = roomStatus === "ban" ? "Banning" : "Picking";
   const color = roomStatus === "ban" ? "#E62222" : "#DCFC35";
-  const bgColor = roomStatus === "ban" ? "bg-red-900 border bg-opacity-20 border-red-500" : "bg-yellow";
   const textColor = roomStatus === "ban" ? "text-red" : "text-yellow";
 
   const arrowTransform = orientation === "left" ? "scaleX(-1)" : "scaleX(1)";

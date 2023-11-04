@@ -2,7 +2,6 @@ import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import { motion } from 'framer-motion';
 import clsx from "clsx";
-import { useImages } from '@/app/context/ImageContext'; // Import the useImages hook
 import { roomStore } from "@/app/stores/roomStore";
 import { Database } from "@/app/types/supabase";
 
