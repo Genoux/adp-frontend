@@ -1,9 +1,13 @@
 'use client';
 
-import LoadingCircle from '@/app/components/common/LoadingCircle';
-import { useState } from 'react';
-import { RoomCreationForm } from './components/RoomCreationForm';
-import { RoomDisplay } from './components/RoomDisplay';
+import { useState } from "react";
+import LoadingCircle from "@/app/components/common/LoadingCircle";
+import { RoomDisplay } from "./components/RoomDisplay";
+import { RoomCreationForm } from "./components/RoomCreationForm";
+import Link from "next/link";
+import Image from "next/image";
+import { defaultTransition } from '@/app/lib/animationConfig'
+import { motion } from "framer-motion";
 
 interface Room {
   id: number;
@@ -98,12 +102,30 @@ function Home() {
 
   return (
     <>
-      <main className="flex h-screen items-center justify-center">
+      <main className="flex flex-col h-screen items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={defaultTransition}
+          className="text-center justify-end items-end mx-auto flex flex-col"
+        >
+          <Image
+            src='home-logo.svg'
+            width={268}
+            height={0} alt={""} />
+        </motion.div>
         {room && blueTeam && redTeam ? (
           <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
         ) : (
           <RoomCreationForm onCreate={createRoomLogic} />
         )}
+        <footer className="w-full bottom-0 pt-24 pb-6">
+          <div className="container flex justify-center gap-24 text-xs">
+            <Link className="hover:underline underline-offset-4" href="https://www.tournoishaq.ca/" target="_blank">Tournoishaq.ca</Link>
+            <p>All right reserved © 2023</p>
+            <p>Beta v0.3.0</p>
+          </div>
+        </footer>
       </main>
     </>
   );

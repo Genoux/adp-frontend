@@ -66,7 +66,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
             duration: 0.3,
             ease: [0.585, 0.535, 0.23, 0.85],
           }}
-          className="flex flex-row gap-6"
+          className="flex flex-col gap-6 w-full"
         >
           {teams.map((team) => (
             <div key={team.id} className="flex flex-col gap-2">
@@ -80,7 +80,6 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
               <Input
                 type="text"
                 name={team.id}
-                className="my-input"
                 onChange={handleInputChange}
                 value={team.value}
               />
@@ -94,7 +93,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
             duration: 0.4,
             ease: [0.585, 0.535, 0.23, 0.85],
           }}
-          className="flex flex-row gap-6"
+          className="flex flex-row gap-6  mt-4"
         >
           <Button
             size="lg"
