@@ -65,11 +65,6 @@ const TeamView = () => {
       setCurrentImage(null)
       socket?.emit("STOP_TIMER", { roomid: room?.id });
 
-      await supabase
-      .from("teams")
-      .update({ clicked_hero: null })
-      .eq("id", team.id);
-
       const champion = selectedChampion;
 
       socket.emit("SELECT_CHAMPION", {

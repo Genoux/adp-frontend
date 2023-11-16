@@ -19,23 +19,23 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
   const { room } = roomStore(state => state);
   const isDone = room?.status === "done";
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
-  
+
 
   useEffect(() => {
     const shouldSetBorder = team.isturn && room?.status === 'select' && team.nb_turn > 0;
-    
+
     if (shouldSetBorder) {
       // Delay setting the new border index
       const delay = 1000; // 2 seconds delay
       const timer = setTimeout(() => {
         setBorderIndex(team.heroes_selected.findIndex((hero: Hero) => !hero.selected));
       }, delay);
-  
+
       // Clean up the timeout if the component unmounts or the dependencies change
       return () => clearTimeout(timer);
     } else {
       // If the condition is not met, set borderIndex to null immediately
-     // setBorderIndex(null);
+      setBorderIndex(null);
     }
   }, [team, room]);
 
@@ -86,7 +86,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                 </motion.div>
               </AnimatePresence>
             }
-          <div className={slotClassName}>
+            <div className={slotClassName}>
               <AnimatePresence>
                 {isClickedHeroSlot && (
                   <motion.div
@@ -94,21 +94,29 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                     initial={{ opacity: 0, scale: 1.5, zIndex: 1 }}
                     animate={{ opacity: 1, scale: 1.5 }}
                     exit={{ opacity: 1, scale: 1.5, transition: { duration: 0.25 } }}
-                    className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
+                    className="absolute top-0 left-0 w-full h-full bg-cover bg-center sepia"
                     style={getHeroImageStyle(team.clicked_hero)}
                   />
                 )}
 
                 {hero.id && (
+                  <>
+                  
                   <motion.div
                     key="hero"
                     initial={{ opacity: 1, scale: 1.5, zIndex: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1, transition: { delay: 0.3, duration: 0.25 } }}
-                    transition={{ delay: 0.15, duration: 0.5, ease: [1,-0.6,.3,1.4] }}
+                    transition={{ delay: 0.15, duration: 0.5, ease: [1, -0.6, .3, 1.4] }}
                     className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
                     style={getHeroImageStyle(hero.id)}
-                  />
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 5, zIndex: 2 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0, duration: .8, ease: [1, -0.6, .3, 1.4] }}
+                      className='bg-gradient-to-t from-[#00000056] to-transparent absolute text-xs z-50 w-full h-full flex justify-center items-end pb-4'> <p> {hero.name}</p></motion.div>
+                </>
                 )}
               </AnimatePresence>
             </div>
