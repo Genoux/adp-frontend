@@ -177,7 +177,7 @@
 /* ... rest of the CSS code ... */
 
 .glow-yellow {
-  box-shadow: 0 0 10px rgba(220, 252, 53, .5);
+  box-shadow: 0 0 10px rgba(220, 252, 53, 1);
 }
 
 .glow-yellow-10 {

@@ -78,6 +78,7 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <>
+      <StateControllerButtons roomid={roomid} />
       <main className='px-0 lg:px-12 '>
         <AnimatePresence mode="wait">
           <SocketContext.Provider value={socket}>

@@ -53,7 +53,7 @@ const TeamView = () => {
       setClickedHero(null);
       setTimeout(() => {
         setCanSelect(true);
-      }, 250);
+      }, 1000);
     }
   }, [team.nb_turn]);
 
@@ -64,6 +64,11 @@ const TeamView = () => {
       setClickedHero(null);
       setCurrentImage(null)
       socket?.emit("STOP_TIMER", { roomid: room?.id });
+
+      await supabase
+      .from("teams")
+      .update({ clicked_hero: null })
+      .eq("id", team.id);
 
       const champion = selectedChampion;
 

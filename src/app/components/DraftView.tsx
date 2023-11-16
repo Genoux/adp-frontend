@@ -19,8 +19,7 @@ const RoomInfo = () => {
             <TeamBans team={blue} />
             <TeamBans team={red} />
           </div>
-
-          <div className="flex flex-row justify-between w-full h-full gap-12 mt-2">
+          <div className="flex flex-row justify-between w-full h-full gap-12 -translate-y-10">
             <TeamPicks team={blue} />
             <TeamPicks team={red} />
           </div>
