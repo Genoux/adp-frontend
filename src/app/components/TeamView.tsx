@@ -8,7 +8,7 @@ import { Button } from "@/app/components/ui/button";
 import { roomStore } from "@/app/stores/roomStore";
 import { teamStore } from "@/app/stores/teamStore";
 import useTeams from "@/app/hooks/useTeams";
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { defaultTransition } from '@/app/lib/animationConfig'
 import Image from "next/image";
 import LoadingCircle from "@/app/components/common/LoadingCircle";
@@ -139,7 +139,6 @@ const TeamView = () => {
           }}
           className="absolute h-full w-full bg-red-900 opacity-5 top-0 left-0 -z-50"></motion.div>
       )}
-
       <motion.div
         exit="exit"
         initial={{ opacity: 0 }}  // start at half the size
@@ -147,22 +146,25 @@ const TeamView = () => {
         transition={defaultTransition}
         className="pb-2"
       >
-        <motion.div
-          className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={defaultTransition}
-        >
-          {currentImage && (
-            <Image
-              src={`/images/champions/splash/${currentImage?.toLowerCase().replace(/\s+/g, '')}.jpg`}
-              width={3840}
-              height={1440}
-              rel="preload"
-              className={`w-full h-full object-cover object-center opacity-50 ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
-              alt={``}
-            />)}
-        </motion.div>
+        {currentImage && (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentImage}  // Key based on currentImage
+              className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'} top-0 w-3/12 h-full -z-10`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <Image
+                src={`/images/champions/splash/${currentImage.toLowerCase().replace(/\s+/g, '')}.jpg`}
+                width={3840}
+                height={1440}
+                rel="preload"
+                className={`w-full h-full object-cover object-center opacity-50 ${currentTeam.color === 'blue' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+                alt={``}
+              />
+            </motion.div>
+          </AnimatePresence>
+        )}
         <motion.div
           exit="exit"
           initial={{ y: "30px", opacity: 0 }}  // start at half the size
