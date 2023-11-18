@@ -60,7 +60,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
   };
 
   return (
-    <motion.div className={`grid grid-cols-5 h-44 pb-4 gap-2 w-full ${team.isturn || isDone ? "opacity-100" : "opacity-60"}`}>
+    <motion.div className={`grid grid-cols-5 h-72 pb-4 gap-2 w-full ${team.isturn || isDone ? "opacity-100" : "opacity-60"}`}>
       {Array.from({ length: 5 }).map((_, index) => {
         const hero = team.heroes_selected[index];
         const isClickedHeroSlot = index === borderIndex && team.clicked_hero;
@@ -91,9 +91,9 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                 {isClickedHeroSlot && (
                   <motion.div
                     key="clicked_hero"
-                    initial={{ opacity: 0, scale: 1.5, zIndex: 1 }}
-                    animate={{ opacity: 1, scale: 1.5 }}
-                    exit={{ opacity: 1, scale: 1.5, transition: { duration: 0.25 } }}
+                    initial={{ opacity: 0, scale: 1.3, zIndex: 1 }}
+                    animate={{ opacity: 1, scale: 1.3 }}
+                    exit={{ opacity: 1, scale: 1.3, transition: { duration: 0.25 } }}
                     className="absolute top-0 left-0 w-full h-full bg-cover bg-center sepia"
                     style={getHeroImageStyle(team.clicked_hero)}
                   />
@@ -101,10 +101,9 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
 
                 {hero.id && (
                   <>
-                  
                   <motion.div
                     key="hero"
-                    initial={{ opacity: 1, scale: 1.5, zIndex: 2 }}
+                    initial={{ opacity: 1, scale: 1.3, zIndex: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1, transition: { delay: 0.3, duration: 0.25 } }}
                     transition={{ delay: 0.15, duration: 0.5, ease: [1, -0.6, .3, 1.4] }}

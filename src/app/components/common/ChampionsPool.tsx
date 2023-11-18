@@ -89,9 +89,9 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                             className="bg-gradient-to-t absolute z-50 from-yellow to-transparent bg-clip-content w-full h-full top-0 left-0">
                           </motion.div>
                           <motion.div
-                            initial={{ y: 2, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: 2, opacity: 0 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }}
                             className={`font-bold text-sm text-center z-50 text-white absolute h-full top-0 flex items-center`}>
                             <p className="z-50">{hero.name}</p>
