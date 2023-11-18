@@ -69,7 +69,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     setHoverIndex(-1);
                   }
                 }}>
-                <div className="relative overflow-hidden rounded-sm">
+                <div className="relative overflow-hidden rounded">
                   <Image
                     src={`/images/champions/tiles/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
                     alt={hero.name}
@@ -78,28 +78,41 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     height={500}
                   />
                   <div className="flex items-center justify-center my-auto overflow-hidden">
-                    {isActive &&
-                      <AnimatePresence>
-                        <motion.div
-                          initial={{ opacity: 0 }} // Start from a larger scale and invisible
-                          animate={{ opacity: 1 }}    // Animate to normal scale and visible
-                          exit={{ opacity: 0 }}   // Exit animation - reverse of initial
-                          transition={{ duration: 0.3, ease: [0.4, 0.0, 0.2, 1] }}       // Adjust duration as needed
-                          className={`font-bold text-sm text-center z-50 text-white absolute h-full top-0 flex items-center`}>
-                          {hero.name}
-                        </motion.div>
-                        <motion.div
-                          className="bg-gradient-to-t absolute z-10 from-yellow to-transparent opacity-50 bg-clip-content w-full h-full top-0 left-0">
-                        </motion.div>
-                      </AnimatePresence>
-                    }
-                    <Image
-                      src={`/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
-                      alt={hero.name}
-                      width={800}
-                      height={800}
-                      className={`mx-auto splash-image ${isActive && "splash-image-hover"}`}
-                    />
+                    <AnimatePresence>
+                      {isActive && (
+                        <>
+                          <motion.div
+                            initial={{ opacity: 0 }} // Start invisible
+                            animate={{ opacity: 0.5 }} // Fade in to half opacity
+                            exit={{ opacity: 0 }} // Fade out to invisible
+                            transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }} // Smooth transition
+                            className="bg-gradient-to-t absolute z-50 from-yellow to-transparent bg-clip-content w-full h-full top-0 left-0">
+                          </motion.div>
+                          <motion.div
+                            initial={{ y: 2, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 2, opacity: 0 }}
+                            transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }}
+                            className={`font-bold text-sm text-center z-50 text-white absolute h-full top-0 flex items-center`}>
+                            <p className="z-50">{hero.name}</p>
+                          </motion.div>
+                          <motion.div
+                            initial={{ scale: 1.3, opacity: 0 }}
+                            animate={{ scale: 1.2, opacity: 1 }}
+                            exit={{ scale: 1, opacity: 0, transition: { duration: 0.2 } }}
+                            transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }}
+                            className={`mx-auto absolute top-0 left-0 w-full h-full object-cover`}>
+                            <Image
+                              src={`/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
+                              alt={hero.name}
+                              width={800}
+                              height={800}
+                              className="w-full h-full object-cover"
+                            />
+                          </motion.div>
+                        </>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               </motion.div>
