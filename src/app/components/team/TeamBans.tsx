@@ -15,8 +15,8 @@ interface Hero {
 
 const TeamBans = ({ team }: Team) => {
   const heightVariants = {
-    collapsed: { y: 0, height: "0px", opacity: 0 },
-    expanded: { y: -50, height: "70px", opacity: 1 }
+    collapsed: { height: "0px", opacity: 0 },
+    expanded: { height: "80px", opacity: 1 }
   };
 
   const { room } = roomStore(state => ({
@@ -34,7 +34,7 @@ const TeamBans = ({ team }: Team) => {
     } else {
       setBorderIndex(null); // Remove the border when it's not the team's turn
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [team.isturn]);
 
   return (
@@ -49,7 +49,7 @@ const TeamBans = ({ team }: Team) => {
         {(team.heroes_ban as unknown as Hero[]).map((hero: Hero, index: number) => (
           <div
             key={index}
-            className={`h-full w-full transition-all relative overflow-hidden rounded-md ${hero.selected && "bg-[#161620] bg-opacity-60"} ${!team.isturn && "opacity-50"} ${(index === borderIndex && !hero.selected) ? "border border-red-600 ease-in-out animate-pulse bg-red-500 bg-opacity-20 border-opacity-70" : "bg-[#161620] border border-white border-opacity-0"}`}
+            className={`h-full w-full transition-all relative overflow-hidden rounded ${hero.selected && "bg-[#161620] bg-opacity-60"} ${!team.isturn && "opacity-50"} ${(index === borderIndex && !hero.selected) ? "border border-red-600 ease-in-out animate-pulse bg-red-500 bg-opacity-20 border-opacity-70" : "bg-[#161620]"}`}
           >
             {
               hero && hero.selected ? (
@@ -61,6 +61,8 @@ const TeamBans = ({ team }: Team) => {
                   </div>
                 ) : (
                   <div>
+                    <div className='bg-gradient-to-t from-[#000000ad] to-transparent absolute top-0 left-0 h-full w-full z-50'></div>
+
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -81,7 +83,7 @@ const TeamBans = ({ team }: Team) => {
                         ease: "easeInOut"
                       }}
 
-                      className="absolute top-0 left-0 w-full h-full bg-cover bg-center grayscale"
+                      className="absolute top-0 left-0 w-full h-full bg-cover bg-center grayscale "
                       style={{
                         backgroundImage: `url("/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg")`,
                       }}

@@ -17,6 +17,7 @@ import StateControllerButtons from "@/app/components/common/StateControllerButto
 import LoadingCircle from "@/app/components/common/LoadingCircle";
 import ChampionsPool from "@/app/components/common/ChampionsPool";
 import { Button } from '@/app/components/ui/button';
+import { CanSelectProvider } from '@/app/context/CanSelectContext';
 
 interface RoomProps {
   params: {
@@ -79,14 +80,16 @@ export default function Room({ params }: RoomProps) {
   return (
     <>
       <StateControllerButtons roomid={roomid} />
-      <main className='px-0 lg:px-12 '>
+      <main>
         <AnimatePresence mode="wait">
           <SocketContext.Provider value={socket}>
             {isLobbyView && <LobbyView />}
             <div className='container'>
               {isPlanningView && <PlanningView />}
-              {isRoomView && <TeamView />}
-              {isRoomView && <DraftView />}
+              <CanSelectProvider>
+                {isRoomView && <TeamView />}
+                {isRoomView && <DraftView />}
+              </CanSelectProvider>
             </div>
             {isFinishView && <FinishView />}
           </SocketContext.Provider>

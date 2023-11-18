@@ -242,11 +242,6 @@
   top: 0;
 }
 
-.team .champion-pool {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-10%);
-}
 
 .unblur {
   animation: unblur 1s linear;

@@ -60,7 +60,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
   };
 
   return (
-    <motion.div className={`grid grid-cols-5 h-72 pb-4 gap-2 w-full ${team.isturn || isDone ? "opacity-100" : "opacity-60"}`}>
+    <motion.div className={`grid grid-cols-5 min-h-10 h-full pb-4 gap-2 w-full ${team.isturn || isDone ? "opacity-100" : "opacity-60"}`}>
       {Array.from({ length: 5 }).map((_, index) => {
         const hero = team.heroes_selected[index];
         const isClickedHeroSlot = index === borderIndex && team.clicked_hero;
