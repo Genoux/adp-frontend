@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
-import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from "@/app/stores/roomStore";
 import { useState, useEffect } from 'react';
 
 interface Team {
   [key: string]: any;
+  applyHeightVariants?: boolean;
 }
 
 interface Hero {
@@ -13,11 +13,7 @@ interface Hero {
   selected: boolean;
 }
 
-const TeamBans = ({ team }: Team) => {
-  const heightVariants = {
-    collapsed: { y: 0, height: "0px", opacity: 0 },
-    expanded: { y: -50, height: "70px", opacity: 1 }
-  };
+const TeamBans: React.FC<Team> = ({ team }) => {
 
   const { room } = roomStore(state => ({
     room: state.room,
@@ -40,11 +36,7 @@ const TeamBans = ({ team }: Team) => {
   return (
     <>
       <motion.div
-        initial="collapsed"
-        animate="expanded"
-        transition={defaultTransition}
-        variants={heightVariants}
-        className="flex gap-2 w-full overflow-hidden"
+        className="flex justify-between gap-2 w-full overflow-hidden h-20"
       >
         {(team.heroes_ban as unknown as Hero[]).map((hero: Hero, index: number) => (
           <div

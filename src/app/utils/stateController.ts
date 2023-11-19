@@ -7,6 +7,8 @@ export async function setWaiting(roomid: string) {
 }
 
 export async function setPlanning(roomid: string) {
+  //await resetHeroPoolSelection(roomid);
+  //await resetTeamHeroSelection(roomid);
   await supabase.from("rooms").update({ cycle: 0, status: "planning", ready: true }).eq("id", roomid);
   await supabase.from("teams").update({ ready: true }).eq("room", roomid);
 }

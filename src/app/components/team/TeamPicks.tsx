@@ -1,10 +1,9 @@
 import { roomStore } from "@/app/stores/roomStore";
 import { motion } from 'framer-motion';
-import { defaultTransition } from '@/app/lib/animationConfig';
 import { useState, useEffect } from 'react';
-import MyImage from '@/app/components/common/MyImage';
 interface Team {
   [key: string]: any;
+  applyHeightVariants?: boolean;
 }
 
 interface Hero {
@@ -13,7 +12,7 @@ interface Hero {
   selected: boolean;
 }
 
-const TeamPicks = ({ team }: Team) => {
+const TeamPicks: React.FC<Team> = ({ team }) => {
 
   const { room } = roomStore(state => ({
     room: state.room,
@@ -21,16 +20,9 @@ const TeamPicks = ({ team }: Team) => {
     isLoading: state.isLoading
   }));
 
-  const heightVariants = {
-    initial: { y: 0, height: 0, originY: 0 },
-    notDone: { height: "250px", y: -45 },
-    done: { height: "300px", y: 0 }
-  };
-
   const isDone = room?.status === "done";
 
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
-
 
   useEffect(() => {
     if (team.isturn && room?.status === 'select' && team.nb_turn > 0) {
@@ -45,11 +37,8 @@ const TeamPicks = ({ team }: Team) => {
 
   return (
     <motion.div
-      initial="initial"
-      animate={isDone ? "done" : "notDone"}
-      transition={defaultTransition}
-      variants={heightVariants}
-      className={`grid grid-cols-5 gap-2 h-full w-full ${team.isturn || isDone ? `opacity-100` : "opacity-60"}`}>
+
+      className={`grid grid-cols-5 h-48 pb-4 gap-2 w-full ${team.isturn || isDone ? `opacity-100` : "opacity-60"}`}>
       {(team.heroes_selected as unknown as Hero[]).map((hero: Hero, index: number) => (
         <div
           key={index}

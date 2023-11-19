@@ -5,7 +5,6 @@ interface StateControllerButtonsProps {
   roomid: string;
 }
 
-
 const StateControllerButtons: React.FC<StateControllerButtonsProps> = ({ roomid }) => {
   const [isVisible, setIsVisible] = useState(true);
 
