@@ -93,9 +93,8 @@ const TeamView = () => {
           <AnimatePresence mode="wait">
             <motion.div
               key={currentImage} // Key based on currentImage
-              className={`absolute ${
-                currentTeam.color === 'blue' ? 'left-0' : 'right-0'
-              } top-0 -z-10 h-full w-3/12`}
+              className={`absolute ${currentTeam.color === 'blue' ? 'left-0' : 'right-0'
+                } top-0 -z-10 h-full w-3/12`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
@@ -106,11 +105,10 @@ const TeamView = () => {
                 width={3840}
                 height={1440}
                 rel="preload"
-                className={`h-full w-full object-cover object-center opacity-50 ${
-                  currentTeam.color === 'blue'
-                    ? 'fade-gradient-left'
-                    : 'fade-gradient-right'
-                }`}
+                className={`h-full w-full object-cover object-center opacity-50 ${currentTeam.color === 'blue'
+                  ? 'fade-gradient-left'
+                  : 'fade-gradient-right'
+                  }`}
                 alt={``}
               />
             </motion.div>
@@ -118,8 +116,8 @@ const TeamView = () => {
         )}
         <motion.div
           exit="exit"
-          initial={{ y: '30px', opacity: 0 }} // start at half the size
-          animate={{ y: '0px', opacity: 1 }} // animate to full size
+          initial={{ opacity: 0 }} // start at half the size
+          animate={{ opacity: 1 }} // animate to full size
           transition={defaultTransition}
           className="my-3 grid w-full grid-cols-3 items-center"
         >
@@ -144,18 +142,15 @@ const TeamView = () => {
             <p className="text-center text-xs font-medium">
               {currentTeam === team
                 ? isBanPhase
-                  ? `C'est à vous de bannir, vous êtes l'équipe ${
-                      currentTeam.color.charAt(0).toUpperCase() +
-                      currentTeam.color.slice(1)
-                    }`
-                  : `C'est à vous de choisir, vous êtes l'équipe ${
-                      currentTeam.color.charAt(0).toUpperCase() +
-                      currentTeam.color.slice(1)
-                    }`
-                : `L'équipe ${
-                    currentTeam.name.charAt(0).toUpperCase() +
-                    currentTeam.name.slice(1)
-                  } entrain de choisir`}
+                  ? `C'est à vous de bannir, vous êtes l'équipe ${currentTeam.color.charAt(0).toUpperCase() +
+                  currentTeam.color.slice(1)
+                  }`
+                  : `C'est à vous de choisir, vous êtes l'équipe ${currentTeam.color.charAt(0).toUpperCase() +
+                  currentTeam.color.slice(1)
+                  }`
+                : `L'équipe ${currentTeam.name.charAt(0).toUpperCase() +
+                currentTeam.name.slice(1)
+                } entrain de choisir`}
             </p>
           </div>
           <p className={`flex items-center justify-end gap-2`}>

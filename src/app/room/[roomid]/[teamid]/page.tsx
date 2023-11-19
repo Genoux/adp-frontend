@@ -98,7 +98,7 @@ export default function Room({ params }: RoomProps) {
         <AnimatePresence mode="wait">
           <SocketContext.Provider value={socket}>
             {isLobbyView && <LobbyView />}
-            <div className="container">
+            <div className="container flex flex-col h-full justify-between">
               {isPlanningView && <PlanningView />}
               <CanSelectProvider>
                 {isRoomView && <TeamView />}
