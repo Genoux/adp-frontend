@@ -1,13 +1,13 @@
-import { useState, useCallback, useEffect } from "react";
-import useEnsureContext from "@/app/hooks/useEnsureContext";
-import SocketContext from "@/app/context/SocketContext";
+import SocketContext from '@/app/context/SocketContext';
+import useEnsureContext from '@/app/hooks/useEnsureContext';
+import { useCallback, useEffect, useState } from 'react';
 
 interface TimerProps {
   className?: string;
   // other props if needed
 }
 const Timer: React.FC<TimerProps> = ({ className }) => {
-  const [timer, setTimer] = useState<string>("");
+  const [timer, setTimer] = useState<string>('');
 
   const socket = useEnsureContext(SocketContext);
 
@@ -16,18 +16,16 @@ const Timer: React.FC<TimerProps> = ({ className }) => {
   }, []);
 
   useEffect(() => {
-    socket?.on("TIMER", handleSocketEvents);
+    socket?.on('TIMER', handleSocketEvents);
 
     return () => {
-      socket?.off("TIMER", handleSocketEvents);
+      socket?.off('TIMER', handleSocketEvents);
     };
   }, [handleSocketEvents, socket]);
 
   return (
     <div className={className}>
-      <h1 className="font-bold text-3xl w-fit mx-auto ">
-        {timer || "00:00"}
-      </h1>
+      <h1 className="mx-auto w-fit text-3xl font-bold ">{timer || '00:00'}</h1>
     </div>
   );
 };

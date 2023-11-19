@@ -1,77 +1,89 @@
-'use client'
+'use client';
 
-import supabase from "@/app/services/supabase";
-import useEnsureContext from "@/app/hooks/useEnsureContext";
-import SocketContext from "@/app/context/SocketContext";
-import { Button } from "@/app/components/ui/button";
-import { roomStore } from "@/app/stores/roomStore";
-import { teamStore } from "@/app/stores/teamStore";
-import useTeams from "@/app/hooks/useTeams";
-import TeamStatus from "@/app/components/common/TeamStatus";
-import { useState, useEffect } from 'react'
+import TeamStatus from '@/app/components/common/TeamStatus';
+import { Button } from '@/app/components/ui/button';
+import SocketContext from '@/app/context/SocketContext';
+import useEnsureContext from '@/app/hooks/useEnsureContext';
+import useTeams from '@/app/hooks/useTeams';
+import supabase from '@/app/services/supabase';
+import { roomStore } from '@/app/stores/roomStore';
+import { teamStore } from '@/app/stores/teamStore';
+import { Inter } from 'next/font/google';
+import { useEffect, useState } from 'react';
 
-import { Inter } from "next/font/google";
 const inter = Inter({
-  subsets: ["latin-ext"],
-  weight: "500"
-})
+  subsets: ['latin-ext'],
+  weight: '500',
+});
 
 const ReadyView = () => {
   const socket = useEnsureContext(SocketContext);
   const [connected, setConnected] = useState<boolean | null>(false);
 
-  const { room, error } = roomStore(state => ({
+  const { room, error } = roomStore((state) => ({
     room: state.room,
     error: state.error,
-    isLoading: state.isLoading
+    isLoading: state.isLoading,
   }));
 
-  const { current: currentTeam, other: otherTeam, red, blue } = useTeams(teamStore);
+  const {
+    current: currentTeam,
+    other: otherTeam,
+    red,
+    blue,
+  } = useTeams(teamStore);
 
   useEffect(() => {
-    if (red.connected && blue.connected) { 
-      setConnected(true)
+    if (red.connected && blue.connected) {
+      setConnected(true);
     } else {
-      setConnected(false)
+      setConnected(false);
     }
-   
   }, [red.connected, blue.connected]);
-  
 
   if (!room || error) {
     return <div>Room not found</div>;
   }
   const handleReadyClick = async () => {
     const { data, error } = await supabase
-      .from("teams")
+      .from('teams')
       .update({ ready: true })
-      .select("*, room(*)")
-      .eq("id", currentTeam.id)
+      .select('*, room(*)')
+      .eq('id', currentTeam.id)
       .single();
 
     if (data && !error) {
-      socket.emit("TEAM_READY", { roomid: room.id, teamid: currentTeam.id });
+      socket.emit('TEAM_READY', { roomid: room.id, teamid: currentTeam.id });
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-y-hidden text-3xl">
-      <div className="text-center mb-6">
-        <h1 className="text-4xl font-bold mb-2">{`Salle d'attente`}</h1>
+    <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 transform flex-col items-center justify-center overflow-y-hidden text-3xl">
+      <div className="mb-6 text-center">
+        <h1 className="mb-2 text-4xl font-bold">{`Salle d'attente`}</h1>
         <p className="text-base">{`Les joueurs attendent dans la salle jusqu'à ce que tout le monde soit prêt.`}</p>
-        <div className="flex items-center mt-6 justify-center">
+        <div className="mt-6 flex items-center justify-center">
           <div className={`h-6 w-1 bg-${currentTeam.color} rounded-full`}></div>
-          <p className={`${inter.className}  text-white text-base font-bold p-2 rounded-md`}>{`Vous êtes l'équipe ${currentTeam.name.toUpperCase()}`}</p>
+          <p
+            className={`${inter.className}  rounded-md p-2 text-base font-bold text-white`}
+          >{`Vous êtes l'équipe ${currentTeam.name.toUpperCase()}`}</p>
           <div className={`h-6 w-1 bg-${currentTeam.color} rounded-full`}></div>
-
         </div>
       </div>
-      <div className="border border-opacity-10 rounded-md w-full mb-12">
+      <div className="mb-12 w-full rounded-md border border-opacity-10">
         <div className="grid grid-cols-2 text-base">
-          <p className={`${inter.className} flex flex-col items-center gap-2 p-6 border-r`}>{blue.name.toUpperCase()}<TeamStatus team={blue} showReadyState={true} />
+          <p
+            className={`${inter.className} flex flex-col items-center gap-2 border-r p-6`}
+          >
+            {blue.name.toUpperCase()}
+            <TeamStatus team={blue} showReadyState={true} />
           </p>
 
-          <p className={`${inter.className} flex flex-col items-center gap-2 p-6`}>{red.name.toUpperCase()}<TeamStatus team={red} showReadyState={true} />
+          <p
+            className={`${inter.className} flex flex-col items-center gap-2 p-6`}
+          >
+            {red.name.toUpperCase()}
+            <TeamStatus team={red} showReadyState={true} />
           </p>
         </div>
       </div>
@@ -86,12 +98,12 @@ const ReadyView = () => {
         </div>
       ) : (
         <Button
-        size="lg"
-        className={`bg-yellow hover:bg-yellow-hover px-24 text-sm uppercase text-yellow-text rounded-sm font-bold mt-6`}
-        onClick={handleReadyClick}
-      >
-        {"Nous sommes prêt"}
-      </Button>
+          size="lg"
+          className={`mt-6 rounded-sm bg-yellow px-24 text-sm font-bold uppercase text-yellow-text hover:bg-yellow-hover`}
+          onClick={handleReadyClick}
+        >
+          {'Nous sommes prêt'}
+        </Button>
       )}
     </div>
   );

@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import React, { useEffect } from 'react';
-import { AnimatePresence } from "framer-motion";
-import Link from 'next/link'
-import DraftView from "@/app/components/DraftView";
-import TeamView from "@/app/components/TeamView";
-import FinishView from "@/app/components/FinishView";
-import PlanningView from "@/app/components/PlanningView";
-import LobbyView from "@/app/components/LobbyView";
-import { ServerCrash } from 'lucide-react';
-import useSocket from "@/app/hooks/useSocket";
-import SocketContext from "@/app/context/SocketContext";
-import { roomStore } from "@/app/stores/roomStore";
-import { teamStore } from "@/app/stores/teamStore";
-import StateControllerButtons from "@/app/components/common/StateControllerButtons";
-import LoadingCircle from "@/app/components/common/LoadingCircle";
-import ChampionsPool from "@/app/components/common/ChampionsPool";
+import ChampionsPool from '@/app/components/common/ChampionsPool';
+import LoadingCircle from '@/app/components/common/LoadingCircle';
+import StateControllerButtons from '@/app/components/common/StateControllerButtons';
+import DraftView from '@/app/components/DraftView';
+import FinishView from '@/app/components/FinishView';
+import LobbyView from '@/app/components/LobbyView';
+import PlanningView from '@/app/components/PlanningView';
+import TeamView from '@/app/components/TeamView';
 import { Button } from '@/app/components/ui/button';
 import { CanSelectProvider } from '@/app/context/CanSelectContext';
+import SocketContext from '@/app/context/SocketContext';
+import useSocket from '@/app/hooks/useSocket';
+import { roomStore } from '@/app/stores/roomStore';
+import { teamStore } from '@/app/stores/teamStore';
+import { AnimatePresence } from 'framer-motion';
+import { ServerCrash } from 'lucide-react';
+import Link from 'next/link';
+import React, { useEffect } from 'react';
 
 interface RoomProps {
   params: {
@@ -32,7 +32,12 @@ export default function Room({ params }: RoomProps) {
 
   const { socket, connectionError } = useSocket(roomid, teamid);
   const { teams, fetchTeams, isLoading, error } = teamStore();
-  const { room, fetchRoom, isLoading: isLoadingRoom, error: errorRoom, } = roomStore();
+  const {
+    room,
+    fetchRoom,
+    isLoading: isLoadingRoom,
+    error: errorRoom,
+  } = roomStore();
 
   useEffect(() => {
     fetchTeams(roomid, teamid);
@@ -48,15 +53,23 @@ export default function Room({ params }: RoomProps) {
 
   if (connectionError || error || errorRoom) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen w-full gap-8">
+      <div className="flex h-screen w-full flex-col items-center justify-center gap-8">
         <ServerCrash size={48} />
-        <div className='flex gap-1 flex-col items-center'>
-          <p className='px-24 text-2xl font-bold'>Impossible de se connecter au serveur. </p>
-          <p className='text-sm opacity-60'>Veuillez réessayer plus tard ou essayer de rafraîchir.</p>
+        <div className="flex flex-col items-center gap-1">
+          <p className="px-24 text-2xl font-bold">
+            Impossible de se connecter au serveur.{' '}
+          </p>
+          <p className="text-sm opacity-60">
+            Veuillez réessayer plus tard ou essayer de rafraîchir.
+          </p>
         </div>
-        <div className='flex gap-2'>
-          <Link href="/"><Button variant="outline">Accueille</Button></Link>
-          <Button variant="secondary" onClick={handleRefresh}>Rafraîchir</Button>
+        <div className="flex gap-2">
+          <Link href="/">
+            <Button variant="outline">Accueille</Button>
+          </Link>
+          <Button variant="secondary" onClick={handleRefresh}>
+            Rafraîchir
+          </Button>
         </div>
       </div>
     );
@@ -74,8 +87,9 @@ export default function Room({ params }: RoomProps) {
 
   const isLobbyView = room.cycle === -1;
   const isPlanningView = room.cycle === 0;
-  const isFinishView = room.status === "done";
-  const isRoomView = room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
+  const isFinishView = room.status === 'done';
+  const isRoomView =
+    room.cycle !== 0 && room.cycle !== -1 && room.status !== 'done';
 
   return (
     <>
@@ -84,7 +98,7 @@ export default function Room({ params }: RoomProps) {
         <AnimatePresence mode="wait">
           <SocketContext.Provider value={socket}>
             {isLobbyView && <LobbyView />}
-            <div className='container'>
+            <div className="container">
               {isPlanningView && <PlanningView />}
               <CanSelectProvider>
                 {isRoomView && <TeamView />}

@@ -1,18 +1,21 @@
-import { useState } from "react";
-import { Input } from "@/app/components/ui/input";
-import { Button } from "@/app/components/ui/button";
-import Image from "next/image";
-import clsx from "clsx";
-import { motion } from "framer-motion";
-import { defaultTransition } from '@/app/lib/animationConfig'
+import { Button } from '@/app/components/ui/button';
+import { Input } from '@/app/components/ui/input';
+import { defaultTransition } from '@/app/lib/animationConfig';
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { useState } from 'react';
+
 interface RoomCreationFormProps {
   onCreate: (blueTeamName: string, redTeamName: string) => void;
 }
 
-export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) => {
+export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
+  onCreate,
+}) => {
   const [formData, setFormData] = useState({
-    blueTeamName: "",
-    redTeamName: "",
+    blueTeamName: '',
+    redTeamName: '',
   });
 
   const handleInputChange = (event: { target: { name: any; value: any } }) => {
@@ -31,8 +34,18 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
   };
 
   const teams = [
-    { id: 'blueTeamName', label: 'Équipe bleue:', color: 'blue', value: formData.blueTeamName },
-    { id: 'redTeamName', label: 'Équipe rouge:', color: 'red', value: formData.redTeamName },
+    {
+      id: 'blueTeamName',
+      label: 'Équipe bleue:',
+      color: 'blue',
+      value: formData.blueTeamName,
+    },
+    {
+      id: 'redTeamName',
+      label: 'Équipe rouge:',
+      color: 'red',
+      value: formData.redTeamName,
+    },
   ];
 
   return (
@@ -41,31 +54,29 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={defaultTransition}
-        className="text-center justify-end items-end mx-auto flex flex-col mb-12"
+        className="mx-auto mb-12 flex flex-col items-end justify-end text-center"
       >
-        <Image
-          src='home-logo.svg'
-          width={460}
-          height={0} alt={""} />
+        <Image src="home-logo.svg" width={460} height={0} alt={''} />
       </motion.div>
-      <div className="flex flex-col gap-6 items-center">
+      <div className="flex flex-col items-center gap-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{
             duration: 0.3,
-            ease: [0.585, 0.535, 0.230, 0.850]
+            ease: [0.585, 0.535, 0.23, 0.85],
           }}
           className="flex flex-row gap-6"
         >
-          {teams.map(team => (
+          {teams.map((team) => (
             <div key={team.id} className="flex flex-col gap-2">
               <label htmlFor={team.id}>{team.label}</label>
-              <div className={clsx("w-full h-2", {
-                "bg-blue": team.color === 'blue',
-                "bg-red": team.color === 'red'
-              })
-              }></div>
+              <div
+                className={clsx('h-2 w-full', {
+                  'bg-blue': team.color === 'blue',
+                  'bg-red': team.color === 'red',
+                })}
+              ></div>
               <Input
                 type="text"
                 name={team.id}
@@ -81,21 +92,23 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
           animate={{ opacity: 1 }}
           transition={{
             duration: 0.4,
-            ease: [0.585, 0.535, 0.230, 0.850]
+            ease: [0.585, 0.535, 0.23, 0.85],
           }}
           className="flex flex-row gap-6"
         >
           <Button
             size="lg"
-            className={`bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold mt-6 ${!formData.blueTeamName || !formData.redTeamName ? "opacity-10" : ""}`}
+            className={`mt-6 rounded-sm bg-yellow text-sm font-bold uppercase text-yellow-text hover:bg-yellow-hover ${
+              !formData.blueTeamName || !formData.redTeamName
+                ? 'opacity-10'
+                : ''
+            }`}
             onClick={handleSubmit}
           >
-            {"Créer une salle"}
+            {'Créer une salle'}
           </Button>
         </motion.div>
       </div>
-
-
     </div>
   );
-}
+};

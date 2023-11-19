@@ -1,10 +1,10 @@
-import TeamPicks from "@/app/components/team/TeamPicks";
-import TeamBans from "@/app/components/team/TeamBans";
-import { teamStore } from "@/app/stores/teamStore";
-import useTeams from "@/app/hooks/useTeams";
-import { motion } from 'framer-motion';
-import { defaultTransition } from '@/app/lib/animationConfig'
 import ConfirmButton from '@/app/components/common/ConfirmButton';
+import TeamBans from '@/app/components/team/TeamBans';
+import TeamPicks from '@/app/components/team/TeamPicks';
+import useTeams from '@/app/hooks/useTeams';
+import { defaultTransition } from '@/app/lib/animationConfig';
+import { teamStore } from '@/app/stores/teamStore';
+import { motion } from 'framer-motion';
 
 const RoomInfo = () => {
   const { blue, red } = useTeams(teamStore);
@@ -12,16 +12,17 @@ const RoomInfo = () => {
   return (
     <>
       <motion.div
-        initial={{ opacity: .5 }}  // start at half the size
-        animate={{ opacity: 1 }}    // animate to full size
-        transition={defaultTransition}>
-        <div className="flex flex-col justify-evenly h-full gap-4 mt-6 rounded-md border border-[#8f8f8f] border-opacity-5 p-4 bg-[#0f0f0f3f]">
-          <div className="grid grid-cols-3 w-full items-center">
+        initial={{ opacity: 0.5 }} // start at half the size
+        animate={{ opacity: 1 }} // animate to full size
+        transition={defaultTransition}
+      >
+        <div className="mt-6 flex h-full flex-col justify-evenly gap-4 rounded-md border border-[#8f8f8f] border-opacity-5 bg-[#0f0f0f3f] p-4">
+          <div className="grid w-full grid-cols-3 items-center">
             <TeamBans team={blue} />
             <ConfirmButton />
             <TeamBans team={red} />
           </div>
-          <div className="grid grid-cols-2 w-full h-full gap-12">
+          <div className="grid h-full w-full grid-cols-2 gap-12">
             <TeamPicks team={blue} />
             <TeamPicks team={red} />
           </div>

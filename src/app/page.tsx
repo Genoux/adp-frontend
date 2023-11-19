@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import LoadingCircle from "@/app/components/common/LoadingCircle";
-import { RoomDisplay } from "./components/RoomDisplay";
-import { RoomCreationForm } from "./components/RoomCreationForm";
+import LoadingCircle from '@/app/components/common/LoadingCircle';
+import { useEffect, useState } from 'react';
+import { RoomCreationForm } from './components/RoomCreationForm';
+import { RoomDisplay } from './components/RoomDisplay';
 
 interface Room {
   id: number;
@@ -13,7 +13,6 @@ interface Room {
   status: string;
   [key: string]: any;
 }
-
 
 interface BlueTeam {
   id: number;
@@ -47,28 +46,28 @@ function Home() {
     ...blueTeam,
     borderColor: 'border-blue border-t-4',
     color: blueTeam.color,
-    btnText: 'Rejoindre'
+    btnText: 'Rejoindre',
   });
 
   const mapToRedTeamStructure = (redTeam: RedTeam): Team => ({
     ...redTeam,
     borderColor: 'border-red border-t-4',
     color: redTeam.color,
-    btnText: 'Rejoindre'
+    btnText: 'Rejoindre',
   });
 
   const createRoomLogic = async (blueTeamName: string, redTeamName: string) => {
     if (!blueTeamName || !redTeamName) {
-      alert("Please fill in all the fields.");
+      alert('Please fill in all the fields.');
       return; // Stop form submission
     }
 
     setLoading(true);
 
     const response1 = await fetch(`/api/generateroom/`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ blueTeamName, redTeamName }),
     });
@@ -83,7 +82,7 @@ function Home() {
     const modifiedRoom = {
       ...data.room,
       blue: mapToBlueTeamStructure(data.blue),
-      red: mapToRedTeamStructure(data.red)
+      red: mapToRedTeamStructure(data.red),
     };
 
     setRoom(modifiedRoom);
@@ -101,17 +100,21 @@ function Home() {
 
   return (
     <>
-      <main className="h-screen flex items-center justify-center">
+      <main className="flex h-screen items-center justify-center">
         {room && blueTeam && redTeam ? (
-          <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} copyLink={copyLink} setCopyLink={setCopyLink} />
+          <RoomDisplay
+            room={room}
+            blueTeam={blueTeam}
+            redTeam={redTeam}
+            copyLink={copyLink}
+            setCopyLink={setCopyLink}
+          />
         ) : (
           <RoomCreationForm onCreate={createRoomLogic} />
         )}
       </main>
-
     </>
   );
 }
 
 export default Home;
-

@@ -1,17 +1,21 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 
 interface CanSelectContextProps {
   canSelect: boolean;
   setCanSelect: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CanSelectContext = createContext<CanSelectContextProps | undefined>(undefined);
+const CanSelectContext = createContext<CanSelectContextProps | undefined>(
+  undefined
+);
 
 interface CanSelectProviderProps {
   children: ReactNode;
 }
 
-export const CanSelectProvider: React.FC<CanSelectProviderProps> = ({ children }) => {
+export const CanSelectProvider: React.FC<CanSelectProviderProps> = ({
+  children,
+}) => {
   const [canSelect, setCanSelect] = useState<boolean>(true);
 
   return (
