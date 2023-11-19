@@ -51,13 +51,20 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
               <motion.div
                 initial={{ opacity: 1 }}
                 animate={{ opacity: shouldFade ? 0.7 : 1 }}
-                transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
+                transition={{ duration: 0.1, ease: [0.4, 0.0, 0.2, 1] }}
                 key={index}
-                className={clsx("rounded-md", {
+                whileTap={{ scale: .9, zIndex: 50, boxShadow: "0px 0px 50px rgba(0, 0, 0, .8)" }}
+                whileHover={hoverIndex === index && hero.name !== selectedChampion ?
+                  {
+                    scale: 1,
+                    zIndex: 50,
+                    boxShadow: "0px 0px 50px rgba(0, 0, 0, .8)",
+                  } : {}}
+                className={clsx("rounded-md z-10 overflow-hidden", {
                   "bg-gray-800": isActive,
                   "grayscale": hero.selected,
                   "pointer-events-none": hero.selected || !isturnAvailable,
-                  "z-50 border border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion && team?.isturn,
+                  "z-50 border rounded-xl border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion && team?.isturn,
                 })}
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
                 onMouseEnter={() => {
@@ -69,7 +76,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     setHoverIndex(-1);
                   }
                 }}>
-                <div className="relative overflow-hidden rounded">
+                <motion.div className="relative overflow-hidden rounded transition-all z-10">
                   <Image
                     src={`/images/champions/tiles/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
                     alt={hero.name}
@@ -86,7 +93,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                             animate={{ opacity: 0.5 }} // Fade in to half opacity
                             exit={{ opacity: 0 }} // Fade out to invisible
                             transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }} // Smooth transition
-                            className="bg-gradient-to-t absolute z-50 from-yellow to-transparent bg-clip-content w-full h-full top-0 left-0">
+                            className="rounded-lg overflow-hidden bg-gradient-to-t absolute z-50 from-yellow to-transparent bg-clip-content w-full h-full top-0 left-0">
                           </motion.div>
                           <motion.div
                             initial={{ opacity: 0 }}
@@ -99,6 +106,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                           <motion.div
                             initial={{ scale: 1.3, opacity: 0 }}
                             animate={{ scale: 1.2, opacity: 1 }}
+                            whileHover={{ scale: 1 }}
                             exit={{ scale: 1, opacity: 0, transition: { duration: 0.2 } }}
                             transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }}
                             className={`mx-auto absolute top-0 left-0 w-full h-full object-cover`}>
@@ -114,7 +122,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                       )}
                     </AnimatePresence>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
             );
           }
