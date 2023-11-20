@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 interface Team {
   [key: string]: any;
+  applyHeightVariants?: boolean;
 }
 
 interface Hero {

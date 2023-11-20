@@ -6,9 +6,10 @@ import SocketContext from '@/app/context/SocketContext';
 import useEnsureContext from '@/app/hooks/useEnsureContext';
 import useTeams from '@/app/hooks/useTeams';
 import { roomStore } from '@/app/stores/roomStore';
-import { teamStore } from '@/app/stores/teamStore';
+import teamStore from '@/app/stores/teamStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect } from 'react';
+import { View } from 'lucide-react'
 
 const ConfirmButton = () => {
   const socket = useEnsureContext(SocketContext);
@@ -20,8 +21,16 @@ const ConfirmButton = () => {
     isLoading: state.isLoading,
   }));
 
-  const { current: team, other, blue, red } = useTeams(teamStore);
-  const currentTeam = team.isturn ? team : other;
+  const { currentTeam: team, otherTeam } = useTeams();
+
+  //For specator mor
+  if (!team) return (
+    <div className='flex flex-col justify-center items-center gap-2'>
+      <View size={21} />
+      <p className='text-center uppercase'>Spectateur</p>
+    </div>
+  );
+  const currentTeam = team.isturn ? team : otherTeam;
 
   const isBanPhase = room?.status === 'ban';
 
@@ -29,7 +38,8 @@ const ConfirmButton = () => {
     ? isBanPhase
       ? 'Confirmer le Ban'
       : 'Confirmer la Selection'
-    : `C'est à l'équipe ${other.color} de ${isBanPhase ? 'bannir' : 'choisir'}`;
+    : `C'est à l'équipe ${otherTeam?.color} de ${isBanPhase ? 'bannir' : 'choisir'
+    }`;
 
   const handleConfirmSelection = async () => {
     if (socket) {
@@ -39,7 +49,7 @@ const ConfirmButton = () => {
       socket.emit('SELECT_CHAMPION', {
         teamid: team?.id,
         roomid: room?.id,
-        selectedChampion: currentTeam.clicked_hero,
+        selectedChampion: currentTeam?.clicked_hero,
       });
     }
   };
@@ -63,7 +73,9 @@ const ConfirmButton = () => {
               size="lg"
               className={`w-64 rounded-sm bg-yellow text-sm font-bold uppercase text-yellow-text hover:bg-yellow-hover`}
               onClick={handleConfirmSelection}
-              disabled={!currentTeam.clicked_hero || !canSelect || !team.isturn}
+              disabled={
+                !currentTeam?.clicked_hero || !canSelect || !team.isturn
+              }
             >
               {!canSelect ? <LoadingCircle color="black" /> : <>{buttonText}</>}
             </Button>

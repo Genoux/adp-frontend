@@ -1,7 +1,7 @@
 'use client';
 
 import LoadingCircle from '@/app/components/common/LoadingCircle';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { RoomCreationForm } from './components/RoomCreationForm';
 import { RoomDisplay } from './components/RoomDisplay';
 
@@ -38,8 +38,6 @@ function Home() {
   const [room, setRoom] = useState<Room | null>(null);
   const [redTeam, setRedTeam] = useState<Team | null>(null);
   const [blueTeam, setBlueTeam] = useState<Team | null>(null);
-
-  const [copyLink, setCopyLink] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState(false);
 
   const mapToBlueTeamStructure = (blueTeam: BlueTeam): Team => ({
@@ -59,7 +57,7 @@ function Home() {
   const createRoomLogic = async (blueTeamName: string, redTeamName: string) => {
     if (!blueTeamName || !redTeamName) {
       alert('Please fill in all the fields.');
-      return; // Stop form submission
+      return;
     }
 
     setLoading(true);
@@ -102,13 +100,7 @@ function Home() {
     <>
       <main className="flex h-screen items-center justify-center">
         {room && blueTeam && redTeam ? (
-          <RoomDisplay
-            room={room}
-            blueTeam={blueTeam}
-            redTeam={redTeam}
-            copyLink={copyLink}
-            setCopyLink={setCopyLink}
-          />
+          <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
         ) : (
           <RoomCreationForm onCreate={createRoomLogic} />
         )}

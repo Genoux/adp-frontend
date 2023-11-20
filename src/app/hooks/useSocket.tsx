@@ -12,7 +12,6 @@ interface SocketHandlers {
 
 export default function useSocket(
   roomid: string,
-  teamid: string,
   handlers: SocketHandlers = {}
 ) {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -48,7 +47,7 @@ export default function useSocket(
     newSocket.on('connect', async () => {
       clearInterval(retryInterval); // Clear retry interval upon successful connection
       setSocket(newSocket);
-      newSocket.emit('joinRoom', { roomid, teamid });
+      newSocket.emit('joinRoom', { roomid });
       console.log('Successfully joined room');
     });
 
@@ -70,7 +69,7 @@ export default function useSocket(
       }
       setSocket(null);
     };
-  }, [handlers.eventHandlers, roomid, teamid]);
+  }, [handlers.eventHandlers, roomid]);
 
   return { socket, connectionError }; // Return the socket
 }

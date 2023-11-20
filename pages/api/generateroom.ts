@@ -43,7 +43,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
 
   try {
     // Step 1: Create room without team_ids
-    let { data: room, error: roomError } = await supabase
+    const { data: room, error: roomError } = await supabase
       .from('rooms')
       .insert({ name: roomName })
       .select('id')
@@ -56,7 +56,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
 
     const roomId = room.id;
 
-    let { data: redTeam, error: redError } = await supabase
+    const { data: redTeam, error: redError } = await supabase
       .from('teams')
       .insert({
         color: 'red',
@@ -70,7 +70,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
       .single();
 
     // Create blue team
-    let { data: blueTeam, error: blueError } = await supabase
+    const { data: blueTeam, error: blueError } = await supabase
       .from('teams')
       .insert({
         color: 'blue',
@@ -90,7 +90,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
     const teamRedId = redTeam.id;
     const teamBlueId = blueTeam.id;
 
-    let { data: updatedRoom, error: updateError } = await supabase
+    const { data: updatedRoom, error: updateError } = await supabase
       .from('rooms')
       .update({
         red: teamRedId,

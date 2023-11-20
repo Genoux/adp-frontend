@@ -23,7 +23,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   team,
   selectedChampion,
   canSelect,
-  handleClickedHero = () => {},
+  handleClickedHero = () => { },
 }) => {
   const [hoverIndex, setHoverIndex] = useState(-1);
   const { room } = roomStore();
@@ -55,18 +55,22 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 animate={{ opacity: shouldFade ? 0.7 : 1 }}
                 transition={{ duration: 0.1, ease: [0.4, 0.0, 0.2, 1] }}
                 key={index}
-                whileTap={{
-                  scale: 0.9,
-                  zIndex: 50,
-                  boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
-                }}
+                whileTap={
+                  hoverIndex === index && hero.name !== selectedChampion && team?.isturn
+                    ? {
+                      scale: 0.9,
+                      zIndex: 50,
+                      boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
+                    }
+                    : {}
+                }
                 whileHover={
                   hoverIndex === index && hero.name !== selectedChampion
                     ? {
-                        scale: 1,
-                        zIndex: 50,
-                        boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
-                      }
+                      scale: 1,
+                      zIndex: 50,
+                      boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
+                    }
                     : {}
                 }
                 className={clsx('z-10 overflow-hidden rounded-md', {

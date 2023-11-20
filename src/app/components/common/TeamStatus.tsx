@@ -3,8 +3,7 @@ import React from 'react';
 
 interface TeamStatusProps {
   team: {
-    ready: boolean;
-    name: string;
+    [key: string]: any;
   };
   showReadyState?: boolean; // if true, will show the 'ready' state if the team is ready
 }
