@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
-import { CopyIcon, CheckIcon } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
-import copyToClipboard from "@/app/utils/copyToClipboard";
-import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
+import { Button } from '@/app/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/app/components/ui/tooltip';
+import copyToClipboard from '@/app/utils/copyToClipboard';
 import clsx from 'clsx';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CheckIcon, CopyIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
 
 interface Team {
   id: number;
@@ -28,7 +33,7 @@ interface RoomDisplayProps {
   redTeam: Team;
 }
 
-const CopyButton: React.FC<{ link: string; }> = ({ link }) => {
+const CopyButton: React.FC<{ link: string }> = ({ link }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopyClick = () => {
@@ -42,14 +47,14 @@ const CopyButton: React.FC<{ link: string; }> = ({ link }) => {
       <Tooltip>
         <TooltipTrigger>
           <div
-            className="bg-transparent text-yellow hover:opacity-90 border-yellow border rounded-sm p-3"
+            className="rounded-sm border border-yellow bg-transparent p-3 text-yellow hover:opacity-90"
             onMouseLeave={() => setCopied(false)}
             onClick={handleCopyClick}
           >
             {copied ? (
-              <CheckIcon className="w-4 h-4" />
+              <CheckIcon className="h-4 w-4" />
             ) : (
-              <CopyIcon className="w-4 h-4" />
+              <CopyIcon className="h-4 w-4" />
             )}
           </div>
         </TooltipTrigger>
@@ -61,19 +66,30 @@ const CopyButton: React.FC<{ link: string; }> = ({ link }) => {
   );
 };
 
-const TeamDisplay: React.FC<{ team: Team; roomId: number; }> = ({ team, roomId }) => {
+const TeamDisplay: React.FC<{ team: Team; roomId: number }> = ({
+  team,
+  roomId,
+}) => {
   const link = `room/${roomId}/${team.id}`;
-  
+
   return (
-    <div className={clsx(
-      team.borderColor,
-      'hover:bg-opacity-10 border border-l-white border-b-white border-r-white border-opacity-10 rounded-md flex flex-col items-center justify-between w-full p-12 transition-all ease-in-out',
-      { 'bg-blue-500 bg-opacity-5': team.color === 'blue', 'bg-red-500 bg-opacity-5': team.color === 'red' }
-    )}>
-      <h1 className="text-4xl font-medium mb-4 uppercase">{team.name}</h1>
-      <div className="flex flex-row justify-center items-center gap-2">
-        <Link href={`/${link}`} passHref target='_blank'>
-          <Button size="lg" className="bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold">
+    <div
+      className={clsx(
+        team.borderColor,
+        'flex w-full flex-col items-center justify-between rounded-md border border-b-white border-l-white border-r-white border-opacity-10 p-12 transition-all ease-in-out hover:bg-opacity-10',
+        {
+          'bg-blue-500 bg-opacity-5': team.color === 'blue',
+          'bg-red-500 bg-opacity-5': team.color === 'red',
+        }
+      )}
+    >
+      <h1 className="mb-4 text-4xl font-medium uppercase">{team.name}</h1>
+      <div className="flex flex-row items-center justify-center gap-2">
+        <Link href={`/${link}`} passHref target="_blank">
+          <Button
+            size="lg"
+            className="rounded-sm bg-yellow text-sm font-bold uppercase text-yellow-text hover:bg-yellow-hover"
+          >
             {team.btnText}
           </Button>
         </Link>
@@ -83,9 +99,13 @@ const TeamDisplay: React.FC<{ team: Team; roomId: number; }> = ({ team, roomId }
   );
 };
 
-export const RoomDisplay: React.FC<RoomDisplayProps> = ({ room, blueTeam, redTeam }) => {
+export const RoomDisplay: React.FC<RoomDisplayProps> = ({
+  room,
+  blueTeam,
+  redTeam,
+}) => {
   const link = `room/${room.id}/spectator`;
-  
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -94,20 +114,23 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({ room, blueTeam, redTea
         transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }}
         key="home-page"
       >
-        <div className="flex flex-row w-full justify-center gap-6 mb-6">
+        <div className="mb-6 flex w-full flex-row justify-center gap-6">
           <TeamDisplay team={blueTeam} roomId={room.id} />
           <TeamDisplay team={redTeam} roomId={room.id} />
         </div>
-        <div className='flex flex-col items-center py-10 align-middle gap-2 border-t-4 bg-black bg-opacity-20 border border-white border-opacity-10 rounded-md'>
-        <h1 className="text-4xl font-medium mb-4 uppercase">Spectateur</h1>
-          <div className='flex align-middle gap-2'>
-          <Link href={`/${link}`} passHref target='_blank'>
-            <Button size="lg" className="bg-yellow hover:bg-yellow-hover text-sm uppercase text-yellow-text rounded-sm font-bold">
-              Rejoindre
-            </Button>
-          </Link>
-          <CopyButton link={link} />
-         </div>
+        <div className="flex flex-col items-center gap-2 rounded-md border border-t-4 border-white border-opacity-10 bg-black bg-opacity-20 py-10 align-middle">
+          <h1 className="mb-4 text-4xl font-medium uppercase">Spectateur</h1>
+          <div className="flex gap-2 align-middle">
+            <Link href={`/${link}`} passHref target="_blank">
+              <Button
+                size="lg"
+                className="rounded-sm bg-yellow text-sm font-bold uppercase text-yellow-text hover:bg-yellow-hover"
+              >
+                Rejoindre
+              </Button>
+            </Link>
+            <CopyButton link={link} />
+          </div>
         </div>
       </motion.div>
     </AnimatePresence>

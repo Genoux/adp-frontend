@@ -1,19 +1,20 @@
-"use client";
+'use client';
 
-import React, { useEffect } from 'react';
-import { AnimatePresence } from "framer-motion";
-import DraftView from "@/app/components/DraftView";
-import TeamView from "@/app/components/TeamView";
-import FinishView from "@/app/components/FinishView";
-import PlanningView from "@/app/components/PlanningView";
-import LobbyView from "@/app/components/LobbyView";
-import useSocket from "@/app/hooks/useSocket";
-import SocketContext from "@/app/context/SocketContext";
-import { roomStore } from "@/app/stores/roomStore";
-import useTeamStore from "@/app/stores/teamStore";
-import StateControllerButtons from "@/app/components/common/StateControllerButtons";
-import LoadingCircle from "@/app/components/common/LoadingCircle";
 import ErrorMessage from '@/app/components/common/ErrorMessage';
+import LoadingCircle from '@/app/components/common/LoadingCircle';
+import StateControllerButtons from '@/app/components/common/StateControllerButtons';
+import DraftView from '@/app/components/DraftView';
+import FinishView from '@/app/components/FinishView';
+import LobbyView from '@/app/components/LobbyView';
+import PlanningView from '@/app/components/PlanningView';
+import TeamView from '@/app/components/TeamView';
+import SocketContext from '@/app/context/SocketContext';
+import useSocket from '@/app/hooks/useSocket';
+import { roomStore } from '@/app/stores/roomStore';
+import useTeamStore from '@/app/stores/teamStore';
+import { AnimatePresence } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { CanSelectProvider } from '@/app/context/CanSelectContext';
 
 interface RoomProps {
   params: {
@@ -27,8 +28,14 @@ export default function Room({ params }: RoomProps) {
   const teamid = params.teamid;
 
   const { socket, connectionError } = useSocket(roomid);
-  const { teams, fetchTeams, isLoading, error, setCurrentTeamId } = useTeamStore();
-  const { room, fetchRoom, isLoading: isLoadingRoom, error: errorRoom, } = roomStore();
+  const { teams, fetchTeams, isLoading, error, setCurrentTeamId } =
+    useTeamStore();
+  const {
+    room,
+    fetchRoom,
+    isLoading: isLoadingRoom,
+    error: errorRoom,
+  } = roomStore();
 
   useEffect(() => {
     fetchTeams(roomid);
@@ -40,9 +47,7 @@ export default function Room({ params }: RoomProps) {
   }, [roomid, fetchRoom]);
 
   if (connectionError || error || errorRoom) {
-    return (
-      <ErrorMessage />
-    );
+    return <ErrorMessage />;
   }
 
   if (isLoading || isLoadingRoom || !socket) {
@@ -57,20 +62,23 @@ export default function Room({ params }: RoomProps) {
 
   const isLobbyView = room.cycle === -1;
   const isPlanningView = room.cycle === 0;
-  const isFinishView = room.status === "done";
-  const isRoomView = room.cycle !== 0 && room.cycle !== -1 && room.status !== "done";
+  const isFinishView = room.status === 'done';
+  const isRoomView =
+    room.cycle !== 0 && room.cycle !== -1 && room.status !== 'done';
 
   return (
     <>
       <StateControllerButtons roomid={room.id as any} />
-      <main className='px-0 lg:px-12 '>
+      <main className="px-0 lg:px-12 ">
         <AnimatePresence mode="wait">
           <SocketContext.Provider value={socket}>
             {isLobbyView && <LobbyView />}
-            <div className='container'>
+            <div className="container flex h-full flex-col justify-between">
               {isPlanningView && <PlanningView />}
-              {isRoomView && <TeamView />}
-              {isRoomView && <DraftView applyHeightVariants={true} />}
+              <CanSelectProvider>
+                {isRoomView && <TeamView />}
+                {isRoomView && <DraftView />}
+              </CanSelectProvider>
             </div>
             {isFinishView && <FinishView />}
           </SocketContext.Provider>

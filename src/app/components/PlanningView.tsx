@@ -1,8 +1,8 @@
-import { roomStore } from "@/app/stores/roomStore";
-import ChampionsPool from "@/app/components/common/ChampionsPool";
-import Timer from "@/app/components/common/RoomTimer";
-import { motion } from "framer-motion";
-import { defaultTransition } from '@/app/lib/animationConfig'
+import ChampionsPool from '@/app/components/common/ChampionsPool';
+import Timer from '@/app/components/common/RoomTimer';
+import { defaultTransition } from '@/app/lib/animationConfig';
+import { roomStore } from '@/app/stores/roomStore';
+import { motion } from 'framer-motion';
 
 export const WaitingView = () => {
   const { room } = roomStore();
@@ -17,15 +17,17 @@ export const WaitingView = () => {
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={defaultTransition}
-        className="text-center mb-8 mt-4">
-        <h1 className="text-4xl font-bold mb-1">Phase de planification</h1>
-        <p className="mb-4">{"Analyse de la sélection de champions"}</p>
+        className="mb-8 mt-4 text-center"
+      >
+        <h1 className="mb-1 text-4xl font-bold">Phase de planification</h1>
+        <p className="mb-4">{'Analyse de la sélection de champions'}</p>
         <Timer />
       </motion.div>
       <motion.div
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={defaultTransition}>
+        transition={defaultTransition}
+      >
         <div className="scale-105">
           <ChampionsPool canHoverToShowName={true} />
         </div>

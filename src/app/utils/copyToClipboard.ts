@@ -4,14 +4,14 @@ const copyToClipboard = (link: string) => {
   navigator.clipboard
     .writeText(copy)
     .then(() => {
-      console.log("Copied to clipboard successfully!");
+      console.log('Copied to clipboard successfully!');
     })
     .catch((err) => {
-      console.error("Could not copy text: ", err);
-      throw new Error("Could not copy text");
+      console.error('Could not copy text: ', err);
+      throw new Error('Could not copy text');
     });
-  
-  return { message: "Copied to clipboard" };
+
+  return { message: 'Copied to clipboard' };
 };
 
 export default copyToClipboard;

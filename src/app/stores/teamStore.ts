@@ -1,8 +1,8 @@
+import supabase from '@/app/services/supabase';
+import { Database } from '@/app/types/supabase';
 import { create } from 'zustand';
-import supabase from "@/app/services/supabase";
-import { Database } from "@/app/types/supabase";
 
-type Team = Database["public"]["Tables"]["teams"]["Row"];
+type Team = Database['public']['Tables']['teams']['Row'];
 
 interface TeamState {
   teams: Team[] | null;
@@ -33,16 +33,21 @@ const useTeamStore = create<TeamState>((set, get) => ({
       set({ teams });
 
       // Set up real-time subscriptions for all teams in the room
-      teams?.forEach((team: { id: string; }) => {
-       supabase
+      teams?.forEach((team: { id: string }) => {
+        supabase
           .channel(team.id)
           .on(
             'postgres_changes',
-            { event: 'UPDATE', schema: 'public', table: 'teams', filter: `id=eq.${team.id}` },
+            {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'teams',
+              filter: `id=eq.${team.id}`,
+            },
             (payload) => get().handleTeamUpdate(payload)
           )
           .subscribe((status, err) => {
-            if (err) console.error(".subscribe - err TEAM:", err);
+            if (err) console.error('.subscribe - err TEAM:', err);
           });
       });
     } catch (error) {
@@ -56,19 +61,19 @@ const useTeamStore = create<TeamState>((set, get) => ({
     set({ currentTeamId: teamId });
   },
   handleTeamUpdate: (payload) => {
-    console.log("useTeamStore - payload:", payload);
-    
+    console.log('useTeamStore - payload:', payload);
+
     const currentTeams = get().teams;
     let updatedTeams = currentTeams;
-  
+
     if (currentTeams) {
-      updatedTeams = currentTeams.map((team) => 
+      updatedTeams = currentTeams.map((team) =>
         team.id === payload.new.id ? { ...team, ...payload.new } : team
       );
     }
-  
+
     set({ teams: updatedTeams });
-  
+
     // Also update the currentTeamId if needed
     if (get().currentTeamId === payload.new.id) {
       set({ currentTeamId: payload.new.id });

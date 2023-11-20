@@ -1,15 +1,19 @@
-import { useMemo } from 'react';
 import useTeamStore from '@/app/stores/teamStore';
+import { useMemo } from 'react';
 
 const useTeam = () => {
   const { teams, currentTeamId } = useTeamStore();
- 
+
   const currentTeam = useMemo(() => {
-    return teams?.find((team: { id: any}) => team.id.toString() === currentTeamId);
+    return teams?.find(
+      (team: { id: any }) => team.id.toString() === currentTeamId
+    );
   }, [teams, currentTeamId]);
 
   const otherTeam = useMemo(() => {
-    return teams?.find((team: { id: any}) => team.id.toString() !== currentTeamId);
+    return teams?.find(
+      (team: { id: any }) => team.id.toString() !== currentTeamId
+    );
   }, [teams, currentTeamId]);
 
   const redTeam = useMemo(() => {
