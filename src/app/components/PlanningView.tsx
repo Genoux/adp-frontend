@@ -29,7 +29,7 @@ export const WaitingView = () => {
         transition={defaultTransition}
       >
         <div className="scale-105">
-          <ChampionsPool canHoverToShowName={true} />
+          <ChampionsPool />
         </div>
       </motion.div>
     </>

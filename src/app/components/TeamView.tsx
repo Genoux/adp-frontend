@@ -1,9 +1,6 @@
 import ChampionsPool from '@/app/components/common/ChampionsPool';
-import LoadingCircle from '@/app/components/common/LoadingCircle';
 import GameStatusBar from '@/app/components/common/RoomHeader';
-import { Button } from '@/app/components/ui/button';
 import { useCanSelect } from '@/app/context/CanSelectContext';
-import useEnsureContext from '@/app/hooks/useEnsureContext';
 import useTeams from '@/app/hooks/useTeams';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import supabase from '@/app/services/supabase';
@@ -11,14 +8,13 @@ import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import SocketContext from '../context/SocketContext';
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>('');
   const { canSelect, setCanSelect } = useCanSelect();
   const [currentImage, setCurrentImage] = useState<string | null>(null);
 
-  const { room, error, isLoading } = roomStore((state) => ({
+  const { room, isLoading } = roomStore((state) => ({
     room: state.room,
     error: state.error,
     isLoading: state.isLoading,
@@ -27,7 +23,7 @@ const TeamView = () => {
   const { currentTeam: team, otherTeam, redTeam, blueTeam } = useTeams();
 
   const currentTeam = team?.isturn ? team : otherTeam;
-  if (!team || !currentTeam || !redTeam || !blueTeam || !room) return null;
+
 
   useEffect(() => {
     if (team?.nb_turn! > 0) {
@@ -36,12 +32,12 @@ const TeamView = () => {
         setCanSelect(true);
       }, 1000);
     }
-  }, [setCanSelect, team.nb_turn]);
+  }, [setCanSelect, team?.nb_turn]);
 
   useEffect(() => {
     if (team) {
       setSelectedChampion(team.clicked_hero || '');
-      setCurrentImage(currentTeam.clicked_hero || '');
+      setCurrentImage(currentTeam?.clicked_hero || '');
     }
   }, [
     currentTeam?.clicked_hero,
@@ -62,7 +58,7 @@ const TeamView = () => {
 
   const isBanPhase = room?.status === 'ban';
 
-  if (!team || error) {
+  if (!team || !currentTeam || !redTeam || !blueTeam || !room) {
     return <div>Team not found</div>;
   }
 

@@ -6,10 +6,9 @@ import SocketContext from '@/app/context/SocketContext';
 import useEnsureContext from '@/app/hooks/useEnsureContext';
 import useTeams from '@/app/hooks/useTeams';
 import { roomStore } from '@/app/stores/roomStore';
-import teamStore from '@/app/stores/teamStore';
 import { AnimatePresence, motion } from 'framer-motion';
+import { View } from 'lucide-react';
 import React, { useEffect } from 'react';
-import { View } from 'lucide-react'
 
 const ConfirmButton = () => {
   const socket = useEnsureContext(SocketContext);
@@ -23,13 +22,19 @@ const ConfirmButton = () => {
 
   const { currentTeam: team, otherTeam } = useTeams();
 
+  useEffect(() => {
+    setCanSelect(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   //For specator mor
-  if (!team) return (
-    <div className='flex flex-col justify-center items-center gap-2'>
-      <View size={21} />
-      <p className='text-center uppercase'>Spectateur</p>
-    </div>
-  );
+  if (!team)
+    return (
+      <div className="flex flex-col items-center justify-center gap-2">
+        <View size={21} />
+        <p className="text-center uppercase">Spectateur</p>
+      </div>
+    );
   const currentTeam = team.isturn ? team : otherTeam;
 
   const isBanPhase = room?.status === 'ban';
@@ -38,8 +43,9 @@ const ConfirmButton = () => {
     ? isBanPhase
       ? 'Confirmer le Ban'
       : 'Confirmer la Selection'
-    : `C'est à l'équipe ${otherTeam?.color} de ${isBanPhase ? 'bannir' : 'choisir'
-    }`;
+    : `C'est à l'équipe ${otherTeam?.color} de ${
+        isBanPhase ? 'bannir' : 'choisir'
+      }`;
 
   const handleConfirmSelection = async () => {
     if (socket) {
@@ -53,11 +59,6 @@ const ConfirmButton = () => {
       });
     }
   };
-
-  useEffect(() => {
-    setCanSelect(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="flex justify-center">

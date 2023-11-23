@@ -7,6 +7,7 @@ import GameStatusBar from '@/app/components/common/RoomHeader';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
 import Planningview from '@/app/components/PlanningView';
+import { CanSelectProvider } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
@@ -15,7 +16,6 @@ import useTeamStore from '@/app/stores/teamStore';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { CanSelectProvider } from '@/app/context/CanSelectContext';
 
 interface SpectatorProps {
   params: {
@@ -72,8 +72,6 @@ const Spectator = ({ params }: SpectatorProps) => {
     return <ErrorMessage />;
   }
 
-
-
   if (room?.status === 'waiting') {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -100,9 +98,7 @@ const Spectator = ({ params }: SpectatorProps) => {
   }
 
   if (room?.status === 'done') {
-    return (
-      <FinishView />
-    );
+    return <FinishView />;
   }
 
   return (
@@ -123,8 +119,9 @@ const Spectator = ({ params }: SpectatorProps) => {
         )}
 
         <div
-          className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'
-            } top-0 -z-10 h-full w-3/12`}
+          className={`absolute ${
+            currentTeam?.color === 'blue' ? 'left-0' : 'right-0'
+          } top-0 -z-10 h-full w-3/12`}
         >
           {currentImage && (
             <Image
@@ -134,10 +131,11 @@ const Spectator = ({ params }: SpectatorProps) => {
               width={3840}
               height={1440}
               rel="preload"
-              className={`h-full w-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue'
-                ? 'fade-gradient-left'
-                : 'fade-gradient-right'
-                }`}
+              className={`h-full w-full object-cover object-center opacity-50 ${
+                currentTeam?.color === 'blue'
+                  ? 'fade-gradient-left'
+                  : 'fade-gradient-right'
+              }`}
               alt={``}
             />
           )}

@@ -8,13 +8,13 @@ import FinishView from '@/app/components/FinishView';
 import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
 import TeamView from '@/app/components/TeamView';
+import { CanSelectProvider } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
 import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect } from 'react';
-import { CanSelectProvider } from '@/app/context/CanSelectContext';
 
 interface RoomProps {
   params: {

@@ -54,16 +54,12 @@ const ReadyView = () => {
       </div>
       <div className="mb-12 w-full rounded-md border border-opacity-10">
         <div className="grid grid-cols-2 text-base">
-          <p
-            className={`flex flex-col items-center gap-2 border-r p-6`}
-          >
+          <p className={`flex flex-col items-center gap-2 border-r p-6`}>
             {blueTeam.name.toUpperCase()}
             <TeamStatus team={blueTeam} showReadyState={true} />
           </p>
 
-          <p
-            className={`flex flex-col items-center gap-2 p-6`}
-          >
+          <p className={`flex flex-col items-center gap-2 p-6`}>
             {redTeam.name.toUpperCase()}
             <TeamStatus team={redTeam} showReadyState={true} />
           </p>
