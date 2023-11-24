@@ -102,7 +102,7 @@ function Home() {
 
   return (
     <>
-      <main className="flex flex-col h-screen items-center justify-center">
+      <main className="flex flex-col items-center justify-center border">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -119,8 +119,8 @@ function Home() {
         ) : (
           <RoomCreationForm onCreate={createRoomLogic} />
         )}
-        <footer className="w-full bottom-0 pt-24 pb-6">
-          <div className="container flex justify-center gap-24 text-xs">
+        <footer className="w-full bottom-0 py-4">
+          <div className="flex justify-center gap-24 text-xs">
             <Link className="hover:underline underline-offset-4" href="https://www.tournoishaq.ca/" target="_blank">Tournoishaq.ca</Link>
             <p>All right reserved © 2023</p>
             <p>Beta v0.3.0</p>
