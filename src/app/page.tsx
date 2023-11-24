@@ -102,7 +102,7 @@ function Home() {
 
   return (
     <>
-      <main className="flex flex-col items-center justify-center border">
+      <main className="flex flex-col items-center justify-around border border-yellow-300 h-full">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -112,14 +112,14 @@ function Home() {
           <Image
             src='home-logo.svg'
             width={268}
-            height={0} alt={""} />
+            height={0} alt={"Tournois Haq"} />
         </motion.div>
         {room && blueTeam && redTeam ? (
           <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
         ) : (
           <RoomCreationForm onCreate={createRoomLogic} />
         )}
-        <footer className="w-full bottom-0 py-4">
+        <footer>
           <div className="flex justify-center gap-24 text-xs">
             <Link className="hover:underline underline-offset-4" href="https://www.tournoishaq.ca/" target="_blank">Tournoishaq.ca</Link>
             <p>All right reserved © 2023</p>

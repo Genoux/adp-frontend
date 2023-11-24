@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={`${GeistSans.className} mx-auto container`}>
+      <body className={`${GeistSans.className} mx-auto container h-full border border-red-400`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
         </ThemeProvider>
