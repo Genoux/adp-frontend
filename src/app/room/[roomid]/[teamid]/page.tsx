@@ -67,23 +67,27 @@ export default function Room({ params }: RoomProps) {
     room.cycle !== 0 && room.cycle !== -1 && room.status !== 'done';
 
   return (
-    <>
+    <main className="flex flex-col items-center justify-start h-full">
       <StateControllerButtons roomid={room.id as any} />
-      <main className="px-0 lg:px-12 ">
-        <AnimatePresence mode="wait">
-          <SocketContext.Provider value={socket}>
-            {isLobbyView && <LobbyView />}
-            <div className="container flex h-full flex-col justify-between">
+      <AnimatePresence mode="wait">
+        <SocketContext.Provider value={socket}>
+          {isLobbyView ? (
+            <section className="h-full flex flex-col justify-center gap-10">
+              <LobbyView />
+            </section>
+          ) : (
+            <section className="container flex h-full flex-col justify-between">
               {isPlanningView && <PlanningView />}
               <CanSelectProvider>
                 {isRoomView && <TeamView />}
                 {isRoomView && <DraftView />}
               </CanSelectProvider>
-            </div>
-            {isFinishView && <FinishView />}
-          </SocketContext.Provider>
-        </AnimatePresence>
-      </main>
-    </>
+            </section>
+          )}
+
+          {isFinishView && <FinishView />}
+        </SocketContext.Provider>
+      </AnimatePresence>
+    </main>
   );
 }

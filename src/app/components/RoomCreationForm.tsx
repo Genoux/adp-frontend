@@ -40,7 +40,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{
-          duration: 0.3,
+          duration: 0.2,
           ease: [0.585, 0.535, 0.230, 0.850]
         }}
         className="flex flex-col gap-6 w-full"
@@ -57,7 +57,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
                 "bg-red": team.color === 'red'
               })
               }></div>
-              <label htmlFor={team.id}>{team.label}</label>
+              <label className="text-sm" htmlFor={team.id}>{team.label}</label>
             </div>
             <Input
               type="text"
