@@ -27,7 +27,6 @@ const ConfirmButton = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //For specator mor
   if (!team)
     return (
       <div className="flex flex-col items-center justify-center gap-2">
@@ -61,7 +60,7 @@ const ConfirmButton = () => {
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center w-full">
       {team.isturn ? (
         <AnimatePresence>
           <motion.div
@@ -71,14 +70,14 @@ const ConfirmButton = () => {
             exit={{ opacity: 0, transition: { duration: 1 } }}
           >
             <Button
-              size="lg"
-              className={`w-64 rounded-sm bg-yellow text-sm font-bold uppercase text-yellow-text hover:bg-yellow-hover`}
+              size="default"
               onClick={handleConfirmSelection}
+              className='w-64'
               disabled={
                 !currentTeam?.clicked_hero || !canSelect || !team.isturn
               }
             >
-              {!canSelect ? <LoadingCircle color="black" /> : <>{buttonText}</>}
+              {!canSelect ? <LoadingCircle color="black" size='w-4 h-4'/> : <>{buttonText}</>}
             </Button>
           </motion.div>
         </AnimatePresence>

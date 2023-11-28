@@ -7,6 +7,7 @@ import useEnsureContext from '@/app/hooks/useEnsureContext';
 import useTeams from '@/app/hooks/useTeams';
 import supabase from '@/app/services/supabase';
 import { roomStore } from '@/app/stores/roomStore';
+import clsx from 'clsx';
 
 interface Team {
   [key: string]: any;
@@ -20,13 +21,14 @@ interface TeamDisplayProps {
 const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
 
   const color = team.color === 'blue' ? 'bleue' : 'rouge';
+  const text = team.color === 'blue' ? 'text-blue' : 'text-red';
 
   return (
     <div className='flex w-full justify-between items-center border rounded-md bg-[#0a0a0c] h-14 p-4'>
       <div>
         <h1>{team.name}</h1>
         {currentTeam.name === team.name && (
-          <p className={`text-${team.color} text-xs`}>{`Vous êtes l'équipe ${color}`}</p>
+          <p className={clsx(`${text} text-xs`)}>{`Vous êtes l'équipe ${color}`}</p>
         )}
       </div>
       <div>
@@ -80,23 +82,26 @@ const ReadyView = () => {
         <TeamDisplay team={redTeam} currentTeam={currentTeam} />
       </div>
 
-      {currentTeam.ready ? (
-        <div className='w-full text-center'>
-          <span className="pr-0.5 text-base">{`En attende de ${otherTeam.name}`}</span>
-          <div className="sending-animation">
-            <span className="sending-animation-dot">.</span>
-            <span className="sending-animation-dot">.</span>
-            <span className="sending-animation-dot">.</span>
+      <div className='h-12 flex items-center justify-center'>
+        {currentTeam.ready ? (
+          <div className='w-full text-center'>
+            <span className="pr-0.5 text-base">{`En attende de ${otherTeam.name}`}</span>
+            <div className="sending-animation">
+              <span className="sending-animation-dot">.</span>
+              <span className="sending-animation-dot">.</span>
+              <span className="sending-animation-dot">.</span>
+            </div>
           </div>
-        </div>
-      ) : (
-        <Button
-          size="lg"
-          onClick={handleReadyClick}
-        >
-          {'Confirmer prêt'}
-        </Button>
-      )}
+        ) : (
+          <Button
+            size="lg"
+            className='w-full'
+            onClick={handleReadyClick}
+          >
+            {'Confirmer prêt'}
+          </Button>
+        )}
+      </div>
     </>
   );
 };

@@ -40,7 +40,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col px-24">
       <div className="grid cursor-pointer grid-cols-10 gap-2">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
@@ -93,7 +93,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                   }
                 }}
               >
-                <motion.div className="relative z-10 overflow-hidden rounded transition-all">
+                <motion.div className="relative z-10 overflow-hidden rounded-lg transition-all">
                   <Image
                     src={`/images/champions/tiles/${hero.id
                       .toLowerCase()

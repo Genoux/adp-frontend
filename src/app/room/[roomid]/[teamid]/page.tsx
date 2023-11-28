@@ -75,8 +75,10 @@ export default function Room({ params }: RoomProps) {
             <section className="h-full flex flex-col justify-center gap-10">
               <LobbyView />
             </section>
+          ) : isFinishView ? (
+            <FinishView />
           ) : (
-            <section className="container flex h-full flex-col justify-between">
+            <section className="container flex h-full" id='main'>
               {isPlanningView && <PlanningView />}
               <CanSelectProvider>
                 {isRoomView && <TeamView />}
@@ -84,9 +86,8 @@ export default function Room({ params }: RoomProps) {
               </CanSelectProvider>
             </section>
           )}
-
-          {isFinishView && <FinishView />}
         </SocketContext.Provider>
+
       </AnimatePresence>
     </main>
   );

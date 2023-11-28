@@ -61,8 +61,6 @@ const useTeamStore = create<TeamState>((set, get) => ({
     set({ currentTeamId: teamId });
   },
   handleTeamUpdate: (payload) => {
-    console.log('useTeamStore - payload:', payload);
-
     const currentTeams = get().teams;
     let updatedTeams = currentTeams;
 

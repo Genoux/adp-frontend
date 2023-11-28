@@ -150,8 +150,8 @@ const TeamView = () => {
         </motion.div>
       </motion.div>
       <motion.div
-        initial={{ y: '85px', scale: 1.05 }} // start at half the size
-        animate={{ y: '0px', scale: 1 }} // animate to full size
+        initial={{ y: '124px' }} // start at half the size
+        animate={{ y: '0px'}} // animate to full size
         transition={defaultTransition}
       >
         <ChampionsPool
