@@ -3,31 +3,73 @@ import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import clsx from "clsx";
 import { motion } from "framer-motion";
+import { z } from "zod";
+
+// Define a Zod schema for your form
+const formSchema = z.object({
+  blueTeamName: z.string().min(1, "Le nom de l'équipe est requis"),
+  redTeamName: z.string().min(1, "Le nom de l'équipe est requis"),
+});
+
+const shakeAnimation = {
+  x: [0, -10, 10, -10, 10, 0],
+  transition: { duration: 0.3 }
+};
 
 interface RoomCreationFormProps {
   onCreate: (blueTeamName: string, redTeamName: string) => void;
 }
 
+interface FormData {
+  blueTeamName: string;
+  redTeamName: string;
+}
+
 export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     blueTeamName: "",
     redTeamName: "",
   });
 
-  const handleInputChange = (event: { target: { name: any; value: any } }) => {
+  const [formErrors, setFormErrors] = useState<FormData>({
+    blueTeamName: "",
+    redTeamName: "",
+  });
+
+  const [shouldShake, setShouldShake] = useState(false);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
+      [name as keyof FormData]: value,
     }));
-  };
 
-  const handleSubmit = (event: { preventDefault: () => void }) => {
-    event.preventDefault();
-    if (formData.blueTeamName && formData.redTeamName) {
-      onCreate(formData.blueTeamName, formData.redTeamName);
+    // Clear the error message for the input field if it's not empty
+    if (value.trim() !== '') {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        [name as keyof FormData]: '',
+      }));
     }
   };
+
+  const handleSubmit = () => {
+    const result = formSchema.safeParse(formData);
+
+    if (result.success) {
+      onCreate(formData.blueTeamName, formData.redTeamName);
+    } else {
+      // Set errors and trigger shake animation
+      const updatedErrors = result.error.formErrors.fieldErrors;
+      setFormErrors({
+        blueTeamName: updatedErrors.blueTeamName?.[0] || "",
+        redTeamName: updatedErrors.redTeamName?.[0] || "",
+      });
+      setShouldShake(!shouldShake); // Toggle to trigger animation
+    }
+  };
+
 
   const teams = [
     { id: 'blueTeamName', label: 'Équipe bleue', color: 'blue', value: formData.blueTeamName },
@@ -52,19 +94,25 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
         {teams.map(team => (
           <div key={team.id} className="flex flex-col gap-1">
             <div className="flex gap-1 items-center">
-              <div className={clsx("w-2.5 h-2.5 rounded-full", {
+              <div className={clsx("w-2 h-2 rounded-full", {
                 "bg-blue": team.color === 'blue',
                 "bg-red": team.color === 'red'
               })
               }></div>
-              <label className="text-sm" htmlFor={team.id}>{team.label}</label>
+              <label className="text-sm font-normal" htmlFor={team.id}>{team.label}</label>
             </div>
-            <Input
-              type="text"
-              name={team.id}
-              onChange={handleInputChange}
-              value={team.value}
-            />
+            <motion.div
+              key={shouldShake as any} // Using key to restart the animation
+              animate={formErrors[team.id as keyof FormData] ? shakeAnimation : {}}
+            >
+              <Input
+                type="text"
+                name={team.id}
+                onChange={handleInputChange}
+                value={team.value}
+                className={`${formErrors[team.id as keyof FormData] ? "border border-red-700 border-opacity-50" : ""}`}
+              />
+            </motion.div>
           </div>
         ))}
       </motion.div>

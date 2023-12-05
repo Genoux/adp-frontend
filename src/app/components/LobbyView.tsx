@@ -24,7 +24,7 @@ const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
   const text = team.color === 'blue' ? 'text-blue' : 'text-red';
 
   return (
-    <div className='flex w-full justify-between items-center border rounded-md bg-[#0a0a0c] h-14 p-4'>
+    <div className='flex w-full justify-between items-center border rounded-md bg-[#0a0a0c] h-16 p-4'>
       <div>
         <h1>{team.name}</h1>
         {currentTeam.name === team.name && (

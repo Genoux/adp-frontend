@@ -104,7 +104,7 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.1, ease: [0.4, 0.0, 0.2, 1] }}
+        transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
       >
         <div className="text-center border-b border-opacity-25 pb-4 mb-4">
           <h1 className="text-2xl font-bold">Chambre génèré!</h1>
