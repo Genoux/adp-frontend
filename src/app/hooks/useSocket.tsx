@@ -21,7 +21,7 @@ export default function useSocket(
 
   useEffect(() => {
     const socketServerUrl =
-      process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:4000';
+      process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:1313';
     const newSocket = io(socketServerUrl);
 
     let retryCount = 0;

@@ -7,8 +7,11 @@ import { z } from "zod";
 
 // Define a Zod schema for your form
 const formSchema = z.object({
-  blueTeamName: z.string().min(1, "Le nom de l'équipe est requis"),
-  redTeamName: z.string().min(1, "Le nom de l'équipe est requis"),
+  blueTeamName: z.string().min(1, "Les noms des équipes ne peuvent pas être vides"),
+  redTeamName: z.string().min(1, "Les noms des équipes ne peuvent pas être vides"),
+}).refine(data => data.blueTeamName !== data.redTeamName, {
+  message: "Les noms des équipes ne peuvent pas être identiques",
+  path: ["blueTeamName", "redTeamName"]
 });
 
 const shakeAnimation = {
@@ -19,6 +22,11 @@ const shakeAnimation = {
 interface RoomCreationFormProps {
   onCreate: (blueTeamName: string, redTeamName: string) => void;
 }
+interface FormErrors {
+  blueTeamName?: string;
+  redTeamName?: string;
+}
+
 
 interface FormData {
   blueTeamName: string;
@@ -31,42 +39,42 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
     redTeamName: "",
   });
 
-  const [formErrors, setFormErrors] = useState<FormData>({
-    blueTeamName: "",
-    redTeamName: "",
-  });
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   const [shouldShake, setShouldShake] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({
+    const { name, value } = event.target as { name: keyof FormData, value: string };
+    setFormData(prevFormData => ({
       ...prevFormData,
-      [name as keyof FormData]: value,
+      [name]: value,
     }));
 
-    // Clear the error message for the input field if it's not empty
-    if (value.trim() !== '') {
+    if (isSubmitted) {
+      // Update only the error for the changed field, if it exists
       setFormErrors(prevErrors => ({
         ...prevErrors,
-        [name as keyof FormData]: '',
+        [name]: '',
       }));
     }
   };
 
   const handleSubmit = () => {
+    setIsSubmitted(true);
+
     const result = formSchema.safeParse(formData);
 
     if (result.success) {
       onCreate(formData.blueTeamName, formData.redTeamName);
     } else {
-      // Set errors and trigger shake animation
+      // Set all errors, including duplicate name error
       const updatedErrors = result.error.formErrors.fieldErrors;
       setFormErrors({
         blueTeamName: updatedErrors.blueTeamName?.[0] || "",
         redTeamName: updatedErrors.redTeamName?.[0] || "",
       });
-      setShouldShake(!shouldShake); // Toggle to trigger animation
+      setShouldShake(!shouldShake);
     }
   };
 
@@ -90,6 +98,9 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
         <div className="text-center border-b border-opacity-25 pb-4 mb-4">
           <h1 className="text-2xl font-bold">Generer une chambre</h1>
           <p className="text-sm font-normal opacity-50">{"Inscrivez le nom des deux équipes qui vont s'affronter."}</p>
+        </div>
+        <div>
+          <p className="text-red-600 text-xs">  {formErrors.blueTeamName || formErrors.redTeamName}</p>
         </div>
         {teams.map(team => (
           <div key={team.id} className="flex flex-col gap-1">

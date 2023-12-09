@@ -94,13 +94,6 @@ function Home() {
     }, 2000);
   };
 
-  // if (loading) {
-  //   return (
-  //     <div className="flex min-h-screen flex-col items-center justify-center">
-  //       <LoadingCircle />
-  //     </div>
-  //   );
-  // }
   const parallaxRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {

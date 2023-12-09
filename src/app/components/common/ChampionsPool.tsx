@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
+import useNextBlurhash from "use-next-blurhash";
 
 interface Hero {
   name: string;
@@ -23,8 +24,10 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   team,
   selectedChampion,
   canSelect,
-  handleClickedHero = () => {},
+  handleClickedHero = () => { },
 }) => {
+  const [blurDataUrl] = useNextBlurhash("LAHfPK02lU~Ct-={0KxtTe-VDhIo");
+
   const [hoverIndex, setHoverIndex] = useState(-1);
   const { room } = roomStore();
   const setHoverState = useCallback((index: number) => {
@@ -57,22 +60,22 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 key={index}
                 whileTap={
                   hoverIndex === index &&
-                  hero.name !== selectedChampion &&
-                  team?.isturn
+                    hero.name !== selectedChampion &&
+                    team?.isturn
                     ? {
-                        scale: 0.9,
-                        zIndex: 50,
-                        boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
-                      }
+                      scale: 0.9,
+                      zIndex: 50,
+                      boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
+                    }
                     : {}
                 }
                 whileHover={
                   hoverIndex === index && hero.name !== selectedChampion
                     ? {
-                        scale: 1,
-                        zIndex: 50,
-                        boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
-                      }
+                      scale: 1,
+                      zIndex: 50,
+                      boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
+                    }
                     : {}
                 }
                 className={clsx('z-10 overflow-hidden rounded-md', {
@@ -95,6 +98,8 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
               >
                 <motion.div className="relative z-10 overflow-hidden rounded-lg transition-all">
                   <Image
+                    placeholder="blur"
+                    blurDataURL={blurDataUrl}
                     src={`/images/champions/tiles/${hero.id
                       .toLowerCase()
                       .replace(/\s+/g, '')
