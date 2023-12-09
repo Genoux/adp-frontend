@@ -76,7 +76,7 @@ const Display: React.FC<DisplayProps> = ({ team, roomId, isSpectator = false }) 
   return (
     <div>
       <div className="flex gap-1 items-center mb-1">
-        <div className={clsx("w-2.5 h-2.5 rounded-full", {
+        <div className={clsx("w-2 h-2 rounded-full", {
           "bg-blue": team.color === 'blue',
           "bg-red": team.color === 'red',
           "bg-[#353535]": isSpectator
