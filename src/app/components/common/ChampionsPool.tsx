@@ -1,10 +1,11 @@
+import React, { useState, useCallback, useEffect } from 'react';
 import { roomStore } from '@/app/stores/roomStore';
 import { Database } from '@/app/types/supabase';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
 import useNextBlurhash from "use-next-blurhash";
+import debounce from 'lodash/debounce';
 
 interface Hero {
   name: string;
@@ -30,15 +31,16 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
 
   const [hoverIndex, setHoverIndex] = useState(-1);
   const { room } = roomStore();
-  const setHoverState = useCallback((index: number) => {
+
+  const debouncedSetHoverIndex = useCallback(debounce((index) => {
     setHoverIndex(index);
-  }, []);
+  }, 100), []);
 
   useEffect(() => {
     if (!canSelect && room?.status !== 'planning') {
-      setHoverState(-1);
+      debouncedSetHoverIndex(-1);
     }
-  }, [canSelect, room?.status, setHoverState]);
+  }, [canSelect, debouncedSetHoverIndex, room?.status]);
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
@@ -56,25 +58,17 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
               <motion.div
                 initial={{ opacity: 1 }}
                 animate={{ opacity: shouldFade ? 0.7 : 1 }}
-                transition={{ duration: 0.1, ease: [0.4, 0.0, 0.2, 1] }}
+                transition={{ duration: .1, ease: [0.4, 0.0, 0.2, 1] }}
                 key={index}
-                whileTap={
-                  hoverIndex === index &&
-                    hero.name !== selectedChampion &&
-                    team?.isturn
-                    ? {
-                      scale: 0.9,
-                      zIndex: 50,
-                      boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
-                    }
-                    : {}
-                }
+                whileTap={{
+                  scale: 0.9,
+                  zIndex: 50,
+                }}
                 whileHover={
-                  hoverIndex === index && hero.name !== selectedChampion
+                  !isActive && hero.name !== selectedChampion
                     ? {
-                      scale: 1,
+                      scale: 1.05,
                       zIndex: 50,
-                      boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
                     }
                     : {}
                 }
@@ -86,10 +80,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     hero.name === selectedChampion && team?.isturn,
                 })}
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
-                onMouseEnter={() => {
-                  if (!canSelect && room?.status != 'planning') return;
-                  setHoverIndex(index);
-                }}
+                onMouseEnter={() => debouncedSetHoverIndex(index)}
                 onMouseLeave={() => {
                   if (!hero.selected) {
                     setHoverIndex(-1);
@@ -114,13 +105,13 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                       {isActive && (
                         <>
                           <motion.div
-                            initial={{ opacity: 0 }} // Start invisible
-                            animate={{ opacity: 0.5 }} // Fade in to half opacity
-                            exit={{ opacity: 0 }} // Fade out to invisible
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 0.5 }}
+                            exit={{ opacity: 0 }}
                             transition={{
-                              duration: 0.2,
+                              duration: 0.1,
                               ease: [0.4, 0.0, 0.2, 1],
-                            }} // Smooth transition
+                            }}
                             className="absolute left-0 top-0 z-50 h-full w-full overflow-hidden rounded-lg bg-gradient-to-t from-yellow to-transparent bg-clip-content"
                           ></motion.div>
                           <motion.div
@@ -136,19 +127,12 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                             <p className="z-50">{hero.name}</p>
                           </motion.div>
                           <motion.div
-                            initial={{ scale: 1.3, opacity: 0 }}
-                            animate={{ scale: 1.2, opacity: 1 }}
-                            whileHover={{ scale: 1 }}
-                            exit={{
-                              scale: 1,
-                              opacity: 0,
-                              transition: { duration: 0.2 },
-                            }}
-                            transition={{
-                              duration: 0.2,
-                              ease: [0.4, 0.0, 0.2, 1],
-                            }}
-                            className={`absolute left-0 top-0 mx-auto h-full w-full object-cover`}
+                           initial={{ scale: 1.3, opacity: 0 }}
+                           animate={{ scale: 1.2, opacity: 1 }}
+                           whileHover={{ scale: 1 }}
+                           exit={{ scale: 1, opacity: 0, transition: { duration: 0.2 } }}
+                           transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }}
+                           className="absolute left-0 top-0 mx-auto h-full w-full object-cover"
                           >
                             <Image
                               src={`/images/champions/splash/${hero.id
