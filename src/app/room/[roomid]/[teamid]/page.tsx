@@ -78,7 +78,7 @@ export default function Room({ params }: RoomProps) {
           ) : isFinishView ? (
             <FinishView />
           ) : (
-            <section className="container flex h-full" id='main'>
+            <section className="h-full" id='main'>
               {isPlanningView && <PlanningView />}
               <CanSelectProvider>
                 {isRoomView && <TeamView />}

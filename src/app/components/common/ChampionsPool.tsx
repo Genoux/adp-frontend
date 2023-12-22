@@ -32,12 +32,12 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
   return (
-    <div className="flex flex-col px-24">
+    <div className="flex flex-col px-6 lg:px-24">
       <div className="grid cursor-pointer grid-cols-10 gap-2">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
             const isActive =
-              (hero.name === selectedChampion);
+              (hero.name === selectedChampion && team?.isturn);
             const isturnAvailable = team ? team.isturn : true;
             const shouldFade = hero.selected || (team && !isturnAvailable);
             return (
@@ -53,7 +53,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                   }
                   : {}}
                 whileHover={
-                  hero.name !== selectedChampion
+                  hero.name !== selectedChampion || !canSelect
                     ? {
                       scale: 1.05,
                       zIndex: 50,
@@ -65,7 +65,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                   grayscale: hero.selected,
                   'pointer-events-none': hero.selected || !isturnAvailable,
                   'glow-yellow z-50 overflow-hidden rounded-xl border border-yellow border-opacity-100 bg-transparent p-1':
-                    hero.name === selectedChampion,
+                    hero.name === selectedChampion && team?.isturn,
                 })}
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
               >
@@ -88,7 +88,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                       <motion.div
                         transition={{ duration: .2, ease: [0.4, 0.0, 0.2, 1] }}
                         whileHover={
-                          hero.name !== selectedChampion
+                          hero.name !== selectedChampion || !canSelect
                             ? {
                               opacity: 1,
                             }

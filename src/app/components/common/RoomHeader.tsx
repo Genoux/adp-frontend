@@ -77,7 +77,7 @@ const GameStatusBar: React.FC<GameStatusBarProps> = ({
   statusText,
 }) => {
   return (
-    <div className="my-3 grid w-full grid-cols-3 items-end justify-center border-b pt-2 pb-4 mb-6">
+    <div className="mt-4 mb-6 grid w-full grid-cols-3 items-end justify-center border-b pb-4">
       <TeamIndicator
         team={blueTeam}
         orientation="right"
