@@ -3,8 +3,7 @@ import { Database } from '@/app/types/supabase';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
-
+import useNextBlurhash from "use-next-blurhash";
 interface Hero {
   name: string;
   id: string;
@@ -23,29 +22,21 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   team,
   selectedChampion,
   canSelect,
-  handleClickedHero = () => {},
+  handleClickedHero = () => { },
 }) => {
-  const [hoverIndex, setHoverIndex] = useState(-1);
-  const { room } = roomStore();
-  const setHoverState = useCallback((index: number) => {
-    setHoverIndex(index);
-  }, []);
+  const [blurDataUrl] = useNextBlurhash("LAHfPK02lU~Ct-={0KxtTe-VDhIo");
 
-  useEffect(() => {
-    if (!canSelect && room?.status !== 'planning') {
-      setHoverState(-1);
-    }
-  }, [canSelect, room?.status, setHoverState]);
+  const { room } = roomStore();
+
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col px-6 lg:px-24">
       <div className="grid cursor-pointer grid-cols-10 gap-2">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
             const isActive =
-              hoverIndex === index ||
               (hero.name === selectedChampion && team?.isturn);
             const isturnAvailable = team ? team.isturn : true;
             const shouldFade = hero.selected || (team && !isturnAvailable);
@@ -53,26 +44,20 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
               <motion.div
                 initial={{ opacity: 1 }}
                 animate={{ opacity: shouldFade ? 0.7 : 1 }}
-                transition={{ duration: 0.1, ease: [0.4, 0.0, 0.2, 1] }}
+                transition={{ duration: .1, ease: [0.4, 0.0, 0.2, 1] }}
                 key={index}
-                whileTap={
-                  hoverIndex === index &&
-                  hero.name !== selectedChampion &&
-                  team?.isturn
-                    ? {
-                        scale: 0.9,
-                        zIndex: 50,
-                        boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
-                      }
-                    : {}
-                }
+                whileTap={hero.name !== selectedChampion && canSelect
+                  ? {
+                    scale: 0.9,
+                    zIndex: 50,
+                  }
+                  : {}}
                 whileHover={
-                  hoverIndex === index && hero.name !== selectedChampion
+                  hero.name !== selectedChampion || !canSelect
                     ? {
-                        scale: 1,
-                        zIndex: 50,
-                        boxShadow: '0px 0px 50px rgba(0, 0, 0, .8)',
-                      }
+                      scale: 1.05,
+                      zIndex: 50,
+                    }
                     : {}
                 }
                 className={clsx('z-10 overflow-hidden rounded-md', {
@@ -83,18 +68,11 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     hero.name === selectedChampion && team?.isturn,
                 })}
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
-                onMouseEnter={() => {
-                  if (!canSelect && room?.status != 'planning') return;
-                  setHoverIndex(index);
-                }}
-                onMouseLeave={() => {
-                  if (!hero.selected) {
-                    setHoverIndex(-1);
-                  }
-                }}
               >
-                <motion.div className="relative z-10 overflow-hidden rounded transition-all">
+                <motion.div className="relative z-10 overflow-hidden rounded-lg transition-all">
                   <Image
+                    placeholder="blur"
+                    blurDataURL={blurDataUrl}
                     src={`/images/champions/tiles/${hero.id
                       .toLowerCase()
                       .replace(/\s+/g, '')
@@ -104,18 +82,52 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                     width={500}
                     height={500}
                   />
+
                   <div className="my-auto flex items-center justify-center overflow-hidden">
+                    <AnimatePresence>
+                      <motion.div
+                        transition={{ duration: .2, ease: [0.4, 0.0, 0.2, 1] }}
+                        whileHover={
+                          hero.name !== selectedChampion || !canSelect
+                            ? {
+                              opacity: 1,
+                            }
+                            : { opacity: 0 }
+                        } className='absolute z-50 top-0 justify-center text-center w-full h-full flex items-center opacity-0'>
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 0.5 }}
+                          exit={{ opacity: 0 }}
+                          transition={{
+                            duration: 0.1,
+                            ease: [0.4, 0.0, 0.2, 1],
+                          }}
+                          className="absolute left-0 top-0 z-50 h-full w-full overflow-hidden rounded-lg bg-gradient-to-t from-yellow to-transparent bg-clip-content"
+                        ></motion.div>
+                        <p className="text-sm font-bold text-white z-10">{hero.name}</p>
+                        <Image
+                          src={`/images/champions/splash/${hero.id
+                            .toLowerCase()
+                            .replace(/\s+/g, '')
+                            .replace(/[\W_]+/g, '')}.jpg`}
+                          alt={hero.name}
+                          width={500}
+                          height={500}
+                          className="h-full w-full object-cover scale-110 absolute"
+                        />
+                      </motion.div>
+                    </AnimatePresence>
                     <AnimatePresence>
                       {isActive && (
                         <>
                           <motion.div
-                            initial={{ opacity: 0 }} // Start invisible
-                            animate={{ opacity: 0.5 }} // Fade in to half opacity
-                            exit={{ opacity: 0 }} // Fade out to invisible
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 0.5 }}
+                            exit={{ opacity: 0 }}
                             transition={{
                               duration: 0.2,
                               ease: [0.4, 0.0, 0.2, 1],
-                            }} // Smooth transition
+                            }}
                             className="absolute left-0 top-0 z-50 h-full w-full overflow-hidden rounded-lg bg-gradient-to-t from-yellow to-transparent bg-clip-content"
                           ></motion.div>
                           <motion.div
@@ -134,16 +146,9 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                             initial={{ scale: 1.3, opacity: 0 }}
                             animate={{ scale: 1.2, opacity: 1 }}
                             whileHover={{ scale: 1 }}
-                            exit={{
-                              scale: 1,
-                              opacity: 0,
-                              transition: { duration: 0.2 },
-                            }}
-                            transition={{
-                              duration: 0.2,
-                              ease: [0.4, 0.0, 0.2, 1],
-                            }}
-                            className={`absolute left-0 top-0 mx-auto h-full w-full object-cover`}
+                            exit={{ scale: 1, opacity: 0, transition: { duration: 0.2 } }}
+                            transition={{ duration: 0, ease: [0.4, 0.0, 0.2, 1] }}
+                            className="absolute left-0 top-0 mx-auto h-full w-full object-cover"
                           >
                             <Image
                               src={`/images/champions/splash/${hero.id
@@ -151,8 +156,8 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                                 .replace(/\s+/g, '')
                                 .replace(/[\W_]+/g, '')}.jpg`}
                               alt={hero.name}
-                              width={800}
-                              height={800}
+                              width={500}
+                              height={500}
                               className="h-full w-full object-cover"
                             />
                           </motion.div>

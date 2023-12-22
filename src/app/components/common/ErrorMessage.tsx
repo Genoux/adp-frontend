@@ -9,7 +9,7 @@ const handleRefresh: () => void = () => {
 
 const ErrorMessage: React.FC = () => {
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center gap-8">
+    <div className="flex w-full flex-col items-center justify-center gap-8">
       <ServerCrash size={48} />
       <div className="flex flex-col items-center gap-1">
         <p className="px-24 text-2xl font-bold">

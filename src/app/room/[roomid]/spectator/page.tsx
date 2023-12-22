@@ -87,13 +87,11 @@ const Spectator = ({ params }: SpectatorProps) => {
 
   if (room?.status === 'planning') {
     return (
-      <div className="container">
         <SocketContext.Provider value={socket}>
-          <div className="container flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center">
             <Planningview />
           </div>
         </SocketContext.Provider>
-      </div>
     );
   }
 
@@ -140,7 +138,7 @@ const Spectator = ({ params }: SpectatorProps) => {
             />
           )}
         </div>
-        <div className="container">
+        <div>
           <GameStatusBar
             blueTeam={blueTeam}
             redTeam={redTeam}
@@ -148,10 +146,10 @@ const Spectator = ({ params }: SpectatorProps) => {
             widthVariants={widthVariants}
             statusText={`Vous êtes spectateur de ${blueTeam?.name.toUpperCase()} vs ${redTeam?.name.toUpperCase()}`}
           />
-          <div className="mb-6">
+          <div>
             <ChampionsPool
               selectedChampion={selectedChampion}
-              canSelect={true}
+              canSelect={false}
             />
           </div>
           <DraftView />

@@ -18,7 +18,6 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
   const { room } = roomStore((state) => state);
   const isDone = room?.status === 'done';
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
-  const [gridItemHeight, setGridItemHeight] = useState('20vh'); // Example initial height
 
   useEffect(() => {
     const shouldSetBorder =
@@ -79,7 +78,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
         );
 
         return (
-          <div key={index} className="h- relative w-full">
+          <div key={index} className="relative w-full h-44">
             {isBorderSlot && (
               <AnimatePresence>
                 <motion.div
@@ -92,7 +91,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                     repeat: Infinity,
                     repeatType: 'reverse',
                   }}
-                  className="glow-yellow-10 absolute left-0 top-0 z-50 h-full w-full rounded-md border border-yellow bg-yellow-300 bg-opacity-10"
+                  className="glow-yellow-10 absolute left-0 top-0 z-50 h-44 w-full rounded-md border border-yellow bg-yellow-300 bg-opacity-10"
                 ></motion.div>
               </AnimatePresence>
             )}
@@ -142,7 +141,6 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                       }}
                       className="absolute z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-[#000000] to-transparent pb-4 text-xs"
                     >
-                      {' '}
                       <p> {hero.name}</p>
                     </motion.div>
                   </>

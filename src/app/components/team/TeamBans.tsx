@@ -53,13 +53,11 @@ const TeamBans = ({ team }: Team) => {
           (hero: Hero, index: number) => (
             <div
               key={index}
-              className={`relative h-full w-full overflow-hidden rounded transition-all ${
-                hero.selected && 'bg-[#161620] bg-opacity-60'
-              } ${!team.isturn && 'opacity-50'} ${
-                index === borderIndex && !hero.selected
+              className={`relative h-full w-full overflow-hidden rounded transition-all ${hero.selected && 'bg-[#161620] bg-opacity-60'
+                } ${!team.isturn && 'opacity-50'} ${index === borderIndex && !hero.selected
                   ? 'animate-pulse border border-red-600 border-opacity-70 bg-red-500 bg-opacity-20 ease-in-out'
                   : 'bg-[#161620]'
-              }`}
+                }`}
             >
               {hero && hero.selected ? (
                 hero.name === null ? (

@@ -7,6 +7,37 @@ import useEnsureContext from '@/app/hooks/useEnsureContext';
 import useTeams from '@/app/hooks/useTeams';
 import supabase from '@/app/services/supabase';
 import { roomStore } from '@/app/stores/roomStore';
+import clsx from 'clsx';
+
+interface Team {
+  [key: string]: any;
+}
+
+interface TeamDisplayProps {
+  team: Team;
+  currentTeam: Team;
+}
+
+const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
+
+  const color = team.color === 'blue' ? 'bleue' : 'rouge';
+  const text = team.color === 'blue' ? 'text-blue' : 'text-red';
+
+  return (
+    <div className='flex w-full justify-between items-center border rounded-md bg-[#0a0a0c] h-16 p-4'>
+      <div>
+        <h1>{team.name}</h1>
+        {currentTeam.name === team.name && (
+          <p className={clsx(`${text} text-xs`)}>{`Vous êtes l'équipe ${color}`}</p>
+        )}
+      </div>
+      <div>
+        <TeamStatus team={team} showReadyState={true} />
+      </div>
+    </div>
+  );
+}
+
 
 const ReadyView = () => {
   const socket = useEnsureContext(SocketContext);
@@ -40,50 +71,38 @@ const ReadyView = () => {
   };
 
   return (
-    <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 transform flex-col items-center justify-center overflow-y-hidden text-3xl">
-      <div className="mb-6 text-center">
-        <h1 className="mb-2 text-4xl font-bold">{`Salle d'attente`}</h1>
-        <p className="text-base">{`Les joueurs attendent dans la salle jusqu'à ce que tout le monde soit prêt.`}</p>
-        <div className="mt-6 flex items-center justify-center">
-          <div className={`h-6 w-1 bg-${currentTeam.color} rounded-full`}></div>
-          <p
-            className={`rounded-md p-2 text-base font-bold text-white`}
-          >{`Vous êtes l'équipe ${currentTeam.name.toUpperCase()}`}</p>
-          <div className={`h-6 w-1 bg-${currentTeam.color} rounded-full`}></div>
-        </div>
+    <>
+      <div className="text-center border-b border-opacity-25 pb-4">
+        <h1 className="text-2xl font-bold">Salle d’attente</h1>
+        <p className="text-sm font-normal opacity-50">{"En attente que les deux équipes soient prêtes."}</p>
       </div>
-      <div className="mb-12 w-full rounded-md border border-opacity-10">
-        <div className="grid grid-cols-2 text-base">
-          <p className={`flex flex-col items-center gap-2 border-r p-6`}>
-            {blueTeam.name.toUpperCase()}
-            <TeamStatus team={blueTeam} showReadyState={true} />
-          </p>
 
-          <p className={`flex flex-col items-center gap-2 p-6`}>
-            {redTeam.name.toUpperCase()}
-            <TeamStatus team={redTeam} showReadyState={true} />
-          </p>
-        </div>
+      <div className='flex flex-col gap-4 w-full mb-12'>
+        <TeamDisplay team={blueTeam} currentTeam={currentTeam} />
+        <TeamDisplay team={redTeam} currentTeam={currentTeam} />
       </div>
-      {currentTeam.ready ? (
-        <div>
-          <span className="pr-0.5 text-base">{`En attende de ${otherTeam.name}`}</span>
-          <div className="sending-animation">
-            <span className="sending-animation-dot">.</span>
-            <span className="sending-animation-dot">.</span>
-            <span className="sending-animation-dot">.</span>
+
+      <div className='h-12 flex items-center justify-center'>
+        {currentTeam.ready ? (
+          <div className='w-full text-center'>
+            <span className="pr-0.5 text-base">{`En attende de ${otherTeam.name}`}</span>
+            <div className="sending-animation">
+              <span className="sending-animation-dot">.</span>
+              <span className="sending-animation-dot">.</span>
+              <span className="sending-animation-dot">.</span>
+            </div>
           </div>
-        </div>
-      ) : (
-        <Button
-          size="lg"
-          className={`mt-6 rounded-sm bg-yellow px-24 text-sm font-bold uppercase text-yellow-text hover:bg-yellow-hover`}
-          onClick={handleReadyClick}
-        >
-          {'Nous sommes prêt'}
-        </Button>
-      )}
-    </div>
+        ) : (
+          <Button
+            size="lg"
+            className='w-full'
+            onClick={handleReadyClick}
+          >
+            {'Confirmer prêt'}
+          </Button>
+        )}
+      </div>
+    </>
   );
 };
 

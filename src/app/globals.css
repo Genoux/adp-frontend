@@ -2,13 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-.my-input {
-  @apply rounded-sm;
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Prevents scrolling */
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+  }
+}
+
+.header {
+  height: 10vh;
+}
+
+.content {
+  height: 90vh;
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: #09090B; 
     --foreground: 240 10% 3.9%;
 
     --muted: 240 4.8% 95.9%;
@@ -92,7 +119,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#09090B] text-foreground;
   }
 }
 

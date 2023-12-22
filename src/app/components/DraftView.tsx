@@ -15,7 +15,7 @@ const RoomInfo = () => {
         animate={{ opacity: 1 }} // animate to full size
         transition={defaultTransition}
       >
-        <div className="mt-6 flex h-full flex-col justify-evenly gap-4 rounded-md border border-[#8f8f8f] border-opacity-5 bg-[#0f0f0f3f] p-4">
+        <div className="mt-6 flex h-full flex-col justify-evenly gap-4 rounded-md border border-[#8f8f8f] border-opacity-5 bg-[#0f0f0f3f] px-5 pb-5 pt-5">
           <div className="grid w-full grid-cols-3 items-center">
             <TeamBans team={blueTeam} />
             <ConfirmButton />
