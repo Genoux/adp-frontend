@@ -1,24 +1,21 @@
-import { Database } from "@/app/types/supabase";
-import Image from "next/image";
-import clsx from "clsx";
-import { roomStore } from "@/app/stores/roomStore";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { motion } from 'framer-motion';
-import { Blurhash } from 'react-blurhash';
-import { useImages } from '@/app/context/ImageContext';  // Import the useImages hook
-import MyImage from "./MyImage";
-
+import { roomStore } from '@/app/stores/roomStore';
+import { Database } from '@/app/types/supabase';
+import clsx from 'clsx';
+import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
+import useNextBlurhash from "use-next-blurhash";
 interface Hero {
   name: string;
+  id: string;
   selected: boolean;
   clicked_hero: boolean;
 }
 
 interface HeroPoolProps {
-  team?: Database["public"]["Tables"]["teams"]["Row"];
-  selectedChampion?: string; // optional
-  canSelect?: boolean; // optional
-  handleClickedHero?: (hero: Hero) => void; // optional
+  team?: Database['public']['Tables']['teams']['Row'];
+  selectedChampion?: string;
+  canSelect?: boolean;
+  handleClickedHero?: (hero: Hero) => void;
 }
 
 const ChampionsPool: React.FC<HeroPoolProps> = ({
@@ -27,107 +24,151 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   canSelect,
   handleClickedHero = () => { },
 }) => {
-  const [hoverIndex, setHoverIndex] = useState(-1);
-  const [mouseDown, setMouseDown] = useState<number | null>(null);
-
-  const { loadedImages, markAsLoaded } = useImages();
+  const [blurDataUrl] = useNextBlurhash("LAHfPK02lU~Ct-={0KxtTe-VDhIo");
 
   const { room } = roomStore();
 
 
-  const setHoverState = useCallback((index: number) => {
-    setHoverIndex(index);
-  }, []);
-
-  useEffect(() => {
-    if (!canSelect && room?.status !== 'planning') {
-      setHoverState(-1);
-      setMouseDown(null);
-    }
-  }, [canSelect, room?.status, setHoverState]);
-
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
-  const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj"; // Replace with your actual Blurhash string
 
   return (
-    <div className="flex flex-col">
-      <div className="grid grid-cols-10 px-12 gap-2 cursor-pointer">
+    <div className="flex flex-col px-24">
+      <div className="grid cursor-pointer grid-cols-10 gap-2">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
-            const isActive = hoverIndex === index || hero.name === selectedChampion && team?.isturn;
+            const isActive =
+              (hero.name === selectedChampion);
             const isturnAvailable = team ? team.isturn : true;
             const shouldFade = hero.selected || (team && !isturnAvailable);
             return (
               <motion.div
                 initial={{ opacity: 1 }}
                 animate={{ opacity: shouldFade ? 0.7 : 1 }}
-                transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
+                transition={{ duration: .1, ease: [0.4, 0.0, 0.2, 1] }}
                 key={index}
-                className={clsx("rounded-xl", {
-                  "bg-gray-800": isActive,
-                  "grayscale": hero.selected,
-                  "pointer-events-none": hero.selected || !isturnAvailable,
-                  "z-50 border-2 border-opacity-100 border-yellow overflow-hidden p-1 bg-transparent glow-yellow": hero.name === selectedChampion && team?.isturn,
-                })}
-                onMouseDown={() => {
-                  if (room?.status === "planning") return;
-                  setMouseDown(index);
-                }}
-                onMouseUp={() => {
-                  setMouseDown(null);
-                }}
-                onClick={canSelect ? () => handleClickedHero(hero) : undefined}
-                onMouseEnter={() => {
-                  if (!canSelect && room?.status != 'planning') return
-                  setHoverIndex(index);
-                }}
-                onMouseLeave={() => {
-                  if (!hero.selected) {
-                    setHoverIndex(-1);
+                whileTap={hero.name !== selectedChampion && canSelect
+                  ? {
+                    scale: 0.9,
+                    zIndex: 50,
                   }
-                }}>
-
-                <div className="relative overflow-hidden rounded-md">
-                  {/* <MyImage
-                    src={`/images/champions/tiles/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
-                   alt={hero.name}
-                  /> */}
+                  : {}}
+                whileHover={
+                  hero.name !== selectedChampion
+                    ? {
+                      scale: 1.05,
+                      zIndex: 50,
+                    }
+                    : {}
+                }
+                className={clsx('z-10 overflow-hidden rounded-md', {
+                  'bg-gray-800': isActive,
+                  grayscale: hero.selected,
+                  'pointer-events-none': hero.selected || !isturnAvailable,
+                  'glow-yellow z-50 overflow-hidden rounded-xl border border-yellow border-opacity-100 bg-transparent p-1':
+                    hero.name === selectedChampion,
+                })}
+                onClick={canSelect ? () => handleClickedHero(hero) : undefined}
+              >
+                <motion.div className="relative z-10 overflow-hidden rounded-lg transition-all">
                   <Image
-                    src={`/images/champions/tiles/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
+                    placeholder="blur"
+                    blurDataURL={blurDataUrl}
+                    src={`/images/champions/tiles/${hero.id
+                      .toLowerCase()
+                      .replace(/\s+/g, '')
+                      .replace(/[\W_]+/g, '')}.jpg`}
                     alt={hero.name}
                     sizes="100vw"
                     width={500}
                     height={500}
-                    placeholder="blur"
-                   blurDataURL={blurhash}
                   />
-                  <div className="flex items-center justify-center my-auto overflow-hidden">
-                    <p
-                      className={`font-bold text-sm text-center hero-name text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${isActive
-                        ? "z-50 animated-text-hover animated-text-visible"
-                        : "hidden"
-                        }`}>
-                      {hero.name}
-                    </p>
-                    <div
-                      className={`${isActive
-                        ? "bg-gradient-to-t absolute z-10 from-yellow to-transparent opacity-50 bg-clip-content w-full h-full top-0 left-0"
-                        : ""
-                        }`}></div>
-                    <Image
-                      src={`/images/champions/splash/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg`}
-                      alt={hero.name}
-                      width={800}
-                      height={800}
-                      className={`mx-auto splash-image ${isActive ? "splash-image-hover" : ""
-                        }`}
-                    />
+
+                  <div className="my-auto flex items-center justify-center overflow-hidden">
+                    <AnimatePresence>
+                      <motion.div
+                        transition={{ duration: .2, ease: [0.4, 0.0, 0.2, 1] }}
+                        whileHover={
+                          hero.name !== selectedChampion
+                            ? {
+                              opacity: 1,
+                            }
+                            : { opacity: 0 }
+                        } className='absolute z-50 top-0 justify-center text-center w-full h-full flex items-center opacity-0'>
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 0.5 }}
+                          exit={{ opacity: 0 }}
+                          transition={{
+                            duration: 0.1,
+                            ease: [0.4, 0.0, 0.2, 1],
+                          }}
+                          className="absolute left-0 top-0 z-50 h-full w-full overflow-hidden rounded-lg bg-gradient-to-t from-yellow to-transparent bg-clip-content"
+                        ></motion.div>
+                        <p className="text-sm font-bold text-white z-10">{hero.name}</p>
+                        <Image
+                          src={`/images/champions/splash/${hero.id
+                            .toLowerCase()
+                            .replace(/\s+/g, '')
+                            .replace(/[\W_]+/g, '')}.jpg`}
+                          alt={hero.name}
+                          width={500}
+                          height={500}
+                          className="h-full w-full object-cover scale-110 absolute"
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                    <AnimatePresence>
+                      {isActive && (
+                        <>
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 0.5 }}
+                            exit={{ opacity: 0 }}
+                            transition={{
+                              duration: 0.2,
+                              ease: [0.4, 0.0, 0.2, 1],
+                            }}
+                            className="absolute left-0 top-0 z-50 h-full w-full overflow-hidden rounded-lg bg-gradient-to-t from-yellow to-transparent bg-clip-content"
+                          ></motion.div>
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{
+                              duration: 0.2,
+                              ease: [0.4, 0.0, 0.2, 1],
+                            }}
+                            className={`absolute top-0 z-50 flex h-full items-center text-center text-sm font-bold text-white`}
+                          >
+                            <p className="z-50">{hero.name}</p>
+                          </motion.div>
+                          <motion.div
+                            initial={{ scale: 1.3, opacity: 0 }}
+                            animate={{ scale: 1.2, opacity: 1 }}
+                            whileHover={{ scale: 1 }}
+                            exit={{ scale: 1, opacity: 0, transition: { duration: 0.2 } }}
+                            transition={{ duration: 0, ease: [0.4, 0.0, 0.2, 1] }}
+                            className="absolute left-0 top-0 mx-auto h-full w-full object-cover"
+                          >
+                            <Image
+                              src={`/images/champions/splash/${hero.id
+                                .toLowerCase()
+                                .replace(/\s+/g, '')
+                                .replace(/[\W_]+/g, '')}.jpg`}
+                              alt={hero.name}
+                              width={500}
+                              height={500}
+                              className="h-full w-full object-cover"
+                            />
+                          </motion.div>
+                        </>
+                      )}
+                    </AnimatePresence>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
             );
           }
-
         )}
       </div>
     </div>

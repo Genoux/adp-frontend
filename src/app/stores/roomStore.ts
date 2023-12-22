@@ -1,6 +1,6 @@
-import { create } from 'zustand';
 import supabase from '@/app/services/supabase';
 import { Database } from '@/app/types/supabase';
+import { create } from 'zustand';
 
 type Room = Database['public']['Tables']['rooms']['Row'];
 
@@ -13,7 +13,6 @@ interface RoomState {
 }
 
 const handleRoomUpdate = (set: any) => (payload: any) => {
-  // Update the room data in your state based on the payload
   set({ room: { ...payload.new } });
 };
 
@@ -25,7 +24,7 @@ export const roomStore = create<RoomState>((set) => ({
   fetchRoom: async (roomId: string) => {
     set({ isLoading: true, error: null });
     try {
-      let { data: room, error } = await supabase
+      const { data: room, error } = await supabase
         .from('rooms')
         .select('*')
         .eq('id', roomId)
@@ -39,25 +38,27 @@ export const roomStore = create<RoomState>((set) => ({
 
       // Setting up the subscription for the room
       supabase
-      .channel(roomId)
-      .on('postgres_changes', {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'rooms',
-        filter: `id=eq.${roomId}`,
-      }, (payload) => {
-        handleRoomUpdate(set)(payload);
-      })
-      .subscribe((status, err) => {
-        if (!err) {
-          console.log('Received event ROOM: ', status);
-          return
-        } else {
-          console.log(".subscribe - err ROOM:", err);
-        }
-      });
-
-
+        .channel(roomId)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'rooms',
+            filter: `id=eq.${roomId}`,
+          },
+          (payload) => {
+            handleRoomUpdate(set)(payload);
+          }
+        )
+        .subscribe((status, err) => {
+          if (!err) {
+            console.log('Received event ROOM: ', status);
+            return;
+          } else {
+            console.log('.subscribe - err ROOM:', err);
+          }
+        });
     } catch (error) {
       set({ error } as any);
     } finally {

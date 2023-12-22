@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { useEffect, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
 
 interface EventHandlers {
   eventName: string;
@@ -12,7 +12,6 @@ interface SocketHandlers {
 
 export default function useSocket(
   roomid: string,
-  teamid: string,
   handlers: SocketHandlers = {}
 ) {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -22,7 +21,7 @@ export default function useSocket(
 
   useEffect(() => {
     const socketServerUrl =
-      process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || "http://localhost:4000";
+      process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:1313';
     const newSocket = io(socketServerUrl);
 
     let retryCount = 0;
@@ -30,14 +29,14 @@ export default function useSocket(
 
     const tryConnect = () => {
       if (retryCount >= MAX_RETRIES) {
-        console.error("Max retries reached. Giving up on connecting.");
-        setConnectionError(true);  // Set the error state here
+        console.error('Max retries reached. Giving up on connecting.');
+        setConnectionError(true); // Set the error state here
         clearInterval(retryInterval);
         return;
       }
 
       if (!newSocket.connected) {
-        console.log("Attempting to reconnect...");
+        console.log('Attempting to reconnect...');
         newSocket.connect();
         retryCount++;
       } else {
@@ -45,15 +44,15 @@ export default function useSocket(
       }
     };
 
-    newSocket.on("connect", async () => {
+    newSocket.on('connect', async () => {
       clearInterval(retryInterval); // Clear retry interval upon successful connection
       setSocket(newSocket);
-      newSocket.emit("joinRoom", { roomid, teamid });
-      console.log("Successfully joined room");
+      newSocket.emit('joinRoom', { roomid });
+      console.log('Successfully joined room');
     });
 
-    newSocket.on("connect_error", () => {
-      console.error("Connection failed. Retrying in a few seconds...");
+    newSocket.on('connect_error', () => {
+      console.error('Connection failed. Retrying in a few seconds...');
       retryInterval = setInterval(tryConnect, RETRY_INTERVAL);
     });
 
@@ -70,7 +69,7 @@ export default function useSocket(
       }
       setSocket(null);
     };
-  }, [handlers.eventHandlers, roomid, teamid]);
+  }, [handlers.eventHandlers, roomid]);
 
   return { socket, connectionError }; // Return the socket
 }

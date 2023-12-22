@@ -1,89 +1,155 @@
-import { roomStore } from "@/app/stores/roomStore";
-import { motion } from 'framer-motion';
-import { defaultTransition } from '@/app/lib/animationConfig';
-import { useState, useEffect } from 'react';
-import MyImage from '@/app/components/common/MyImage';
+import { roomStore } from '@/app/stores/roomStore';
+import clsx from 'clsx';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+
 interface Team {
   [key: string]: any;
+  applyHeightVariants?: boolean;
 }
 
 interface Hero {
   name: string;
+  id: string;
   selected: boolean;
 }
 
-const TeamPicks = ({ team }: Team) => {
-
-  const { room } = roomStore(state => ({
-    room: state.room,
-    error: state.error,
-    isLoading: state.isLoading
-  }));
-
-  const heightVariants = {
-    initial: { y: 0, height: 0, originY: 0 },
-    notDone: { height: "250px", y: -45 },
-    done: { height: "300px", y: 0 }
-  };
-
-  const isDone = room?.status === "done";
-
+const TeamPicks: React.FC<Team> = ({ team }) => {
+  const { room } = roomStore((state) => state);
+  const isDone = room?.status === 'done';
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
+  useEffect(() => {
+    const shouldSetBorder =
+      team.isturn && room?.status === 'select' && team.nb_turn > 0;
+
+    if (shouldSetBorder) {
+      const timer = setTimeout(() => {
+        setBorderIndex(
+          team.heroes_selected.findIndex((hero: Hero) => !hero.selected)
+        );
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    } else {
+      setBorderIndex(null);
+    }
+  }, [team, room]);
 
   useEffect(() => {
-    if (team.isturn && room?.status === 'select' && team.nb_turn > 0) {
-      const firstUnselectedHeroIndex = (team.heroes_selected as unknown as Hero[]).findIndex(hero => !hero.selected);
-      setBorderIndex(firstUnselectedHeroIndex);
-    } else {
-      setBorderIndex(null); // Remove the border when it's not the team's turn
+    if (!team.clicked_hero) {
+      setBorderIndex(null);
+    }
+  }, [team.clicked_hero]);
+
+  const getHeroImageStyle = (heroId: string) => {
+    if (!heroId) {
+      return {};
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room?.status, team.nb_turn]);
+    return {
+      backgroundImage: `url("/images/champions/splash/${heroId
+        .toLowerCase()
+        .replace(/\s+/g, '')
+        .replace(/[\W_]+/g, '')}.jpg")`,
+      backgroundSize: 'cover',
+      height: '100%',
+      width: '100%',
+    };
+  };
 
   return (
     <motion.div
-      initial="initial"
-      animate={isDone ? "done" : "notDone"}
-      transition={defaultTransition}
-      variants={heightVariants}
-      className={`grid grid-cols-5 gap-2 h-full w-full ${team.isturn || isDone ? `opacity-100` : "opacity-60"}`}>
-      {(team.heroes_selected as unknown as Hero[]).map((hero: Hero, index: number) => (
-        <div
-          key={index}
-          className={`h-full w-full rounded-md overflow-hidden transition-all relative ${hero.name ? "" : (index === borderIndex ? "border ease-in-out animate-pulse bg-yellow-300 bg-opacity-10 border-yellow glow-yellow" : "border border-white border-opacity-10")}`}>
-          {hero.name && (
-            <div>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{
-                  delay: .1,
-                  duration: .5,
-                  ease: "easeInOut"
-                }}
-                className="absolute z-50 w-full h-full flex justify-center items-center font-medium opacity-0">
-                {hero.name}
-              </motion.div>
-              <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-t from-black via-transparent to-transparent bg-clip-content z-40"></div>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{
-                  delay: .1,
-                  duration: .2,
-                  ease: "easeInOut"
-                }}
-                className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
-                style={{
-                  backgroundImage: `url("/images/champions/splash/${hero.name.toLowerCase().replace(/\s+/g, '')}.jpg")`,
-                }}
-              />
+      className={`flex h-full w-full gap-2 ${
+        team.isturn || isDone ? 'opacity-100' : 'opacity-60'
+      }`}
+    >
+      {Array.from({ length: 5 }).map((_, index) => {
+        const hero = team.heroes_selected[index];
+        const isClickedHeroSlot = index === borderIndex && team.clicked_hero;
+        const isBorderSlot = index === borderIndex;
+        const isEmptySlot = !isClickedHeroSlot && !hero.id;
+
+        const slotClassName = clsx(
+          'h-44 w-full rounded-md overflow-hidden relative',
+          isEmptySlot
+            ? 'border border-white border-opacity-10'
+            : 'border border-white border-opacity-0'
+        );
+
+        return (
+          <div key={index} className="relative w-full h-44">
+            {isBorderSlot && (
+              <AnimatePresence>
+                <motion.div
+                  key="border" // Key is static, but the presence of this div is controlled by isBorderSlot
+                  initial={{ opacity: 0, zIndex: 50 }} // Starts from fully transparent
+                  animate={{ opacity: 1 }} // Fades to fully opaque
+                  exit={{ opacity: 0, transition: { duration: 1 } }} // 2 seconds fade out
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    repeatType: 'reverse',
+                  }}
+                  className="glow-yellow-10 absolute left-0 top-0 z-50 h-44 w-full rounded-md border border-yellow bg-yellow-300 bg-opacity-10"
+                ></motion.div>
+              </AnimatePresence>
+            )}
+            <div className={slotClassName}>
+              <AnimatePresence>
+                {isClickedHeroSlot && (
+                  <motion.div
+                    key="clicked_hero"
+                    initial={{ opacity: 0, scale: 1.3, zIndex: 1 }}
+                    animate={{ opacity: 1, scale: 1.3 }}
+                    exit={{
+                      opacity: 1,
+                      scale: 1.3,
+                      transition: { duration: 0.25 },
+                    }}
+                    className="absolute left-0 top-0 h-full w-full bg-cover bg-center sepia"
+                    style={getHeroImageStyle(team.clicked_hero)}
+                  />
+                )}
+
+                {hero.id && (
+                  <>
+                    <motion.div
+                      key="hero"
+                      initial={{ opacity: 1, scale: 1.3, zIndex: 2 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{
+                        opacity: 0,
+                        scale: 1,
+                        transition: { delay: 0.3, duration: 0.25 },
+                      }}
+                      transition={{
+                        delay: 0.15,
+                        duration: 0.5,
+                        ease: [1, -0.6, 0.3, 1.2],
+                      }}
+                      className="absolute left-0 top-0 h-full w-full overflow-hidden bg-cover bg-center"
+                      style={getHeroImageStyle(hero.id)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 5, zIndex: 2 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: 0,
+                        duration: 0.8,
+                        ease: [1, -0.6, 0.3, 1.2],
+                      }}
+                      className="absolute z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-[#000000] to-transparent pb-4 text-xs"
+                    >
+                      <p> {hero.name}</p>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </div>
-          )}
-        </div>
-      ))}
+          </div>
+        );
+      })}
     </motion.div>
   );
 };

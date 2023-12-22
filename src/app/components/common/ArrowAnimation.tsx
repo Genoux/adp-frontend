@@ -1,16 +1,16 @@
+import { motion } from 'framer-motion';
 import React from 'react';
-import { motion } from "framer-motion";
 
 interface ArrowAnimationProps {
-  roomStatus: "ban" | "select" | string | null | undefined;
-  teamIsTurn?: boolean;
-  orientation?: "left" | "right";
+  roomStatus: 'ban' | 'select' | string | null | undefined;
+  teamIsTurn?: boolean | null | undefined;
+  orientation?: 'left' | 'right';
 }
 
 const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
   roomStatus,
   teamIsTurn = false,
-  orientation = "right"
+  orientation = 'right',
 }) => {
   const arrows = [0, 1, 2];
 
@@ -18,18 +18,20 @@ const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
     return null;
   }
 
-  const text = roomStatus === "ban" ? "Banning" : "Picking";
-  const color = roomStatus === "ban" ? "#E62222" : "#DCFC35";
-  const bgColor = roomStatus === "ban" ? "bg-red-900 border bg-opacity-20 border-red-500" : "bg-yellow";
-  const textColor = roomStatus === "ban" ? "text-red" : "text-yellow";
+  const text = roomStatus === 'ban' ? 'Banning' : 'Picking';
+  const color = roomStatus === 'ban' ? '#E62222' : '#DCFC35';
+  const textColor = roomStatus === 'ban' ? 'text-red' : 'text-yellow';
 
-  const arrowTransform = orientation === "left" ? "scaleX(-1)" : "scaleX(1)";
-  const flexDirection = orientation === "left" ? "flex-row-reverse" : "flex-row";
+  const arrowTransform = orientation === 'left' ? 'scaleX(-1)' : 'scaleX(1)';
+  const flexDirection =
+    orientation === 'left' ? 'flex-row-reverse' : 'flex-row';
 
   return (
-    <div className={`flex gap-2 items-center justify-center border-opacity-20 px-3 transition-all delay-1000 py-1 rounded ${flexDirection}`}>
-        <div className="flex space-x-0.5">
-        {arrows.map(i => (
+    <div
+      className={`flex items-center justify-center gap-2 rounded border-opacity-20 px-3 py-1 transition-all delay-1000 ${flexDirection}`}
+    >
+      <div className="flex space-x-0.5">
+        {arrows.map((i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0 }}
@@ -37,25 +39,35 @@ const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
             transition={{
               delay: i * 0.1,
               duration: 1.2,
-              ease: "easeInOut",
-              repeat: Infinity
+              ease: 'easeInOut',
+              repeat: Infinity,
             }}
             className="text-white"
           >
-
-            <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transform: arrowTransform }}>
-              <path d="M6 1L1.19522 4.84383C1.09514 4.92389 1.09514 5.07611 1.19522 5.15617L6 9" stroke={color} stroke-width="1.5" />
+            <svg
+              width="7"
+              height="10"
+              viewBox="0 0 7 10"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ transform: arrowTransform }}
+            >
+              <path
+                d="M6 1L1.19522 4.84383C1.09514 4.92389 1.09514 5.07611 1.19522 5.15617L6 9"
+                stroke={color}
+                stroke-width="1.5"
+              />
             </svg>
-
           </motion.div>
         ))}
       </div>
-      <p className={`text-md font-medium uppercase animate-pulse duration-1000 ${textColor}`}>{text}</p>
-
-
-    
+      <p
+        className={`text-md animate-pulse font-medium uppercase duration-1000 ${textColor}`}
+      >
+        {text}
+      </p>
     </div>
   );
-}
+};
 
 export default ArrowAnimation;

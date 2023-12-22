@@ -1,24 +1,30 @@
+import useTeamStore from '@/app/stores/teamStore';
 import { useMemo } from 'react';
 
-const useTeams = (teamStore: () => { teams: any; currentTeam: any }) => {
-  const { teams, currentTeam } = teamStore();
+const useTeam = () => {
+  const { teams, currentTeamId } = useTeamStore();
 
-  const blue = useMemo(() => {
-    return teams?.find((team: { color: string; }) => team.color === 'blue');
+  const currentTeam = useMemo(() => {
+    return teams?.find(
+      (team: { id: any }) => team.id.toString() === currentTeamId
+    );
+  }, [teams, currentTeamId]);
+
+  const otherTeam = useMemo(() => {
+    return teams?.find(
+      (team: { id: any }) => team.id.toString() !== currentTeamId
+    );
+  }, [teams, currentTeamId]);
+
+  const redTeam = useMemo(() => {
+    return teams?.find((team) => team.color === 'red');
   }, [teams]);
 
-  const red = useMemo(() => {
-    return teams?.find((team: { color: string; }) => team.color === 'red');
+  const blueTeam = useMemo(() => {
+    return teams?.find((team) => team.color === 'blue');
   }, [teams]);
 
-  const current = useMemo(() => {
-    return teams?.find((team: { id: any; }) => team.id === currentTeam.id);
-  }, [currentTeam.id, teams]);
-
-  const other = useMemo(() => {
-    return teams?.find((team: { id: any; }) => team.id !== currentTeam.id);
-  }, [currentTeam.id, teams]);
-
-  return {teams, current, other, blue, red };
+  return { currentTeam, otherTeam, redTeam, blueTeam, teams };
 };
-export default useTeams;
+
+export default useTeam;
