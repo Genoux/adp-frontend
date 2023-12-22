@@ -148,10 +148,10 @@ const Spectator = ({ params }: SpectatorProps) => {
             widthVariants={widthVariants}
             statusText={`Vous êtes spectateur de ${blueTeam?.name.toUpperCase()} vs ${redTeam?.name.toUpperCase()}`}
           />
-          <div className="mb-6">
+          <div>
             <ChampionsPool
               selectedChampion={selectedChampion}
-              canSelect={true}
+              canSelect={false}
             />
           </div>
           <DraftView />
