@@ -1,60 +1,87 @@
-import TeamPicks from "./team/TeamPicks";
-import { teamStore } from "@/app/stores/teamStore";
-import useTeams from "@/app/hooks/useTeams";
-import { defaultTransition } from '@/app/lib/animationConfig'
-import { motion } from "framer-motion";
-import { useEffect } from "react";
+import useTeams from '@/app/hooks/useTeams';
+import { defaultTransition } from '@/app/lib/animationConfig';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { truncateString } from '@/app/lib/utils';
+import { Key } from 'react';
 
-const FinishView = () => {
-  let { blue, red } = useTeams(teamStore);
-  
+interface Hero {
+  name: string;
+  id: string;
+  selected: boolean;
+}
+
+interface Team {
+  [key: string]: any;
+}
+
+const HeroDisplay = ({ hero }: { hero: Hero }) => (
+  <div className="relative h-full">
+    <h1 className="absolute left-0 top-0 flex h-full w-full items-end justify-center bg-black bg-opacity-20 bg-gradient-to-t from-[#000000f5] via-transparent pb-12">
+      {hero.name}
+    </h1>
+    <Image
+      className="h-full overflow-hidden rounded-sm object-cover"
+      width={1024}
+      height={1024}
+      src={hero.id ? `/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg` : ''}
+      alt={''}
+    />
+  </div>
+);
+
+const TeamDisplay = ({ team, teamColor,position }: { team: Team, teamColor: string, position: string }) => (
+  <div className={`flex flex-col items-${position}`}>
+    <div className={`bg-${teamColor}-500 bg-opacity-25 border border-${teamColor} rounded-full w-fit flex items-center px-2 h-7 gap-2`}>
+      <div className={`text-sm font-medium h-3 w-3 rounded-full bg-${teamColor}`}></div>
+      {truncateString(team?.name.toUpperCase(), 6)}
+    </div>
+    <div className="flex h-96 gap-2 mt-6">
+      {team.heroes_selected.map((hero: Hero, index: Key | null | undefined) => (
+        <HeroDisplay key={index} hero={hero} />
+      ))}
+    </div>
+  </div>
+);
+
+export const FinishView = () => {
+  const { redTeam, blueTeam } = useTeams();
+
+  if (!redTeam || !blueTeam) return null;
+
   return (
-    <div className="px-6 lg:px-12">
+    <div className="flex h-screen flex-col items-center justify-center gap-12">
       <motion.div
-        initial={{ y: "-10px", opacity: 0 }}  // start at half the size
-        animate={{ y: "0px", opacity: 1 }}    // animate to full size
+        initial={{ y: '-10px', opacity: 0 }}
+        animate={{ y: '0px', opacity: 1 }}
         transition={defaultTransition}
         className="text-center"
       >
-        <h1 className="text-4xl font-bold mt-12">{"Draft terminé!"}</h1>
+        <h1 className="text-4xl font-bold">{'Draft terminé'}</h1>
       </motion.div>
-      <div className="grid grid-cols-2  gap-12 w-full">
+      <div className="flex w-full items-center gap-6">
         <motion.div
-           initial={{opacity: 0 }}
-           animate={{ opacity: .25 }}
-           transition={defaultTransition}
-          className="bg-gradient-to-r from-blue to-transparent absolute left-0 top-0 h-full w-1/2 opacity-25"></motion.div>
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={defaultTransition}
+        >
+        <TeamDisplay team={blueTeam} teamColor="blue" position='start' />
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={defaultTransition}
-          className="relative"
         >
-          <h1 className={`text-xl py-1 w-fit px-8 uppercase mb-6 rounded-full text-center bg-${blue.color}`}> {blue.name}</h1>
-          <div className="border-t border-white border-opacity-40 pt-6">
-            <TeamPicks team={blue} />
-          </div>
+          <p className="text-lg font-bold">VS</p>
         </motion.div>
 
-        
-        <motion.div
-          initial={{opacity: 0 }}
-          animate={{ opacity: .25 }}
-          transition={defaultTransition}
-          className="bg-gradient-to-r from-transparent to-red absolute right-0 top-0 h-full w-1/2 opacity-25"
-        >
-        </motion.div>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={defaultTransition}
-          className="relative"
         >
-          <h1 className={`text-xl py-1 w-fit px-8 uppercase mb-6 rounded-full text-center ml-auto bg-${red.color}`}> {red.name}</h1>
-          <div className="border-t border-white border-opacity-40 pt-6">
-            <TeamPicks team={red} />
-          </div>
+        <TeamDisplay team={redTeam} teamColor="red" position='end' />
         </motion.div>
       </div>
     </div>

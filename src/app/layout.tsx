@@ -1,16 +1,24 @@
 import "./globals.css";
-import { Bai_Jamjuree } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "@/app/components/ui/theme-provider";
-import { ImageProvider } from '@/app/context/ImageContext';  // Import the ImageProvider
-
-const bai_jamjuree = Bai_Jamjuree({
-  subsets: ["latin-ext"],
-  weight: "500"
-})
 
 export const metadata = {
-  title: "HAQ - Aram draft pick",
-  description: "Aram draft pick for League of Legends",
+  title: 'HAQ - Aram draft pick',
+  description: 'Aram draft pick for League of Legends',
+  icons: {
+    icon: [
+      {
+        media: '(prefers-color-scheme: light)',
+        url: '/images/favicon-light.ico',
+        href: '/images/favicon-light.ico',
+      },
+      {
+        media: '(prefers-color-scheme: dark)',
+        url: '/images/favicon-dark.ico',
+        href: '/images/favicon-dark.ico',
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -20,13 +28,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={`${bai_jamjuree.className} min-w-[1024px] mx-auto overflow-hidden`}>
-        <ImageProvider> {/* Wrap children with ImageProvider */}
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-            {children}
-          </ThemeProvider>
-        </ImageProvider>
-       <div className="flex absolute  w-full justify-end bottom-0 items-center pb-2 pr-4 font-medium text-sm">Beta 0.2.0</div>
+      <body className={`${GeistSans.className} mx-auto h-full px-6 min-w-[1024px] max-w-[1440px]`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

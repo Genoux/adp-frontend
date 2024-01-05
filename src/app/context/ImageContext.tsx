@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
 
 interface ImageContextProps {
   loadedImages: { [key: string]: boolean };
@@ -22,7 +22,9 @@ interface ImageProviderProps {
 }
 
 export const ImageProvider: React.FC<ImageProviderProps> = ({ children }) => {
-  const [loadedImages, setLoadedImages] = useState<{ [key: string]: boolean }>({});
+  const [loadedImages, setLoadedImages] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
   const markAsLoaded = (src: string) => {
     setLoadedImages((prev) => ({ ...prev, [src]: true }));
