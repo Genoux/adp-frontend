@@ -125,7 +125,7 @@ function Home() {
           transition={defaultTransition}
           className="text-center justify-end items-end mx-auto flex flex-col mt-12"
         >
-          <Image src='home-logo.svg' width={268} height={0} alt={"Tournois Haq"} />
+          <Image src='home-logo.svg' width={368} height={0} alt={"Tournois Haq"} />
         </motion.div>
         {loading ? (
           // Show loading circle when loading is true
@@ -141,7 +141,7 @@ function Home() {
         )}
 
       </main>
-      <footer className="my-6">
+      <footer className="my-6 hidden">
         <div className="flex justify-center gap-24 text-xs">
           <Link className="hover:underline underline-offset-4" href="https://www.tournoishaq.ca/" target="_blank">Tournoishaq.ca</Link>
           <p>All right reserved © 2023</p>

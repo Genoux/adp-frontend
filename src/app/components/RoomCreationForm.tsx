@@ -78,6 +78,12 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
     }
   };
 
+  const handleKeyPress = (event: { key: string; }) => {
+    if (event.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
 
   const teams = [
     { id: 'blueTeamName', label: 'Équipe bleue', color: 'blue', value: formData.blueTeamName },
@@ -85,7 +91,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
   ];
 
   return (
-    <div className="flex flex-col gap-6 items-center">
+    <div className="flex flex-col gap-6 items-center border p-12 rounded-md bg-black bg-opacity-10">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -95,7 +101,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
         }}
         className="flex flex-col gap-6 w-full"
       >
-        <div className="text-center border-b border-opacity-25 pb-4 mb-4">
+        <div className="text-left">
           <h1 className="text-2xl font-bold">Generer une chambre</h1>
           <p className="text-sm font-normal opacity-50">{"Inscrivez le nom des deux équipes qui vont s'affronter."}</p>
         </div>
@@ -121,6 +127,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
                 name={team.id}
                 onChange={handleInputChange}
                 value={team.value}
+                onKeyDown={handleKeyPress}
                 className={`${formErrors[team.id as keyof FormData] ? "border border-red-700 border-opacity-50" : ""}`}
               />
             </motion.div>
