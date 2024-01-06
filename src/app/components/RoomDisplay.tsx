@@ -108,8 +108,8 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
         className='border p-12 rounded-md bg-black bg-opacity-5'
       >
         <div className="text-left pb-4 mb-4">
-          <h1 className="text-2xl font-bold">Chambre génèré!</h1>
-          <p className="text-sm font-normal opacity-50">{"Rejoignez une chambre associé à votre équipe."}</p>
+          <h1 className="text-2xl font-bold">Chambre générée</h1>
+          <p className="text-sm font-normal opacity-50">{"Rejoignez une chambre associée à votre équipe"}</p>
         </div>
         <div className="flex w-full flex-col justify-center gap-6">
           <Display team={blueTeam} roomId={room.id} />

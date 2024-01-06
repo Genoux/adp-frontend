@@ -10,7 +10,7 @@ const formSchema = z.object({
   blueTeamName: z.string().min(1, "Les noms des équipes ne peuvent pas être vides"),
   redTeamName: z.string().min(1, "Les noms des équipes ne peuvent pas être vides"),
 }).refine(data => data.blueTeamName !== data.redTeamName, {
-  message: "Les noms des équipes ne peuvent pas être identiques",
+  message: "Les noms des deux équipes ne peuvent pas être identiques",
   path: ["blueTeamName", "redTeamName"]
 });
 
@@ -26,7 +26,6 @@ interface FormErrors {
   blueTeamName?: string;
   redTeamName?: string;
 }
-
 
 interface FormData {
   blueTeamName: string;
@@ -102,8 +101,8 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
         className="flex flex-col gap-6 w-full"
       >
         <div className="text-left">
-          <h1 className="text-2xl font-bold">Generer une chambre</h1>
-          <p className="text-sm font-normal opacity-50">{"Inscrivez le nom des deux équipes qui vont s'affronter."}</p>
+          <h1 className="text-2xl font-bold">Générer une chambre</h1>
+          <p className="text-sm font-normal opacity-50">{"Veuillez inscrire les noms des deux équipes qui vont s'affronter"}</p>
         </div>
         <div>
           <p className="text-red-600 text-xs">  {formErrors.blueTeamName || formErrors.redTeamName}</p>

@@ -16,12 +16,12 @@ interface Team {
 }
 
 const HeroDisplay = ({ hero }: { hero: Hero }) => (
-  <div className="relative h-full">
-    <h1 className="absolute left-0 top-0 flex h-full w-full items-end justify-center bg-black bg-opacity-20 bg-gradient-to-t from-[#000000f5] via-transparent pb-12">
+  <div className="relative h-full rounded overflow-hidden">
+    <h1 className="absolute over text-center left-0 top-0 flex h-full w-full items-end justify-center bg-black bg-opacity-20 bg-gradient-to-t from-[#000000f5] via-transparent pb-12">
       {hero.name}
     </h1>
     <Image
-      className="h-full overflow-hidden rounded-sm object-cover"
+      className="h-full overflow-hidden object-cover"
       width={1024}
       height={1024}
       src={hero.id ? `/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg` : ''}
@@ -50,7 +50,7 @@ export const FinishView = () => {
   if (!redTeam || !blueTeam) return null;
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-12">
+    <div className="flex mt-24 flex-col items-center justify-center gap-12">
       <motion.div
         initial={{ y: '-10px', opacity: 0 }}
         animate={{ y: '0px', opacity: 1 }}

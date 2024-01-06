@@ -33,7 +33,7 @@ export const WaitingView = () => {
       >
           <ChampionsPool />
       </motion.div>
-      <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez informer les administrateurs." />
+      <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
 
     </motion.div>
   );

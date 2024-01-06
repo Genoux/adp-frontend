@@ -74,7 +74,7 @@ const ReadyView = () => {
     <>
       <div className="text-center border-b border-opacity-25 pb-4">
         <h1 className="text-2xl font-bold">Salle d’attente</h1>
-        <p className="text-sm font-normal opacity-50">{"En attente que les deux équipes soient prêtes."}</p>
+        <p className="text-sm font-normal opacity-50">{"En attente que les deux équipes soient prêtes"}</p>
       </div>
 
       <div className='flex flex-col gap-4 w-full mb-12'>
