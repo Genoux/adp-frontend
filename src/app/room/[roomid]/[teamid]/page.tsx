@@ -15,6 +15,7 @@ import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect } from 'react';
+import NoticeBanner from '@/app/components/common/NoticeBanner';
 
 interface RoomProps {
   params: {
@@ -79,7 +80,12 @@ export default function Room({ params }: RoomProps) {
             <FinishView />
           ) : (
             <section className="h-full" id='main'>
-              {isPlanningView && <PlanningView />}
+              {isPlanningView &&
+                <div className='flex flex-col gap-2'>
+                  <PlanningView />
+                  <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
+                </div>
+              }
               <CanSelectProvider>
                 {isRoomView && <TeamView />}
                 {isRoomView && <DraftView />}
@@ -87,7 +93,6 @@ export default function Room({ params }: RoomProps) {
             </section>
           )}
         </SocketContext.Provider>
-
       </AnimatePresence>
     </main>
   );

@@ -81,7 +81,7 @@ const Display: React.FC<DisplayProps> = ({ team, roomId, isSpectator = false }) 
           "bg-red": team.color === 'red',
           "bg-[#353535]": isSpectator
         })}></div>
-        <label>{isSpectator ? 'spectateur' : team.name}</label>
+        <label>{isSpectator ? 'Spectateur' : team.name}</label>
       </div>
       <div className="flex flex-row items-center gap-2">
         <Input readOnly className='rounded h-10' value={`${window.location.origin}/${link}`} onClick={handleInputClick} />

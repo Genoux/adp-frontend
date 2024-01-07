@@ -1,6 +1,5 @@
 import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 import Timer from '@/app/components/common/RoomTimer';
-import { truncateString } from '@/app/lib/utils';
 import React from 'react';
 import { motion } from 'framer-motion';
 import { defaultTransition } from '@/app/lib/animationConfig';
@@ -61,7 +60,7 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({
         >
           <div className={`${team?.isturn ? `bg-${team.color}` : 'bg-zinc-700'
             } text-sm font-medium h-3 w-3 rounded-full`}></div>
-          {truncateString(team?.name.toUpperCase(), 6)}
+          {team?.name.toUpperCase()}
         </div>
       </div>
     </div>

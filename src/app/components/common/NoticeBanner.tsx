@@ -28,7 +28,7 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({ message }) => {
           exit="exit"
           variants={variants}
           transition={{delay: 2, ...defaultTransition }}
-          className="px-4 py-3 bg-[#0a0a0c] text-white cursor-pointer flex justify-between items-center border border-opacity-25 gap-6 rounded-md"
+          className="px-4 py-3 w-fit mx-auto bg-[#0a0a0c] text-white cursor-pointer flex justify-between items-center border border-opacity-25 gap-6 rounded-md"
         >
           <div className='flex gap-2 items-center'>
             <Info size={16} color='#BBBBBB' />

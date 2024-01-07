@@ -2,7 +2,6 @@ import useTeams from '@/app/hooks/useTeams';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { truncateString } from '@/app/lib/utils';
 import { Key } from 'react';
 
 interface Hero {
@@ -33,8 +32,8 @@ const HeroDisplay = ({ hero }: { hero: Hero }) => (
 const TeamDisplay = ({ team, teamColor,position }: { team: Team, teamColor: string, position: string }) => (
   <div className={`flex flex-col items-${position}`}>
     <div className={`bg-${teamColor}-500 bg-opacity-25 border border-${teamColor} rounded-full w-fit flex items-center px-2 h-7 gap-2`}>
-      <div className={`text-sm font-medium h-3 w-3 rounded-full bg-${teamColor}`}></div>
-      {truncateString(team?.name.toUpperCase(), 6)}
+      <div className={`text-sm font-medium h-2.5 w-2.5 rounded-full bg-${teamColor}`}></div>
+      {team.name}
     </div>
     <div className="flex h-96 gap-2 mt-6">
       {team.heroes_selected.map((hero: Hero, index: Key | null | undefined) => (

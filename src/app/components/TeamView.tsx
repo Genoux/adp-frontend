@@ -6,8 +6,18 @@ import { defaultTransition } from '@/app/lib/animationConfig';
 import supabase from '@/app/services/supabase';
 import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
+import { default as NextImage } from 'next/image';
 import { useEffect, useState } from 'react';
+
+const preloadSplashImages = (heroes: { id: string; }[]) => {
+  heroes.forEach((hero) => {
+    const img = new Image() as HTMLImageElement;
+    img.src = `/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`;
+   console.log("heroes.forEach - img.src:", img.src);
+
+  });
+};
+
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>('');
@@ -24,6 +34,11 @@ const TeamView = () => {
 
   const currentTeam = team?.isturn ? team : otherTeam;
   const [isImageBeingRemoved, setIsImageBeingRemoved] = useState(false);
+
+  
+  useEffect(() => {
+    preloadSplashImages(room?.heroes_pool as { id: string; }[]);
+  }, [room?.heroes_pool]);
 
   useEffect(() => {
     if (currentImage) {
@@ -112,10 +127,10 @@ const TeamView = () => {
             exit={{ 
               opacity: 0, 
               scale: isImageBeingRemoved ? 1  : 1.4,
-              transition: { delay: isImageBeingRemoved ? 0 : .25, ease: [1, 0, 0.3, 1.2], duration: isImageBeingRemoved ? 0.1 : .5 } // Slower exit transition only when image is being removed due to user selection
+              transition: { delay: isImageBeingRemoved ? 0 : .25, ease: [1, 0, 0.3, 1.2], duration: isImageBeingRemoved ? 0.1 : .5 }
             }}
           >
-            <Image
+            <NextImage
               src={`/images/champions/splash/${currentImage.toLowerCase().replace(/\s+/g, '')}.jpg`}
               width={3840}
               height={1440}
