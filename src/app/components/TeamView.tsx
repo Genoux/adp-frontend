@@ -30,24 +30,6 @@ const TeamView = () => {
     isLoading: state.isLoading,
   }));
 
-  
-  useEffect(() => {
-    fetch('/api/listImages')
-      .then(response => response.json())
-      .then(data => {
-        if (data && Array.isArray(data.imageUrls)) {
-          data.imageUrls.forEach((url: string) => {
-            console.log("data.imageUrls.forEach - url:", url);
-            const img = new Image();
-            img.src = url;
-          });
-        } else {
-          console.error('Expected an object with an array of image URLs, but received:', data);
-        }
-      })
-      .catch(error => console.error('Error preloading images:', error));
-  }, []);
-
   const { currentTeam: team, otherTeam, redTeam, blueTeam } = useTeams();
 
   const currentTeam = team?.isturn ? team : otherTeam;
