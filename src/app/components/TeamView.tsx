@@ -9,14 +9,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { default as NextImage } from 'next/image';
 import { useEffect, useState } from 'react';
 
-const preloadSplashImages = (heroes: { id: string; }[]) => {
-  heroes.forEach((hero) => {
-    const img = new Image() as HTMLImageElement;
-    img.src = `/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`;
-   console.log("heroes.forEach - img.src:", img.src);
+// const preloadSplashImages = (heroes: { id: string; }[]) => {
+//   heroes.forEach((hero) => {
+//     const img = new Image() as HTMLImageElement;
+//     img.src = `/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`;
+//    console.log("heroes.forEach - img.src:", img.src);
 
-  });
-};
+//   });
+// };
 
 
 const TeamView = () => {
@@ -37,7 +37,7 @@ const TeamView = () => {
 
   
   useEffect(() => {
-    preloadSplashImages(room?.heroes_pool as { id: string; }[]);
+    //preloadSplashImages(room?.heroes_pool as { id: string; }[]);
   }, [room?.heroes_pool]);
 
   useEffect(() => {
@@ -132,9 +132,10 @@ const TeamView = () => {
           >
             <NextImage
               src={`/images/champions/splash/${currentImage.toLowerCase().replace(/\s+/g, '')}.jpg`}
-              width={3840}
-              height={1440}
-              rel="preload"
+              width={960}
+              height={360}
+                priority
+                quality={100}
               className={`h-full w-full object-cover object-center opacity-50 ${
                 currentTeam.color === 'blue'
                   ? 'fade-gradient-left'

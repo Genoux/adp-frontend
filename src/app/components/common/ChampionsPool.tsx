@@ -3,7 +3,7 @@ import { Database } from '@/app/types/supabase';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import useNextBlurhash from "use-next-blurhash";
+
 interface Hero {
   name: string;
   id: string;
@@ -24,8 +24,6 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   canSelect,
   handleClickedHero = () => { },
 }) => {
-  const [blurDataUrl] = useNextBlurhash("LAHfPK02lU~Ct-={0KxtTe-VDhIo");
-
   const { room } = roomStore();
 
 
@@ -71,8 +69,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
               >
                 <motion.div className="relative z-10 overflow-hidden rounded-lg transition-all">
                   <Image
-                    placeholder="blur"
-                    blurDataURL={blurDataUrl}
+                    priority
                     src={`/images/champions/tiles/${hero.id
                       .toLowerCase()
                       .replace(/\s+/g, '')
@@ -158,6 +155,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                               alt={hero.name}
                               width={500}
                               height={500}
+                              priority
                               className="h-full w-full object-cover"
                             />
                           </motion.div>
