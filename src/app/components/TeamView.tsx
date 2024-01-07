@@ -30,6 +30,24 @@ const TeamView = () => {
     isLoading: state.isLoading,
   }));
 
+  
+  useEffect(() => {
+    fetch('/api/listImages')
+      .then(response => response.json())
+      .then(data => {
+        if (data && Array.isArray(data.imageUrls)) {
+          data.imageUrls.forEach((url: string) => {
+            console.log("data.imageUrls.forEach - url:", url);
+            const img = new Image();
+            img.src = url;
+          });
+        } else {
+          console.error('Expected an object with an array of image URLs, but received:', data);
+        }
+      })
+      .catch(error => console.error('Error preloading images:', error));
+  }, []);
+
   const { currentTeam: team, otherTeam, redTeam, blueTeam } = useTeams();
 
   const currentTeam = team?.isturn ? team : otherTeam;
@@ -126,12 +144,13 @@ const TeamView = () => {
             animate={{ opacity: 1 }}
             exit={{ 
               opacity: 0, 
-              scale: isImageBeingRemoved ? 1  : 1.4,
               transition: { delay: isImageBeingRemoved ? 0 : .25, ease: [1, 0, 0.3, 1.2], duration: isImageBeingRemoved ? 0.1 : .5 }
             }}
           >
             <NextImage
-              src={`/images/champions/splash/${currentImage.toLowerCase().replace(/\s+/g, '')}.jpg`}
+              src={`/images/champions/splash/${currentImage.toLowerCase()
+                .replace(/\s+/g, '')
+                .replace(/[\W_]+/g, '')}.jpg`}
               width={960}
               height={360}
                 priority

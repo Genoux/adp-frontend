@@ -5,7 +5,7 @@ import LoadingCircle from "@/app/components/common/LoadingCircle";
 import { RoomDisplay } from "./components/RoomDisplay";
 import { RoomCreationForm } from "./components/RoomCreationForm";
 import Link from "next/link";
-import Image from "next/image";
+import { default as NextImage } from 'next/image';
 import { defaultTransition } from '@/app/lib/animationConfig'
 import { motion } from "framer-motion";
 
@@ -125,7 +125,7 @@ function Home() {
           transition={defaultTransition}
           className="text-center justify-end items-end mx-auto flex flex-col mt-12"
         >
-          <Image src='home-logo.svg' width={368} height={0} alt={"Tournois Haq"} />
+          <NextImage src='home-logo.svg' width={368} height={0} alt={"Tournois Haq"} />
         </motion.div>
         {loading ? (
           // Show loading circle when loading is true
