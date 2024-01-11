@@ -120,7 +120,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                           transition: { duration: 0.25 },
                         }}
 
-                        className='absolute left-0 top-0 z-50 flex w-full h-full justify-center items-center'>
+                        className='absolute left-0 top-0 z-50 flex w-full h-full justify-center items-center  bg-gradient-to-t from-black to-transparent'>
                         <p className='text-sm'>{team.clicked_hero}</p>
                       </motion.div>à
                     </AnimatePresence>
@@ -154,7 +154,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                         duration: 0.8,
                         ease: [1, -0.6, 0.3, 1.2],
                       }}
-                      className="absolute z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-[#000000] to-transparent"
+                      className="absolute z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-black to-transparent"
                     >
                       <motion.div className='z-50 absolute top-0 left-0 w-full h-full flex justify-center items-center'><p className='text-sm'>{hero.name}</p></motion.div>
                     </motion.div>

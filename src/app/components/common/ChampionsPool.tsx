@@ -1,5 +1,4 @@
 import { roomStore } from '@/app/stores/roomStore';
-import { Database } from '@/app/types/supabase';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
@@ -11,8 +10,12 @@ interface Hero {
   clicked_hero: boolean;
 }
 
+interface Team {
+  [key: string]: any;
+}
+
 interface HeroPoolProps {
-  team?: Database['public']['Tables']['teams']['Row'];
+  team?: Team;
   selectedChampion?: string;
   canSelect?: boolean;
   handleClickedHero?: (hero: Hero) => void;
@@ -44,8 +47,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
       <div className="grid cursor-pointer grid-cols-10 gap-2">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
-            const isActive =
-              (hero.name === selectedChampion && team?.isturn);
+            const isActive = (hero.name === selectedChampion && team?.isturn);
             const isturnAvailable = team ? team.isturn : true;
             const shouldFade = hero.selected || (team && !isturnAvailable);
             const activeState = isActive || hoveredHero === hero.name;
@@ -114,7 +116,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                           ease: [0.4, 0.0, 0.2, 1],
                         }}
                         className={clsx(`absolute left-0 top-0 z-50 h-full w-full rounded-lg bg-gradient-to-t`, {
-                          "from-yellow to-transparent": room.status === 'select',
+                          "from-yellow to-transparent": room.status === 'select' || room.status === 'planning',
                           "from-red to-transparent": room.status === 'ban'
                         })}
                       ></motion.div>
