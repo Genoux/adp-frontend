@@ -71,6 +71,7 @@ module.exports = {
         boxShadow: {
           'yellow-glow': '0 0 20px rgba(255, 255, 0, 1)', // Adjust the values as needed
           'yellow-glow-10': '0 0 10px 5px rgba(255, 255, 0, 1)', // Adjust the values as needed
+          'red-glow': '0 0 5px rgba(255, 0, 0, 0)' // Adjust the values as needed
         },
         transitionTimingFunction: {
           main: 'cubic-bezier(0,.45,.54,1)',

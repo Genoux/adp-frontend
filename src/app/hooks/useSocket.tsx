@@ -48,7 +48,7 @@ export default function useSocket(
       clearInterval(retryInterval); // Clear retry interval upon successful connection
       setSocket(newSocket);
       newSocket.emit('joinRoom', { roomid });
-      console.log('Successfully joined room');
+      console.log('Successfully joined room ' + roomid);
     });
 
     newSocket.on('connect_error', () => {

@@ -8,6 +8,8 @@ import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { default as NextImage } from 'next/image';
 import { useEffect, useState } from 'react';
+import SocketContext from '@/app/context/SocketContext';
+import useEnsureContext from '@/app/hooks/useEnsureContext';
 
 // const preloadSplashImages = (heroes: { id: string; }[]) => {
 //   heroes.forEach((hero) => {
@@ -22,7 +24,13 @@ import { useEffect, useState } from 'react';
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>('');
   const { canSelect, setCanSelect } = useCanSelect();
-  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [currentImageBlue, setCurrentImageBlue] = useState<string | null>(null);
+  const [currentImageRed, setCurrentImageRed] = useState<string | null>(null);
+  
+
+  const socket = useEnsureContext(SocketContext);
+
+
 
   const { room, isLoading } = roomStore((state) => ({
     room: state.room,
@@ -33,23 +41,31 @@ const TeamView = () => {
   const { currentTeam: team, otherTeam, redTeam, blueTeam } = useTeams();
 
   const currentTeam = team?.isturn ? team : otherTeam;
-  const [isImageBeingRemoved, setIsImageBeingRemoved] = useState(false);
 
-  
+  useEffect(() => {
+    const handleConfirmation = async (data: any) => {
+      if (data) {
+        console.log("handleConfirmation - data:", data);
+      }
+    };
+
+    // Listen to the 'CHAMPION_CONFIRMED' event
+    socket.on('CHAMPION_SELECTED', handleConfirmation);
+
+    return () => {
+      // Clean up the event listener
+      socket.off('CHAMPION_SELECTED', handleConfirmation);
+    };
+  }, [socket]);
+
+
   useEffect(() => {
     //preloadSplashImages(room?.heroes_pool as { id: string; }[]);
   }, [room?.heroes_pool]);
 
   useEffect(() => {
-    if (currentImage) {
-      setIsImageBeingRemoved(false);
-    }
-  }, [currentImage]);
-
-
-  useEffect(() => {
     if (team?.nb_turn! > 0) {
-      setSelectedChampion('');
+
       setTimeout(() => {
         setCanSelect(true);
       }, 1000);
@@ -57,22 +73,33 @@ const TeamView = () => {
   }, [setCanSelect, team?.nb_turn]);
 
   useEffect(() => {
-    if (team) {
-      setSelectedChampion(team.clicked_hero || '');
-      setCurrentImage(currentTeam?.clicked_hero || '');
+    if (blueTeam?.clicked_hero) {
+      setCurrentImageBlue(blueTeam?.clicked_hero || '');
+      setCurrentImageRed('');
     }
-  }, [
-    currentTeam?.clicked_hero,
-    otherTeam?.clicked_hero,
-    team,
-    team?.clicked_hero,
-  ]);
+
+  }, [blueTeam?.clicked_hero]);
+
+  useEffect(() => {
+    if (redTeam?.clicked_hero) {
+      setCurrentImageRed(redTeam?.clicked_hero || '');
+      setCurrentImageBlue('');
+    }
+
+  }, [redTeam?.clicked_hero]);
+
+  useEffect(() => {
+    if (team) {
+      setSelectedChampion(team?.clicked_hero || '');
+    }
+  }, [team, team?.clicked_hero]);
+
+
 
   const handleClickedHero = async (hero: any) => {
     if (hero.name === team?.clicked_hero) return null;
     if (!team) return null;
 
-    setIsImageBeingRemoved(true);
     await supabase
       .from('teams')
       .update({ clicked_hero: hero.name })
@@ -115,38 +142,60 @@ const TeamView = () => {
         animate={{ opacity: 1 }} // animate to full size
         transition={defaultTransition}
       >
-    <AnimatePresence>
-        {currentImage && (
-          <motion.div
-            key={currentImage} // Key based on currentImage
-            className={`absolute ${
-              currentTeam.color === 'blue' ? 'left-0' : 'right-0'
-            } top-0 -z-10 h-full w-3/12`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ 
-              opacity: 0, 
-              transition: { delay: isImageBeingRemoved ? 0 : .25, ease: [1, 0, 0.3, 1.2], duration: isImageBeingRemoved ? 0.1 : .5 }
-            }}
-          >
-            <NextImage
-              src={`/images/champions/splash/${currentImage.toLowerCase()
-                .replace(/\s+/g, '')
-                .replace(/[\W_]+/g, '')}.jpg`}
-              width={960}
-              height={360}
+        <AnimatePresence>
+          {currentImageBlue && (
+            <motion.div
+              key={currentImageBlue} // Key based on currentImage
+              className={`absolute left-0 top-0 -z-10 h-full w-3/12`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{
+                opacity: 0,
+                transition: { ease: [1, 0, 0.3, 1.2], duration: .1 }
+              }}
+            >
+              <NextImage
+                src={`/images/champions/splash/${currentImageBlue.toLowerCase()
+                  .replace(/\s+/g, '')
+                  .replace(/[\W_]+/g, '')}.jpg`}
+                width={960}
+                height={360}
                 priority
                 quality={100}
-              className={`h-full w-full object-cover object-center opacity-50 ${
-                currentTeam.color === 'blue'
-                  ? 'fade-gradient-left'
-                  : 'fade-gradient-right'
-              }`}
-              alt={``}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+                className={`h-full w-full object-cover object-center opacity-50 fade-gradient-left`}
+                alt={``}
+              />
+            </motion.div>
+          )}
+
+        </AnimatePresence>
+        <AnimatePresence>
+          {currentImageRed && (
+            <motion.div
+              key={currentImageRed} // Key based on currentImage
+              className={`absolute right-0 top-0 -z-10 h-full w-3/12`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{
+                opacity: 0,
+                transition: { ease: [1, 0, 0.3, 1.2], duration: .1 }
+              }}
+            >
+              <NextImage
+                src={`/images/champions/splash/${currentImageRed.toLowerCase()
+                  .replace(/\s+/g, '')
+                  .replace(/[\W_]+/g, '')}.jpg`}
+                width={960}
+                height={360}
+                priority
+                quality={100}
+                className={`h-full w-full object-cover object-center opacity-50 fade-gradient-right`}
+                alt={``}
+              />
+            </motion.div>
+          )}
+
+        </AnimatePresence>
         <motion.div
           exit="exit"
           initial={{ opacity: 0 }} // start at half the size

@@ -60,9 +60,8 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
 
   return (
     <motion.div
-      className={`flex h-full w-full gap-2 ${
-        team.isturn || isDone ? 'opacity-100' : 'opacity-60'
-      }`}
+      className={`flex h-full w-full gap-2 ${team.isturn || isDone ? 'opacity-100' : 'opacity-60'
+        }`}
     >
       {Array.from({ length: 5 }).map((_, index) => {
         const hero = team.heroes_selected[index];
@@ -96,20 +95,34 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
               </AnimatePresence>
             )}
             <div className={slotClassName}>
-              <AnimatePresence>
                 {isClickedHeroSlot && (
-                  <motion.div
-                    key="clicked_hero"
-                    initial={{ opacity: 0, scale: 1.3, zIndex: 1 }}
-                    animate={{ opacity: 1, scale: 1.3 }}
-                    exit={{
-                      opacity: 1,
-                      scale: 1.3,
-                      transition: { duration: 0.25 },
-                    }}
-                    className="absolute left-0 top-0 h-full w-full bg-cover bg-center sepia"
-                    style={getHeroImageStyle(team.clicked_hero)}
-                  />
+                  <>
+                    <motion.div
+                      key="clicked_hero"
+                      initial={{ opacity: 0, scale: 1.3, zIndex: 1 }}
+                      animate={{ opacity: 1, scale: 1.3 }}
+                      exit={{
+                        opacity: 1,
+                        scale: 1.3,
+                        transition: { duration: 0.25 },
+                      }}
+                      className="absolute left-0 top-0 h-full w-full bg-cover bg-center sepia"
+                      style={getHeroImageStyle(team.clicked_hero)}
+                    />
+                    <AnimatePresence>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{
+                          opacity: 0,
+                          transition: { duration: 0.25 },
+                        }}
+
+                        className='absolute left-0 top-0 z-50 flex w-full h-full justify-center items-center'>
+                        <p className='text-sm'>{team.clicked_hero}</p>
+                      </motion.div>à
+                    </AnimatePresence>
+                  </>
                 )}
 
                 {hero.id && (
@@ -132,8 +145,8 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                       style={getHeroImageStyle(hero.id)}
                     />
                     <motion.div
-                      initial={{ opacity: 0, y: 5, zIndex: 2 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
                       transition={{
                         delay: 0,
                         duration: 0.8,
@@ -141,11 +154,11 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                       }}
                       className="absolute z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-[#000000] to-transparent pb-4 text-xs"
                     >
-                      <p> {hero.name}</p>
+                      <motion.div className='z-50 absolute top-0 left-0 w-full h-full flex justify-center items-center'><p className='text-sm'>{hero.name}</p></motion.div>
                     </motion.div>
                   </>
                 )}
-              </AnimatePresence>
+  
             </div>
           </div>
         );

@@ -3,7 +3,7 @@ import { Database } from '@/app/types/supabase';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-
+import { useState } from 'react';
 interface Hero {
   name: string;
   id: string;
@@ -25,6 +25,16 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   handleClickedHero = () => { },
 }) => {
   const { room } = roomStore();
+  const [hoveredHero, setHoveredHero] = useState<string | null>(null);
+
+  const onHeroHover = (hero: Hero) => {
+    setHoveredHero(hero.name);
+  };
+
+  const onHeroHoverEnd = () => {
+    setHoveredHero(null);
+  };
+
 
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
@@ -38,32 +48,23 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
               (hero.name === selectedChampion && team?.isturn);
             const isturnAvailable = team ? team.isturn : true;
             const shouldFade = hero.selected || (team && !isturnAvailable);
+            const activeState = isActive || hoveredHero === hero.name;
             return (
               <motion.div
                 initial={{ opacity: 1 }}
                 animate={{ opacity: shouldFade ? 0.7 : 1 }}
                 transition={{ duration: .1, ease: [0.4, 0.0, 0.2, 1] }}
                 key={index}
-                whileTap={hero.name !== selectedChampion && canSelect
-                  ? {
-                    scale: 0.9,
-                    zIndex: 50,
-                  }
-                  : {}}
-                whileHover={
-                  hero.name !== selectedChampion || !canSelect
-                    ? {
-                      scale: 1.05,
-                      zIndex: 50,
-                    }
-                    : {}
-                }
+                onHoverStart={() => onHeroHover(hero)}
+                onHoverEnd={onHeroHoverEnd}
                 className={clsx('z-10 overflow-hidden rounded-md', {
                   'bg-gray-800': isActive,
                   grayscale: hero.selected,
                   'pointer-events-none': hero.selected || !isturnAvailable,
                   'glow-yellow z-50 overflow-hidden rounded-xl border border-yellow border-opacity-100 bg-transparent p-1':
-                    hero.name === selectedChampion && team?.isturn,
+                    hero.name === selectedChampion && team?.isturn && room.status === 'select',
+                  'border-red-700 bg-red-700 bg-opacity-20 glow-red border rounded-xl p-1':
+                    hero.name === selectedChampion && team?.isturn && room.status === 'ban',
                 })}
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
               >
@@ -91,17 +92,6 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                             }
                             : { opacity: 0 }
                         } className='absolute z-50 top-0 justify-center text-center w-full h-full flex items-center opacity-0'>
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 0.5 }}
-                          exit={{ opacity: 0 }}
-                          transition={{
-                            duration: 0.1,
-                            ease: [0.4, 0.0, 0.2, 1],
-                          }}
-                          className="absolute left-0 top-0 z-50 h-full w-full overflow-hidden rounded-lg bg-gradient-to-t from-yellow to-transparent bg-clip-content"
-                        ></motion.div>
-                        <p className="text-sm font-bold text-white z-10">{hero.name}</p>
                         <Image
                           src={`/images/champions/splash/${hero.id
                             .toLowerCase()
@@ -114,37 +104,51 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                         />
                       </motion.div>
                     </AnimatePresence>
+                    {activeState && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: .5 }}
+                        exit={{ opacity: 0 }}
+                        transition={{
+                          duration: 0.2,
+                          ease: [0.4, 0.0, 0.2, 1],
+                        }}
+                        className={clsx(`absolute left-0 top-0 z-50 h-full w-full rounded-lg bg-gradient-to-t`, {
+                          "from-yellow to-transparent": room.status === 'select',
+                          "from-red to-transparent": room.status === 'ban'
+                        })}
+                      ></motion.div>
+                    )}
+
+                    {activeState && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 5, zIndex: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{
+                          duration: 0.2,
+                          ease: [0.4, 0.0, 0.2, 1],
+                        }}
+                        
+                        className={`absolute bg- top-0 z-40 flex h-full items-center text-center text-sm font-bold text-white`}>
+                        <p>{hero.name}</p>
+                      </motion.div>
+                    )}
+
                     <AnimatePresence>
-                      {isActive && (
+                      {activeState && (
                         <>
+  
+
                           <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 0.5 }}
-                            exit={{ opacity: 0 }}
-                            transition={{
-                              duration: 0.2,
-                              ease: [0.4, 0.0, 0.2, 1],
-                            }}
-                            className="absolute left-0 top-0 z-50 h-full w-full overflow-hidden rounded-lg bg-gradient-to-t from-yellow to-transparent bg-clip-content"
-                          ></motion.div>
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{
-                              duration: 0.2,
-                              ease: [0.4, 0.0, 0.2, 1],
-                            }}
-                            className={`absolute top-0 z-50 flex h-full items-center text-center text-sm font-bold text-white`}
-                          >
-                            <p className="z-50">{hero.name}</p>
-                          </motion.div>
-                          <motion.div
-                            initial={{ scale: 1.3, opacity: 0 }}
-                            animate={{ scale: 1.2, opacity: 1 }}
+                            initial={{ scale: 1.1, opacity: 0 }}
+                            animate={{ scale: 1.1, opacity: 1 }}
                             whileHover={{ scale: 1 }}
                             exit={{ scale: 1, opacity: 0, transition: { duration: 0.2 } }}
-                            transition={{ duration: 0, ease: [0.4, 0.0, 0.2, 1] }}
+                            transition={{
+                              duration: 0.2,
+                              ease: [0.4, 0.0, 0.2, 1],
+                            }}
                             className="absolute left-0 top-0 mx-auto h-full w-full object-cover"
                           >
                             <Image

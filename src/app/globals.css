@@ -207,6 +207,10 @@ html {
   box-shadow: 0 0 5px rgba(220, 252, 53, 0.5);
 }
 
+.glow-red {
+  box-shadow: 0 0 5px rgba(252, 53, 53, 0.5);
+}
+
 .image-container {
   position: relative;
 }
