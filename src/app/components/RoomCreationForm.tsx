@@ -90,7 +90,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({ onCreate }) 
   ];
 
   return (
-    <div className="flex flex-col gap-6 items-center border p-12 rounded-md bg-black bg-opacity-10">
+    <div className="flex flex-col gap-6 items-center border p-8 rounded-md bg-black bg-opacity-10">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

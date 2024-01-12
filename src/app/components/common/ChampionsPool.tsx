@@ -43,7 +43,8 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
   return (
-    <div className="flex flex-col px-6 lg:px-24">
+    <div className="flex flex-col px-6 lg:px-24 overflow-y-auto">
+      <div className='hidden absolute top-10 left-0 w-full h-full bg-gradient-to-t from-black via-transparent to-transparent z-50'></div>
       <div className="grid cursor-pointer grid-cols-10 gap-2">
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {

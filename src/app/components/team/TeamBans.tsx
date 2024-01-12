@@ -2,6 +2,7 @@ import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface Team {
   [key: string]: any;
@@ -72,7 +73,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
         const slotClassName = clsx(
           'h-24 w-full rounded-md overflow-hidden relative',
           isEmptySlot
-            ? 'border border-white bg-slate-900 bg-opacity-20 border-opacity-5'
+            ? 'border border-white bg-neutral-900 bg-opacity-30 border-opacity-5'
             : 'border border-white border-opacity-0'
         );
 
@@ -127,39 +128,39 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                   </>
                 )}
 
-                {hero.id && (
-                  <>
-                    <motion.div
-                      key="hero"
-                      initial={{ opacity: 1, scale: 1.3, zIndex: 2 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{
-                        opacity: 0,
-                        scale: 1,
-                        transition: { delay: 0.3, duration: 0.25 },
-                      }}
-                      transition={{
-                        delay: 0.15,
-                        duration: 0.5,
-                        ease: [1, -0.6, 0.3, 1.2],
-                      }}
-                      className="absolute left-0 top-0 h-full w-full overflow-hidden bg-cover bg-center grayscale"
-                      style={getHeroImageStyle(hero.id)}
-                    />
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{
-                        delay: 0,
-                        duration: 0.8,
-                        ease: [1, -0.6, 0.3, 1.2],
-                      }}
-                      className="absolute z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-black to-transparent"
-                    >
-                      <motion.div className='z-50 absolute top-0 left-0 w-full h-full flex justify-center items-center'><p className='text-sm'>{hero.name}</p></motion.div>
-                    </motion.div>
-                  </>
-                )}
+                {
+                  ('id' in hero && hero.selected) ? (
+                    <>
+                      {/* Content to show when 'id' is in hero and hero.selected is true */}
+                      <motion.div
+                        key="hero"
+                        initial={{ opacity: 1, scale: 1.3, zIndex: 2 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1, transition: { delay: 0.3, duration: 0.25 } }}
+                        transition={{ delay: 0.15, duration: 0.5, ease: [1, -0.6, 0.3, 1.2] }}
+                        className="absolute left-0 top-0 h-full w-full overflow-hidden bg-cover bg-center grayscale"
+                        style={getHeroImageStyle(hero.id)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0, duration: 0.8, ease: [1, -0.6, 0.3, 1.2] }}
+                        className="absolute z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-black to-transparent"
+                      >
+                        <motion.div className='z-50 absolute top-0 left-0 w-full h-full flex justify-center items-center'>
+                          <p className='text-sm'>{hero.name}</p>
+                        </motion.div>
+                      </motion.div>
+                    </>
+                  ) : (
+                    hero.selected ? (
+                        <div className='flex items-center justify-center h-full'>
+                          <Image src={`/images/x.svg`} alt={hero.name} width={32} height={32} />
+                      </div>
+                    ) : null
+                  )
+                }
+
               </AnimatePresence>
             </div>
           </div>
