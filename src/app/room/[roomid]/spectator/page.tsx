@@ -14,9 +14,10 @@ import useTeams from '@/app/hooks/useTeams';
 import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { motion } from 'framer-motion';
+import { Eye } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { Eye } from 'lucide-react';
+
 interface SpectatorProps {
   params: {
     roomid: string;
@@ -74,10 +75,10 @@ const Spectator = ({ params }: SpectatorProps) => {
 
   if (room?.status === 'waiting') {
     return (
-      <div className="flex flex-col min-h-screen items-center justify-center">
-        <Eye size={40} className='mb-4' />
-        <h1 className='font-bold text-2xl'>Vous êtes spectateur</h1>
-        <div className='opacity-50'>
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <Eye size={40} className="mb-4" />
+        <h1 className="text-2xl font-bold">Vous êtes spectateur</h1>
+        <div className="opacity-50">
           <span className="pr-0.5 text-base">{`En attende des équipes`}</span>
           <div className="sending-animation">
             <span className="sending-animation-dot">.</span>
@@ -121,8 +122,9 @@ const Spectator = ({ params }: SpectatorProps) => {
         )}
 
         <div
-          className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'
-            } top-0 -z-10 h-full w-3/12`}
+          className={`absolute ${
+            currentTeam?.color === 'blue' ? 'left-0' : 'right-0'
+          } top-0 -z-10 h-full w-3/12`}
         >
           {currentImage && (
             <Image
@@ -132,10 +134,11 @@ const Spectator = ({ params }: SpectatorProps) => {
               width={3840}
               height={1440}
               rel="preload"
-              className={`h-full w-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue'
+              className={`h-full w-full object-cover object-center opacity-50 ${
+                currentTeam?.color === 'blue'
                   ? 'fade-gradient-left'
                   : 'fade-gradient-right'
-                }`}
+              }`}
               alt={``}
             />
           )}

@@ -60,7 +60,7 @@ const ConfirmButton = () => {
   };
 
   return (
-    <div className="flex justify-center w-full">
+    <div className="flex w-full justify-center">
       {team.isturn ? (
         <AnimatePresence>
           <motion.div
@@ -72,12 +72,16 @@ const ConfirmButton = () => {
             <Button
               size="default"
               onClick={handleConfirmSelection}
-              className='w-64'
+              className="w-64"
               disabled={
                 !currentTeam?.clicked_hero || !canSelect || !team.isturn
               }
             >
-              {!canSelect ? <LoadingCircle color="black" size='w-4 h-4'/> : <>{buttonText}</>}
+              {!canSelect ? (
+                <LoadingCircle color="black" size="w-4 h-4" />
+              ) : (
+                <>{buttonText}</>
+              )}
             </Button>
           </motion.div>
         </AnimatePresence>

@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { X } from 'lucide-react';
-import { Info } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { defaultTransition } from '@/app/lib/animationConfig';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Info, X } from 'lucide-react';
+import { useState } from 'react';
 
 type NoticeBannerProps = {
   message: string;
@@ -13,8 +12,8 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({ message }) => {
 
   const variants = {
     initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0},
-    exit: { opacity: 0, transition: { duration: 0.2 } }
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, transition: { duration: 0.2 } },
   };
 
   if (!isVisible) return null;
@@ -27,14 +26,18 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({ message }) => {
           animate="animate"
           exit="exit"
           variants={variants}
-          transition={{delay: 2, ...defaultTransition }}
-          className="px-4 py-3 w-fit mx-auto bg-[#0a0a0c] text-white cursor-pointer flex justify-between items-center border border-opacity-25 gap-6 rounded-md"
+          transition={{ delay: 2, ...defaultTransition }}
+          className="mx-auto flex w-fit cursor-pointer items-center justify-between gap-6 rounded-md border border-opacity-25 bg-[#0a0a0c] px-4 py-3 text-white"
         >
-          <div className='flex gap-2 items-center'>
-            <Info size={16} color='#BBBBBB' />
+          <div className="flex items-center gap-2">
+            <Info size={16} color="#BBBBBB" />
             <p className="text-sm font-normal text-[#b8b8b8]">{message}</p>
           </div>
-          <X className='cursor-pointer hover:opacity-70 transition-all' size={14} onClick={() => setIsVisible(false)} />
+          <X
+            className="cursor-pointer transition-all hover:opacity-70"
+            size={14}
+            onClick={() => setIsVisible(false)}
+          />
         </motion.div>
       )}
     </AnimatePresence>

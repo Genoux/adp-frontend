@@ -15,27 +15,46 @@ interface Team {
 }
 
 const HeroDisplay = ({ hero }: { hero: Hero }) => (
-  <div className="relative h-full rounded overflow-hidden">
-    <h1 className="absolute over text-center left-0 top-0 flex h-full w-full items-end justify-center bg-black bg-opacity-20 bg-gradient-to-t from-[#000000f5] via-transparent pb-12">
+  <div className="relative h-full overflow-hidden rounded">
+    <h1 className="over absolute left-0 top-0 flex h-full w-full items-end justify-center bg-black bg-opacity-20 bg-gradient-to-t from-[#000000f5] via-transparent pb-12 text-center">
       {hero.name}
     </h1>
     <Image
       className="h-full overflow-hidden object-cover"
       width={1024}
       height={1024}
-      src={hero.id ? `/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg` : ''}
+      src={
+        hero.id
+          ? `/images/champions/splash/${hero.id
+              .toLowerCase()
+              .replace(/\s+/g, '')
+              .replace(/[\W_]+/g, '')}.jpg`
+          : ''
+      }
       alt={''}
     />
   </div>
 );
 
-const TeamDisplay = ({ team, teamColor,position }: { team: Team, teamColor: string, position: string }) => (
+const TeamDisplay = ({
+  team,
+  teamColor,
+  position,
+}: {
+  team: Team;
+  teamColor: string;
+  position: string;
+}) => (
   <div className={`flex flex-col items-${position}`}>
-    <div className={`bg-${teamColor}-500 bg-opacity-25 border border-${teamColor} rounded-full w-fit flex items-center px-2 h-7 gap-2`}>
-      <div className={`text-sm font-medium h-2.5 w-2.5 rounded-full bg-${teamColor}`}></div>
+    <div
+      className={`bg-${teamColor}-500 border bg-opacity-25 border-${teamColor} flex h-7 w-fit items-center gap-2 rounded-full px-2`}
+    >
+      <div
+        className={`h-2.5 w-2.5 rounded-full text-sm font-medium bg-${teamColor}`}
+      ></div>
       {team.name}
     </div>
-    <div className="flex h-96 gap-2 mt-6">
+    <div className="mt-6 flex h-96 gap-2">
       {team.heroes_selected.map((hero: Hero, index: Key | null | undefined) => (
         <HeroDisplay key={index} hero={hero} />
       ))}
@@ -49,7 +68,7 @@ export const FinishView = () => {
   if (!redTeam || !blueTeam) return null;
 
   return (
-    <div className="flex mt-24 flex-col items-center justify-center gap-12">
+    <div className="mt-24 flex flex-col items-center justify-center gap-12">
       <motion.div
         initial={{ y: '-10px', opacity: 0 }}
         animate={{ y: '0px', opacity: 1 }}
@@ -64,7 +83,7 @@ export const FinishView = () => {
           animate={{ opacity: 1 }}
           transition={defaultTransition}
         >
-        <TeamDisplay team={blueTeam} teamColor="blue" position='start' />
+          <TeamDisplay team={blueTeam} teamColor="blue" position="start" />
         </motion.div>
 
         <motion.div
@@ -80,7 +99,7 @@ export const FinishView = () => {
           animate={{ opacity: 1 }}
           transition={defaultTransition}
         >
-        <TeamDisplay team={redTeam} teamColor="red" position='end' />
+          <TeamDisplay team={redTeam} teamColor="red" position="end" />
         </motion.div>
       </div>
     </div>

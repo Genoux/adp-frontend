@@ -12,8 +12,6 @@ import { SetStateAction, useEffect, useState } from 'react';
 //import useEnsureContext from '@/app/hooks/useEnsureContext';
 import { Json } from '../types/supabase';
 
-
-
 interface Team {
   [key: string]: any;
 }
@@ -29,8 +27,6 @@ interface BlueTeam {
 interface RedTeam {
   [key: string]: any;
 }
-
-
 
 const TeamView = () => {
   const [selectedChampion, setSelectedChampion] = useState<string>('');
@@ -65,7 +61,31 @@ const TeamView = () => {
     }
   }, [team?.nb_turn, setCanSelect]);
 
-  const updateCurrentImages = (team: { clicked_hero: string | null; color: string; connected: boolean | null; created_at: string | null; heroes_ban: Json; heroes_selected: Json; id: number; isturn: boolean | null; name: string; nb_turn: number | null; ready: boolean | null; room: number; selected_hero: string | null; socketid: Json; } | undefined, setCurrentImage: { (value: SetStateAction<string | null>): void; (value: SetStateAction<string | null>): void; (arg0: string): void; }) => {
+  const updateCurrentImages = (
+    team:
+      | {
+          clicked_hero: string | null;
+          color: string;
+          connected: boolean | null;
+          created_at: string | null;
+          heroes_ban: Json;
+          heroes_selected: Json;
+          id: number;
+          isturn: boolean | null;
+          name: string;
+          nb_turn: number | null;
+          ready: boolean | null;
+          room: number;
+          selected_hero: string | null;
+          socketid: Json;
+        }
+      | undefined,
+    setCurrentImage: {
+      (value: SetStateAction<string | null>): void;
+      (value: SetStateAction<string | null>): void;
+      (arg0: string): void;
+    }
+  ) => {
     if (team?.clicked_hero) {
       setCurrentImage(team.clicked_hero);
     } else {
@@ -83,14 +103,19 @@ const TeamView = () => {
     setSelectedChampion(team?.clicked_hero || '');
   }, [team]);
 
-  const handleClickedHero = async (hero: { name: string | null; }) => {
+  const handleClickedHero = async (hero: { name: string | null }) => {
     if (!team || hero.name === team.clicked_hero) return;
-    await supabase.from('teams').update({ clicked_hero: hero.name }).eq('id', team.id);
+    await supabase
+      .from('teams')
+      .update({ clicked_hero: hero.name })
+      .eq('id', team.id);
   };
 
   const isBanPhase = room?.status === 'ban';
-  const widthVariants = { notTurn: { width: '6px' }, isTurn: { width: '125px' } };
-
+  const widthVariants = {
+    notTurn: { width: '6px' },
+    isTurn: { width: '125px' },
+  };
 
   if (!team || !currentTeam || isLoading) {
     return <div>{isLoading ? 'Loading...' : 'Team not found'}</div>;
@@ -100,18 +125,24 @@ const TeamView = () => {
     <>
       {isBanPhase && <BanPhaseOverlay />}
 
-      <MainContent team={team} room={room as Room} currentImageBlue={currentImageBlue || ''} currentImageRed={currentImageRed || ''} widthVariants={widthVariants} blueTeam={blueTeam as BlueTeam} redTeam={redTeam as RedTeam} />
+      <MainContent
+        team={team}
+        room={room as Room}
+        currentImageBlue={currentImageBlue || ''}
+        currentImageRed={currentImageRed || ''}
+        widthVariants={widthVariants}
+        blueTeam={blueTeam as BlueTeam}
+        redTeam={redTeam as RedTeam}
+      />
 
-      <ChampionsPoolComponent {...{ team, selectedChampion, canSelect, handleClickedHero }} />
+      <ChampionsPoolComponent
+        {...{ team, selectedChampion, canSelect, handleClickedHero }}
+      />
     </>
   );
-
-
 };
 
 export default TeamView;
-
-
 
 const BanPhaseOverlay = () => (
   <motion.div
@@ -123,8 +154,17 @@ const BanPhaseOverlay = () => (
   ></motion.div>
 );
 
-
-const ChampionsPoolComponent = ({ team, selectedChampion, canSelect, handleClickedHero }: { team: Team, selectedChampion: string, canSelect: boolean, handleClickedHero: (hero: { name: string | null }) => void }) => {
+const ChampionsPoolComponent = ({
+  team,
+  selectedChampion,
+  canSelect,
+  handleClickedHero,
+}: {
+  team: Team;
+  selectedChampion: string;
+  canSelect: boolean;
+  handleClickedHero: (hero: { name: string | null }) => void;
+}) => {
   return (
     <motion.div
       initial={{ y: '70px' }}
@@ -141,7 +181,6 @@ const ChampionsPoolComponent = ({ team, selectedChampion, canSelect, handleClick
   );
 };
 
-
 const MainContent = ({
   currentImageBlue,
   currentImageRed,
@@ -149,7 +188,7 @@ const MainContent = ({
   team,
   blueTeam,
   redTeam,
-  room
+  room,
 }: {
   currentImageBlue: string | null;
   currentImageRed: string | null;
@@ -159,15 +198,22 @@ const MainContent = ({
   redTeam: RedTeam;
   room: Room;
 }) => {
-
   return (
     <>
       <AnimatePresence>
         {currentImageBlue && (
-          <ImageComponent key={currentImageBlue} image={currentImageBlue} position="left" />
+          <ImageComponent
+            key={currentImageBlue}
+            image={currentImageBlue}
+            position="left"
+          />
         )}
         {currentImageRed && (
-          <ImageComponent key={currentImageRed} image={currentImageRed} position="right" />
+          <ImageComponent
+            key={currentImageRed}
+            image={currentImageRed}
+            position="right"
+          />
         )}
       </AnimatePresence>
       <GameStatusBar
@@ -181,31 +227,46 @@ const MainContent = ({
   );
 };
 
-const ImageComponent = ({ image, position }: { image: string; position: string}) => (
+const ImageComponent = ({
+  image,
+  position,
+}: {
+  image: string;
+  position: string;
+}) => (
   <motion.div
-    className={`absolute top-0 -z-10 h-full w-3/12 ${position === 'left' ? 'left-0' : 'right-0'}`}
+    className={`absolute top-0 -z-10 h-full w-3/12 ${
+      position === 'left' ? 'left-0' : 'right-0'
+    }`}
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
-    exit={{ opacity: 0, transition: { duration: .2 } }}
+    exit={{ opacity: 0, transition: { duration: 0.2 } }}
   >
     <NextImage
-      src={`/images/champions/splash/${image.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
+      src={`/images/champions/splash/${image
+        .toLowerCase()
+        .replace(/\s+/g, '')
+        .replace(/[\W_]+/g, '')}.jpg`}
       width={960}
       height={360}
       priority
       quality={100}
-      className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+      className={`h-full w-full object-cover object-center opacity-50 ${
+        position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'
+      }`}
       alt={image}
     />
   </motion.div>
 );
 
-const getStatusText = (color: string, room: { status: string; }) => {
+const getStatusText = (color: string, room: { status: string }) => {
   const isBanPhase = room?.status === 'ban';
   const teamName = color.charAt(0).toUpperCase() + color.slice(1);
   const toFrench = teamName === 'Blue' ? 'Bleue' : 'Rouge';
   if (color) {
-    return isBanPhase ? `C'est à vous de bannir, vous êtes l'équipe ${toFrench}` : `C'est à vous de choisir, vous êtes l'équipe ${toFrench}`;
+    return isBanPhase
+      ? `C'est à vous de bannir, vous êtes l'équipe ${toFrench}`
+      : `C'est à vous de choisir, vous êtes l'équipe ${toFrench}`;
   }
   return '';
 };

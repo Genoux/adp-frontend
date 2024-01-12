@@ -1,6 +1,6 @@
-import "./globals.css";
-import { GeistSans } from "geist/font/sans";
-import { ThemeProvider } from "@/app/components/ui/theme-provider";
+import './globals.css';
+import { ThemeProvider } from '@/app/components/ui/theme-provider';
+import { GeistSans } from 'geist/font/sans';
 
 export const metadata = {
   title: 'HAQ - Aram draft pick',
@@ -28,7 +28,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={`${GeistSans.className} mx-auto h-full px-6 min-w-[1024px] max-w-[1440px]`}>
+      <body
+        className={`${GeistSans.className} mx-auto h-full min-w-[1024px] max-w-[1440px] px-6`}
+      >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
         </ThemeProvider>

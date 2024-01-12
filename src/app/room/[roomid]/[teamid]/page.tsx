@@ -2,6 +2,7 @@
 
 import ErrorMessage from '@/app/components/common/ErrorMessage';
 import LoadingCircle from '@/app/components/common/LoadingCircle';
+import NoticeBanner from '@/app/components/common/NoticeBanner';
 import StateControllerButtons from '@/app/components/common/StateControllerButtons';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
@@ -15,7 +16,6 @@ import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect } from 'react';
-import NoticeBanner from '@/app/components/common/NoticeBanner';
 
 interface RoomProps {
   params: {
@@ -68,24 +68,24 @@ export default function Room({ params }: RoomProps) {
     room.cycle !== 0 && room.cycle !== -1 && room.status !== 'done';
 
   return (
-    <main className="flex flex-col items-center justify-start h-full">
+    <main className="flex h-full flex-col items-center justify-start">
       <StateControllerButtons roomid={room.id as any} />
       <AnimatePresence mode="wait">
         <SocketContext.Provider value={socket}>
           {isLobbyView ? (
-            <section className="h-full flex flex-col justify-center gap-10">
+            <section className="flex h-full flex-col justify-center gap-10">
               <LobbyView />
             </section>
           ) : isFinishView ? (
             <FinishView />
           ) : (
-            <section className="h-full" id='main'>
-              {isPlanningView &&
-                <div className='flex flex-col gap-2'>
+            <section className="h-full" id="main">
+              {isPlanningView && (
+                <div className="flex flex-col gap-2">
                   <PlanningView />
                   <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
                 </div>
-              }
+              )}
               <CanSelectProvider>
                 {isRoomView && <TeamView />}
                 {isRoomView && <DraftView />}

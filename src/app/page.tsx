@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from "react";
-import LoadingCircle from "@/app/components/common/LoadingCircle";
-import { RoomDisplay } from "./components/RoomDisplay";
-import { RoomCreationForm } from "./components/RoomCreationForm";
-import Link from "next/link";
+import LoadingCircle from '@/app/components/common/LoadingCircle';
+import { defaultTransition } from '@/app/lib/animationConfig';
+import { motion } from 'framer-motion';
 import { default as NextImage } from 'next/image';
-import { defaultTransition } from '@/app/lib/animationConfig'
-import { motion } from "framer-motion";
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
+import { RoomCreationForm } from './components/RoomCreationForm';
+import { RoomDisplay } from './components/RoomDisplay';
 
 interface Room {
   id: number;
@@ -104,46 +104,55 @@ function Home() {
       const yPos = y / height - 0.5;
 
       if (parallaxRef.current) {
-        parallaxRef.current.style.transform = `translate(${xPos * -20.0}px, ${yPos * -20.0}px)`;
+        parallaxRef.current.style.transform = `translate(${xPos * -20.0}px, ${
+          yPos * -20.0
+        }px)`;
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
 
-
   return (
     <>
-      <main className="flex flex-col items-center justify-start gap-16 h-full mb-12">
+      <main className="mb-12 flex h-full flex-col items-center justify-start gap-16">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={defaultTransition}
-          className="text-center justify-end items-end mx-auto flex flex-col mt-12"
+          className="mx-auto mt-12 flex flex-col items-end justify-end text-center"
         >
-          <NextImage src='home-logo.svg' width={368} height={0} alt={"Tournois Haq"} />
+          <NextImage
+            src="home-logo.svg"
+            width={368}
+            height={0}
+            alt={'Tournois Haq'}
+          />
         </motion.div>
         {loading ? (
           // Show loading circle when loading is true
           <div className="flex h-1/2 flex-col items-center justify-center">
             <LoadingCircle />
           </div>
+        ) : room && blueTeam && redTeam ? (
+          <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
         ) : (
-          room && blueTeam && redTeam ? (
-            <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
-          ) : (
-            <RoomCreationForm onCreate={createRoomLogic} />
-          )
+          <RoomCreationForm onCreate={createRoomLogic} />
         )}
-
       </main>
       <footer className="my-6 hidden">
         <div className="flex justify-center gap-24 text-xs">
-          <Link className="hover:underline underline-offset-4" href="https://www.tournoishaq.ca/" target="_blank">Tournoishaq.ca</Link>
+          <Link
+            className="underline-offset-4 hover:underline"
+            href="https://www.tournoishaq.ca/"
+            target="_blank"
+          >
+            Tournoishaq.ca
+          </Link>
           <p>All right reserved © 2023</p>
           <p>Beta v0.3.0</p>
         </div>

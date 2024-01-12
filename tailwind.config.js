@@ -17,11 +17,11 @@ module.exports = {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "var(--background)",
-        foreground: "hsl(var(--foreground))",
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'var(--background)',
+        foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -71,7 +71,7 @@ module.exports = {
         boxShadow: {
           'yellow-glow': '0 0 20px rgba(255, 255, 0, 1)', // Adjust the values as needed
           'yellow-glow-10': '0 0 10px 5px rgba(255, 255, 0, 1)', // Adjust the values as needed
-          'red-glow': '0 0 5px rgba(255, 0, 0, 0)' // Adjust the values as needed
+          'red-glow': '0 0 5px rgba(255, 0, 0, 0)', // Adjust the values as needed
         },
         transitionTimingFunction: {
           main: 'cubic-bezier(0,.45,.54,1)',
