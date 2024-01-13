@@ -16,7 +16,7 @@ import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect } from 'react';
-
+import GameStatusBar from '@/app/components/common/RoomHeader';
 interface RoomProps {
   params: {
     roomid: string;
@@ -81,11 +81,11 @@ export default function Room({ params }: RoomProps) {
           ) : (
             <section className="h-full" id="main">
               {isPlanningView && (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
                   <PlanningView />
                   <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
                 </div>
-              )}
+              )}  
               <CanSelectProvider>
                 {isRoomView && <TeamView />}
                 {isRoomView && <DraftView />}

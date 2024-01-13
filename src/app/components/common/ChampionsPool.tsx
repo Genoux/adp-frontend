@@ -42,9 +42,9 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
   return (
-    <div className="flex flex-col overflow-y-auto px-6 lg:px-24">
-      <div className="absolute left-0 top-10 z-50 hidden h-full w-full bg-gradient-to-t from-black via-transparent to-transparent"></div>
+    <div className="flex flex-col overflow-y-auto px-6 lg:px-24 min-h-[200px] mb-3">
       <div className="grid cursor-pointer grid-cols-10 gap-2">
+
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
             const isActive = hero.name === selectedChampion && team?.isturn;

@@ -47,7 +47,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
     if (!heroId) {
       return {};
     }
-    const lol = {
+    const imageStyle = {
       backgroundImage: `url("/images/champions/splash/${heroId
         .toLowerCase()
         .replace(/\s+/g, '')
@@ -56,7 +56,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
       height: '100%',
       width: '100%',
     };
-    return lol;
+    return imageStyle;
   };
 
   return (

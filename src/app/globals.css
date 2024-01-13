@@ -33,7 +33,7 @@ html {
 
 @layer base {
   :root {
-    --background: #09090b;
+    --background: #09090B; 
     --foreground: 240 10% 3.9%;
 
     --muted: 240 4.8% 95.9%;

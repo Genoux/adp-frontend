@@ -144,19 +144,6 @@ function Home() {
           <RoomCreationForm onCreate={createRoomLogic} />
         )}
       </main>
-      <footer className="my-6 hidden">
-        <div className="flex justify-center gap-24 text-xs">
-          <Link
-            className="underline-offset-4 hover:underline"
-            href="https://www.tournoishaq.ca/"
-            target="_blank"
-          >
-            Tournoishaq.ca
-          </Link>
-          <p>All right reserved © 2023</p>
-          <p>Beta v0.3.0</p>
-        </div>
-      </footer>
     </>
   );
 }

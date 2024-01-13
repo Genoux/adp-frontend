@@ -11,6 +11,7 @@ import { SetStateAction, useEffect, useState } from 'react';
 //import SocketContext from '@/app/context/SocketContext';
 //import useEnsureContext from '@/app/hooks/useEnsureContext';
 import { Json } from '../types/supabase';
+import { delay } from 'lodash';
 
 interface Team {
   [key: string]: any;
@@ -150,7 +151,7 @@ const BanPhaseOverlay = () => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 0.05 }}
     transition={{ delay: 0.2, duration: 1, ease: 'linear' }}
-    className="absolute left-0 top-0 -z-50 h-full w-full bg-red-900 opacity-5"
+    className="fixed left-0 top-0 -z-50 h-full w-full bg-red-900 opacity-50"
   ></motion.div>
 );
 
@@ -167,9 +168,10 @@ const ChampionsPoolComponent = ({
 }) => {
   return (
     <motion.div
-      initial={{ y: '70px' }}
+      initial={{ y: '120px' }}
       animate={{ y: '0px' }}
-      transition={defaultTransition}
+      transition={{defaultTransition}}
+      className='mt-24'
     >
       <ChampionsPool
         team={team as Team}
@@ -235,7 +237,7 @@ const ImageComponent = ({
   position: string;
 }) => (
   <motion.div
-    className={`absolute top-0 -z-10 h-full w-3/12 ${
+    className={`fixed top-0 -z-10 h-full w-3/12 ${
       position === 'left' ? 'left-0' : 'right-0'
     }`}
     initial={{ opacity: 0 }}

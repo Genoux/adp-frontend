@@ -3,7 +3,7 @@ import { defaultTransition } from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Key } from 'react';
-
+import TeamName from '@/app/components/common/TeamName'
 interface Hero {
   name: string;
   id: string;
@@ -16,7 +16,7 @@ interface Team {
 
 const HeroDisplay = ({ hero }: { hero: Hero }) => (
   <div className="relative h-full overflow-hidden rounded">
-    <h1 className="over absolute left-0 top-0 flex h-full w-full items-end justify-center bg-black bg-opacity-20 bg-gradient-to-t from-[#000000f5] via-transparent pb-12 text-center">
+    <h1 className="absolute left-0 top-0 flex h-full w-full items-end justify-center bg-black bg-opacity-20 bg-gradient-to-t from-[#000000f5] via-transparent pb-12 text-center">
       {hero.name}
     </h1>
     <Image
@@ -26,9 +26,9 @@ const HeroDisplay = ({ hero }: { hero: Hero }) => (
       src={
         hero.id
           ? `/images/champions/splash/${hero.id
-              .toLowerCase()
-              .replace(/\s+/g, '')
-              .replace(/[\W_]+/g, '')}.jpg`
+            .toLowerCase()
+            .replace(/\s+/g, '')
+            .replace(/[\W_]+/g, '')}.jpg`
           : ''
       }
       alt={''}
@@ -46,14 +46,7 @@ const TeamDisplay = ({
   position: string;
 }) => (
   <div className={`flex flex-col items-${position}`}>
-    <div
-      className={`bg-${teamColor}-500 border bg-opacity-25 border-${teamColor} flex h-7 w-fit items-center gap-2 rounded-full px-2`}
-    >
-      <div
-        className={`h-2.5 w-2.5 rounded-full text-sm font-medium bg-${teamColor}`}
-      ></div>
-      {team.name}
-    </div>
+    <TeamName name={team.name} color={team.color} />
     <div className="mt-6 flex h-96 gap-2">
       {team.heroes_selected.map((hero: Hero, index: Key | null | undefined) => (
         <HeroDisplay key={index} hero={hero} />
@@ -68,41 +61,33 @@ export const FinishView = () => {
   if (!redTeam || !blueTeam) return null;
 
   return (
-    <div className="mt-24 flex flex-col items-center justify-center gap-12">
+    <motion.div
+    initial={{ y: -10, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    transition={{defaultTransition, delay: .5}}
+      className="mt-10 px-24 flex flex-col items-center justify-center gap-6">
       <motion.div
-        initial={{ y: '-10px', opacity: 0 }}
-        animate={{ y: '0px', opacity: 1 }}
-        transition={defaultTransition}
         className="text-center"
       >
         <h1 className="text-4xl font-bold">{'Draft terminé'}</h1>
       </motion.div>
       <div className="flex w-full items-center gap-6">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={defaultTransition}
         >
           <TeamDisplay team={blueTeam} teamColor="blue" position="start" />
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={defaultTransition}
         >
           <p className="text-lg font-bold">VS</p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={defaultTransition}
         >
           <TeamDisplay team={redTeam} teamColor="red" position="end" />
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
