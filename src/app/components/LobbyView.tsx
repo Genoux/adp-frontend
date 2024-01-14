@@ -1,5 +1,3 @@
-'use client';
-
 import TeamStatus from '@/app/components/common/TeamStatus';
 import { Button } from '@/app/components/ui/button';
 import SocketContext from '@/app/context/SocketContext';
@@ -8,6 +6,8 @@ import useTeams from '@/app/hooks/useTeams';
 import supabase from '@/app/services/supabase';
 import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import { defaultTransition } from '../lib/animationConfig';
 
 interface Team {
   [key: string]: any;
@@ -19,16 +19,17 @@ interface TeamDisplayProps {
 }
 
 const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
-
   const color = team.color === 'blue' ? 'bleue' : 'rouge';
   const text = team.color === 'blue' ? 'text-blue' : 'text-red';
 
   return (
-    <div className='flex w-full justify-between items-center border rounded-md bg-[#0a0a0c] h-16 p-4'>
+    <div className="flex h-16 w-full items-center justify-between rounded-md border bg-[#0a0a0c] p-4">
       <div>
         <h1>{team.name}</h1>
         {currentTeam.name === team.name && (
-          <p className={clsx(`${text} text-xs`)}>{`Vous êtes l'équipe ${color}`}</p>
+          <p
+            className={clsx(`${text} text-xs`)}
+          >{`Vous êtes l'équipe ${color}`}</p>
         )}
       </div>
       <div>
@@ -36,8 +37,7 @@ const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
       </div>
     </div>
   );
-}
-
+};
 
 const ReadyView = () => {
   const socket = useEnsureContext(SocketContext);
@@ -61,8 +61,8 @@ const ReadyView = () => {
     const { data, error } = await supabase
       .from('teams')
       .update({ ready: true })
+      .eq('id', currentTeam.id)
       .select('*, room(*)')
-      .eq('id', currentTeam?.id)
       .single();
 
     if (data && !error) {
@@ -71,20 +71,25 @@ const ReadyView = () => {
   };
 
   return (
-    <>
-      <div className="text-center border-b border-opacity-25 pb-4">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ defaultTransition, delay: 0.25, duration: 0.25 }}
+    >
+      <div className="border-b border-opacity-25 pb-4 text-center">
         <h1 className="text-2xl font-bold">Salle d’attente</h1>
-        <p className="text-sm font-normal opacity-50">{"En attente que les deux équipes soient prêtes"}</p>
+        <p className="text-sm font-normal opacity-50">
+          {'En attente que les deux équipes soient prêtes'}
+        </p>
       </div>
-
-      <div className='flex flex-col gap-4 w-full mb-12'>
+      <div className="mb-12 flex w-full flex-col gap-4">
         <TeamDisplay team={blueTeam} currentTeam={currentTeam} />
         <TeamDisplay team={redTeam} currentTeam={currentTeam} />
       </div>
 
-      <div className='h-12 flex items-center justify-center'>
+      <div className="flex h-12 items-center justify-center">
         {currentTeam.ready ? (
-          <div className='w-full text-center'>
+          <div className="w-full text-center">
             <span className="pr-0.5 text-base">{`En attende de ${otherTeam.name}`}</span>
             <div className="sending-animation">
               <span className="sending-animation-dot">.</span>
@@ -93,16 +98,12 @@ const ReadyView = () => {
             </div>
           </div>
         ) : (
-          <Button
-            size="lg"
-            className='w-full'
-            onClick={handleReadyClick}
-          >
+          <Button size="lg" className="w-full" onClick={handleReadyClick}>
             {'Confirmer prêt'}
           </Button>
         )}
       </div>
-    </>
+    </motion.div>
   );
 };
 

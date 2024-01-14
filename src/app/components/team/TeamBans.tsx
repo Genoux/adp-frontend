@@ -1,6 +1,7 @@
-import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from '@/app/stores/roomStore';
-import { motion } from 'framer-motion';
+import clsx from 'clsx';
+import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface Team {
@@ -14,109 +15,171 @@ interface Hero {
   selected: boolean;
 }
 
-const TeamBans = ({ team }: Team) => {
-  const heightVariants = {
-    collapsed: { height: '0px', opacity: 0 },
-    expanded: { height: '80px', opacity: 1 },
-  };
-
-  const { room } = roomStore((state) => ({
-    room: state.room,
-    error: state.error,
-    isLoading: state.isLoading,
-  }));
-
+const TeamBans: React.FC<Team> = ({ team }) => {
+  const { room } = roomStore((state) => state);
+  const isDone = room?.status === 'done';
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (team.isturn && room?.status === 'ban') {
-      const firstUnselectedHeroIndex = (
-        team.heroes_ban as unknown as Hero[]
-      ).findIndex((hero) => !hero.selected);
-      setBorderIndex(firstUnselectedHeroIndex);
+    const shouldSetBorder =
+      team.isturn && room?.status === 'ban' && team.nb_turn > 0;
+
+    if (shouldSetBorder) {
+      const timer = setTimeout(() => {
+        setBorderIndex(
+          team.heroes_ban.findIndex((hero: Hero) => !hero.selected)
+        );
+      }, 1000);
+
+      return () => clearTimeout(timer);
     } else {
-      setBorderIndex(null); // Remove the border when it's not the team's turn
+      setBorderIndex(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [team.isturn]);
+  }, [team, room]);
+
+  useEffect(() => {
+    if (!team.clicked_hero) {
+      setBorderIndex(null);
+    }
+  }, [team.clicked_hero]);
+
+  const getHeroImageStyle = (heroId: string) => {
+    if (!heroId) {
+      return {};
+    }
+    const imageStyle = {
+      backgroundImage: `url("/images/champions/splash/${heroId
+        .toLowerCase()
+        .replace(/\s+/g, '')
+        .replace(/[\W_]+/g, '')}.jpg")`,
+      backgroundSize: 'cover',
+      height: '100%',
+      width: '100%',
+    };
+    return imageStyle;
+  };
 
   return (
-    <>
-      <motion.div
-        initial="collapsed"
-        animate="expanded"
-        transition={defaultTransition}
-        variants={heightVariants}
-        className="flex w-full gap-2 overflow-hidden"
-      >
-        {(team.heroes_ban as unknown as Hero[]).map(
-          (hero: Hero, index: number) => (
-            <div
-              key={index}
-              className={`relative h-full w-full overflow-hidden rounded transition-all ${hero.selected && 'bg-[#161620] bg-opacity-60'
-                } ${!team.isturn && 'opacity-50'} ${index === borderIndex && !hero.selected
-                  ? 'animate-pulse border border-red-600 border-opacity-70 bg-red-500 bg-opacity-20 ease-in-out'
-                  : 'bg-[#161620]'
-                }`}
-            >
-              {hero && hero.selected ? (
-                hero.name === null ? (
-                  <div className="flex h-full items-center justify-center">
-                    <svg
-                      width="33"
-                      height="32"
-                      viewBox="0 0 33 32"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M32.2811 3.52929C33.0886 2.72192 33.0886 1.4129 32.2811 0.605529C31.4739 -0.201843 30.1647 -0.201843 29.3576 0.605529L16.8867 13.0763L4.41604 0.605529C3.60863 -0.201843 2.29962 -0.201843 1.49225 0.605529C0.684876 1.4129 0.684876 2.72192 1.49225 3.52929L13.963 16L1.49225 28.4707C0.684876 29.2783 0.684876 30.5871 1.49225 31.3946C2.29962 32.2018 3.60863 32.2018 4.41604 31.3946L16.8867 18.9238L29.3576 31.3946C30.1647 32.2018 31.4739 32.2018 32.2811 31.3946C33.0886 30.5871 33.0886 29.2783 32.2811 28.4707L19.8105 16L32.2811 3.52929Z"
-                        fill="#302F3D"
-                      />
-                    </svg>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="absolute left-0 top-0 z-50 h-full w-full bg-gradient-to-t from-[#000000ad] to-transparent"></div>
+    <motion.div
+      className={`flex h-full w-full gap-2 ${
+        team.isturn || isDone ? 'opacity-100' : 'opacity-60'
+      }`}
+    >
+      {Array.from({ length: 3 }).map((_, index) => {
+        const hero = team.heroes_ban[index];
+        const isClickedHeroSlot = index === borderIndex && team.clicked_hero;
+        const isBorderSlot = index === borderIndex;
+        const isEmptySlot = !isClickedHeroSlot && !hero.id;
 
+        const slotClassName = clsx(
+          'h-24 w-full rounded-md overflow-hidden relative',
+          isEmptySlot
+            ? 'border border-white bg-neutral-900 bg-opacity-30 border-opacity-5'
+            : 'border border-white border-opacity-0'
+        );
+
+        return (
+          <div key={index} className="relative h-24 w-full ">
+            {isBorderSlot && (
+              <AnimatePresence>
+                <motion.div
+                  key="border" // Key is static, but the presence of this div is controlled by isBorderSlot
+                  initial={{ opacity: 0, zIndex: 50 }} // Starts from fully transparent
+                  animate={{ opacity: 1 }} // Fades to fully opaque
+                  exit={{ opacity: 0, transition: { duration: 1 } }} // 2 seconds fade out
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    repeatType: 'reverse',
+                  }}
+                  className="absolute left-0 top-0 z-50 h-24 w-full rounded-md border border-red-600 bg-red-600 bg-opacity-40"
+                ></motion.div>
+              </AnimatePresence>
+            )}
+            <div className={slotClassName}>
+              <AnimatePresence>
+                {isClickedHeroSlot && (
+                  <>
                     <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
+                      key="clicked_hero"
+                      initial={{ opacity: 0, scale: 1.3, zIndex: 1 }}
+                      animate={{ opacity: 1, scale: 1.3 }}
+                      exit={{
+                        opacity: 1,
+                        scale: 1.3,
+                        transition: { duration: 0.25 },
+                      }}
+                      className="absolute left-0 top-0 h-full w-full bg-cover bg-center"
+                      style={getHeroImageStyle(team.clicked_hero)}
+                    />
+                    <AnimatePresence>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{
+                          opacity: 0,
+                          transition: { duration: 0.25 },
+                        }}
+                        className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center  bg-gradient-to-t from-black to-transparent"
+                      >
+                        <p className="text-sm">{team.clicked_hero}</p>
+                      </motion.div>
+                      à
+                    </AnimatePresence>
+                  </>
+                )}
+
+                {'id' in hero && hero.selected ? (
+                  <>
+                    {/* Content to show when 'id' is in hero and hero.selected is true */}
+                    <motion.div
+                      key="hero"
+                      initial={{ opacity: 1, scale: 1.3, zIndex: 2 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{
+                        opacity: 0,
+                        scale: 1,
+                        transition: { delay: 0.3, duration: 0.25 },
+                      }}
                       transition={{
-                        delay: 0.1,
+                        delay: 0.15,
                         duration: 0.5,
-                        ease: 'easeInOut',
+                        ease: [1, -0.6, 0.3, 1.2],
                       }}
-                      className="absolute z-50 flex h-full w-full items-center justify-center font-medium"
-                    >
-                      {hero.name}
-                    </motion.div>
+                      className="absolute left-0 top-0 h-full w-full overflow-hidden bg-cover bg-center grayscale"
+                      style={getHeroImageStyle(hero.id)}
+                    />
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{
-                        delay: 0.1,
-                        duration: 0.2,
-                        ease: 'easeInOut',
+                        delay: 0,
+                        duration: 0.8,
+                        ease: [1, -0.6, 0.3, 1.2],
                       }}
-                      className="absolute left-0 top-0 h-full w-full bg-cover bg-center grayscale "
-                      style={{
-                        backgroundImage: `url("/images/champions/splash/${hero.id
-                          .toLowerCase()
-                          .replace(/\s+/g, '')
-                          .replace(/[\W_]+/g, '')}.jpg")`,
-                      }}
-                    ></motion.div>
+                      className="absolute z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-black to-transparent"
+                    >
+                      <motion.div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center">
+                        <p className="text-sm">{hero.name}</p>
+                      </motion.div>
+                    </motion.div>
+                  </>
+                ) : hero.selected ? (
+                  <div className="flex h-full items-center justify-center">
+                    <Image
+                      src={`/images/x.svg`}
+                      alt={hero.name}
+                      width={32}
+                      height={32}
+                    />
                   </div>
-                )
-              ) : null}
+                ) : null}
+              </AnimatePresence>
             </div>
-          )
-        )}
-      </motion.div>
-    </>
+          </div>
+        );
+      })}
+    </motion.div>
   );
 };
 

@@ -11,11 +11,12 @@ const RoomInfo = () => {
   return (
     <>
       <motion.div
-        initial={{ opacity: 0.5 }} // start at half the size
-        animate={{ opacity: 1 }} // animate to full size
-        transition={defaultTransition}
+        initial={{ opacity: 0, y: 50 }} // start at half the size
+        animate={{ opacity: 1, y: 0 }} // animate to full size
+        transition={{ duration: 0.25, defaultTransition, delay: 0.25 }}
+        className="px-6"
       >
-        <div className="mt-6 flex h-full flex-col justify-evenly gap-4 rounded-md border border-[#8f8f8f] border-opacity-5 bg-[#0f0f0f3f] px-5 pb-5 pt-5">
+        <div className="mb-4 flex h-full flex-col justify-evenly gap-4 rounded-md border border-[#8f8f8f] border-opacity-5 bg-neutral-950 bg-opacity-40 px-5 pb-5 pt-5">
           <div className="grid w-full grid-cols-3 items-center">
             <TeamBans team={blueTeam} />
             <ConfirmButton />
