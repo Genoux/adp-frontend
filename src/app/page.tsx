@@ -4,8 +4,8 @@ import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import { default as NextImage } from 'next/image';
-import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import useNextBlurhash from 'use-next-blurhash';
 import { RoomCreationForm } from './components/RoomCreationForm';
 import { RoomDisplay } from './components/RoomDisplay';
 
@@ -43,6 +43,9 @@ function Home() {
   const [redTeam, setRedTeam] = useState<Team | null>(null);
   const [blueTeam, setBlueTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const [blurDataUrl] = useNextBlurhash('L59?XaFx57}9_LS#D*nN1Oxsr=59');
+  console.log(blurDataUrl);
 
   const mapToBlueTeamStructure = (blueTeam: BlueTeam): Team => ({
     ...blueTeam,

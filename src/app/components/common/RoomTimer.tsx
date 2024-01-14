@@ -21,7 +21,6 @@ const Timer: React.FC<TimerProps> = ({ className, size = 'medium' }) => {
     large: 'text-5xl', // example size, adjust as needed
   };
 
-
   useEffect(() => {
     socket?.on('TIMER', handleSocketEvents);
 
@@ -32,7 +31,9 @@ const Timer: React.FC<TimerProps> = ({ className, size = 'medium' }) => {
 
   return (
     <div className={className}>
-      <h1 className={`${fontSize[size]} mx-auto w-fit font-bold`}>{timer || '00:00'}</h1>
+      <h1 className={`${fontSize[size]} mx-auto w-fit font-bold`}>
+        {timer || '00:00'}
+      </h1>
     </div>
   );
 };

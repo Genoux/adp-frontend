@@ -1,9 +1,10 @@
+import TeamName from '@/app/components/common/TeamName';
 import useTeams from '@/app/hooks/useTeams';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Key } from 'react';
-import TeamName from '@/app/components/common/TeamName'
+
 interface Hero {
   name: string;
   id: string;
@@ -26,9 +27,9 @@ const HeroDisplay = ({ hero }: { hero: Hero }) => (
       src={
         hero.id
           ? `/images/champions/splash/${hero.id
-            .toLowerCase()
-            .replace(/\s+/g, '')
-            .replace(/[\W_]+/g, '')}.jpg`
+              .toLowerCase()
+              .replace(/\s+/g, '')
+              .replace(/[\W_]+/g, '')}.jpg`
           : ''
       }
       alt={''}
@@ -38,7 +39,6 @@ const HeroDisplay = ({ hero }: { hero: Hero }) => (
 
 const TeamDisplay = ({
   team,
-  teamColor,
   position,
 }: {
   team: Team;
@@ -62,28 +62,24 @@ export const FinishView = () => {
 
   return (
     <motion.div
-    initial={{ y: -10, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{defaultTransition, delay: .5}}
-      className="mt-10 px-24 flex flex-col items-center justify-center gap-6">
-      <motion.div
-        className="text-center"
-      >
+      initial={{ y: -10, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ defaultTransition, delay: 0.5 }}
+      className="mt-10 flex flex-col items-center justify-center gap-6 px-24"
+    >
+      <motion.div className="text-center">
         <h1 className="text-4xl font-bold">{'Draft terminé'}</h1>
       </motion.div>
       <div className="flex w-full items-center gap-6">
-        <motion.div
-        >
+        <motion.div>
           <TeamDisplay team={blueTeam} teamColor="blue" position="start" />
         </motion.div>
 
-        <motion.div
-        >
+        <motion.div>
           <p className="text-lg font-bold">VS</p>
         </motion.div>
 
-        <motion.div
-        >
+        <motion.div>
           <TeamDisplay team={redTeam} teamColor="red" position="end" />
         </motion.div>
       </div>

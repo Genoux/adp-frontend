@@ -1,5 +1,6 @@
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
+import { defaultTransition } from '@/app/lib/animationConfig';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
@@ -116,7 +117,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
         animate={{ opacity: 1 }}
         transition={{
           duration: 0.2,
-          ease: [0.585, 0.535, 0.23, 0.85],
+          defaultTransition,
         }}
         className="flex w-full flex-col gap-6"
       >

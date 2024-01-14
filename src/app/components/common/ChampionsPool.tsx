@@ -1,3 +1,6 @@
+import ImageHash from '@/app/components/common/ImageHash';
+import { useBlurHash } from '@/app/context/BlurHashContext';
+import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -15,6 +18,9 @@ interface Team {
   [key: string]: any;
 }
 
+interface BlurHashes {
+  [key: string]: string;
+}
 interface HeroPoolProps {
   team?: Team;
   selectedChampion?: string;
@@ -39,18 +45,30 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
     setHoveredHero(null);
   };
 
+  const blurHashes: BlurHashes = useBlurHash();
+
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
   return (
-    <div className="flex flex-col overflow-y-auto px-6 lg:px-24 min-h-[200px] mb-3">
+    <motion.div
+      initial={{ opacity: 0, y: 0 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ defaultTransition, delay: 0.25, duration: 0.25 }}
+      className="mb-3 flex min-h-[200px] flex-col overflow-y-auto px-6 lg:px-24"
+    >
       <div className="grid cursor-pointer grid-cols-10 gap-2">
-
         {(room.heroes_pool as unknown as Hero[]).map(
           (hero: Hero, index: number) => {
             const isActive = hero.name === selectedChampion && team?.isturn;
             const isturnAvailable = team ? team.isturn : true;
             const shouldFade = hero.selected || (team && !isturnAvailable);
             const activeState = isActive || hoveredHero === hero.name;
+            const imageName = `${hero.id
+              .toLowerCase()
+              .replace(/\s+/g, '')
+              .replace(/[\W_]+/g, '')}.jpg`;
+            const blurHash = blurHashes[imageName];
+
             return (
               <motion.div
                 initial={{ opacity: 1 }}
@@ -75,22 +93,33 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                 onClick={canSelect ? () => handleClickedHero(hero) : undefined}
               >
                 <motion.div className="relative z-10 overflow-hidden rounded-lg transition-all">
-                  <Image
+                  <ImageHash
+                    alt={hero.name}
+                    blurhash={blurHash}
+                    width={200}
+                    height={200}
+                    quality={80}
+                    src={`/images/champions/tiles/${hero.id
+                      .toLowerCase()
+                      .replace(/\s+/g, '')
+                      .replace(/[\W_]+/g, '')}.jpg`}
+                  />
+                  {/* <Image
                     priority
+                    className='hidden'
                     src={`/images/champions/tiles/${hero.id
                       .toLowerCase()
                       .replace(/\s+/g, '')
                       .replace(/[\W_]+/g, '')}.jpg`}
                     alt={hero.name}
-                    sizes="100vw"
                     width={500}
                     height={500}
-                  />
+                  /> */}
 
                   <div className="my-auto flex items-center justify-center overflow-hidden">
                     <AnimatePresence>
                       <motion.div
-                        transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }}
+                        transition={{ duration: 0.2, defaultTransition }}
                         whileHover={
                           hero.name !== selectedChampion || !canSelect
                             ? {
@@ -140,7 +169,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                         exit={{ opacity: 0 }}
                         transition={{
                           duration: 0.2,
-                          ease: [0.4, 0.0, 0.2, 1],
+                          defaultTransition,
                         }}
                         className={`bg- absolute top-0 z-40 flex h-full items-center text-center text-sm font-bold text-white`}
                       >
@@ -188,7 +217,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
           }
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

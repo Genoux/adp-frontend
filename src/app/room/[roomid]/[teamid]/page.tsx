@@ -9,6 +9,7 @@ import FinishView from '@/app/components/FinishView';
 import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
 import TeamView from '@/app/components/TeamView';
+import { BlurHashProvider } from '@/app/context/BlurHashContext';
 import { CanSelectProvider } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
@@ -16,7 +17,7 @@ import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect } from 'react';
-import GameStatusBar from '@/app/components/common/RoomHeader';
+
 interface RoomProps {
   params: {
     roomid: string;
@@ -72,26 +73,28 @@ export default function Room({ params }: RoomProps) {
       <StateControllerButtons roomid={room.id as any} />
       <AnimatePresence mode="wait">
         <SocketContext.Provider value={socket}>
-          {isLobbyView ? (
-            <section className="flex h-full flex-col justify-center gap-10">
-              <LobbyView />
-            </section>
-          ) : isFinishView ? (
-            <FinishView />
-          ) : (
-            <section className="h-full" id="main">
-              {isPlanningView && (
-                <div className="flex flex-col">
-                  <PlanningView />
-                  <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
-                </div>
-              )}  
-              <CanSelectProvider>
-                {isRoomView && <TeamView />}
-                {isRoomView && <DraftView />}
-              </CanSelectProvider>
-            </section>
-          )}
+          <BlurHashProvider>
+            {isLobbyView ? (
+              <section className="flex h-full flex-col justify-center gap-10">
+                <LobbyView />
+              </section>
+            ) : isFinishView ? (
+              <FinishView />
+            ) : (
+              <section className="h-full" id="main">
+                {isPlanningView && (
+                  <div className="flex flex-col">
+                    <PlanningView />
+                    <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
+                  </div>
+                )}
+                <CanSelectProvider>
+                  {isRoomView && <TeamView />}
+                  {isRoomView && <DraftView />}
+                </CanSelectProvider>
+              </section>
+            )}
+          </BlurHashProvider>
         </SocketContext.Provider>
       </AnimatePresence>
     </main>

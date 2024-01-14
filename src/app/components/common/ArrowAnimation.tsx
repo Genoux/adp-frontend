@@ -1,6 +1,5 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { defaultTransition } from '@/app/lib/animationConfig';
 
 interface ArrowAnimationProps {
   roomStatus: 'ban' | 'select' | string | null | undefined;
@@ -17,9 +16,7 @@ const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
   const arrows = [0, 1, 2];
 
   useEffect(() => {
-    console.log('roomStatus', roomStatus);
     const time = roomStatus === 'ban' ? 0 : 1000;
-    console.log('time', time);
     // First hide the current state
     setVisibleRoomStatus(null);
 
@@ -40,8 +37,8 @@ const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
   const textColor = visibleRoomStatus === 'ban' ? 'text-red' : 'text-yellow';
 
   const arrowTransform = orientation === 'left' ? 'scaleX(-1)' : 'scaleX(1)';
-  const flexDirection = orientation === 'left' ? 'flex-row-reverse' : 'flex-row';
-
+  const flexDirection =
+    orientation === 'left' ? 'flex-row-reverse' : 'flex-row';
 
   return (
     <AnimatePresence>
@@ -50,7 +47,9 @@ const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0 }}
       >
-        <div className={`flex items-center justify-center gap-2 rounded border-opacity-20 px-3 py-1 transition-all delay-1000 ${flexDirection}`}>
+        <div
+          className={`flex items-center justify-center gap-2 rounded border-opacity-20 px-3 py-1 transition-all delay-1000 ${flexDirection}`}
+        >
           <div className="flex space-x-0.5">
             {arrows.map((i) => (
               <motion.div
@@ -83,20 +82,20 @@ const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
             ))}
           </div>
           <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{
-              duration: 1.2,
-              ease: 'easeInOut',
-              repeat: Infinity,
-              repeatType: 'reverse',
-            }}
-            className={`text-md font-medium uppercase ${textColor}`}
-          >
-            {text}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0.3, 1, 0.3] }}
+              transition={{
+                duration: 1.2,
+                ease: 'easeInOut',
+                repeat: Infinity,
+                repeatType: 'reverse',
+              }}
+              className={`text-md font-medium uppercase ${textColor}`}
+            >
+              {text}
             </motion.div>
-            </AnimatePresence>
+          </AnimatePresence>
         </div>
       </motion.div>
     </AnimatePresence>

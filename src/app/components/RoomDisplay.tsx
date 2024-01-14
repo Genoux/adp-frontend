@@ -6,6 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/app/components/ui/tooltip';
+import { defaultTransition } from '@/app/lib/animationConfig';
 import copyToClipboard from '@/app/utils/copyToClipboard';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -78,7 +79,11 @@ const Display: React.FC<DisplayProps> = ({
   };
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, defaultTransition }}
+    >
       <div className="mb-1 flex items-center gap-1">
         <div
           className={clsx('h-2 w-2 rounded-full', {
@@ -103,7 +108,7 @@ const Display: React.FC<DisplayProps> = ({
         </Link>
         <CopyButton link={link} />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

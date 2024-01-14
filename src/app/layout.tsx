@@ -33,7 +33,13 @@ export default function RootLayout({
         className={`${GeistSans.className} mx-auto h-full min-w-[1024px] max-w-[1440px]`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <Image className='fixed top-0 left-0 h-full w-full -z-10 opacity-50' src="/bg-fog.png" alt="HAQ" width={1440} height={200} />
+          <Image
+            className="fixed left-0 top-0 -z-10 h-full w-full opacity-50"
+            src="/bg-fog.png"
+            alt="HAQ"
+            width={1440}
+            height={200}
+          />
           {children}
         </ThemeProvider>
       </body>

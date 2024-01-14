@@ -2,16 +2,12 @@ import ChampionsPool from '@/app/components/common/ChampionsPool';
 import GameStatusBar from '@/app/components/common/RoomHeader';
 import { useCanSelect } from '@/app/context/CanSelectContext';
 import useTeams from '@/app/hooks/useTeams';
-import { defaultTransition } from '@/app/lib/animationConfig';
 import supabase from '@/app/services/supabase';
 import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { default as NextImage } from 'next/image';
 import { SetStateAction, useEffect, useState } from 'react';
-//import SocketContext from '@/app/context/SocketContext';
-//import useEnsureContext from '@/app/hooks/useEnsureContext';
 import { Json } from '../types/supabase';
-import { delay } from 'lodash';
 
 interface Team {
   [key: string]: any;
@@ -167,19 +163,14 @@ const ChampionsPoolComponent = ({
   handleClickedHero: (hero: { name: string | null }) => void;
 }) => {
   return (
-    <motion.div
-      initial={{ y: '120px' }}
-      animate={{ y: '0px' }}
-      transition={{defaultTransition}}
-      className='mt-24'
-    >
+    <div className="mt-24">
       <ChampionsPool
         team={team as Team}
         selectedChampion={selectedChampion}
         canSelect={canSelect}
         handleClickedHero={handleClickedHero}
       />
-    </motion.div>
+    </div>
   );
 };
 

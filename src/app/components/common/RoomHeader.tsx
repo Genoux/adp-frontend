@@ -1,10 +1,10 @@
 import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 import Timer from '@/app/components/common/RoomTimer';
+import TeamName from '@/app/components/common/TeamName';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
-import { delay } from 'lodash';
 import React from 'react';
-import TeamName from '@/app/components/common/TeamName';
+
 interface Team {
   [key: string]: any;
 }
@@ -36,21 +36,24 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({
 }) => {
   return (
     <div
-      className={`flex items-center gap-2 ${orientation === 'right' ? 'justify-start' : 'justify-end'
-        }`}
+      className={`flex items-center gap-2 ${
+        orientation === 'right' ? 'justify-start' : 'justify-end'
+      }`}
     >
       <div
-        className={`flex items-center ${orientation === 'right' ? 'flex-row-reverse ' : 'flex-row'
-          }`}
+        className={`flex items-center ${
+          orientation === 'right' ? 'flex-row-reverse ' : 'flex-row'
+        }`}
       >
         <motion.div
-          className={`flex items-center justify-center ${orientation === 'right' ? 'mr-2' : 'ml-1'
-            }`}
+          className={`flex items-center justify-center ${
+            orientation === 'right' ? 'mr-2' : 'ml-1'
+          }`}
           initial={{ opacity: 0, x: orientation === 'right' ? 50 : -50 }} // start from left or right based on orientation
           animate={{ opacity: 1, x: 0 }} // animate to the original position
           transition={{ delay: 0.4, defaultTransition }}
         >
-        <ArrowAnimation
+          <ArrowAnimation
             roomStatus={roomStatus}
             teamIsTurn={team?.isturn}
             orientation={orientation}
@@ -58,7 +61,7 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({
         </motion.div>
         <div className={`${!team.isturn ? 'opacity-60' : null}`}>
           <TeamName name={team.name} color={team.color} />
-       </div>
+        </div>
       </div>
     </div>
   );
@@ -76,9 +79,10 @@ const GameStatusBar: React.FC<GameStatusBarProps> = ({
     <motion.div
       initial={{ opacity: 0, y: -100 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{defaultTransition, delay: 0.1}}
-      className="fixed left-0 top-0 z-50 w-full backdrop-blur-md bg-black/40 py-3 border-b border-neutral-400 border-opacity-20">
-      <div className='px-6 grid w-full grid-cols-3 items-center justify-center'>
+      transition={{ defaultTransition, delay: 0.25, duration: 0.25 }}
+      className="fixed left-0 top-0 z-50 w-full border-b border-neutral-400 border-opacity-20 bg-black/40 py-3 backdrop-blur-md"
+    >
+      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-3 items-center justify-center px-6">
         <TeamIndicator
           team={blueTeam}
           orientation="right"

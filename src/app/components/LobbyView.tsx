@@ -1,5 +1,3 @@
-'use client';
-
 import TeamStatus from '@/app/components/common/TeamStatus';
 import { Button } from '@/app/components/ui/button';
 import SocketContext from '@/app/context/SocketContext';
@@ -8,6 +6,8 @@ import useTeams from '@/app/hooks/useTeams';
 import supabase from '@/app/services/supabase';
 import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import { defaultTransition } from '../lib/animationConfig';
 
 interface Team {
   [key: string]: any;
@@ -61,8 +61,8 @@ const ReadyView = () => {
     const { data, error } = await supabase
       .from('teams')
       .update({ ready: true })
+      .eq('id', currentTeam.id)
       .select('*, room(*)')
-      .eq('id', currentTeam?.id)
       .single();
 
     if (data && !error) {
@@ -71,14 +71,17 @@ const ReadyView = () => {
   };
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ defaultTransition, delay: 0.25, duration: 0.25 }}
+    >
       <div className="border-b border-opacity-25 pb-4 text-center">
         <h1 className="text-2xl font-bold">Salle d’attente</h1>
         <p className="text-sm font-normal opacity-50">
           {'En attente que les deux équipes soient prêtes'}
         </p>
       </div>
-
       <div className="mb-12 flex w-full flex-col gap-4">
         <TeamDisplay team={blueTeam} currentTeam={currentTeam} />
         <TeamDisplay team={redTeam} currentTeam={currentTeam} />
@@ -100,7 +103,7 @@ const ReadyView = () => {
           </Button>
         )}
       </div>
-    </>
+    </motion.div>
   );
 };
 
