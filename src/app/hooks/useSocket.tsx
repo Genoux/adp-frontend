@@ -16,6 +16,7 @@ export default function useSocket(
 ) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connectionError, setConnectionError] = useState<boolean>(false);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
   const MAX_RETRIES = 2; // Maximum retries
   const RETRY_INTERVAL = 2000; // Retry every 5 seconds
 
@@ -47,8 +48,13 @@ export default function useSocket(
     newSocket.on('connect', async () => {
       clearInterval(retryInterval); // Clear retry interval upon successful connection
       setSocket(newSocket);
+      setIsConnected(true);
       newSocket.emit('joinRoom', { roomid });
       console.log('Successfully joined room ' + roomid);
+    });
+
+    newSocket.on('disconnect', () => {
+      setIsConnected(false); // Update connection status on disconnect
     });
 
     newSocket.on('connect_error', () => {
@@ -71,5 +77,5 @@ export default function useSocket(
     };
   }, [handlers.eventHandlers, roomid]);
 
-  return { socket, connectionError }; // Return the socket
+  return { socket, connectionError, isConnected }; // Return the socket
 }

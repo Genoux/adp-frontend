@@ -27,7 +27,7 @@ interface SpectatorProps {
 const Spectator = ({ params }: SpectatorProps) => {
   const roomid = params.roomid;
 
-  const { socket, connectionError } = useSocket(roomid);
+  const { socket, connectionError, isConnected } = useSocket(roomid);
   const { teams, fetchTeams, isLoading: loadTeam } = useTeamStore();
   const { room, fetchRoom, isLoading } = roomStore();
   const { redTeam, blueTeam } = useTeams();
@@ -40,10 +40,6 @@ const Spectator = ({ params }: SpectatorProps) => {
     notTurn: { width: '6px' },
     isTurn: { width: '125px' },
   };
-
-  useEffect(() => {
-    console.log(room?.status);
-  }, [room?.status]);
 
   useEffect(() => {
     fetchRoom(roomid);
@@ -62,7 +58,7 @@ const Spectator = ({ params }: SpectatorProps) => {
     }
   }, [teams]);
 
-  if (!socket || isLoading || loadTeam) {
+  if (!isConnected || isLoading || loadTeam) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         {<LoadingCircle />}
@@ -135,8 +131,8 @@ const Spectator = ({ params }: SpectatorProps) => {
                 src={`/images/champions/splash/${currentImage
                   ?.toLowerCase()
                   .replace(/\s+/g, '')}.jpg`}
-                width={3840}
-                height={1440}
+                width={500}
+                height={500}
                 rel="preload"
                 className={`h-full w-full object-cover object-center opacity-50 ${
                   currentTeam?.color === 'blue'

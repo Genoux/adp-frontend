@@ -66,7 +66,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
             const imageName = `${hero.id
               .toLowerCase()
               .replace(/\s+/g, '')
-              .replace(/[\W_]+/g, '')}.jpg`;
+              .replace(/[\W_]+/g, '')}`;
             const blurHash = blurHashes[imageName];
 
             return (

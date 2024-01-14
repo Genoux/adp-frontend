@@ -22,8 +22,9 @@ const HeroDisplay = ({ hero }: { hero: Hero }) => (
     </h1>
     <Image
       className="h-full overflow-hidden object-cover"
-      width={1024}
-      height={1024}
+      width={500}
+      height={500}
+      quality={80}
       src={
         hero.id
           ? `/images/champions/splash/${hero.id

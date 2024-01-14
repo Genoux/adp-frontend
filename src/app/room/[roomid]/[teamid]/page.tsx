@@ -29,7 +29,7 @@ export default function Room({ params }: RoomProps) {
   const roomid = params.roomid;
   const teamid = params.teamid;
 
-  const { socket, connectionError } = useSocket(roomid);
+  const { socket, connectionError, isConnected } = useSocket(roomid);
   const { teams, fetchTeams, isLoading, error, setCurrentTeamId } =
     useTeamStore();
   const {
@@ -52,7 +52,7 @@ export default function Room({ params }: RoomProps) {
     return <ErrorMessage />;
   }
 
-  if (isLoading || isLoadingRoom || !socket) {
+  if (isLoading || isLoadingRoom || !isConnected) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         {<LoadingCircle />}
