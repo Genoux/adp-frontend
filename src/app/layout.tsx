@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/app/components/ui/theme-provider';
 import { GeistSans } from 'geist/font/sans';
 import Image from 'next/image';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
   title: 'HAQ - Aram draft pick',
@@ -34,7 +35,6 @@ export default function RootLayout({
         className={`${GeistSans.className} mx-auto h-full min-w-[1024px] max-w-[1440px]`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <SpeedInsights />
           <Image
             className="fixed left-0 top-0 -z-10 h-full w-full opacity-50"
             src="/bg-fog.png"
@@ -43,6 +43,8 @@ export default function RootLayout({
             height={200}
           />
           {children}
+          <SpeedInsights />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
