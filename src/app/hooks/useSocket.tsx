@@ -15,38 +15,32 @@ export default function useSocket(
   handlers: SocketHandlers = {}
 ) {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [connectionError, setConnectionError] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const MAX_RETRIES = 2; // Maximum retries
-  const RETRY_INTERVAL = 2000; // Retry every 5 seconds
 
   useEffect(() => {
     const socketServerUrl =
       process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:1313';
     const newSocket = io(socketServerUrl);
 
-    let retryCount = 0;
-    let retryInterval: any;
+    let retryInterval: NodeJS.Timeout | null = null;
 
     const tryConnect = () => {
-      if (retryCount >= MAX_RETRIES) {
-        console.error('Max retries reached. Giving up on connecting.');
-        setConnectionError(true); // Set the error state here
-        clearInterval(retryInterval);
-        return;
-      }
-
       if (!newSocket.connected) {
         console.log('Attempting to reconnect...');
         newSocket.connect();
-        retryCount++;
       } else {
-        clearInterval(retryInterval);
+        if (retryInterval) {
+          clearInterval(retryInterval);
+          retryInterval = null;
+        }
       }
     };
 
     newSocket.on('connect', async () => {
-      clearInterval(retryInterval); // Clear retry interval upon successful connection
+      if (retryInterval) {
+        clearInterval(retryInterval);
+        retryInterval = null;
+      }
       setSocket(newSocket);
       setIsConnected(true);
       newSocket.emit('joinRoom', { roomid });
@@ -59,7 +53,9 @@ export default function useSocket(
 
     newSocket.on('connect_error', () => {
       console.error('Connection failed. Retrying in a few seconds...');
-      retryInterval = setInterval(tryConnect, RETRY_INTERVAL);
+      if (!retryInterval) {
+        retryInterval = setInterval(tryConnect, 2000);
+      }
     });
 
     if (handlers.eventHandlers) {
@@ -69,7 +65,10 @@ export default function useSocket(
     }
 
     return () => {
-      clearInterval(retryInterval); // Clear retry interval upon cleanup
+      if (retryInterval) {
+        clearInterval(retryInterval);
+        retryInterval = null;
+      }
       if (newSocket) {
         newSocket.disconnect();
       }
@@ -77,5 +76,5 @@ export default function useSocket(
     };
   }, [handlers.eventHandlers, roomid]);
 
-  return { socket, connectionError, isConnected }; // Return the socket
+  return { socket, isConnected }; // Return the socket
 }

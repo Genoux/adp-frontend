@@ -1,7 +1,6 @@
 'use client';
 
 import ErrorMessage from '@/app/components/common/ErrorMessage';
-import LoadingCircle from '@/app/components/common/LoadingCircle';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import StateControllerButtons from '@/app/components/common/StateControllerButtons';
 import DraftView from '@/app/components/DraftView';
@@ -29,7 +28,7 @@ export default function Room({ params }: RoomProps) {
   const roomid = params.roomid;
   const teamid = params.teamid;
 
-  const { socket, connectionError, isConnected } = useSocket(roomid);
+  const { socket, isConnected } = useSocket(roomid);
   const { teams, fetchTeams, isLoading, error, setCurrentTeamId } =
     useTeamStore();
   const {
@@ -48,14 +47,21 @@ export default function Room({ params }: RoomProps) {
     fetchRoom(roomid);
   }, [roomid, fetchRoom]);
 
-  if (connectionError || error || errorRoom) {
+  if (error || errorRoom) {
     return <ErrorMessage />;
   }
 
   if (isLoading || isLoadingRoom || !isConnected) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        {<LoadingCircle />}
+        <div className='flex gap-1'>
+          <p>Connection en cours</p>
+          <div className="sending-animation">
+            <span className="sending-animation-dot">.</span>
+            <span className="sending-animation-dot">.</span>
+            <span className="sending-animation-dot">.</span>
+          </div>
+        </div>
       </div>
     );
   }

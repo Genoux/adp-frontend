@@ -2,7 +2,6 @@
 
 import ChampionsPool from '@/app/components/common/ChampionsPool';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
-import LoadingCircle from '@/app/components/common/LoadingCircle';
 import GameStatusBar from '@/app/components/common/RoomHeader';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
@@ -27,7 +26,7 @@ interface SpectatorProps {
 const Spectator = ({ params }: SpectatorProps) => {
   const roomid = params.roomid;
 
-  const { socket, connectionError, isConnected } = useSocket(roomid);
+  const { socket, isConnected } = useSocket(roomid);
   const { teams, fetchTeams, isLoading: loadTeam } = useTeamStore();
   const { room, fetchRoom, isLoading } = roomStore();
   const { redTeam, blueTeam } = useTeams();
@@ -61,12 +60,19 @@ const Spectator = ({ params }: SpectatorProps) => {
   if (!isConnected || isLoading || loadTeam) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        {<LoadingCircle />}
+        <div className='flex gap-1'>
+          <p>Connection en cours</p>
+          <div className="sending-animation">
+            <span className="sending-animation-dot">.</span>
+            <span className="sending-animation-dot">.</span>
+            <span className="sending-animation-dot">.</span>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (!blueTeam || !redTeam || !room || connectionError) {
+  if (!blueTeam || !redTeam || !room ) {
     return <ErrorMessage />;
   }
 
@@ -122,9 +128,8 @@ const Spectator = ({ params }: SpectatorProps) => {
           )}
 
           <div
-            className={`absolute ${
-              currentTeam?.color === 'blue' ? 'left-0' : 'right-0'
-            } top-0 -z-10 h-full w-3/12`}
+            className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'
+              } top-0 -z-10 h-full w-3/12`}
           >
             {currentImage && (
               <Image
@@ -134,11 +139,10 @@ const Spectator = ({ params }: SpectatorProps) => {
                 width={500}
                 height={500}
                 rel="preload"
-                className={`h-full w-full object-cover object-center opacity-50 ${
-                  currentTeam?.color === 'blue'
+                className={`h-full w-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue'
                     ? 'fade-gradient-left'
                     : 'fade-gradient-right'
-                }`}
+                  }`}
                 alt={``}
               />
             )}
