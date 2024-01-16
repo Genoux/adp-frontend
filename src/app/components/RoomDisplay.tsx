@@ -123,7 +123,7 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
-        className="rounded-md border bg-black bg-opacity-5 p-8"
+        className="rounded-md border bg-black bg-opacity-20 p-8"
       >
         <div className="mb-4 pb-4 text-left">
           <h1 className="text-2xl font-bold">Chambre générée</h1>

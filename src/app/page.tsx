@@ -122,7 +122,7 @@ function Home() {
 
   return (
     <>
-      <main className="mb-12 flex h-full flex-col items-center justify-start gap-16">
+      <main className="flex h-full flex-col items-center justify-start gap-16">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

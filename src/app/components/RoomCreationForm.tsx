@@ -111,14 +111,16 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
   ];
 
   return (
-    <div className="flex flex-col items-center gap-6 rounded-md border bg-black bg-opacity-10 p-8">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{
-          duration: 0.2,
-          defaultTransition,
-        }}
+    <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{
+      duration: 0.2,
+      defaultTransition,
+    }}
+      className="flex flex-col items-center gap-6 rounded-md border bg-black bg-opacity-30 p-8">
+      <div
+
         className="flex w-full flex-col gap-6"
       >
         <div className="text-left">
@@ -167,7 +169,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
             </motion.div>
           </div>
         ))}
-      </motion.div>
+      </div>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -187,6 +189,6 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
           {'Créer une salle'}
         </Button>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };

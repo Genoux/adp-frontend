@@ -79,7 +79,7 @@ const GameStatusBar: React.FC<GameStatusBarProps> = ({
     <motion.div
       initial={{ opacity: 0, y: -100 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ defaultTransition, delay: 0.25, duration: 0.25 }}
+      transition={{ defaultTransition, delay: 0.25, duration: 0.3 }}
       className="fixed left-0 top-0 z-50 w-full border-b border-neutral-400 border-opacity-20 bg-black/40 py-3 backdrop-blur-md"
     >
       <div className="mx-auto grid w-full max-w-[1440px] grid-cols-3 items-center justify-center px-6">

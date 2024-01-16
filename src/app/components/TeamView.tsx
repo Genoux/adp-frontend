@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { default as NextImage } from 'next/image';
 import { SetStateAction, useEffect, useState } from 'react';
 import { Json } from '../types/supabase';
+import { defaultTransition } from '@/app/lib/animationConfig';
 
 interface Team {
   [key: string]: any;
@@ -163,14 +164,19 @@ const ChampionsPoolComponent = ({
   handleClickedHero: (hero: { name: string | null }) => void;
 }) => {
   return (
-    <div className="mt-24">
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{defaultTransition, delay: .25, duration: .3}}
+
+      className="mt-24">
       <ChampionsPool
         team={team as Team}
         selectedChampion={selectedChampion}
         canSelect={canSelect}
         handleClickedHero={handleClickedHero}
       />
-    </div>
+    </motion.div>
   );
 };
 
