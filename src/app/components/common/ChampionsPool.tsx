@@ -54,7 +54,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
       initial={{ opacity: 0, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ defaultTransition, delay: 0.25, duration: 0.25 }}
-      className="mb-3 flex min-h-[200px] flex-col overflow-y-auto px-6 lg:px-24"
+      className="mb-4 flex min-h-[200px] flex-col overflow-y-auto px-6 lg:px-24"
     >
       <div className="grid cursor-pointer grid-cols-10 gap-2">
         {(room.heroes_pool as unknown as Hero[]).map(

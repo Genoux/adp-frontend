@@ -127,10 +127,7 @@ const Spectator = ({ params }: SpectatorProps) => {
             ></motion.div>
           )}
 
-          <div
-            className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'
-              } top-0 -z-10 h-full w-3/12`}
-          >
+          <div className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 -z-10 h-full w-3/12`}>
             {currentImage && (
               <Image
                 src={`/images/champions/splash/${currentImage

@@ -84,7 +84,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
               <AnimatePresence>
                 <motion.div
                   key="border" // Key is static, but the presence of this div is controlled by isBorderSlot
-                  initial={{ opacity: 0, zIndex: 50 }} // Starts from fully transparent
+                  initial={{ opacity: .2, zIndex: 50 }} // Starts from fully transparent
                   animate={{ opacity: 1 }} // Fades to fully opaque
                   exit={{ opacity: 0, transition: { duration: 1 } }} // 2 seconds fade out
                   transition={{
@@ -120,7 +120,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                           opacity: 0,
                           transition: { duration: 0.25 },
                         }}
-                        className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center  bg-gradient-to-t from-black to-transparent"
+                        className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gradient-to-t from-black to-transparent"
                       >
                         <p className="text-sm">{team.clicked_hero}</p>
                       </motion.div>
@@ -129,7 +129,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                   </>
                 )}
 
-                {'id' in hero && hero.selected ? (
+                { hero.id !== "" && hero.selected ? (
                   <>
                     {/* Content to show when 'id' is in hero and hero.selected is true */}
                     <motion.div
@@ -164,7 +164,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                       </motion.div>
                     </motion.div>
                   </>
-                ) : hero.selected ? (
+                ) : hero.selected && hero.id === "" ? (
                   <div className="flex h-full items-center justify-center">
                     <Image
                       src={`/images/x.svg`}
