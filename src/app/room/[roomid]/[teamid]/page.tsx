@@ -15,8 +15,9 @@ import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
 import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
+import { defaultTransition } from '@/app/lib/animationConfig';
 
 interface RoomProps {
   params: {
@@ -46,28 +47,68 @@ export default function Room({ params }: RoomProps) {
   const isRoomView = room && !isLobbyView && !isPlanningView && !isFinishView;
 
   return (
-    <main className="flex h-full flex-col items-center justify-start">
+    <main className="flex flex-col items-center justify-center">
       <StateControllerButtons roomid={room?.id as any} />
-      <AnimatePresence mode="wait">
-        <SocketContext.Provider value={socket}>
-          <BlurHashProvider>
-            {isLobbyView && <LobbyView />}
-            {isFinishView && <FinishView />}
+
+      <SocketContext.Provider value={socket}>
+        <BlurHashProvider>
+          <AnimatePresence mode='wait'>
+            {isLobbyView && (
+              <motion.div
+                key="lobbyView"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: .1, defaultTransition }}
+              >
+                <LobbyView />
+              </motion.div>
+            )}
+
+            {isFinishView && (
+              <motion.div
+                key="finishView"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: .1, defaultTransition }}
+              >
+                <FinishView />
+              </motion.div>
+            )}
+
             {isPlanningView && (
-              <div className="flex flex-col">
+              <motion.div
+                key="planningView"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: .1, defaultTransition }}
+              >
                 <PlanningView />
                 <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
-              </div>
+              </motion.div>
             )}
+
             {isRoomView && (
-              <CanSelectProvider>
-                <TeamView />
-                <DraftView />
-              </CanSelectProvider>
+              <>
+                <motion.div
+                  key="teamView"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: .1, defaultTransition }}
+                >
+                  <CanSelectProvider>
+                    <TeamView />
+                    <DraftView />
+                  </CanSelectProvider>
+                </motion.div>
+              </>
             )}
-          </BlurHashProvider>
-        </SocketContext.Provider>
-      </AnimatePresence>
+          </AnimatePresence>
+        </BlurHashProvider>
+      </SocketContext.Provider>
     </main>
   );
 }
