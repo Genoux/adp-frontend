@@ -33,9 +33,9 @@ const useTeamStore = create<TeamState>((set, get) => ({
       set({ teams });
 
       // Set up real-time subscriptions for all teams in the room
-      teams?.forEach((team: { id: string }) => {
+      teams?.forEach((team: Team) => {
         supabase
-          .channel(team.id)
+          .channel(team.id.toString())
           .on(
             'postgres_changes',
             {

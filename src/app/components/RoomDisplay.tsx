@@ -1,17 +1,18 @@
 import { Button } from '@/app/components/ui/button';
+import { Input } from '@/app/components/ui/input';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/app/components/ui/tooltip';
+import { defaultTransition } from '@/app/lib/animationConfig';
 import copyToClipboard from '@/app/utils/copyToClipboard';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Input } from '@/app/components/ui/input';
 
 interface RoomDisplayProps {
   [key: string]: any;
@@ -31,12 +32,12 @@ const CopyButton: React.FC<{ link: string }> = ({ link }) => {
       <Tooltip>
         <TooltipTrigger>
           <div
-            className="text-black bg-white rounded p-3"
+            className="rounded bg-white p-3 text-black"
             onMouseLeave={() => setCopied(false)}
             onClick={handleCopyClick}
           >
             {copied ? (
-              <CheckIcon className="h-4 w-4 text-red-300" color='black' />
+              <CheckIcon className="h-4 w-4 text-red-300" color="black" />
             ) : (
               <CopyIcon className="h-4 w-4" />
             )}
@@ -49,7 +50,6 @@ const CopyButton: React.FC<{ link: string }> = ({ link }) => {
     </TooltipProvider>
   );
 };
-
 
 interface Team {
   id?: number;
@@ -64,9 +64,14 @@ interface DisplayProps {
   isSpectator?: boolean;
 }
 
-
-const Display: React.FC<DisplayProps> = ({ team, roomId, isSpectator = false }) => {
-  const link = isSpectator ? `room/${roomId}/spectator` : `room/${roomId}/${team.id}`;
+const Display: React.FC<DisplayProps> = ({
+  team,
+  roomId,
+  isSpectator = false,
+}) => {
+  const link = isSpectator
+    ? `room/${roomId}/spectator`
+    : `room/${roomId}/${team.id}`;
 
   const handleInputClick = (event: any) => {
     event.target.select();
@@ -74,23 +79,36 @@ const Display: React.FC<DisplayProps> = ({ team, roomId, isSpectator = false }) 
   };
 
   return (
-    <div>
-      <div className="flex gap-1 items-center mb-1">
-        <div className={clsx("w-2 h-2 rounded-full", {
-          "bg-blue": team.color === 'blue',
-          "bg-red": team.color === 'red',
-          "bg-[#353535]": isSpectator
-        })}></div>
-        <label>{isSpectator ? 'spectateur' : team.name}</label>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, defaultTransition }}
+    >
+      <div className="mb-1 flex items-center gap-1">
+        <div
+          className={clsx('h-2 w-2 rounded-full', {
+            'bg-blue': team.color === 'blue',
+            'bg-red': team.color === 'red',
+            'bg-[#353535]': isSpectator,
+          })}
+        ></div>
+        <label>{isSpectator ? 'Spectateur' : team.name}</label>
       </div>
       <div className="flex flex-row items-center gap-2">
-        <Input readOnly className='rounded h-10' value={`${window.location.origin}/${link}`} onClick={handleInputClick} />
-        <Link href={`/${link}`} target='_blank' passHref>
-          <Button size="default" className="rounded">{isSpectator ? 'Rejoindre' : team.btnText}</Button>
+        <Input
+          readOnly
+          className="h-10 rounded"
+          value={`${window.location.origin}/${link}`}
+          onClick={handleInputClick}
+        />
+        <Link href={`/${link}`} target="_blank" passHref>
+          <Button size="default" className="rounded">
+            {isSpectator ? 'Rejoindre' : team.btnText}
+          </Button>
         </Link>
         <CopyButton link={link} />
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -105,11 +123,13 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
-        className='border p-12 rounded-md bg-black bg-opacity-5'
+        className="rounded-md border bg-black bg-opacity-20 p-8"
       >
-        <div className="text-left pb-4 mb-4">
-          <h1 className="text-2xl font-bold">Chambre génèré!</h1>
-          <p className="text-sm font-normal opacity-50">{"Rejoignez une chambre associé à votre équipe."}</p>
+        <div className="mb-4 pb-4 text-left">
+          <h1 className="text-2xl font-bold">Chambre générée</h1>
+          <p className="text-sm font-normal opacity-50">
+            {'Rejoignez une chambre associée à votre équipe'}
+          </p>
         </div>
         <div className="flex w-full flex-col justify-center gap-6">
           <Display team={blueTeam} roomId={room.id} />

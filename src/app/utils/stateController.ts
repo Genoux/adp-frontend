@@ -18,11 +18,13 @@ export async function resetForPlanning(roomid: string) {
     return console.error('Error fetching room or heroes pool', fetchError);
   }
 
-  // Reset selected in heroes_pool
-  const updatedHeroesPool = room.heroes_pool.map((hero: any) => ({
-    ...hero,
-    selected: false,
-  }));
+  // Null check for heroes_pool
+  const updatedHeroesPool = Array.isArray(room.heroes_pool)
+    ? room.heroes_pool.map((hero: any) => ({
+        ...hero,
+        selected: false,
+      }))
+    : [];
 
   // Update the heroes_pool in the room
   const { error: updateError } = await supabase

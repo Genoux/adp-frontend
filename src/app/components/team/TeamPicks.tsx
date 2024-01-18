@@ -78,14 +78,14 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
         );
 
         return (
-          <div key={index} className="relative w-full h-44">
+          <div key={index} className="relative h-44 w-full">
             {isBorderSlot && (
               <AnimatePresence>
                 <motion.div
                   key="border" // Key is static, but the presence of this div is controlled by isBorderSlot
                   initial={{ opacity: 0, zIndex: 50 }} // Starts from fully transparent
                   animate={{ opacity: 1 }} // Fades to fully opaque
-                  exit={{ opacity: 0, transition: { duration: 1 } }} // 2 seconds fade out
+                  exit={{ opacity: 0, transition: { duration: 2 } }} // 2 seconds fade out
                   transition={{
                     duration: 1,
                     repeat: Infinity,
@@ -96,8 +96,8 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
               </AnimatePresence>
             )}
             <div className={slotClassName}>
-              <AnimatePresence>
-                {isClickedHeroSlot && (
+              {isClickedHeroSlot && (
+                <>
                   <motion.div
                     key="clicked_hero"
                     initial={{ opacity: 0, scale: 1.3, zIndex: 1 }}
@@ -110,42 +110,58 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                     className="absolute left-0 top-0 h-full w-full bg-cover bg-center sepia"
                     style={getHeroImageStyle(team.clicked_hero)}
                   />
-                )}
-
-                {hero.id && (
-                  <>
+                  <AnimatePresence>
                     <motion.div
-                      key="hero"
-                      initial={{ opacity: 1, scale: 1.3, zIndex: 2 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
                       exit={{
                         opacity: 0,
-                        scale: 1,
-                        transition: { delay: 0.3, duration: 0.25 },
+                        transition: { duration: 0.25 },
                       }}
-                      transition={{
-                        delay: 0.15,
-                        duration: 0.5,
-                        ease: [1, -0.6, 0.3, 1.2],
-                      }}
-                      className="absolute left-0 top-0 h-full w-full overflow-hidden bg-cover bg-center"
-                      style={getHeroImageStyle(hero.id)}
-                    />
-                    <motion.div
-                      initial={{ opacity: 0, y: 5, zIndex: 2 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        delay: 0,
-                        duration: 0.8,
-                        ease: [1, -0.6, 0.3, 1.2],
-                      }}
-                      className="absolute z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-[#000000] to-transparent pb-4 text-xs"
+                      className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gradient-to-t from-black to-transparent"
                     >
-                      <p> {hero.name}</p>
+                      <p className="text-sm">{team.clicked_hero}</p>
                     </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
+                    à
+                  </AnimatePresence>
+                </>
+              )}
+
+              {hero.id && (
+                <>
+                  <motion.div
+                    key="hero"
+                    initial={{ opacity: 1, scale: 1.3, zIndex: 2 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{
+                      opacity: 0,
+                      scale: 1,
+                      transition: { delay: 0.3, duration: 0.25 },
+                    }}
+                    transition={{
+                      delay: 0.15,
+                      duration: 0.5,
+                      ease: [1, -0.6, 0.3, 1.2],
+                    }}
+                    className="absolute left-0 top-0 h-full w-full overflow-hidden bg-cover bg-center"
+                    style={getHeroImageStyle(hero.id)}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{
+                      delay: 0,
+                      duration: 0.8,
+                      ease: [1, -0.6, 0.3, 1.2],
+                    }}
+                    className="absolute z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-[#000000] to-transparent pb-4 text-xs"
+                  >
+                    <motion.div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center">
+                      <p className="text-sm">{hero.name}</p>
+                    </motion.div>
+                  </motion.div>
+                </>
+              )}
             </div>
           </div>
         );
