@@ -19,7 +19,7 @@ export const WaitingView = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ defaultTransition, delay: 0.25, duration: 0.25 }}
+      transition={{ defaultTransition, delay: 0.25, duration: 1.25 }}
       className="mb-4 mt-6 flex h-full flex-col items-center justify-start gap-4"
     >
       <div className="flex flex-col items-center gap-4">
