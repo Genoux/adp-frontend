@@ -22,6 +22,19 @@ const ConfirmButton = () => {
 
   const { currentTeam: team, otherTeam } = useTeams();
 
+    
+  useEffect(() => {
+    const handleButton = () => {
+      console.log('CHAMPION_SELECTED');
+      setCanSelect(false);
+    };
+    socket.on('CHAMPION_SELECTED', handleButton);
+
+    return () => {
+      socket.off('CHAMPION_SELECTED', handleButton);
+    };
+  }, [setCanSelect, socket]);
+
   useEffect(() => {
     setCanSelect(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -44,7 +57,8 @@ const ConfirmButton = () => {
       : 'Confirmer la Selection'
     : `C'est à l'équipe ${otherTeam?.color} de ${
         isBanPhase ? 'bannir' : 'choisir'
-      }`;
+    }`;
+
 
   const handleConfirmSelection = async () => {
     if (socket) {
