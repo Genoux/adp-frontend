@@ -25,13 +25,13 @@ const ConfirmButton = () => {
     
   useEffect(() => {
     const handleButton = () => {
-      console.log('CHAMPION_SELECTED');
+      console.log('TIMER_FALSE');
       setCanSelect(false);
     };
-    socket.on('CHAMPION_SELECTED', handleButton);
+    socket.on('TIMER_FALSE', handleButton);
 
     return () => {
-      socket.off('CHAMPION_SELECTED', handleButton);
+      socket.off('TIMER_FALSE', handleButton);
     };
   }, [setCanSelect, socket]);
 
