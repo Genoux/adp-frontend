@@ -57,7 +57,7 @@ const TeamView = () => {
     if (team?.nb_turn! > 0) {
       setTimeout(() => setCanSelect(true), 1000);
     }
-  }, [team?.nb_turn, setCanSelect]);
+  }, [team?.nb_turn, setCanSelect, team?.isturn]);
 
   const updateCurrentImages = (
     team:
