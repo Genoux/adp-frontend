@@ -5,9 +5,9 @@ import { defaultTransition } from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import { default as NextImage } from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import useNextBlurhash from 'use-next-blurhash';
 import { RoomCreationForm } from './components/RoomCreationForm';
 import { RoomDisplay } from './components/RoomDisplay';
+import { BedDouble } from 'lucide-react';
 
 interface Room {
   id: number;
@@ -44,8 +44,7 @@ function Home() {
   const [blueTeam, setBlueTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [blurDataUrl] = useNextBlurhash('L59?XaFx57}9_LS#D*nN1Oxsr=59');
-  console.log(blurDataUrl);
+  const appMode = process.env.NEXT_PUBLIC_APP_MODE;
 
   const mapToBlueTeamStructure = (blueTeam: BlueTeam): Team => ({
     ...blueTeam,
@@ -107,9 +106,8 @@ function Home() {
       const yPos = y / height - 0.5;
 
       if (parallaxRef.current) {
-        parallaxRef.current.style.transform = `translate(${xPos * -20.0}px, ${
-          yPos * -20.0
-        }px)`;
+        parallaxRef.current.style.transform = `translate(${xPos * -20.0}px, ${yPos * -20.0
+          }px)`;
       }
     };
 
@@ -123,29 +121,40 @@ function Home() {
   return (
     <>
       <main className="flex h-full flex-col items-center justify-start gap-16">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={defaultTransition}
-          className="mx-auto mt-12 flex flex-col items-end justify-end text-center"
-        >
-          <NextImage
-            src="home-logo.svg"
-            width={368}
-            height={0}
-            alt={'Tournois Haq'}
-          />
-        </motion.div>
-        {loading ? (
-          // Show loading circle when loading is true
-          <div className="flex h-1/2 flex-col items-center justify-center">
-            <LoadingCircle />
+        {appMode === 'false'  ? (
+          <div className='flex flex-col h-full justify-center items-center gap-2 animate-pulse'>
+            <BedDouble className='w-6 h-6' />
+            <h1 className='font-semibold text-2xl'>Zzzzzz</h1>
           </div>
-        ) : room && blueTeam && redTeam ? (
-          <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
         ) : (
-          <RoomCreationForm onCreate={createRoomLogic} />
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={defaultTransition}
+              className="mx-auto mt-12 flex flex-col items-end justify-end text-center"
+            >
+              <NextImage
+                src="home-logo.svg"
+                width={368}
+                height={0}
+                alt={'Tournois Haq'}
+              />
+            </motion.div>
+            {loading ? (
+              // Show loading circle when loading is true
+              <div className="flex h-1/2 flex-col items-center justify-center">
+                <LoadingCircle />
+              </div>
+            ) : room && blueTeam && redTeam ? (
+              <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
+            ) : (
+              <RoomCreationForm onCreate={createRoomLogic} />
+            )}
+
+          </>
         )}
+
       </main>
     </>
   );
