@@ -32,11 +32,11 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${GeistSans.className} mx-auto h-full min-w-[1024px] max-w-[1440px]`}
+        className={`${GeistSans.className} container`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <Image
-            className="fixed left-0 top-0 -z-10 h-full w-full opacity-50"
+            className="  fixed left-0 top-0 -z-10 h-full w-full opacity-10"
             src="/bg-fog.png"
             alt="HAQ"
             width={1440}

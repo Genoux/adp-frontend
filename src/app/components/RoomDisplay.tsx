@@ -31,8 +31,8 @@ const CopyButton: React.FC<{ link: string }> = ({ link }) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
-          <div
-            className="rounded bg-white p-3 text-black"
+          <Button
+            className="bg-white p-3 text-black"
             onMouseLeave={() => setCopied(false)}
             onClick={handleCopyClick}
           >
@@ -41,7 +41,7 @@ const CopyButton: React.FC<{ link: string }> = ({ link }) => {
             ) : (
               <CopyIcon className="h-4 w-4" />
             )}
-          </div>
+          </Button>
         </TooltipTrigger>
         <TooltipContent>
           <p>{"Copier l'URL"}</p>
@@ -97,12 +97,11 @@ const Display: React.FC<DisplayProps> = ({
       <div className="flex flex-row items-center gap-2">
         <Input
           readOnly
-          className="h-10 rounded"
           value={`${window.location.origin}/${link}`}
           onClick={handleInputClick}
         />
         <Link href={`/${link}`} target="_blank" passHref>
-          <Button size="default" className="rounded">
+          <Button size="default">
             {isSpectator ? 'Rejoindre' : team.btnText}
           </Button>
         </Link>
