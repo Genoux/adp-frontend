@@ -1,10 +1,8 @@
 "use client";
 
+import { useRouter } from 'next/navigation';
+
 export default function Admin() {
-  
-  return (
-    <div>
-    admin
-    </div>
-  );
+  const router = useRouter();
+  router.push('/admin/rooms'); // Redirect on successful login
 }

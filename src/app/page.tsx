@@ -3,7 +3,6 @@
 import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
-import { default as NextImage } from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { RoomCreationForm } from './components/RoomCreationForm';
 import { RoomDisplay } from './components/RoomDisplay';

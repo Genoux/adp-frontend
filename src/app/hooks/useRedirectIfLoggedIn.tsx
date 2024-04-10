@@ -14,7 +14,7 @@ export const useRedirectIfLoggedIn = (redirectTo: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         try {
-          await router.push(redirectTo);
+          router.push(redirectTo);
         } catch (error) {
           console.error(error);
         }
