@@ -1,4 +1,4 @@
-import supabase from '@/app/services/supabase';
+import supabase from '@/app/lib/supabase/client';
 import { Database } from '@/app/types/supabase';
 import { create } from 'zustand';
 

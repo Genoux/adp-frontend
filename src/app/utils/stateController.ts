@@ -1,4 +1,4 @@
-import supabase from '@/app/services/supabase';
+import supabase from '@/app/lib/supabase/client';
 import { champions } from '@/app/utils/champions';
 
 export async function resetForPlanning(roomid: string) {
