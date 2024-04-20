@@ -18,6 +18,6 @@ export async function login(formData: FormData) {
     redirect('/error');  // Make sure this redirect is functioning as intended
   } else {
     revalidatePath('/', 'layout');
-    redirect('/');  // Or any intended path
+    redirect('/admin/rooms');  // Or any intended path
   }
 }

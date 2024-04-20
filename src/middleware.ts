@@ -1,13 +1,9 @@
+
+
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -22,29 +18,9 @@ export async function middleware(request: NextRequest) {
             value,
             ...options,
           })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
         },
         remove(name: string, options: CookieOptions) {
           request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
             name,
             value: '',
             ...options,
@@ -54,10 +30,17 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  await supabase.auth.getUser()
+  const user = await supabase.auth.getUser()
 
-  return response
+  // If there is no user, redirect to the login page
+  if (!user) {
+    return NextResponse.redirect('/login')
+  }
+
+  // If there is a user, continue to the requested page
+  return NextResponse.next()
 }
+
 
 export const config = {
   matcher: [
