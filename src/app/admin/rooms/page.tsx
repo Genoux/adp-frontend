@@ -53,7 +53,7 @@ const RoomComponent = ({ room }: { room: Room }) => {
   )
 };
 
-export function RoomsPage() {
+export default function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [user, setUser] = useState<User>(); // We can use the user object directly from the auth module
   const router = useRouter();
@@ -178,5 +178,3 @@ export function RoomsPage() {
     </AnimatePresence>
   );
 }
-
-export default RoomsPage;

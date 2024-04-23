@@ -22,7 +22,7 @@ const customConfig: Config = {
   style: 'capital',
 };
 
-export async function randomChampions() {
+async function randomChampions() {
   const shuffledChampions = [...champions].sort(() => Math.random() - 0.5);
   const randomChampions = shuffledChampions.slice(0, 30);
 
