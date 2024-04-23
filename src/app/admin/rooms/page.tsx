@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import supabase from '@/app/lib/supabase/client';
-import { Skeleton } from "@/app/components/ui/skeleton"
+import supabase from '@/app/lib/supabase/auth/supabase-browser';
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { defaultTransition } from '@/app/lib/animationConfig';
+import LoadingCircle from '@/app/components/common/LoadingCircle';
 
 interface Room {
+  [key: string]: any;
+}
+
+interface User {
   [key: string]: any;
 }
 
@@ -49,26 +53,23 @@ const RoomComponent = ({ room }: { room: Room }) => {
   )
 };
 
-export default function RoomsPage() {
-  const [user, setUser] = useState(null);
+export function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [user, setUser] = useState<User>(); // We can use the user object directly from the auth module
   const router = useRouter();
 
   useEffect(() => {
     async function checkSession() {
-      const session = await supabase.auth.getSession();
-      const user = session.data?.session?.user;
-      console.log("checkSession - user:", user);
-
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        router.push("/auth");
-        return
+        return null
       }
-      setUser(user as any);
+      setUser(user)
     }
 
     checkSession();
-  }, []);
+  }, [router]);
+
 
   async function fetchFullRoomData(roomId: string) {
     const { data, error } = await supabase
@@ -130,19 +131,11 @@ export default function RoomsPage() {
 
   if (!user)
     return (
-      <div className="container max-w-2xl p-24">
-        <div className="flex flex-col">
-          <div className="flex w-full mb-6 justify-between items-center">
-            <div><Skeleton className="w-[100px] h-[20px] rounded-full" /></div>
-          </div>
-          <div className="w-full flex flex-col gap-2 overflow-scroll h-4/5 relative border p-4 rounded-md">
-            <Skeleton className="w-[200px] h-[20px] rounded-full" />
-            <Skeleton className="w-full h-[20px] rounded-full" />
-            <Skeleton className="w-full h-[20px] rounded-full" />
-            <Skeleton className="w-full h-[20px] rounded-full" />
-          </div>
+      <>
+        <div className="flex flex-col h-screen items-center justify-center">
+          <LoadingCircle />
         </div>
-      </div>
+      </>
     )
 
   const logout = async () => {
@@ -159,14 +152,15 @@ export default function RoomsPage() {
         transition={{ defaultTransition, delay: 0.1 }}
       >
 
-        <div className="container max-w-2xl p-24">
+        <div className=" mt-24">
           <div className="flex flex-col">
             <div className="flex w-full mb-6 justify-between items-center">
-              <div>Account: {(user as any)?.email}</div>
+              <div className='text-sm'>
+                <span className='opacity-60'>Account: </span>
+                {(user as any)?.email}</div>
               <Button onClick={logout}>Logout</Button>
             </div>
             <div className="w-full flex flex-col gap-2 overflow-scroll h-4/5 relative border p-4 rounded-md">
-              <div className="bg-gradient-to-t from-black to-transparent sticky w-full h-full top-0 left-0"></div>
               {rooms.length ? rooms.map((room, index) => (
                 <motion.div
                   key={index}
@@ -184,3 +178,5 @@ export default function RoomsPage() {
     </AnimatePresence>
   );
 }
+
+export default RoomsPage;
