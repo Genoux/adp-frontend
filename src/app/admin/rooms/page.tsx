@@ -22,11 +22,27 @@ const RoomComponent = ({ room }: { room: Room }) => {
     return null;
   }
 
+  function changeText(status: string) {
+    switch (status) {
+      case 'select':
+        return 'Picking';
+      case 'ban':
+        return 'Banning';
+      case 'done':
+        return 'Done';
+      case 'planning':
+        return 'Planning';
+      default:
+        return 'Unknown';
+    }
+  }
+
   const statusClass = (() => {
     switch (room.status) {
-      case 'picking':
+      case 'select':
+        return 'bg-pink-600 animate-pulse'; // Green for picking or ban
       case 'ban':
-        return 'bg-green-600 animate-pulse'; // Green for picking or ban
+        return 'bg-red-600 animate-pulse'; // Green for picking or ban
       case 'done':
         return 'bg-green-400'; // Red for done
       case 'planning':
@@ -37,15 +53,15 @@ const RoomComponent = ({ room }: { room: Room }) => {
   })();
 
   return (
-    <Link href={`/room/${room.id}/spectator`} target="_blank" className="w-full hover:bg-white hover:bg-opacity-5 transition-all border rounded-sm p-2 justify-between flex gap-2 " passHref>
+    <Link href={`/room/${room.id}/spectator`} target="_blank" className="w-full hover:bg-white hover:bg-opacity-5 transition-all border rounded-sm p-3 justify-between flex gap-2 " passHref>
       <div className="flex items-center gap-2">
         <div className={`h-2 w-2 rounded-full duration-2000 ${statusClass}`}></div>
-        <p className="h-full items-center flex text-base font-medium">{room.status}</p>
+        <p className="h-full items-center flex text-base font-medium">{changeText(room.status)}</p>
       </div>
-      <div className="flex gap-2">
-        <p className="h-full items-center flex text-red font-semibold">{room.red.name}</p>
-        <span className="opacity-50">-</span>
-        <p className="h-full items-center flex text-blue font-semibold">{room.blue.name}</p>
+      <div className="flex gap-2 items-center">
+        <p className="h-full items-center flex text-red font-semibold capitalize">{room.red.name}</p>
+        <span className="opacity-50 text-xs">vs</span>
+        <p className="h-full items-center flex text-blue font-semibold capitalize">{room.blue.name}</p>
       </div>
 
 
