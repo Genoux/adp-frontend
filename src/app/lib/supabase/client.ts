@@ -1,9 +1,9 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@/app/types/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-const supabase: SupabaseClient = createClient<Database>(
+const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
+  { db: { schema: 'aram_draft_pick' } }
 );
 
 export default supabase;
