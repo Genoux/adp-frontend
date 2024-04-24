@@ -10,9 +10,7 @@ import {
   uniqueNamesGenerator,
 } from 'unique-names-generator';
 
-export const config = {
-  runtime: 'edge',
-};
+export const runtime = "edge"
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
@@ -24,7 +22,7 @@ const customConfig: Config = {
   style: 'capital',
 };
 
-export async function randomChampions() {
+async function randomChampions() {
   const shuffledChampions = [...champions].sort(() => Math.random() - 0.5);
   const randomChampions = shuffledChampions.slice(0, 30);
 
@@ -113,8 +111,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
   }
 }
 
-export default async function MyEdgeFunction(request: NextRequest) {
-  // get body from request
+export async function POST(request: NextRequest) {
   const { blueTeamName, redTeamName } = await request.json();
   const value = await createRoom(blueTeamName, redTeamName);
   return NextResponse.json(value);

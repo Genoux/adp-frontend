@@ -112,31 +112,27 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
 
   return (
     <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{
-      duration: 0.2,
-      defaultTransition,
-    }}
-      className="flex flex-col items-center gap-6 rounded-md border bg-black bg-opacity-30 p-8">
-      <div
-
-        className="flex w-full flex-col gap-6"
-      >
-        <div className="text-left">
-          <h1 className="text-2xl font-bold">Générer une chambre</h1>
-          <p className="text-sm font-normal opacity-50">
-            {"Veuillez inscrire les noms des deux équipes qui vont s'affronter"}
-          </p>
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{
+        duration: 0.2,
+        defaultTransition,
+      }}
+      className="flex flex-col items-center gap-6 rounded-md border p-6">
+      <div className="flex w-full flex-col gap-6">
+        <div className="flex flex-col space-y-1.5">
+          <h3 className="font-semibold leading-none tracking-tight">Générer une chambre</h3>
+          <p className="text-sm text-muted-foreground">{"Veuillez inscrire les noms des deux équipes qui vont s'affronter"}</p>
         </div>
-        <div>
+
+        {(formErrors.blueTeamName || formErrors.redTeamName) && (
           <p className="text-xs text-red-600">
-            {' '}
             {formErrors.blueTeamName || formErrors.redTeamName}
           </p>
-        </div>
+        )}
+
         {teams.map((team) => (
-          <div key={team.id} className="flex flex-col gap-1">
+          <div key={team.id} className="flex flex-col gap-2">
             <div className="flex items-center gap-1">
               <div
                 className={clsx('h-2 w-2 rounded-full', {
@@ -144,7 +140,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
                   'bg-red': team.color === 'red',
                 })}
               ></div>
-              <label className="text-sm font-normal" htmlFor={team.id}>
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor={team.id}>
                 {team.label}
               </label>
             </div>
@@ -160,11 +156,10 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
                 onChange={handleInputChange}
                 value={team.value}
                 onKeyDown={handleKeyPress}
-                className={`${
-                  formErrors[team.id as keyof FormData]
+                className={`${formErrors[team.id as keyof FormData]
                     ? 'border border-red-700 border-opacity-50'
                     : ''
-                }`}
+                  }`}
               />
             </motion.div>
           </div>
@@ -177,13 +172,12 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
           duration: 0.4,
           ease: [0.585, 0.535, 0.23, 0.85],
         }}
-        className="mt-4 flex flex-row  gap-6"
+        className="w-full"
       >
         <Button
-          size="lg"
-          className={`w-full ${
-            !formData.blueTeamName || !formData.redTeamName ? 'opacity-10' : ''
-          }`}
+    
+          className={`w-full ${!formData.blueTeamName || !formData.redTeamName ? 'opacity-10' : ''
+            }`}
           onClick={handleSubmit}
         >
           {'Créer une salle'}
