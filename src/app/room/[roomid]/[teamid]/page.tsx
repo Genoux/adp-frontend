@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
-import StateControllerButtons from '@/app/components/common/StateControllerButtons';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
 import LobbyView from '@/app/components/LobbyView';
@@ -48,8 +47,6 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <main className="flex flex-col items-center justify-center">
-      <StateControllerButtons roomid={room?.id as any} />
-
       <SocketContext.Provider value={socket}>
         <BlurHashProvider>
           <AnimatePresence mode='wait'>

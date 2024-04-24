@@ -72,7 +72,7 @@ const Spectator = ({ params }: SpectatorProps) => {
     );
   }
 
-  if (!blueTeam || !redTeam || !room ) {
+  if (!blueTeam || !redTeam|| !room ) {
     return <ErrorMessage />;
   }
 
@@ -150,7 +150,7 @@ const Spectator = ({ params }: SpectatorProps) => {
               redTeam={redTeam}
               room={room}
               widthVariants={widthVariants}
-              statusText={`Vous êtes spectateur de ${blueTeam?.name.toUpperCase()} vs ${redTeam?.name.toUpperCase()}`}
+              statusText={`Vous êtes spectateur de ${blueTeam?.name?.toUpperCase()} vs ${redTeam?.name?.toUpperCase()}`}
             />
             <div className="mt-24">
               <ChampionsPool

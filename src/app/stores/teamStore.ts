@@ -2,7 +2,7 @@ import supabase from '@/app/lib/supabase/client';
 import { Database } from '@/app/types/supabase';
 import { create } from 'zustand';
 
-type Team = Database['public']['Tables']['teams']['Row'];
+type Team = Database['aram_draft_pick']['Tables']['teams']['Row'];
 
 interface TeamState {
   teams: Team[] | null;
@@ -40,7 +40,7 @@ const useTeamStore = create<TeamState>((set, get) => ({
             'postgres_changes',
             {
               event: 'UPDATE',
-              schema: 'public',
+              schema: 'aram_draft_pick',
               table: 'teams',
               filter: `id=eq.${team.id}`,
             },

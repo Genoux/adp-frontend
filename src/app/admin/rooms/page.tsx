@@ -115,10 +115,10 @@ export default function RoomsPage() {
 
     // Subscribe to real-time updates to the rooms table
     supabase
-      .channel("public:rooms")
+      .channel("aram_draft_pick:rooms")
       .on('postgres_changes', {
         event: '*',
-        schema: 'public',
+        schema: 'aram_draft_pick',
         table: 'rooms',
       }, async (payload) => {
         console.log("Real-time update:", payload);
