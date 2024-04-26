@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${GeistSans.className} container`}
+        className={`${GeistSans.className} container overflow-x-hidden`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <Image

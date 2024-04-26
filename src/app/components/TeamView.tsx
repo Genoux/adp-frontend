@@ -2,7 +2,7 @@ import ChampionsPool from '@/app/components/common/ChampionsPool';
 import GameStatusBar from '@/app/components/common/RoomHeader';
 import { useCanSelect } from '@/app/context/CanSelectContext';
 import useTeams from '@/app/hooks/useTeams';
-import supabase from '@/app/lib/supabase/client';
+import { supabase } from '@/app/lib/supabase/client';
 import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { default as NextImage } from 'next/image';
