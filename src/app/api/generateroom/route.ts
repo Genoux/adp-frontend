@@ -40,6 +40,8 @@ function generateArray(key: string, length: number) {
 }
 
 async function createRoom(blueTeamName: string, redTeamName: string) {
+  console.log(blueTeamName);
+  console.log(redTeamName);
   const champions = await randomChampions();
   const roomName: string = uniqueNamesGenerator(customConfig);
 
