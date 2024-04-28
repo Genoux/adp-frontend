@@ -34,7 +34,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = (
         <InputSelect submit={(data) => submit(data)} />
         {/* <InputForm submit={(data) => submit(data)} /> */}
       </motion.div>
-      <NoticeBanner message="Si votre équipe n'apparet pas dans la list, veuillez contacter un admin" />
+      <NoticeBanner message="Si votre équipe n'apparaît pas dans la liste, veuillez contacter un administrateur" />
     </>
   );
 };
