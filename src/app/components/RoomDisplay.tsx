@@ -92,7 +92,7 @@ const Display: React.FC<DisplayProps> = ({
             'bg-[#353535]': isSpectator,
           })}
         ></div>
-        <label>{isSpectator ? 'Spectateur' : team.name}</label>
+        <label>{isSpectator ? 'spectateur' : team.name}</label>
       </div>
       <div className="flex flex-row items-center gap-2">
         <Input

@@ -2,11 +2,11 @@
 
 import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { defaultTransition } from '@/app/lib/animationConfig';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { RoomCreationForm } from '@/app/components/RoomCreationForm';
 import { RoomDisplay } from '@/app/components/RoomDisplay';
-import { BedDouble } from 'lucide-react';
+import { BedDouble, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 interface Room {
@@ -65,16 +65,16 @@ function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-  
+
       const { room, blue, red } = await response.json();
       if (room.error) {
         console.error(room.error);
         return;
       }
-  
+
       const mappedBlueTeam = mapTeamStructure(blue, 'blue');
       const mappedRedTeam = mapTeamStructure(red, 'red');
-  
+
       setBlueTeam(mappedBlueTeam);
       setRedTeam(mappedRedTeam);
       setRoom({ ...room, blue: mappedBlueTeam, red: mappedRedTeam });
@@ -93,11 +93,12 @@ function Home() {
           <h1 className='font-semibold text-2xl'>Zzzzzz</h1>
         </div>
       ) : (
+        <AnimatePresence>
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={defaultTransition}
-            className='flex flex-col items-center mx-auto justify-center max-w-[980px] gap-12 pb-12 mt-12'
+            className='flex flex-col items-center mx-auto justify-center max-w-[980px] gap-12 mt-12'
           >
             <div className='flex flex-col items-center justify-center'>
               <Link className="inline-flex items-center rounded-lg bg-muted px-3 py-1 text-sm font-medium gap-2 mb-4" href="http://tournoishaq.ca/" target='_blank'><svg width="12" height="17" viewBox="0 0 12 17" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -108,19 +109,33 @@ function Home() {
               <span className="max-w-[750px] text-center text-sm text-muted-foreground md:text-xl">Système de Pick & Ban Personnalisé pour ARAM avec 30 Champions Partagés</span>
             </div>
 
-          {loading ? (
-            // Show loading circle when loading is true
-            <div className="flex flex-col items-center justify-center h-[320px]">
-              <LoadingCircle />
-            </div>
-          ) : room && blueTeam && redTeam ? (
-            <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
-          ) : (
-          <RoomCreationForm submit={(data: TeamsName) => createRoom(data as TeamsName)}  />
-          )}
+            {loading ? (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={defaultTransition}
+                className="flex flex-col items-center justify-center h-[440px]">
+                <LoadingCircle />
+              </motion.div>
+            ) : room && blueTeam && redTeam ? (
+              <div className='flex flex-col gap-2'>
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ defaultTransition, delay: 0.5 }}
+                  onClick={() => { setRoom(null) }} className='cursor-pointer border p-1 rounded-sm flex w-fit  hover:bg-white hover:bg-opacity-5 hover:-translate-x-1'><ArrowLeft size={18} /></motion.div>
+                <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
+              </div>
+            ) : (
+              <>
+                <RoomCreationForm submit={(data: TeamsName) => createRoom(data as TeamsName)} />
+
+              </>
+            )}
 
 
           </motion.div>
+        </AnimatePresence>
       )}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -133,7 +148,9 @@ function Home() {
         </footer>
 
       </motion.div>
+
     </main>
+
   );
 }
 

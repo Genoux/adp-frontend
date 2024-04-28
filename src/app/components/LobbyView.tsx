@@ -64,6 +64,7 @@ const ReadyView = () => {
       .eq('id', currentTeam.id)
       .select('*, room(*)')
       .single();
+    
 
     if (data && !error) {
       socket.emit('TEAM_READY', { roomid: room.id, teamid: currentTeam?.id });
