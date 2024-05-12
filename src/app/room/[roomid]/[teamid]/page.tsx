@@ -76,7 +76,7 @@ export default function Room({ params }: RoomProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: .1, defaultTransition }}
+                transition={{ duration: .2, defaultTransition }}
               >
                 <FinishView />
               </motion.div>
