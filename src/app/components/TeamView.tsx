@@ -7,9 +7,7 @@ import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { default as NextImage } from 'next/image';
 import { SetStateAction, useEffect, useState } from 'react';
-import { Json } from '../types/supabase';
 import { defaultTransition } from '@/app/lib/animationConfig';
-
 interface Team {
   [key: string]: any;
 }
@@ -31,7 +29,6 @@ const TeamView = () => {
   const { canSelect, setCanSelect } = useCanSelect();
   const [currentImageBlue, setCurrentImageBlue] = useState<string | null>(null);
   const [currentImageRed, setCurrentImageRed] = useState<string | null>(null);
-  //const socket = useEnsureContext(SocketContext);
   const { room, isLoading } = roomStore((state) => ({
     room: state.room,
     error: state.error,
@@ -39,19 +36,6 @@ const TeamView = () => {
   }));
   const { currentTeam: team, otherTeam, redTeam, blueTeam } = useTeams();
   const currentTeam = team?.isturn ? team : otherTeam;
-
-  // useEffect(() => {
-  //   const handleConfirmation = async (data: any) => {
-  //     if (data) {
-  //       await supabase.from('teams').update({ clicked_hero: null }).eq('id', currentTeam?.id);
-  //     };
-  //   };
-  //   socket.on('CHAMPION_SELECTED', handleConfirmation);
-
-  //   return () => {
-  //     socket.off('CHAMPION_SELECTED', handleConfirmation);
-  //   };
-  // }, [currentTeam?.id, socket]);
 
   useEffect(() => {
     if (team?.nb_turn! > 0) {
@@ -62,21 +46,8 @@ const TeamView = () => {
   const updateCurrentImages = (
     team:
       | {
-          clicked_hero: string | null;
-          color: string;
-          connected: boolean | null;
-          created_at: string | null;
-          heroes_ban: Json;
-          heroes_selected: Json;
-          id: number;
-          isturn: boolean | null;
-          name: string;
-          nb_turn: number | null;
-          ready: boolean | null;
-          room: number;
-          selected_hero: string | null;
-          socketid: Json;
-        }
+        [key: string]: any;
+      }
       | undefined,
     setCurrentImage: {
       (value: SetStateAction<string | null>): void;
@@ -167,7 +138,7 @@ const ChampionsPoolComponent = ({
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{defaultTransition, delay: .25, duration: .3}}
+      transition={{ defaultTransition, delay: .25, duration: .3 }}
 
       className="mt-24">
       <ChampionsPool
@@ -234,9 +205,8 @@ const ImageComponent = ({
   position: string;
 }) => (
   <motion.div
-    className={`fixed top-0 -z-10 h-full w-3/12 ${
-      position === 'left' ? 'left-0' : 'right-0'
-    }`}
+    className={`fixed top-0 -z-10 h-full w-3/12 ${position === 'left' ? 'left-0' : 'right-0'
+      }`}
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0, transition: { duration: 0.2 } }}
@@ -248,11 +218,9 @@ const ImageComponent = ({
         .replace(/[\W_]+/g, '')}.jpg`}
       width={960}
       height={360}
-      priority
       quality={100}
-      className={`h-full w-full object-cover object-center opacity-50 ${
-        position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'
-      }`}
+      className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'
+        }`}
       alt={image}
     />
   </motion.div>

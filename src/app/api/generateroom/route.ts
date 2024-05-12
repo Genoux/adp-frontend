@@ -22,6 +22,7 @@ const supabase = createClient(
 
 const customConfig: Config = {
   dictionaries: [adjectives, colors, animals],
+  length: 2,
   separator: ' ',
   style: 'capital',
 };

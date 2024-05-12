@@ -89,6 +89,7 @@ export default function Room({ params }: RoomProps) {
 
             {isRoomView && (
               <>
+                
                 <motion.div
                   key="teamView"
                   initial={{ opacity: 0 }}
