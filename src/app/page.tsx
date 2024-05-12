@@ -7,8 +7,9 @@ import { useState } from 'react';
 import { RoomCreationForm } from '@/app/components/RoomCreationForm';
 import { RoomDisplay } from '@/app/components/RoomDisplay';
 import { BedDouble, ArrowLeft } from 'lucide-react';
+import { appVersion } from '@/app/utils/version';
 import Link from 'next/link';
-import { Logo } from "haq-assets"
+import { Logo } from 'haq-assets'
 
 interface Room {
   id: number;
@@ -102,10 +103,10 @@ function Home() {
             className='flex flex-col items-center mx-auto justify-center max-w-[980px] gap-12 mt-12'
           >
             <div className='flex flex-col items-center justify-center'>
-              <Link className="inline-flex items-center rounded-lg bg-muted px-2 py-1 text-sm font-medium gap-1 mb-4" href="http://tournoishaq.ca/" target='_blank'>
-                <Logo size={16} fill='#fff' />
+              <Link className="inline-flex items-center rounded-full bg-muted pl-2 pr-3 py-1 text-sm font-bold gap-1 mb-4" href="http://tournoishaq.ca/" target='_blank'>
+                  <Logo size={18} />
                 Tournois HAQ</Link>
-              <h1 className="text-center text-5xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1]">Aram Draft Pick <span className='text-xs tracking-normal'>v1.2</span></h1>
+              <h1 className="text-center text-5xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1]">Aram Draft Pick <span className='text-xs tracking-normal'>v{appVersion}</span></h1>
               <span className="max-w-[750px] text-center text-sm text-muted-foreground md:text-xl">Système de Pick & Ban Personnalisé pour ARAM avec 30 Champions Partagés</span>
             </div>
 
