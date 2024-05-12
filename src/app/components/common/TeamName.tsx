@@ -1,8 +1,8 @@
 import React from 'react';
 
 interface TeamNameProps {
-  color: string | undefined; // Add the color property
-  name: string | undefined; // Add the name property
+  color: string; // Add the color property
+  name: string; // Add the name property
 }
 
 const TeamName: React.FC<TeamNameProps> = ({

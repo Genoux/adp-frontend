@@ -3,7 +3,7 @@ import { Button } from '@/app/components/ui/button';
 import SocketContext from '@/app/context/SocketContext';
 import useEnsureContext from '@/app/hooks/useEnsureContext';
 import useTeams from '@/app/hooks/useTeams';
-import supabase from '@/app/lib/supabase/client';
+import { supabase } from '@/app/lib/supabase/client';
 import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
@@ -64,6 +64,7 @@ const ReadyView = () => {
       .eq('id', currentTeam.id)
       .select('*, room(*)')
       .single();
+    
 
     if (data && !error) {
       socket.emit('TEAM_READY', { roomid: room.id, teamid: currentTeam?.id });

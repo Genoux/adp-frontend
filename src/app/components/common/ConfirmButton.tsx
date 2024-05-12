@@ -44,7 +44,7 @@ const ConfirmButton = () => {
     return (
       <div className="flex flex-col items-center justify-center gap-2">
         <View size={21} />
-        <p className="text-center uppercase">Spectateur</p>
+        <p className="text-center uppercase">spectateur</p>
       </div>
     );
   const currentTeam = team.isturn ? team : otherTeam;

@@ -1,4 +1,4 @@
-import supabase from '@/app/lib/supabase/client';
+import { supabase } from '@/app/lib/supabase/client';
 
 export async function resetForPlanning(roomid: string) {
   // Reset room cycle and status
