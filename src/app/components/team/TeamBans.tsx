@@ -61,7 +61,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
 
   return (
     <motion.div
-      className={`flex h-full w-full gap-2 ${
+      className={`flex h-fit w-full gap-2 ${
         team.isturn || isDone ? 'opacity-100' : 'opacity-60'
       }`}
     >

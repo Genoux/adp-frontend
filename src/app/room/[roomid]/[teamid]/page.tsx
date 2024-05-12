@@ -17,7 +17,9 @@ import useTeamStore from '@/app/stores/teamStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import { defaultTransition } from '@/app/lib/animationConfig';
-
+import StateControllerButtons from '@/app/components/common/StateControllerButtons';
+//import useTeams from '@/app/hooks/useTeams';
+import GameStatusBar from '@/app/components/common/RoomHeader';
 interface RoomProps {
   params: {
     roomid: string;
@@ -25,11 +27,17 @@ interface RoomProps {
   };
 }
 
+
+interface Room {
+  [key: string]: any;
+}
+
 export default function Room({ params }: RoomProps) {
   const { roomid, teamid } = params;
   const { socket, isConnected } = useSocket(roomid);
   const { fetchTeams, isLoading, error, setCurrentTeamId } = useTeamStore();
   const { room, fetchRoom, isLoading: isLoadingRoom, error: errorRoom } = roomStore();
+  //const { currentTeam: team, redTeam, blueTeam } = useTeams();
 
   useEffect(() => {
     fetchTeams(roomid);
@@ -46,7 +54,8 @@ export default function Room({ params }: RoomProps) {
   const isRoomView = room && !isLobbyView && !isPlanningView && !isFinishView;
 
   return (
-    <main className="flex flex-col items-center justify-center">
+    <main>
+      <StateControllerButtons roomid={roomid} />
       <SocketContext.Provider value={socket}>
         <BlurHashProvider>
           <AnimatePresence mode='wait'>
@@ -56,8 +65,7 @@ export default function Room({ params }: RoomProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: .1, defaultTransition }}
-              >
+                transition={{ duration: .1, defaultTransition }}>
                 <LobbyView />
               </motion.div>
             )}
@@ -81,28 +89,36 @@ export default function Room({ params }: RoomProps) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: .1, defaultTransition }}
+                className='flex flex-col gap-12 pt-12 px-4'
               >
                 <PlanningView />
                 <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
               </motion.div>
             )}
 
+
             {isRoomView && (
-              <>
-                
-                <motion.div
-                  key="teamView"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: .1, defaultTransition }}
-                >
-                  <CanSelectProvider>
-                    <TeamView />
-                    <DraftView />
-                  </CanSelectProvider>
-                </motion.div>
-              </>
+              <motion.div
+                key="teamView"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: .1, defaultTransition }}
+                className=''
+              >
+                <CanSelectProvider>
+                  <div className='h-screen w-full'>
+                    <GameStatusBar className='fixed top-0 left-0' />
+
+                    <div className='mx-auto max-w-7xl h-screen flex flex-col justify-around pb-6 px-4 gap-4'>
+                      <TeamView className='mt-24' />
+                      <DraftView className='h-full' />
+                    </div>
+                  </div>
+
+
+                </CanSelectProvider>
+              </motion.div>
             )}
           </AnimatePresence>
         </BlurHashProvider>

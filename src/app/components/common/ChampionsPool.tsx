@@ -21,18 +21,20 @@ interface Team {
 interface BlurHashes {
   [key: string]: string;
 }
-interface HeroPoolProps {
+interface ChampionsPoolProps {
   team?: Team;
   selectedChampion?: string;
   canSelect?: boolean;
   handleClickedHero?: (hero: Hero) => void;
+  className?: string;
 }
 
-const ChampionsPool: React.FC<HeroPoolProps> = ({
+const ChampionsPool: React.FC<ChampionsPoolProps> = ({
   team,
   selectedChampion,
   canSelect,
-  handleClickedHero = () => {},
+  handleClickedHero = () => { },
+  className= '',
 }) => {
   const { room } = roomStore();
   const [hoveredHero, setHoveredHero] = useState<string | null>(null);
@@ -54,7 +56,7 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
       initial={{ opacity: 0, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ defaultTransition, delay: 0.25, duration: 0.25 }}
-      className="mb-4 flex min-h-[200px] flex-col overflow-y-auto px-6 lg:px-24"
+      className={`flex h-full flex-col overflow-y-auto ${className}`}
     >
       <div className="grid cursor-pointer grid-cols-10 gap-2">
         {(room.heroes_pool as unknown as Hero[]).map(
@@ -104,18 +106,6 @@ const ChampionsPool: React.FC<HeroPoolProps> = ({
                       .replace(/\s+/g, '')
                       .replace(/[\W_]+/g, '')}.jpg`}
                   />
-                  {/* <Image
-                    priority
-                    className='hidden'
-                    src={`/images/champions/tiles/${hero.id
-                      .toLowerCase()
-                      .replace(/\s+/g, '')
-                      .replace(/[\W_]+/g, '')}.jpg`}
-                    alt={hero.name}
-                    width={500}
-                    height={500}
-                  /> */}
-
                   <div className="my-auto flex items-center justify-center overflow-hidden">
                     <AnimatePresence>
                       <motion.div

@@ -35,11 +35,6 @@ const Spectator = ({ params }: SpectatorProps) => {
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [currentTeam, setCurrentTeam] = useState<any | null>(null);
 
-  const widthVariants = {
-    notTurn: { width: '6px' },
-    isTurn: { width: '125px' },
-  };
-
   useEffect(() => {
     fetchRoom(roomid);
     fetchTeams(roomid);
@@ -145,19 +140,11 @@ const Spectator = ({ params }: SpectatorProps) => {
             )}
           </div>
           <div>
-            <GameStatusBar
-              blueTeam={blueTeam}
-              redTeam={redTeam}
-              room={room}
-              widthVariants={widthVariants}
-              statusText={`Vous êtes spectateur de ${blueTeam?.name?.toUpperCase()} vs ${redTeam?.name?.toUpperCase()}`}
-            />
-            <div className="mt-24">
+            <GameStatusBar />
               <ChampionsPool
                 selectedChampion={selectedChampion}
                 canSelect={false}
               />
-            </div>
             <DraftView />
           </div>
         </BlurHashProvider>

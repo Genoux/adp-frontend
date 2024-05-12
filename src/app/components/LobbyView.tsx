@@ -39,7 +39,7 @@ const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
   );
 };
 
-const ReadyView = () => {
+const LobbyView = () => {
   const socket = useEnsureContext(SocketContext);
 
   const { room, error } = roomStore((state) => ({
@@ -76,7 +76,7 @@ const ReadyView = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ defaultTransition, delay: 0.25, duration: 0.25 }}
-      className='flex flex-col items-center justify-center h-screen'
+      className='flex flex-col items-center justify-center h-screen w-fit mx-auto'
     >
       <div className="border-b border-opacity-25 mb-4 pb-4 text-center">
         <h1 className="text-2xl font-bold">Salle d’attente</h1>
@@ -109,4 +109,4 @@ const ReadyView = () => {
   );
 };
 
-export default ReadyView;
+export default LobbyView;

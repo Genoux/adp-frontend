@@ -6,7 +6,7 @@ import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from '@/app/stores/roomStore';
 import { motion } from 'framer-motion';
 
-export const WaitingView = () => {
+export const PlanningView = () => {
   const { room } = roomStore();
 
   const { blueTeam, redTeam } = useTeams();
@@ -20,7 +20,7 @@ export const WaitingView = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ defaultTransition, delay: 0.25, duration: 1.25 }}
-      className="mb-4 mt-6 flex h-full flex-col items-center justify-start gap-4"
+      className="flex flex-col items-center justify-center gap-4 max-w-7xl mx-auto"
     >
       <div className="flex flex-col items-center gap-4">
         <Timer className="w-full" size="large" />
@@ -31,13 +31,13 @@ export const WaitingView = () => {
           </p>
         </div>
       </div>
-      <div className="flex w-full justify-between px-6 lg:px-24">
-        <TeamName name={blueTeam?.name} color={blueTeam?.color} />
-        <TeamName name={redTeam?.name} color={redTeam?.color} />
+      <div className="flex w-full justify-between">
+        <TeamName name={blueTeam?.name || ''} color={blueTeam?.color || ''} />
+        <TeamName name={redTeam?.name || ''} color={redTeam?.color || ''} />
       </div>
       <ChampionsPool />
     </motion.div>
   );
 };
 
-export default WaitingView;
+export default PlanningView;

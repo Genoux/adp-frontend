@@ -71,14 +71,14 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
         const isEmptySlot = !isClickedHeroSlot && !hero.id;
 
         const slotClassName = clsx(
-          'h-44 w-full rounded-md overflow-hidden relative',
+          'h-full min-h-[200px] w-full rounded-md overflow-hidden relative',
           isEmptySlot
             ? 'border border-white border-opacity-10'
             : 'border border-white border-opacity-0'
         );
 
         return (
-          <div key={index} className="relative h-44 w-full">
+          <div key={index} className="relative h-full w-full">
             {isBorderSlot && (
               <AnimatePresence>
                 <motion.div
@@ -91,7 +91,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                     repeat: Infinity,
                     repeatType: 'reverse',
                   }}
-                  className="glow-yellow-10 absolute left-0 top-0 z-50 h-44 w-full rounded-md border border-yellow bg-yellow-300 bg-opacity-10"
+                  className="glow-yellow-10 absolute left-0 top-0 z-50 min-h-[200px] h-full w-full rounded-md border border-yellow bg-yellow-300 bg-opacity-10"
                 ></motion.div>
               </AnimatePresence>
             )}

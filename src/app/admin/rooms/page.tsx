@@ -167,8 +167,7 @@ export default function RoomsPage() {
         animate={{ opacity: 1 }}
         transition={{ defaultTransition, delay: 0.1 }}
       >
-
-        <div className=" mt-24">
+        <div>
           <div className="flex flex-col">
             <div className="flex w-full mb-6 justify-between items-center">
               <div className='text-sm'>
