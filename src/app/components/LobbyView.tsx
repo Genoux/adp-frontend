@@ -101,7 +101,7 @@ const LobbyView = () => {
           </div>
         ) : (
           <Button size="lg" className="w-full" onClick={handleReadyClick}>
-            {'Confirmer prêt'}
+            <span>{'Confirmer prêt'}</span>
           </Button>
         )}
       </div>

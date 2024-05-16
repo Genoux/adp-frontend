@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import NextImage from 'next/image';
 import ChampionsPool from '@/app/components/common/ChampionsPool';
-import { useCanSelect } from '@/app/context/CanSelectContext';
+//import { useCanSelect } from '@/app/context/CanSelectContext';
 import useTeams from '@/app/hooks/useTeams';
 import { supabase } from '@/app/lib/supabase/client';
 import { roomStore } from '@/app/stores/roomStore';
@@ -22,7 +22,7 @@ type TeamViewProps = {
 
 const TeamView: React.FC<TeamViewProps> = ({ className }) => {
   const [selectedChampion, setSelectedChampion] = useState<string | null>(null);
-  const { canSelect, setCanSelect } = useCanSelect();
+ // const { canSelect, setCanSelect } = useCanSelect();
   const [currentImageBlue, setCurrentImageBlue] = useState<string>('');
   const [currentImageRed, setCurrentImageRed] = useState<string>('');
   const { room, isLoading } = roomStore(state => ({
@@ -32,11 +32,11 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
   const { currentTeam: team, otherTeam, blueTeam, redTeam } = useTeams();
   const currentTeam = team?.isturn ? team : otherTeam;
 
-  useEffect(() => {
-    if (team?.nb_turn! > 0) {
-      setTimeout(() => setCanSelect(true), 1000);
-    }
-  }, [setCanSelect, team]);
+  // useEffect(() => {
+  //   if (team?.nb_turn! > 0) {
+  //     setTimeout(() => setCanSelect(true), 1000);
+  //   }
+  // }, [setCanSelect, team]);
 
   useEffect(() => {
     setSelectedChampion(team?.clicked_hero || null);
@@ -65,8 +65,8 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
     <>
       {room?.status === 'ban' && <BanPhaseOverlay />}
       <AnimatePresence>
-        <ImageComponent image={currentImageBlue} position="left" />
-        <ImageComponent image={currentImageRed} position="right" />
+        <ImageComponent key={`blue-${currentImageBlue}`} image={currentImageBlue} position="left" />
+        <ImageComponent key={`red-${currentImageRed}`} image={currentImageRed} position="right" />
       </AnimatePresence>
       <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -77,7 +77,6 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
         <ChampionsPool
           team={team}
           selectedChampion={selectedChampion || ''}
-          canSelect={canSelect}
           handleClickedHero={handleClickedHero}
         />
       </motion.div>
@@ -109,16 +108,14 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ image, position }) => (
   >
     {image && (
     <NextImage
-    src={`/images/champions/splash/${image?.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
-    width={960}
-    height={360}
-    quality={100}
-    className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
-    alt={image}
-      />
-    )  
-    }
-    
+      src={`/images/champions/splash/${image?.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
+      width={960}
+      height={360}
+      quality={100}
+      className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+      alt={image}
+    />
+    )}
   </motion.div>
 );
 

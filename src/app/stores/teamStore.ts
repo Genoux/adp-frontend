@@ -1,8 +1,18 @@
 import { supabase } from '@/app/lib/supabase/client';
-import { Database } from '@/app/types/supabase';
+//import { Database } from '@/app/types/supabase';
 import { create } from 'zustand';
 
-type Team = Database['aram_draft_pick']['Tables']['teams']['Row'];
+type Team = {
+  id: number;
+  isturn: boolean;
+  nb_turn: number;
+  name: string | null;
+  clicked_hero: string | null;
+  room: string;
+  ready: boolean;
+  color: string | null;
+  canSelect: boolean;
+};
 
 interface TeamState {
   teams: Team[] | null;

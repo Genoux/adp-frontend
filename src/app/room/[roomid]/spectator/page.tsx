@@ -7,7 +7,7 @@ import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
 import Planningview from '@/app/components/PlanningView';
 import { BlurHashProvider } from '@/app/context/BlurHashContext';
-import { CanSelectProvider } from '@/app/context/CanSelectContext';
+//import { CanSelectProvider } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
@@ -105,7 +105,6 @@ const Spectator = ({ params }: SpectatorProps) => {
   }
 
   return (
-    <CanSelectProvider>
       <SocketContext.Provider value={socket}>
         <BlurHashProvider>
           {room?.status === 'ban' && (
@@ -143,13 +142,11 @@ const Spectator = ({ params }: SpectatorProps) => {
             <GameStatusBar />
               <ChampionsPool
                 selectedChampion={selectedChampion}
-                canSelect={false}
               />
             <DraftView />
           </div>
         </BlurHashProvider>
       </SocketContext.Provider>
-    </CanSelectProvider>
   );
 };
 

@@ -9,7 +9,7 @@ import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
 import TeamView from '@/app/components/TeamView';
 import { BlurHashProvider } from '@/app/context/BlurHashContext';
-import { CanSelectProvider } from '@/app/context/CanSelectContext';
+//import { CanSelectProvider } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
 import { roomStore } from '@/app/stores/roomStore';
@@ -48,10 +48,10 @@ export default function Room({ params }: RoomProps) {
   if (error || errorRoom) return <ErrorMessage />;
   if (isLoading || isLoadingRoom || !isConnected) return <LoadingScreen />;
 
-  const isLobbyView = room?.cycle === -1;
-  const isPlanningView = room?.cycle === 0;
+  const isLobbyView = room?.status === "waiting"
+  const isPlanningView = room?.status === "planning";
   const isFinishView = room?.status === 'done';
-  const isRoomView = room && !isLobbyView && !isPlanningView && !isFinishView;
+  const isRoomView = room && room?.status === 'select' || room?.status === 'ban';
 
   return (
     <main>
@@ -65,7 +65,7 @@ export default function Room({ params }: RoomProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: .1, defaultTransition }}>
+                transition={{ duration: .1 }}>
                 <LobbyView />
               </motion.div>
             )}
@@ -76,7 +76,7 @@ export default function Room({ params }: RoomProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: .2, defaultTransition }}
+                transition={{ duration: .1, defaultTransition }}
               >
                 <FinishView />
               </motion.div>
@@ -88,7 +88,7 @@ export default function Room({ params }: RoomProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: .1, defaultTransition }}
+                transition={{ duration: .1 }}
                 className='flex flex-col gap-12 pt-12 px-4'
               >
                 <PlanningView />
@@ -106,7 +106,6 @@ export default function Room({ params }: RoomProps) {
                 transition={{ duration: .1, defaultTransition }}
                 className=''
               >
-                <CanSelectProvider>
                   <div className='h-screen w-full'>
                     <GameStatusBar className='fixed top-0 left-0' />
 
@@ -116,8 +115,6 @@ export default function Room({ params }: RoomProps) {
                     </div>
                   </div>
 
-
-                </CanSelectProvider>
               </motion.div>
             )}
           </AnimatePresence>

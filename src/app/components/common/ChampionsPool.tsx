@@ -24,7 +24,6 @@ interface BlurHashes {
 interface ChampionsPoolProps {
   team?: Team;
   selectedChampion?: string;
-  canSelect?: boolean;
   handleClickedHero?: (hero: Hero) => void;
   className?: string;
 }
@@ -32,7 +31,6 @@ interface ChampionsPoolProps {
 const ChampionsPool: React.FC<ChampionsPoolProps> = ({
   team,
   selectedChampion,
-  canSelect,
   handleClickedHero = () => { },
   className= '',
 }) => {
@@ -92,7 +90,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                     team?.isturn &&
                     room.status === 'ban',
                 })}
-                onClick={canSelect ? () => handleClickedHero(hero) : undefined}
+                onClick={team?.canSelect ? () => handleClickedHero(hero) : undefined}
               >
                 <motion.div className="relative z-10 overflow-hidden rounded-lg transition-all">
                   <ImageHash
@@ -109,9 +107,9 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                   <div className="my-auto flex items-center justify-center overflow-hidden">
                     <AnimatePresence>
                       <motion.div
-                        transition={{ duration: 0.2, defaultTransition }}
+                        transition={{ duration: 0.1, defaultTransition}}
                         whileHover={
-                          hero.name !== selectedChampion || !canSelect
+                          hero.name !== selectedChampion || !team?.canSelect
                             ? {
                                 opacity: 1,
                               }
@@ -125,8 +123,8 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                             .replace(/\s+/g, '')
                             .replace(/[\W_]+/g, '')}.jpg`}
                           alt={hero.name}
-                          width={500}
-                          height={500}
+                          width={300}
+                          height={300}
                           className="absolute h-full w-full scale-110 object-cover"
                         />
                       </motion.div>
@@ -135,10 +133,10 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.5 }}
-                        exit={{ opacity: 0 }}
+                        exit={{ opacity: 0, transition: { duration: 0.02 } }}
                         transition={{
-                          duration: 0.2,
-                          ease: [0.4, 0.0, 0.2, 1],
+                          duration: 0.1,
+                          defaultTransition,
                         }}
                         className={clsx(
                           `absolute left-0 top-0 z-50 h-full w-full rounded-lg bg-gradient-to-t`,
@@ -156,9 +154,9 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                       <motion.div
                         initial={{ opacity: 0, y: 5, zIndex: 50 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
+                        exit={{ opacity: 0, transition: { duration: 0.02 }, }}
                         transition={{
-                          duration: 0.2,
+                          duration: 0.1,
                           defaultTransition,
                         }}
                         className={`bg- absolute top-0 z-40 flex h-full items-center text-center text-sm font-bold text-white`}
@@ -177,11 +175,10 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                             exit={{
                               scale: 1,
                               opacity: 0,
-                              transition: { duration: 0.2 },
+                              transition: { duration: 0.02 },
                             }}
                             transition={{
-                              duration: 0.2,
-                              ease: [0.4, 0.0, 0.2, 1],
+                              duration: 0.1,
                             }}
                             className="absolute left-0 top-0 mx-auto h-full w-full object-cover"
                           >
@@ -191,8 +188,8 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                                 .replace(/\s+/g, '')
                                 .replace(/[\W_]+/g, '')}.jpg`}
                               alt={hero.name}
-                              width={500}
-                              height={500}
+                              width={300}
+                              height={300}
                               priority
                               className="h-full w-full object-cover"
                             />

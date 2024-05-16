@@ -1,7 +1,7 @@
 // ConfirmButton.tsx
 import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { Button } from '@/app/components/ui/button';
-import { useCanSelect } from '@/app/context/CanSelectContext';
+//import { useCanSelect } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useEnsureContext from '@/app/hooks/useEnsureContext';
 import useTeams from '@/app/hooks/useTeams';
@@ -12,7 +12,7 @@ import React, { useEffect } from 'react';
 
 const ConfirmButton = () => {
   const socket = useEnsureContext(SocketContext);
-  const { canSelect, setCanSelect } = useCanSelect();
+ // const { canSelect, setCanSelect } = useCanSelect();
 
   const { room } = roomStore((state) => ({
     room: state.room,
@@ -22,21 +22,29 @@ const ConfirmButton = () => {
 
   const { currentTeam: team, otherTeam } = useTeams();
 
+
+
+  // useEffect(() => {
+  //   if (team) {
+  //     setCanSelect(team.canSelect);
+  //   }
     
-  useEffect(() => {
-    const handleButton = () => {
-      console.log('TIMER_FALSE');
-      setCanSelect(false);
-    };
-    socket.on('TIMER_FALSE', handleButton);
+  // }, [setCanSelect]);
+    
+  // useEffect(() => {
+  //   const handleButton = () => {
+  //     console.log('TIMER_FALSE');
+  //     setCanSelect(false);
+  //   };
+  //   socket.on('TIMER_FALSE', handleButton);
 
-    return () => {
-      socket.off('TIMER_FALSE', handleButton);
-    };
-  }, [setCanSelect, socket]);
+  //   return () => {
+  //     socket.off('TIMER_FALSE', handleButton);
+  //   };
+  // }, [setCanSelect, socket]);
 
   useEffect(() => {
-    setCanSelect(true);
+    //setCanSelect(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -61,10 +69,9 @@ const ConfirmButton = () => {
 
 
   const handleConfirmSelection = async () => {
+   // setCanSelect(false);
     if (socket) {
-      setCanSelect(false);
-      socket?.emit('STOP_TIMER', { roomid: room?.id });
-
+      //socket?.emit('STOP_TIMER', { roomid: room?.id });
       socket.emit('SELECT_CHAMPION', {
         teamid: team?.id,
         roomid: room?.id,
@@ -72,7 +79,7 @@ const ConfirmButton = () => {
       });
     }
   };
-
+  
   return (
     <div className="flex w-full justify-center">
       {team.isturn ? (
@@ -88,10 +95,10 @@ const ConfirmButton = () => {
               onClick={handleConfirmSelection}
               className="w-64"
               disabled={
-                !currentTeam?.clicked_hero || !canSelect || !team.isturn
+                !currentTeam?.clicked_hero || !team.canSelect
               }
             >
-              {!canSelect ? (
+              {!team.canSelect ? (
                 <LoadingCircle color="black" size="w-4 h-4" />
               ) : (
                 <>{buttonText}</>

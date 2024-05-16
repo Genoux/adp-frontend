@@ -1,5 +1,5 @@
 const defaultTransition = {
-  duration: 0.2,
+  duration: 0.12,
   ease: [0.585, 0.535, 0.23, 0.85],
 };
 //0.875, 0.130, 0.655, 0.875

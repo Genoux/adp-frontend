@@ -99,7 +99,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
               {isClickedHeroSlot && (
                 <>
                   <motion.div
-                    key="clicked_hero"
+                    key={team.clicked_hero}
                     initial={{ opacity: 0, scale: 1.3, zIndex: 1 }}
                     animate={{ opacity: 1, scale: 1.3 }}
                     exit={{
@@ -130,7 +130,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
               {hero.id && (
                 <>
                   <motion.div
-                    key="hero"
+                    key={hero.id}
                     initial={{ opacity: 1, scale: 1.3, zIndex: 2 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{

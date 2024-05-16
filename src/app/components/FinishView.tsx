@@ -26,13 +26,15 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
       <p className='text-xl font-black uppercase'>{hero.name}</p>
     </div>
     <div className="absolute top-0 left-0 w-full h-full">
-      <Image
-        src={`/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
-        alt={hero.name}
-        layout="fill"
-        objectFit="cover"
-        objectPosition='center'
-      />
+      {hero.id &&
+        <Image
+          src={`/images/champions/splash/${hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
+          alt={hero.name}
+        fill
+        style={{ objectFit: "cover" }}
+        sizes='100% 100%'
+        />
+      }
     </div>
   </motion.div>
 );
@@ -79,7 +81,7 @@ const FinishView: React.FC = () => {
   return (
     <div
       className="flex flex-col items-center justify-center max-w-7xl mx-auto">
-        <AnimatePresence>
+      <AnimatePresence>
         {showTitle && (
           <motion.div
             variants={{
@@ -103,28 +105,28 @@ const FinishView: React.FC = () => {
       {showTeams && (
         <div className="flex w-full justify-center gap-6 pt-6 pb-6 items-center">
           <div className='w-full'>
-          <motion.div
+            <motion.div
               initial={{ x: -100, opacity: 0 }}
-              animate={{x: 0, opacity: 1 }}
+              animate={{ x: 0, opacity: 1 }}
               transition={{ defaultTransition, delay: 1, duration: 1 }}
               className='-z-10 fixed left-0 top-0 w-1/2 h-full border-l-8 border-blue-600 bg-gradient-to-r from-[#0f9efd15] to-transparent'></motion.div>
-          <TeamDisplay team={blueTeam} position="start" />
+            <TeamDisplay team={blueTeam} position="start" />
           </div>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ defaultTransition, delay: 2, duration: 0.2 }}
             className="text-5xl font-black uppercase">VS</motion.div>
-          
+
           <div className='w-full'>
             <motion.div
               initial={{ x: 100, opacity: 0 }}
-              animate={{x: 0, opacity: 1 }}
+              animate={{ x: 0, opacity: 1 }}
               transition={{ defaultTransition, delay: 1, duration: 1 }}
               className='-z-10 fixed right-0 top-0 w-1/2 h-full border-r-8 border-red-600 bg-gradient-to-l from-[#ff22121c] to-transparent'></motion.div>
             <TeamDisplay team={redTeam} position="end" reverseAnimation={true} />
           </div>
-         
+
         </div>
       )}
     </div>
