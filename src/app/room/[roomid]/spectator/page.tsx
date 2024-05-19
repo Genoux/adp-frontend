@@ -2,7 +2,7 @@
 
 import ChampionsPool from '@/app/components/common/ChampionsPool';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
-import GameStatusBar from '@/app/components/common/RoomStatusBar';
+import RoomStatusBar from '@/app/components/common/RoomStatusBar';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
 import Planningview from '@/app/components/PlanningView';
@@ -15,7 +15,8 @@ import useTeamStore from '@/app/stores/teamStore';
 import { Eye } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-
+import { motion, AnimatePresence } from 'framer-motion';
+import { defaultTransition } from '@/app/lib/animationConfig';
 interface SpectatorProps {
   params: {
     roomid: string;
@@ -29,14 +30,12 @@ const Spectator = ({ params }: SpectatorProps) => {
   const { room, fetchRoom, isLoading } = roomStore();
   const { redTeam, blueTeam } = useTeams();
 
-  const [selectedChampion, setSelectedChampion] = useState<string>('');
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [currentTeam, setCurrentTeam] = useState<any | null>(null);
 
   useEffect(() => {
     fetchRoom(roomid);
     fetchTeams(roomid);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -45,7 +44,6 @@ const Spectator = ({ params }: SpectatorProps) => {
       if (currentTeam) {
         setCurrentImage(currentTeam.clicked_hero || '');
         setCurrentTeam(currentTeam);
-        setSelectedChampion(currentTeam.clicked_hero || '');
       }
     }
   }, [teams]);
@@ -71,7 +69,7 @@ const Spectator = ({ params }: SpectatorProps) => {
 
   if (room?.status === 'waiting') {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
+      <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col items-center justify-center overflow-hidden">
         <Eye size={40} className="mb-4" />
         <h1 className="text-2xl font-bold">Vous êtes spectateur</h1>
         <div className="opacity-50">
@@ -90,7 +88,7 @@ const Spectator = ({ params }: SpectatorProps) => {
     return (
       <SocketContext.Provider value={socket}>
         <BlurHashProvider>
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col gap-12 px-4 pt-12">
             <Planningview />
           </div>
         </BlurHashProvider>
@@ -105,6 +103,7 @@ const Spectator = ({ params }: SpectatorProps) => {
   return (
     <SocketContext.Provider value={socket}>
       <BlurHashProvider>
+
         <div
           className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 -z-10 h-full w-3/12`}
         >
@@ -116,20 +115,33 @@ const Spectator = ({ params }: SpectatorProps) => {
               width={500}
               height={500}
               rel="preload"
-              className={`h-full w-full object-cover object-center opacity-50 ${
-                currentTeam?.color === 'blue'
-                  ? 'fade-gradient-left'
-                  : 'fade-gradient-right'
-              }`}
+              className={`h-full w-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue'
+                ? 'fade-gradient-left'
+                : 'fade-gradient-right'
+                }`}
               alt={``}
             />
           )}
         </div>
-        <div>
-          <GameStatusBar />
-          <ChampionsPool selectedChampion={selectedChampion} />
-          <DraftView />
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ defaultTransition }}
+          >
+            <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
+              <RoomStatusBar className="z-90 fixed left-0 top-0" />
+              <section className="flex h-full flex-col gap-4 p-4">
+                <div className="h-12"></div>
+                <div className="flex h-full flex-col justify-between gap-4">
+                  <ChampionsPool />
+                  <DraftView />
+                </div>
+              </section>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </BlurHashProvider>
     </SocketContext.Provider>
   );

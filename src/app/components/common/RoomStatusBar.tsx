@@ -70,15 +70,17 @@ const RoomStatusBar: React.FC<RoomStatusBarProps> = ({ className }) => {
 
   return (
     <div
-      className={`box-border w-full border-b border-neutral-400 border-opacity-20 bg-black/40 py-3 backdrop-blur-md ${className}`}
+      className={`z-90 box-border w-full border-b border-neutral-400 border-opacity-20 bg-black/40 py-3 backdrop-blur-md ${className}`}
     >
       <div className="mx-auto grid w-full max-w-screen grid-cols-3 items-center justify-center px-4">
         <TeamIndicator team={blueTeam as Team} orientation="right" />
         <div className="flex w-full flex-col items-center">
           <Timer />
-          <p className="text-center text-xs font-normal text-[#737373]">
-            {getStatusText(currentTeam?.color as any, room?.status as any)}
-          </p>
+          {currentTeam && (
+            <p className="text-center text-xs font-normal text-[#737373]">
+            {getStatusText(currentTeam?.color ?? '', { status: room?.status ?? '' })}
+            </p>
+          )}
         </div>
         <TeamIndicator team={redTeam as Team} orientation="left" />
       </div>
