@@ -2,8 +2,8 @@ import {
   setDraft,
   setFinish,
   setPlanning,
-  userTrigger,
   setWaiting,
+  userTrigger,
 } from '@/app/utils/stateController';
 import { useEffect, useState } from 'react';
 
@@ -56,7 +56,7 @@ const StateControllerButtons: React.FC<StateControllerButtonsProps> = ({
   if (!isVisible) return null;
 
   return (
-    <div className="flex flex-row gap-4 hidden">
+    <div className="flex hidden flex-row gap-4">
       <button className="btn btn-primary" onClick={() => setWaiting(roomid)}>
         Set Waiting
       </button>

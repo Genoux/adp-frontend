@@ -12,7 +12,6 @@ import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
 import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
-import { motion } from 'framer-motion';
 import { Eye } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -54,7 +53,7 @@ const Spectator = ({ params }: SpectatorProps) => {
   if (!isConnected || isLoading || loadTeam) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        <div className='flex gap-1'>
+        <div className="flex gap-1">
           <p>Connection en cours</p>
           <div className="sending-animation">
             <span className="sending-animation-dot">.</span>
@@ -66,7 +65,7 @@ const Spectator = ({ params }: SpectatorProps) => {
     );
   }
 
-  if (!blueTeam || !redTeam|| !room ) {
+  if (!blueTeam || !redTeam || !room) {
     return <ErrorMessage />;
   }
 
@@ -104,34 +103,35 @@ const Spectator = ({ params }: SpectatorProps) => {
   }
 
   return (
-      <SocketContext.Provider value={socket}>
-        <BlurHashProvider>
-          <div className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 -z-10 h-full w-3/12`}>
-            {currentImage && (
-              <Image
-                src={`/images/champions/splash/${currentImage
-                  ?.toLowerCase()
-                  .replace(/\s+/g, '')}.jpg`}
-                width={500}
-                height={500}
-                rel="preload"
-                className={`h-full w-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue'
-                    ? 'fade-gradient-left'
-                    : 'fade-gradient-right'
-                  }`}
-                alt={``}
-              />
-            )}
-          </div>
-          <div>
-            <GameStatusBar />
-              <ChampionsPool
-                selectedChampion={selectedChampion}
-              />
-            <DraftView />
-          </div>
-        </BlurHashProvider>
-      </SocketContext.Provider>
+    <SocketContext.Provider value={socket}>
+      <BlurHashProvider>
+        <div
+          className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 -z-10 h-full w-3/12`}
+        >
+          {currentImage && (
+            <Image
+              src={`/images/champions/splash/${currentImage
+                ?.toLowerCase()
+                .replace(/\s+/g, '')}.jpg`}
+              width={500}
+              height={500}
+              rel="preload"
+              className={`h-full w-full object-cover object-center opacity-50 ${
+                currentTeam?.color === 'blue'
+                  ? 'fade-gradient-left'
+                  : 'fade-gradient-right'
+              }`}
+              alt={``}
+            />
+          )}
+        </div>
+        <div>
+          <GameStatusBar />
+          <ChampionsPool selectedChampion={selectedChampion} />
+          <DraftView />
+        </div>
+      </BlurHashProvider>
+    </SocketContext.Provider>
   );
 };
 

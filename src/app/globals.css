@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -51,21 +49,20 @@
   }
 }
 
+@layer base {
+  .dark {
+    --card-empty: 240, 19%, 11%, 1;
+    --main: 70, 97%, 60%, 1;
+    --draft-empty: 240, 19%, 11%, 1;
+    --yellow: 70, 97%, 60%, 1;
+    --yellow-hover: 70, 97%, 50%, 1;
+    --yellow-text: 70, 59%, 4%, 1;
+    --yellow-second: 61, 100%, 40%, 1;
+    --yellow-transparent: 70, 97%, 60%, 0.5;
 
-@layer base { 
- .dark {
-  --card-empty: 240, 19%, 11%, 1;
-  --main: 70, 97%, 60%, 1;
-  --draft-empty: 240, 19%, 11%, 1;
-  --yellow: 70, 97%, 60%, 1;
-  --yellow-hover: 70, 97%, 50%, 1;
-  --yellow-text: 70, 59%, 4%, 1;
-  --yellow-second: 61, 100%, 40%, 1;
-  --yellow-transparent: 70, 97%, 60%, 0.5;
-
-  --red: 0, 80%, 52%, 1;
-  --blue: 212, 96%, 57%, 1;
- }
+    --red: 0, 80%, 52%, 1;
+    --blue: 212, 96%, 57%, 1;
+  }
 }
 
 body,

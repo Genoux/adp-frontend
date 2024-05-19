@@ -1,6 +1,7 @@
+import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
-import { roomStore } from '@/app/stores/roomStore';
+
 interface ArrowAnimationProps {
   teamIsTurn?: boolean | null | undefined;
   orientation?: 'left' | 'right';

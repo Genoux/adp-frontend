@@ -25,7 +25,7 @@ const ConfirmButton = () => {
     setLocalCanSelect(team?.canSelect as boolean);
   }, [team]);
 
-  if(isLoading) return <div>Loading...</div>; 
+  if (isLoading) return <div>Loading...</div>;
 
   if (!team)
     return (
@@ -44,8 +44,7 @@ const ConfirmButton = () => {
       : 'Confirmer la Selection'
     : `C'est à l'équipe ${otherTeam?.color} de ${
         isBanPhase ? 'bannir' : 'choisir'
-    }`;
-
+      }`;
 
   const handleConfirmSelection = async () => {
     // setCanSelect(false);
@@ -59,30 +58,29 @@ const ConfirmButton = () => {
       });
     }
   };
-  
+
   return (
     <motion.div
-    initial={{ opacity: 0 }} // start at half the size
-    animate={{ opacity: 1 }} // animate to full size
-    transition={{ duration: 0.15, delay: 0.2}}
-      className="flex w-full justify-center">
+      initial={{ opacity: 0 }} // start at half the size
+      animate={{ opacity: 1 }} // animate to full size
+      transition={{ duration: 0.15, delay: 0.2 }}
+      className="flex w-full justify-center"
+    >
       {team.isturn ? (
-          <div>
-            <Button
-              size="lg"
-              onClick={handleConfirmSelection}
-              className="w-64"
-              disabled={
-                !currentTeam?.clicked_hero || !team.canSelect
-              }
-            >
-              {!team.canSelect || !localCanSelect ? (
-                <LoadingCircle color="black" size="w-4 h-4" />
-              ) : (
-                <>{buttonText}</>
-              )}
-            </Button>
-          </div>
+        <div>
+          <Button
+            size="lg"
+            onClick={handleConfirmSelection}
+            className="w-64"
+            disabled={!currentTeam?.clicked_hero || !team.canSelect}
+          >
+            {!team.canSelect || !localCanSelect ? (
+              <LoadingCircle color="black" size="w-4 h-4" />
+            ) : (
+              <>{buttonText}</>
+            )}
+          </Button>
+        </div>
       ) : (
         <div className="flex w-full flex-col items-center justify-center">
           <p className="text-sm opacity-80">Ce n’est pas votre tour</p>

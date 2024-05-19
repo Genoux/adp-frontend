@@ -1,27 +1,27 @@
 import { supabase } from '@/app/lib/supabase/client';
 
-const local = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:4000';
-console.log("local:", local);
+const local =
+  process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:4000';
+console.log('local:', local);
 
 const myHeaders = new Headers();
-myHeaders.append("Content-Type", "");
+myHeaders.append('Content-Type', '');
 
-type RequestRedirect = "follow" | "error" | "manual";
+type RequestRedirect = 'follow' | 'error' | 'manual';
 type RequestInit = {
-  method: "POST";
+  method: 'POST';
   headers: Headers;
   redirect: RequestRedirect | undefined;
 };
 
 const requestOptions: RequestInit = {
-  method: "POST",
+  method: 'POST',
   headers: myHeaders,
-  redirect: "follow" as RequestRedirect | undefined
+  redirect: 'follow' as RequestRedirect | undefined,
 };
 
-
 async function resetArray(roomid: string): Promise<void> {
-  console.log("resetArray - roomid:", roomid);
+  console.log('resetArray - roomid:', roomid);
   try {
     // Fetch current heroes_pool from the room
     const { data: room, error: fetchError } = await supabase
@@ -69,7 +69,10 @@ export async function setWaiting(roomid: string): Promise<void> {
   try {
     await resetArray(roomid);
 
-    const response = await fetch(`${local}/api/waiting?roomid=${roomid}`, requestOptions);
+    const response = await fetch(
+      `${local}/api/waiting?roomid=${roomid}`,
+      requestOptions
+    );
 
     if (!response.ok) {
       throw new Error('Error setting waiting phase');
@@ -80,7 +83,7 @@ export async function setWaiting(roomid: string): Promise<void> {
 }
 
 export async function setPlanning(roomid: string): Promise<void> {
-  console.log("setPlanning - roomid:", roomid);
+  console.log('setPlanning - roomid:', roomid);
   try {
     const response = await fetch(`${local}/api/planning?roomid=${roomid}`, {
       method: 'POST',
@@ -89,7 +92,6 @@ export async function setPlanning(roomid: string): Promise<void> {
     if (!response.ok) {
       throw new Error('Error setting planning phase');
     }
-
   } catch (error) {
     console.error('Error setting planning phase:', error);
   }

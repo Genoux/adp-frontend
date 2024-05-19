@@ -62,7 +62,6 @@ const LobbyView = () => {
       .eq('id', currentTeam.id)
       .select('*, room(*)')
       .single();
-    
 
     if (data && !error) {
       socket.emit('TEAM_READY', { roomid: room.id, teamid: currentTeam?.id });
@@ -70,8 +69,8 @@ const LobbyView = () => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center h-screen w-fit mx-auto'>
-      <div className="border-b border-opacity-25 mb-4 pb-4 text-center">
+    <div className="mx-auto flex h-screen w-fit flex-col items-center justify-center">
+      <div className="mb-4 border-b border-opacity-25 pb-4 text-center">
         <h1 className="text-2xl font-bold">Salle d’attente</h1>
         <p className="text-sm font-normal opacity-50">
           {'En attente que les deux équipes soient prêtes'}

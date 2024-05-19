@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
 import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+
 interface Hero {
   name: string;
   id: string;
@@ -32,35 +33,54 @@ const TeamBans: React.FC<Team> = ({ team }) => {
   }, [team.clicked_hero]);
 
   return (
-    <motion.div
-      className="flex h-full w-full gap-2">
+    <motion.div className="flex h-full w-full gap-2">
       {Array.from({ length: 3 }).map((_, index) => {
         const hero = team.heroes_ban[index];
         const isBorderSlot = index === borderIndex;
         const isEmptySlot = !isBorderSlot && !hero.id;
-        const imageSrc = `/images/champions/splash/${hero.id ? hero.id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '') : 'placeholder'}.jpg`;
-        const ClickedHero = `/images/champions/splash/${team.clicked_hero ? team.clicked_hero.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '') : 'placeholder'}.jpg`;
+        const imageSrc = `/images/champions/splash/${
+          hero.id
+            ? hero.id
+                .toLowerCase()
+                .replace(/\s+/g, '')
+                .replace(/[\W_]+/g, '')
+            : 'placeholder'
+        }.jpg`;
+        const ClickedHero = `/images/champions/splash/${
+          team.clicked_hero
+            ? team.clicked_hero
+                .toLowerCase()
+                .replace(/\s+/g, '')
+                .replace(/[\W_]+/g, '')
+            : 'placeholder'
+        }.jpg`;
 
         return (
-
           <motion.div
             animate={{ opacity: !team.isturn ? 0.8 : 1 }}
-            key={index} className="relative h-full w-full overflow-hidden">
+            key={index}
+            className="relative h-full w-full overflow-hidden"
+          >
             {isBorderSlot && (
               <AnimatePresence>
-                <div className="flex items-end justify-center pb-6 absolute bottom-0 h-full w-full left-0 right-0 z-50 text-center text-sm text-white">
+                <div className="absolute bottom-0 left-0 right-0 z-50 flex h-full w-full items-end justify-center pb-6 text-center text-sm text-white">
                   {team.clicked_hero}
                 </div>
-                <div className='relative overflow-hidden w-full h-full'>
+                <div className="relative h-full w-full overflow-hidden">
                   <motion.div
                     animate={{ opacity: [0.2, 0.7] }}
-                    transition={{ duration: 1, repeat: Infinity, repeatType: 'reverse' }}
-                    className="glow-red-10 absolute inset-0 z-40 border border-red bg-gradient-to-t from-red to-transparent bg-opacity-10"
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      repeatType: 'reverse',
+                    }}
+                    className="glow-red-10 absolute inset-0 z-40 border border-red bg-opacity-10 bg-gradient-to-t from-red to-transparent"
                   />
                   {team.clicked_hero && (
                     <motion.div
                       className="absolute inset-0 z-10"
-                      initial={{ scale: 1.2 }}>
+                      initial={{ scale: 1.2 }}
+                    >
                       <Image
                         alt={team.clicked_hero}
                         src={ClickedHero}
@@ -73,16 +93,25 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                 </div>
               </AnimatePresence>
             )}
-            <div className={clsx("relative h-full overflow-hidden border bg-black bg-opacity-20", {
-              'border border-white border-opacity-10': isEmptySlot,
-              'border border-white border-opacity-0': !isEmptySlot
-            })}>
+            <div
+              className={clsx(
+                'relative h-full overflow-hidden border bg-black bg-opacity-20',
+                {
+                  'border border-white border-opacity-10': isEmptySlot,
+                  'border border-white border-opacity-0': !isEmptySlot,
+                }
+              )}
+            >
               {hero.id && (
                 <motion.div
-                  className="h-full w-full absolute top-0 left-0 grayscale"
+                  className="absolute left-0 top-0 h-full w-full grayscale"
                   initial={{ scale: 1.2 }}
                   animate={{ scale: 1 }}
-                  transition={{ duration: 0.5, ease: [1, -0.6, 0.3, 1.2], delay: 0.2 }}
+                  transition={{
+                    duration: 0.5,
+                    ease: [1, -0.6, 0.3, 1.2],
+                    delay: 0.2,
+                  }}
                 >
                   <Image
                     alt={hero.name}
@@ -91,10 +120,9 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                     objectFit="cover"
                     quality={80}
                   />
-
                 </motion.div>
               )}
-              <div className="flex items-end justify-center pb-6 absolute bottom-0 h-full w-full left-0 right-0 z-50 text-center text-sm text-white bg-gradient-to-t from-black to-transparent">
+              <div className="absolute bottom-0 left-0 right-0 z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-black to-transparent pb-6 text-center text-sm text-white">
                 {hero.name}
               </div>
             </div>

@@ -1,8 +1,8 @@
 // hooks/useRedirectIfLoggedIn.js
 
-import { useEffect } from 'react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useEffect } from 'react';
 
 // Redirects logged-in users to the specified path
 export const useRedirectIfLoggedIn = (redirectTo: string) => {
@@ -11,7 +11,9 @@ export const useRedirectIfLoggedIn = (redirectTo: string) => {
 
   useEffect(() => {
     const redirectIfLoggedIn = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         try {
           router.push(redirectTo);

@@ -1,11 +1,11 @@
 import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 import Timer from '@/app/components/common/RoomTimer';
 import TeamName from '@/app/components/common/TeamName';
+import useTeams from '@/app/hooks/useTeams';
 import { defaultTransition } from '@/app/lib/animationConfig';
+import { roomStore } from '@/app/stores/roomStore';
 import { motion } from 'framer-motion';
 import React from 'react';
-import useTeams from '@/app/hooks/useTeams';
-import { roomStore } from '@/app/stores/roomStore';
 
 interface Team {
   [key: string]: any;
@@ -15,7 +15,6 @@ interface TeamIndicatorProps {
   team: Team;
   orientation: 'left' | 'right';
 }
-
 
 const getStatusText = (color: string, room: { status: string }) => {
   const isBanPhase = room?.status === 'ban';
@@ -29,13 +28,8 @@ const getStatusText = (color: string, room: { status: string }) => {
   return '';
 };
 
-
 // Component for the team indicator with arrow and name
-const TeamIndicator: React.FC<TeamIndicatorProps> = ({
-  team,
-  orientation,
-}) => {
-
+const TeamIndicator: React.FC<TeamIndicatorProps> = ({ team, orientation }) => {
   return (
     <div
       className={`flex items-center gap-2 ${
@@ -55,10 +49,7 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({
           animate={{ opacity: 1, x: 0 }} // animate to the original position
           transition={{ delay: 0.4, defaultTransition }}
         >
-          <ArrowAnimation
-            teamIsTurn={team?.isturn}
-            orientation={orientation}
-          />
+          <ArrowAnimation teamIsTurn={team?.isturn} orientation={orientation} />
         </motion.div>
         <div className={`${!team.isturn ? 'opacity-60' : null}`}>
           <TeamName name={team.name} color={team.color} />
@@ -69,34 +60,27 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({
 };
 
 interface RoomStatusBarProps {
-  className?: string;  // Optional className prop
+  className?: string; // Optional className prop
 }
 
 // The main component for the Room status bar
 const RoomStatusBar: React.FC<RoomStatusBarProps> = ({ className }) => {
-
   const { room } = roomStore();
   const { currentTeam, redTeam, blueTeam } = useTeams();
 
   return (
     <div
-      className={`w-full border-b border-neutral-400 border-opacity-20 bg-black/40 py-3 backdrop-blur-md box-border ${className}`}
+      className={`box-border w-full border-b border-neutral-400 border-opacity-20 bg-black/40 py-3 backdrop-blur-md ${className}`}
     >
-      <div className="mx-auto grid w-full px-4 max-w-screen grid-cols-3 items-center justify-center">
-        <TeamIndicator
-          team={blueTeam as Team}
-          orientation="right"
-        />
+      <div className="mx-auto grid w-full max-w-screen grid-cols-3 items-center justify-center px-4">
+        <TeamIndicator team={blueTeam as Team} orientation="right" />
         <div className="flex w-full flex-col items-center">
           <Timer />
           <p className="text-center text-xs font-normal text-[#737373]">
             {getStatusText(currentTeam?.color as any, room?.status as any)}
           </p>
         </div>
-        <TeamIndicator
-          team={redTeam as Team}
-          orientation="left"
-        />
+        <TeamIndicator team={redTeam as Team} orientation="left" />
       </div>
     </div>
   );

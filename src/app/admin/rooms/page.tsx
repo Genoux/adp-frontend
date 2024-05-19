@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import supabase from '@/app/lib/supabase/auth/supabase-browser';
-import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
-import { defaultTransition } from '@/app/lib/animationConfig';
 import LoadingCircle from '@/app/components/common/LoadingCircle';
+import { Button } from '@/app/components/ui/button';
+import { defaultTransition } from '@/app/lib/animationConfig';
+import supabase from '@/app/lib/supabase/auth/supabase-browser';
+import { AnimatePresence, motion } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface Room {
   [key: string]: any;
@@ -53,20 +53,29 @@ const RoomComponent = ({ room }: { room: Room }) => {
   })();
 
   return (
-    <Link href={`/room/${room.id}/spectator`} target="_blank" className="w-full hover:bg-white hover:bg-opacity-5 border p-3 justify-between flex gap-2 " passHref>
+    <Link
+      href={`/room/${room.id}/spectator`}
+      target="_blank"
+      className="flex w-full justify-between gap-2 border p-3 hover:bg-white hover:bg-opacity-5 "
+      passHref
+    >
       <div className="flex items-center gap-2">
-        <div className={`h-2 w-2 duration-2000 ${statusClass}`}></div>
-        <p className="h-full items-center flex text-base font-medium">{changeText(room.status)}</p>
+        <div className={`duration-2000 h-2 w-2 ${statusClass}`}></div>
+        <p className="flex h-full items-center text-base font-medium">
+          {changeText(room.status)}
+        </p>
       </div>
-      <div className="flex gap-2 items-center">
-        <p className="h-full items-center flex text-red font-semibold capitalize">{room.red.name}</p>
-        <span className="opacity-50 text-xs">vs</span>
-        <p className="h-full items-center flex text-blue font-semibold capitalize">{room.blue.name}</p>
+      <div className="flex items-center gap-2">
+        <p className="flex h-full items-center font-semibold capitalize text-red">
+          {room.red.name}
+        </p>
+        <span className="text-xs opacity-50">vs</span>
+        <p className="flex h-full items-center font-semibold capitalize text-blue">
+          {room.blue.name}
+        </p>
       </div>
-
-
     </Link>
-  )
+  );
 };
 
 export default function RoomsPage() {
@@ -76,16 +85,17 @@ export default function RoomsPage() {
 
   useEffect(() => {
     async function checkSession() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
-        return null
+        return null;
       }
-      setUser(user)
+      setUser(user);
     }
 
     checkSession();
   }, [router]);
-
 
   async function fetchFullRoomData(roomId: string) {
     const { data, error } = await supabase
@@ -95,7 +105,7 @@ export default function RoomsPage() {
       .single(); // Assuming 'id' is unique, .single() will return just one object
 
     if (error) {
-      console.error("Error fetching room data:", error);
+      console.error('Error fetching room data:', error);
       return null;
     }
     return data;
@@ -103,11 +113,13 @@ export default function RoomsPage() {
 
   useEffect(() => {
     const fetchRooms = async () => {
-      const { data: rooms, error } = await supabase.from('rooms').select('*, red(*), blue(*)');
+      const { data: rooms, error } = await supabase
+        .from('rooms')
+        .select('*, red(*), blue(*)');
       if (!error && rooms) {
         setRooms(rooms);
       } else {
-        console.error("Error fetching rooms:", error);
+        console.error('Error fetching rooms:', error);
       }
     };
 
@@ -115,53 +127,61 @@ export default function RoomsPage() {
 
     // Subscribe to real-time updates to the rooms table
     supabase
-      .channel("aram_draft_pick:rooms")
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'aram_draft_pick',
-        table: 'rooms',
-      }, async (payload) => {
-        console.log("Real-time update:", payload);
+      .channel('aram_draft_pick:rooms')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'aram_draft_pick',
+          table: 'rooms',
+        },
+        async (payload) => {
+          console.log('Real-time update:', payload);
 
-        if (['UPDATE', 'INSERT'].includes(payload.eventType)) {
-          // Fetch the full updated room data for the affected room
-          const updatedRoom = await fetchFullRoomData((payload.new as { id: string }).id);
-          if (!updatedRoom) return; // Exit if fetching fails
+          if (['UPDATE', 'INSERT'].includes(payload.eventType)) {
+            // Fetch the full updated room data for the affected room
+            const updatedRoom = await fetchFullRoomData(
+              (payload.new as { id: string }).id
+            );
+            if (!updatedRoom) return; // Exit if fetching fails
 
-          setRooms(currentRooms => {
-            return currentRooms.map(room => room.id === updatedRoom.id ? updatedRoom : room);
-          });
+            setRooms((currentRooms) => {
+              return currentRooms.map((room) =>
+                room.id === updatedRoom.id ? updatedRoom : room
+              );
+            });
 
-          if (payload.eventType === 'INSERT') {
-            setRooms(currentRooms => [...currentRooms, updatedRoom]);
+            if (payload.eventType === 'INSERT') {
+              setRooms((currentRooms) => [...currentRooms, updatedRoom]);
+            }
+          }
+
+          if (payload.eventType === 'DELETE') {
+            setRooms((currentRooms) =>
+              currentRooms.filter((room) => room.id !== payload.old.id)
+            );
           }
         }
-
-        if (payload.eventType === 'DELETE') {
-          setRooms(currentRooms => currentRooms.filter(room => room.id !== payload.old.id));
-        }
-      })
+      )
       .subscribe();
-  }
-    , []);
+  }, []);
 
   if (!user)
     return (
       <>
-        <div className="flex flex-col h-screen items-center justify-center">
+        <div className="flex h-screen flex-col items-center justify-center">
           <LoadingCircle />
         </div>
       </>
-    )
+    );
 
   const logout = async () => {
     await supabase.auth.signOut();
-    router.push("/auth");
+    router.push('/auth');
   };
 
   return (
     <AnimatePresence>
-
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -169,23 +189,28 @@ export default function RoomsPage() {
       >
         <div>
           <div className="flex flex-col">
-            <div className="flex w-full mb-6 justify-between items-center">
-              <div className='text-sm'>
-                <span className='opacity-60'>Account: </span>
-                {(user as any)?.email}</div>
+            <div className="mb-6 flex w-full items-center justify-between">
+              <div className="text-sm">
+                <span className="opacity-60">Account: </span>
+                {(user as any)?.email}
+              </div>
               <Button onClick={logout}>Logout</Button>
             </div>
-            <div className="w-full flex flex-col gap-2 overflow-scroll h-4/5 relative border p-4">
-              {rooms.length ? rooms.map((room, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ defaultTransition }}
-                >
-                  <RoomComponent room={room} />
-                </motion.div>
-              )) : <p>No rooms</p>}
+            <div className="relative flex h-4/5 w-full flex-col gap-2 overflow-scroll border p-4">
+              {rooms.length ? (
+                rooms.map((room, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ defaultTransition }}
+                  >
+                    <RoomComponent room={room} />
+                  </motion.div>
+                ))
+              ) : (
+                <p>No rooms</p>
+              )}
             </div>
           </div>
         </div>

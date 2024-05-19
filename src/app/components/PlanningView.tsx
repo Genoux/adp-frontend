@@ -14,7 +14,7 @@ export const PlanningView = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 max-w-screen mx-auto">
+    <div className="mx-auto flex max-w-screen flex-col items-center justify-center gap-4">
       <div className="flex flex-col items-center gap-4">
         <Timer className="w-full" size="large" />
         <div className="text-center">

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import NextImage from 'next/image';
 import ChampionsPool from '@/app/components/common/ChampionsPool';
 import useTeams from '@/app/hooks/useTeams';
+import { defaultTransition } from '@/app/lib/animationConfig';
 import { supabase } from '@/app/lib/supabase/client';
 import { roomStore } from '@/app/stores/roomStore';
-import { defaultTransition } from '@/app/lib/animationConfig';
+import { AnimatePresence, motion } from 'framer-motion';
+import NextImage from 'next/image';
+import React, { useEffect, useState } from 'react';
 
 interface Team {
   [key: string]: any;
@@ -23,7 +23,7 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
   const [selectedChampion, setSelectedChampion] = useState<string | null>(null);
   const [currentImageBlue, setCurrentImageBlue] = useState<string>('');
   const [currentImageRed, setCurrentImageRed] = useState<string>('');
-  const { room, isLoading } = roomStore(state => ({
+  const { room, isLoading } = roomStore((state) => ({
     room: state.room,
     isLoading: state.isLoading,
   }));
@@ -35,7 +35,10 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
   }, [team]);
 
   useEffect(() => {
-    const updateImage = (team: Team | undefined, setCurrentImage: React.Dispatch<React.SetStateAction<string | ''>>) => {
+    const updateImage = (
+      team: Team | undefined,
+      setCurrentImage: React.Dispatch<React.SetStateAction<string | ''>>
+    ) => {
       if (team) {
         setCurrentImage(team.clicked_hero || null);
       }
@@ -47,7 +50,10 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
 
   const handleClickedHero = async (hero: Hero) => {
     if (!team || hero.name === team.clicked_hero) return;
-    await supabase.from('teams').update({ clicked_hero: hero.name }).eq('id', team.id);
+    await supabase
+      .from('teams')
+      .update({ clicked_hero: hero.name })
+      .eq('id', team.id);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -57,13 +63,21 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
     <>
       {room?.status === 'ban' && <BanPhaseOverlay />}
       <AnimatePresence>
-        <ImageComponent key={`blue-${currentImageBlue}`} image={currentImageBlue} position="left" />
-        <ImageComponent key={`red-${currentImageRed}`} image={currentImageRed} position="right" />
+        <ImageComponent
+          key={`blue-${currentImageBlue}`}
+          image={currentImageBlue}
+          position="left"
+        />
+        <ImageComponent
+          key={`red-${currentImageRed}`}
+          image={currentImageRed}
+          position="right"
+        />
       </AnimatePresence>
       <motion.div
         initial={{ opacity: 1 }}
         animate={{ opacity: 1 }}
-        transition={{defaultTransition, duration: 0.2}}
+        transition={{ defaultTransition, duration: 0.2 }}
         className={className}
       >
         <ChampionsPool
@@ -99,14 +113,17 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ image, position }) => (
     exit={{ opacity: 0 }}
   >
     {image && (
-    <NextImage
-      src={`/images/champions/splash/${image?.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.jpg`}
-      width={960}
-      height={360}
-      quality={100}
-      className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
-      alt={image}
-    />
+      <NextImage
+        src={`/images/champions/splash/${image
+          ?.toLowerCase()
+          .replace(/\s+/g, '')
+          .replace(/[\W_]+/g, '')}.jpg`}
+        width={960}
+        height={360}
+        quality={100}
+        className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
+        alt={image}
+      />
     )}
   </motion.div>
 );
