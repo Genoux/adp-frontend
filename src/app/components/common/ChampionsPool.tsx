@@ -39,12 +39,8 @@ const StaticChampionsList = ({ hero, blurHashes }: StaticChampionsListProps) => 
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 1 }}
-        animate={{ opacity: .5 }}
-        transition={{ defaultTransition, duration: 0.2 }}
-        exit={{ opacity: 0 }}
-        className={clsx('overflow-hidden relative z-10 rounded-lg opacity-60', {
+      <div
+        className={clsx('overflow-hidden relative z-10', {
           'grayscale': hero.selected,
           'pointer-events-none': hero.selected,
         })}
@@ -57,7 +53,7 @@ const StaticChampionsList = ({ hero, blurHashes }: StaticChampionsListProps) => 
           quality={80}
           src={`/images/champions/tiles/${imageName}.jpg`}
         />
-      </motion.div>
+      </div>
     </AnimatePresence>
   );
 }
@@ -85,7 +81,9 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
   return (
-    <div className={`relative -z-10 grid cursor-pointer grid-cols-10 gap-2 ${className}`}>
+    <motion.div
+      animate={{ opacity: !team?.isturn && (room?.status !== 'planning') ? 0.8 : 1 }}
+      className={`relative z-0 grid cursor-pointer grid-cols-10 gap-2 ${className}`}>
       {room.heroes_pool.map((hero: Hero, index: number) => {
         const isSelected = hero.name === team?.clicked_hero;
         const isHovered = hero.name === hoveredHero;
@@ -102,53 +100,39 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
             key={index}
           >
             <motion.div
-              initial={{ opacity: 0.5 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ defaultTransition, duration: 0.2 }}
-              className={clsx('overflow-hidden relative z-10 rounded-lg', {
+              className={clsx('overflow-hidden relative z-10', {
                 'grayscale': hero.selected,
                 'pointer-events-none': hero.selected,
-                'glow-yellow z-50 rounded-xl border border-yellow bg-transparent': isSelected && room.status === 'select',
-                'glow-red rounded-xl border-2 border-red-700 bg-opacity-20 p-0.5': isSelected && room.status === 'ban',
+                'glow-yellow z-50 border border-yellow bg-transparent': isSelected && room.status === 'select',
+                'glow-red border-2 border-red-700 bg-opacity-20 p-0.5': isSelected && room.status === 'ban',
               })}
               onClick={() => handleClickHero(hero)}
               onHoverStart={() => setHoveredHero(hero.name)} // Set hovered hero on hover start
               onHoverEnd={() => setHoveredHero(null)} // Clear hovered hero on hover end
             >
-              <motion.div
-                animate={{ scale: isSelected ? 1 : 1 }}
-                transition={defaultTransition}
-              >
                 {(isHovered && !isSelected) && (
                   <motion.div
                     initial={{ opacity: 0, y: 2 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 5 }}
                     transition={defaultTransition}
-
                     className="bg-gray-900 bg-opacity-70 absolute top-0 left-0 w-full h-full z-20">
                     <p className='text-xs font-bold flex justify-center items-center h-full'> {hero.name}</p>
                   </motion.div>
                 )}
                 {(isSelected) && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 2 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 5 }}
-                    transition={{ defaultTransition, duration: 0.15 }}
-
-                    className={clsx('overflow-hidden absolute top-0 left-0 w-full h-full bg-gradient-to-t bg-opacity-20 z-50', {
+                  <div
+                    className={clsx('overflow-hidden absolute top-0 left-0 w-full bg-gradient-to-t h-full z-50', {
                       'from-red to-transparent': isSelected && room.status === 'ban',
-                      'from-yellow to-transparent': isSelected && room.status === 'select',
+                      'from-yellow-transparent to-transparent': isSelected && room.status === 'select',
                     })}>
                     <p className='text-xs font-bold flex justify-center items-center h-full'> {hero.name}</p>
-                  </motion.div>
+                  </div>
                 )}
                 <motion.div
                   animate={{ scale: isHovered && !isSelected && team.isturn ? 1.2 : 1 }}
-                  transition={defaultTransition}
-                  className='rounded-sm overflow-hidden relative z-10'
+                  transition={{duration: 0.1, defaultTransition}}
+                  className='overflow-hidden relative z-10'
                 >
                   <ImageHash
                     alt={hero.name}
@@ -159,12 +143,11 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                     src={`/images/champions/tiles/${imageName}.jpg`}
                   />
                 </motion.div>
-              </motion.div>
             </motion.div>
           </AnimatePresence>
         );
       })}
-    </div>
+    </motion.div>
   );
 };
 

@@ -2,9 +2,7 @@ import ChampionsPool from '@/app/components/common/ChampionsPool';
 import Timer from '@/app/components/common/RoomTimer';
 import TeamName from '@/app/components/common/TeamName';
 import useTeams from '@/app/hooks/useTeams';
-import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from '@/app/stores/roomStore';
-import { motion } from 'framer-motion';
 
 export const PlanningView = () => {
   const { room } = roomStore();
@@ -16,12 +14,7 @@ export const PlanningView = () => {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ defaultTransition, delay: 0.25, duration: 1.25 }}
-      className="flex flex-col items-center justify-center gap-4 max-w-7xl mx-auto"
-    >
+    <div className="flex flex-col items-center justify-center gap-4 max-w-screen mx-auto">
       <div className="flex flex-col items-center gap-4">
         <Timer className="w-full" size="large" />
         <div className="text-center">
@@ -36,7 +29,7 @@ export const PlanningView = () => {
         <TeamName name={redTeam?.name || ''} color={redTeam?.color || ''} />
       </div>
       <ChampionsPool />
-    </motion.div>
+    </div>
   );
 };
 

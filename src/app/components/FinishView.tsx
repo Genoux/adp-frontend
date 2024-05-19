@@ -70,7 +70,7 @@ const FinishView: React.FC = () => {
         setTimeout(() => {
           setShowTeams(true);
         }, 0);
-      }, 1000);
+      }, 2000);
     }
   }, [showTitle]);
 
@@ -84,18 +84,9 @@ const FinishView: React.FC = () => {
       <AnimatePresence>
         {showTitle && (
           <motion.div
-            variants={{
-              initial: { opacity: 0, y: -10 },
-              animate: { opacity: 1, y: 0 },
-              exit: { opacity: 0, y: 0 }
-            }}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{
-              animate: { ...defaultTransition, duration: 0.2 },
-              exit: { ...defaultTransition, duration: 0.2, delay: 1.5 }  // Keeps the delay on exit
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ defaultTransition, duration: 1, delay: 1 }}
             className="text-center absolute top-0 left-0 flex justify-center items-center w-full h-full"
           >
             <h1 className="text-6xl font-black uppercase">Draft terminé</h1>

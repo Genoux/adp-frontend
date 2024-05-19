@@ -78,7 +78,7 @@ export default function LoginPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
-      className="flex flex-col items-center rounded-md border p-6 w-fit mx-auto">
+      className="flex flex-col items-center border p-6 w-fit mx-auto">
       <div className="flex flex-col">
         <div className="flex flex-col gap-1 text-center mb-6">
           <h3 className="font-semibold leading-none tracking-tight text-lg">Connection admin</h3>

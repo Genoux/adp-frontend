@@ -106,20 +106,6 @@ const Spectator = ({ params }: SpectatorProps) => {
   return (
       <SocketContext.Provider value={socket}>
         <BlurHashProvider>
-          {room?.status === 'ban' && (
-            <motion.div
-              exit="exit"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.05 }}
-              transition={{
-                delay: 0.2,
-                duration: 1,
-                ease: 'linear',
-              }}
-              className="absolute left-0 top-0 -z-50 h-full w-full bg-red-900 opacity-5"
-            ></motion.div>
-          )}
-
           <div className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 -z-10 h-full w-3/12`}>
             {currentImage && (
               <Image

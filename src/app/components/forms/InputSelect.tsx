@@ -79,7 +79,7 @@ export function InputSelect({ submit }: FormSelectProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex gap-2 items-center text-blue">
-                  <span className="w-2 h-2 bg-blue rounded-full"></span>
+                  <span className="w-2 h-2 bg-blue"></span>
                   Équipe Bleue
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -107,7 +107,7 @@ export function InputSelect({ submit }: FormSelectProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex gap-2 items-center text-red">
-                  <span className="w-2 h-2 bg-red rounded-full"></span>
+                  <span className="w-2 h-2 bg-red"></span>
                   Équipe Rouge
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>

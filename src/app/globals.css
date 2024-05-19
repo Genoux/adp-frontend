@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -24,7 +25,7 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
-    --radius: 0.75rem;
+    --radius: 0.3rem;
   }
 
   .dark {
@@ -47,19 +48,24 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
-
-    --card-empty: 240, 19%, 11%, 1;
-    --main: 70, 97%, 60%, 1;
-    --draft-empty: 240, 19%, 11%, 1;
-    --yellow: 70, 97%, 60%, 1;
-    --yellow-hover: 70, 97%, 50%, 1;
-    --yellow-text: 70, 59%, 4%, 1;
-    --yellow-second: 61, 100%, 40%, 1;
-    --yellow-transparent: 70, 97%, 60%, 0.2;
-
-    --red: 0, 80%, 52%, 1;
-    --blue: 212, 96%, 57%, 1;
   }
+}
+
+
+@layer base { 
+ .dark {
+  --card-empty: 240, 19%, 11%, 1;
+  --main: 70, 97%, 60%, 1;
+  --draft-empty: 240, 19%, 11%, 1;
+  --yellow: 70, 97%, 60%, 1;
+  --yellow-hover: 70, 97%, 50%, 1;
+  --yellow-text: 70, 59%, 4%, 1;
+  --yellow-second: 61, 100%, 40%, 1;
+  --yellow-transparent: 70, 97%, 60%, 0.5;
+
+  --red: 0, 80%, 52%, 1;
+  --blue: 212, 96%, 57%, 1;
+ }
 }
 
 body,

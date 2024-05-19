@@ -103,7 +103,7 @@ function Home() {
             className='flex flex-col items-center mx-auto justify-center max-w-[980px] gap-12 mt-12'
           >
             <div className='flex flex-col items-center justify-center'>
-              <Link className="inline-flex items-center rounded-full bg-muted pl-2 pr-3 py-1 text-sm font-bold gap-1 mb-4" href="http://tournoishaq.ca/" target='_blank'>
+              <Link className="inline-flex items-center bg-muted pl-2 pr-3 py-1 text-sm font-bold gap-1 mb-4" href="http://tournoishaq.ca/" target='_blank'>
                   <Logo size={18} />
                 Tournois HAQ</Link>
               <h1 className="text-center text-5xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1]">Aram Draft Pick <span className='text-xs tracking-normal'>v{appVersion}</span></h1>
@@ -124,7 +124,7 @@ function Home() {
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ defaultTransition, delay: 0.5 }}
-                  onClick={() => { setRoom(null) }} className='cursor-pointer border p-1 rounded-sm flex w-fit  hover:bg-white hover:bg-opacity-5 hover:-translate-x-1'><ArrowLeft size={18} /></motion.div>
+                  onClick={() => { setRoom(null) }} className='cursor-pointer border p-1 flex w-fit  hover:bg-white hover:bg-opacity-5 hover:-translate-x-1'><ArrowLeft size={18} /></motion.div>
                 <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
               </div>
             ) : (

@@ -15,10 +15,9 @@ import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
-import { defaultTransition } from '@/app/lib/animationConfig';
 import StateControllerButtons from '@/app/components/common/StateControllerButtons';
-//import useTeams from '@/app/hooks/useTeams';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
+import { defaultTransition } from '@/app/lib/animationConfig';
 
 interface RoomProps {
   params: {
@@ -36,7 +35,6 @@ export default function Room({ params }: RoomProps) {
   const { socket, isConnected } = useSocket(roomid);
   const { fetchTeams, isLoading, error, setCurrentTeamId } = useTeamStore();
   const { room, fetchRoom, isLoading: isLoadingRoom, error: errorRoom } = roomStore();
-  //const { currentTeam: team, redTeam, blueTeam } = useTeams();
 
   useEffect(() => {
     fetchTeams(roomid);
@@ -57,37 +55,36 @@ export default function Room({ params }: RoomProps) {
       <StateControllerButtons roomid={roomid} />
       <SocketContext.Provider value={socket}>
         <BlurHashProvider>
-          <AnimatePresence mode='wait'>
+        
             {isLobbyView && (
               <motion.div
-                key="lobbyView"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: .1 }}>
+                transition={{ defaultTransition }}>
                 <LobbyView />
               </motion.div>
             )}
 
-            {isFinishView && (
+          {isFinishView && (
+             <AnimatePresence mode='wait'>
               <motion.div
-                key="finishView"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: .1, defaultTransition }}
+                transition={{ defaultTransition }}
               >
                 <FinishView />
               </motion.div>
+              </AnimatePresence>
             )}
 
             {isPlanningView && (
               <motion.div
-                key="planningView"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: .1 }}
+                transition={{ defaultTransition }}
                 className='flex flex-col gap-12 pt-12 px-4'
               >
                 <PlanningView />
@@ -95,26 +92,28 @@ export default function Room({ params }: RoomProps) {
               </motion.div>
             )}
 
-            {isRoomView && (
+          {isRoomView && (
+              <AnimatePresence mode='wait'>
               <motion.div
-                key="teamView"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: .1, defaultTransition }}
-                className=''
+                transition={{ defaultTransition }}
               >
-                  <div className='h-screen w-full max-w-7xl border border-red-400 '>
-                    <RoomStatusBar className=' top-0 left-0 z-90' />
-                    <div className='h-full flex flex-col justify-between px-4 gap-4 border border-blue-600'>
+                <div className='overflow-hidden h-screen min-h-[768px] mx-auto w-full flex justify-between flex-col max-w-screen min-w-screen'>
+                  <RoomStatusBar className='fixed top-0 left-0 z-90' />
+                  <section className='p-4 h-full flex flex-col gap-4'>
+                    <div className='h-16'></div>
+                    <div className='h-full flex flex-col justify-between gap-4'>
                       <TeamView />
                       <DraftView />
                     </div>
-                  </div>
-
+                  </section>
+                </div>
               </motion.div>
+              </AnimatePresence>
             )}
-          </AnimatePresence>
+
         </BlurHashProvider>
       </SocketContext.Provider>
     </main>

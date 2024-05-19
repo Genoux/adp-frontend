@@ -61,9 +61,9 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
         <ImageComponent key={`red-${currentImageRed}`} image={currentImageRed} position="right" />
       </AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={defaultTransition}
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 1 }}
+        transition={{defaultTransition, duration: 0.2}}
         className={className}
       >
         <ChampionsPool
@@ -79,7 +79,7 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
 const BanPhaseOverlay: React.FC = () => (
   <motion.div
     initial={{ opacity: 0 }}
-    animate={{ opacity: 0.05 }}
+    animate={{ opacity: 0.1 }}
     exit="exit"
     transition={{ delay: 0.2, duration: 1, ease: 'linear' }}
     className="fixed left-0 top-0 -z-50 h-full w-full bg-red-900 opacity-50"

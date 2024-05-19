@@ -26,7 +26,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = (
         exit={{ opacity: 0 }}
         transition={{ defaultTransition, delay: 0.5}}
         
-        className="p-6 border rounded-md flex flex-col gap-4 max-w-md">
+        className="p-6 border flex flex-col gap-4 max-w-md">
         <div className="flex flex-col space-y-1.5">
           <h3 className="font-semibold leading-none tracking-tight">Générer une chambre</h3>
           <p className="text-xs font-normal text-muted-foreground">{"Veuillez selectionner les noms des deux équipes qui vont s'affronter"}</p>

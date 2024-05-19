@@ -53,9 +53,9 @@ const RoomComponent = ({ room }: { room: Room }) => {
   })();
 
   return (
-    <Link href={`/room/${room.id}/spectator`} target="_blank" className="w-full hover:bg-white hover:bg-opacity-5 border rounded-sm p-3 justify-between flex gap-2 " passHref>
+    <Link href={`/room/${room.id}/spectator`} target="_blank" className="w-full hover:bg-white hover:bg-opacity-5 border p-3 justify-between flex gap-2 " passHref>
       <div className="flex items-center gap-2">
-        <div className={`h-2 w-2 rounded-full duration-2000 ${statusClass}`}></div>
+        <div className={`h-2 w-2 duration-2000 ${statusClass}`}></div>
         <p className="h-full items-center flex text-base font-medium">{changeText(room.status)}</p>
       </div>
       <div className="flex gap-2 items-center">
@@ -175,7 +175,7 @@ export default function RoomsPage() {
                 {(user as any)?.email}</div>
               <Button onClick={logout}>Logout</Button>
             </div>
-            <div className="w-full flex flex-col gap-2 overflow-scroll h-4/5 relative border p-4 rounded-md">
+            <div className="w-full flex flex-col gap-2 overflow-scroll h-4/5 relative border p-4">
               {rooms.length ? rooms.map((room, index) => (
                 <motion.div
                   key={index}

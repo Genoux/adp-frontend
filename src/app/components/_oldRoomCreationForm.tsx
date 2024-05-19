@@ -121,7 +121,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
         duration: 0.2,
         defaultTransition,
       }}
-      className="flex flex-col items-center gap-6 rounded-md border p-6">
+      className="flex flex-col items-center gap-6 border p-6">
       <div className="flex w-full flex-col gap-6">
         <div className="flex flex-col space-y-1.5">
           <h3 className="font-semibold leading-none tracking-tight">Générer une chambre</h3>
@@ -138,7 +138,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
           <div key={team.id} className="flex flex-col gap-2">
             <div className="flex items-center gap-1">
               <div
-                className={clsx('h-2 w-2 rounded-full', {
+                className={clsx('h-2 w-2', {
                   'bg-blue': team.color === 'blue',
                   'bg-red': team.color === 'red',
                 })}

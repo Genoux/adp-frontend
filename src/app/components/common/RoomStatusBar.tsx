@@ -79,13 +79,10 @@ const RoomStatusBar: React.FC<RoomStatusBarProps> = ({ className }) => {
   const { currentTeam, redTeam, blueTeam } = useTeams();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -100 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ defaultTransition, delay: 0.25, duration: 0.3 }}
+    <div
       className={`w-full border-b border-neutral-400 border-opacity-20 bg-black/40 py-3 backdrop-blur-md box-border ${className}`}
     >
-      <div className="mx-auto grid w-full px-4 max-w-7xl grid-cols-3 items-center justify-center">
+      <div className="mx-auto grid w-full px-4 max-w-screen grid-cols-3 items-center justify-center">
         <TeamIndicator
           team={blueTeam as Team}
           orientation="right"
@@ -101,7 +98,7 @@ const RoomStatusBar: React.FC<RoomStatusBarProps> = ({ className }) => {
           orientation="left"
         />
       </div>
-    </motion.div>
+    </div>
   );
 };
 
