@@ -56,7 +56,7 @@ const StateControllerButtons: React.FC<StateControllerButtonsProps> = ({
   if (!isVisible) return null;
 
   return (
-    <div className="flex hidden flex-row gap-4">
+    <div className="hidden flex-row gap-4">
       <button className="btn btn-primary" onClick={() => setWaiting(roomid)}>
         Set Waiting
       </button>

@@ -41,24 +41,51 @@ const StaticChampionsList = ({
     .replace(/\s+/g, '')
     .replace(/[\W_]+/g, '');
   const blurHash = blurHashes[imageName];
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <AnimatePresence>
-      <div
-        className={clsx('relative z-10 overflow-hidden', {
-          grayscale: hero.selected,
-          'pointer-events-none': hero.selected,
-        })}
+      <motion.div
+        transition={defaultTransition}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
       >
-        <ImageHash
-          alt={hero.name}
-          blurhash={blurHash}
-          width={200}
-          height={200}
-          quality={80}
-          src={`/images/champions/tiles/${imageName}.jpg`}
-        />
-      </div>
+        <div
+          className={clsx('relative z-10 overflow-hidden', {
+            grayscale: hero.selected,
+            'pointer-events-none': hero.selected,
+          })}
+        >
+          <motion.div
+            animate={{
+              opacity: isHovered ? 1 : 0,
+            }}
+            transition={{ duration: 0.1, defaultTransition }}
+            className="absolute left-0 top-0 z-50 h-full w-full bg-gray-900 bg-opacity-80"
+          >
+            <p className="flex h-full items-center justify-center text-xs font-bold">
+              {hero.name}
+            </p>
+          </motion.div>
+
+          <motion.div
+            animate={{
+              scale: isHovered ? 1.2 : 1,
+            }}
+            transition={{ duration: 0.1, defaultTransition }}
+            className="relative z-10 overflow-hidden"
+          >
+            <ImageHash
+              alt={hero.name}
+              blurhash={blurHash}
+              width={200}
+              height={200}
+              quality={80}
+              src={`/images/champions/tiles/${imageName}.jpg`}
+            />
+          </motion.div>
+        </div>
+      </motion.div>
     </AnimatePresence>
   );
 };
@@ -89,7 +116,9 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
       animate={{
         opacity: !team?.isturn && room?.status !== 'planning' ? 0.8 : 1,
       }}
-      className={`relative z-0 grid cursor-pointer grid-cols-10 gap-2 ${className}`}
+      className={clsx(
+        'relative z-0 grid grid-cols-10 gap-2', className
+      )}
     >
       {room.heroes_pool.map((hero: Hero, index: number) => {
         const isSelected = hero.name === team?.clicked_hero;
@@ -99,7 +128,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
           .replace(/\s+/g, '')
           .replace(/[\W_]+/g, '');
         const blurHash = blurHashes[imageName];
-        if (!team?.isturn)
+        if (!team?.isturn || room?.status === 'planning')
           return (
             <React.Fragment key={index}>
               <StaticChampionsList hero={hero} blurHashes={blurHashes} />
@@ -109,8 +138,8 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
           <AnimatePresence key={index}>
             <motion.div
               className={clsx('relative z-10 overflow-hidden', {
-                grayscale: hero.selected,
-                'pointer-events-none': hero.selected,
+                'pointer-events-none grayscale': hero.selected,
+                'cursor-pointer': !hero.selected,
                 'glow-yellow z-50 border border-yellow bg-transparent':
                   isSelected && room.status === 'select',
                 'glow-red border-2 border-red-700 bg-opacity-20 p-0.5':
@@ -122,14 +151,13 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
             >
               {isHovered && !isSelected && (
                 <motion.div
-                  initial={{ opacity: 0, y: 2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 5 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={defaultTransition}
                   className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
                 >
                   <p className="flex h-full items-center justify-center text-xs font-bold">
-                    {' '}
                     {hero.name}
                   </p>
                 </motion.div>
@@ -147,7 +175,6 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                   )}
                 >
                   <p className="flex h-full items-center justify-center text-xs font-bold">
-                    {' '}
                     {hero.name}
                   </p>
                 </div>
