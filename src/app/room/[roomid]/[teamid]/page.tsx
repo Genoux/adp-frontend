@@ -9,7 +9,6 @@ import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
 import TeamView from '@/app/components/TeamView';
 import { BlurHashProvider } from '@/app/context/BlurHashContext';
-//import { CanSelectProvider } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
 import { roomStore } from '@/app/stores/roomStore';
@@ -19,14 +18,14 @@ import LoadingScreen from '@/app/components/common/LoadingScreen';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import StateControllerButtons from '@/app/components/common/StateControllerButtons';
 //import useTeams from '@/app/hooks/useTeams';
-import GameStatusBar from '@/app/components/common/RoomHeader';
+import RoomStatusBar from '@/app/components/common/RoomStatusBar';
+
 interface RoomProps {
   params: {
     roomid: string;
     teamid: string;
   };
 }
-
 
 interface Room {
   [key: string]: any;
@@ -96,7 +95,6 @@ export default function Room({ params }: RoomProps) {
               </motion.div>
             )}
 
-
             {isRoomView && (
               <motion.div
                 key="teamView"
@@ -106,12 +104,11 @@ export default function Room({ params }: RoomProps) {
                 transition={{ duration: .1, defaultTransition }}
                 className=''
               >
-                  <div className='h-screen w-full'>
-                    <GameStatusBar className='fixed top-0 left-0' />
-
-                    <div className='mx-auto max-w-7xl h-screen flex flex-col justify-around pb-6 px-4 gap-4'>
-                      <TeamView className='mt-24' />
-                      <DraftView className='h-full' />
+                  <div className='h-screen w-full max-w-7xl border border-red-400 '>
+                    <RoomStatusBar className=' top-0 left-0 z-90' />
+                    <div className='h-full flex flex-col justify-between px-4 gap-4 border border-blue-600'>
+                      <TeamView />
+                      <DraftView />
                     </div>
                   </div>
 

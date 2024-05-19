@@ -610,6 +610,11 @@ export const champions = [
     selected: false,
   },
   {
+    id: "Smolder",
+    name: "Smolder",
+    selected: false,
+  },
+  {
     id: "Sona",
     name: "Sona",
     selected: false,
@@ -756,7 +761,7 @@ export const champions = [
   },
   {
     id: "MonkeyKing",
-    name: "Wukong",
+    name: "MonkeyKing",
     selected: false,
   },
   {

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import NextImage from 'next/image';
 import ChampionsPool from '@/app/components/common/ChampionsPool';
-//import { useCanSelect } from '@/app/context/CanSelectContext';
 import useTeams from '@/app/hooks/useTeams';
 import { supabase } from '@/app/lib/supabase/client';
 import { roomStore } from '@/app/stores/roomStore';
@@ -22,7 +21,6 @@ type TeamViewProps = {
 
 const TeamView: React.FC<TeamViewProps> = ({ className }) => {
   const [selectedChampion, setSelectedChampion] = useState<string | null>(null);
- // const { canSelect, setCanSelect } = useCanSelect();
   const [currentImageBlue, setCurrentImageBlue] = useState<string>('');
   const [currentImageRed, setCurrentImageRed] = useState<string>('');
   const { room, isLoading } = roomStore(state => ({
@@ -31,12 +29,6 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
   }));
   const { currentTeam: team, otherTeam, blueTeam, redTeam } = useTeams();
   const currentTeam = team?.isturn ? team : otherTeam;
-
-  // useEffect(() => {
-  //   if (team?.nb_turn! > 0) {
-  //     setTimeout(() => setCanSelect(true), 1000);
-  //   }
-  // }, [setCanSelect, team]);
 
   useEffect(() => {
     setSelectedChampion(team?.clicked_hero || null);
@@ -76,7 +68,7 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
       >
         <ChampionsPool
           team={team}
-          selectedChampion={selectedChampion || ''}
+          selectedChampion={selectedChampion}
           handleClickedHero={handleClickedHero}
         />
       </motion.div>

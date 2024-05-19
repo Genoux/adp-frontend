@@ -71,7 +71,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
         const isEmptySlot = !isClickedHeroSlot && !hero.id;
 
         const slotClassName = clsx(
-          'h-full min-h-[200px] w-full rounded-md overflow-hidden relative',
+          'h-full min-h-[100px] w-full rounded-md overflow-hidden relative',
           isEmptySlot
             ? 'border border-white border-opacity-10'
             : 'border border-white border-opacity-0'

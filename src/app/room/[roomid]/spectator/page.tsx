@@ -2,12 +2,11 @@
 
 import ChampionsPool from '@/app/components/common/ChampionsPool';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
-import GameStatusBar from '@/app/components/common/RoomHeader';
+import GameStatusBar from '@/app/components/common/RoomStatusBar';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
 import Planningview from '@/app/components/PlanningView';
 import { BlurHashProvider } from '@/app/context/BlurHashContext';
-//import { CanSelectProvider } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';

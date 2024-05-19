@@ -74,11 +74,6 @@ export async function setWaiting(roomid: string): Promise<void> {
     if (!response.ok) {
       throw new Error('Error setting waiting phase');
     }
-
-    const result = await response.json();
-    if (result.error) {
-      throw new Error(result.error.message);
-    }
   } catch (error) {
     console.error('Error setting waiting phase:', error);
   }
@@ -95,10 +90,6 @@ export async function setPlanning(roomid: string): Promise<void> {
       throw new Error('Error setting planning phase');
     }
 
-    const result = await response.json();
-    if (result.error) {
-      throw new Error(result.error.message);
-    }
   } catch (error) {
     console.error('Error setting planning phase:', error);
   }
@@ -112,11 +103,6 @@ export async function setDraft(roomid: string): Promise<void> {
 
     if (!response.ok) {
       throw new Error('Error setting draft phase');
-    }
-
-    const result = await response.json();
-    if (result.error) {
-      throw new Error(result.error.message);
     }
   } catch (error) {
     console.error('Error setting draft phase:', error);
@@ -132,11 +118,6 @@ export async function userTrigger(roomid: string): Promise<void> {
     if (!response.ok) {
       throw new Error('Error setting finish phase');
     }
-
-    const result = await response.json();
-    if (result.error) {
-      throw new Error(result.error.message);
-    }
   } catch (error) {
     console.error('Error setting finish phase:', error);
   }
@@ -150,11 +131,6 @@ export async function setFinish(roomid: string): Promise<void> {
 
     if (!response.ok) {
       throw new Error('Error setting finish phase');
-    }
-
-    const result = await response.json();
-    if (result.error) {
-      throw new Error(result.error.message);
     }
   } catch (error) {
     console.error('Error setting finish phase:', error);

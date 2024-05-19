@@ -3,10 +3,11 @@ import TeamBans from '@/app/components/team/TeamBans';
 import TeamPicks from '@/app/components/team/TeamPicks';
 import useTeams from '@/app/hooks/useTeams';
 import { defaultTransition } from '@/app/lib/animationConfig';
+import clsx from 'clsx';
 import { motion } from 'framer-motion';
 
 interface DraftViewProps {
-  className?: string;
+  className?: string |'';
 }
 
 const DraftView: React.FC<DraftViewProps>  = ({ className }) => {
@@ -18,7 +19,7 @@ const DraftView: React.FC<DraftViewProps>  = ({ className }) => {
         initial={{ opacity: 0, y: 50 }} // start at half the size
         animate={{ opacity: 1, y: 0 }} // animate to full size
         transition={{ duration: 0.3, defaultTransition, delay: 0.25 }}
-        className={`${className} flex h-full flex-col justify-evenly gap-4 rounded-md border border-[#8f8f8f] border-opacity-5 bg-neutral-950 bg-opacity-40 px-5 pb-5 pt-5`}
+        className={clsx('flex h-full flex-col justify-evenly gap-4 rounded-md border border-[#8f8f8f] border-opacity-5 bg-neutral-950 bg-opacity-40 p-4', className)}
       >
           <div className="grid w-full h-fit grid-cols-3 items-center">
             <TeamBans team={blueTeam} />

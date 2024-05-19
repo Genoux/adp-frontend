@@ -34,7 +34,7 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({ message }) => {
             <p className="text-sm font-normal text-[#b8b8b8]">{message}</p>
           </div>
           <X
-            className="cursor-pointer transition-all hover:opacity-70"
+            className="cursor-pointer hover:opacity-70"
             size={14}
             onClick={() => setIsVisible(false)}
           />

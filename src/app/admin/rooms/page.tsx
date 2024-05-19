@@ -53,7 +53,7 @@ const RoomComponent = ({ room }: { room: Room }) => {
   })();
 
   return (
-    <Link href={`/room/${room.id}/spectator`} target="_blank" className="w-full hover:bg-white hover:bg-opacity-5 transition-all border rounded-sm p-3 justify-between flex gap-2 " passHref>
+    <Link href={`/room/${room.id}/spectator`} target="_blank" className="w-full hover:bg-white hover:bg-opacity-5 border rounded-sm p-3 justify-between flex gap-2 " passHref>
       <div className="flex items-center gap-2">
         <div className={`h-2 w-2 rounded-full duration-2000 ${statusClass}`}></div>
         <p className="h-full items-center flex text-base font-medium">{changeText(room.status)}</p>

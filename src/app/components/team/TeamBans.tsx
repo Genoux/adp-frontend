@@ -79,7 +79,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
         );
 
         return (
-          <div key={index} className="relative h-24 w-full ">
+          <div key={`${hero.id}_${index}`} className="relative h-24 w-full ">
             {isBorderSlot && (
               <AnimatePresence>
                 <motion.div

@@ -68,12 +68,12 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({
   );
 };
 
-interface GameStatusBarProps {
+interface RoomStatusBarProps {
   className?: string;  // Optional className prop
 }
 
-// The main component for the game status bar
-const GameStatusBar: React.FC<GameStatusBarProps> = ({ className }) => {
+// The main component for the Room status bar
+const RoomStatusBar: React.FC<RoomStatusBarProps> = ({ className }) => {
 
   const { room } = roomStore();
   const { currentTeam, redTeam, blueTeam } = useTeams();
@@ -105,4 +105,4 @@ const GameStatusBar: React.FC<GameStatusBarProps> = ({ className }) => {
   );
 };
 
-export default GameStatusBar;
+export default RoomStatusBar;

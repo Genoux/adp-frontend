@@ -42,8 +42,7 @@ const useTeamStore = create<TeamState>((set, get) => ({
 
       set({ teams });
 
-      // Set up real-time subscriptions for all teams in the room
-      teams?.forEach((team: Team) => {
+      teams.forEach((team: Team) => {
         supabase
           .channel(team.id.toString())
           .on(
@@ -57,6 +56,7 @@ const useTeamStore = create<TeamState>((set, get) => ({
             (payload) => get().handleTeamUpdate(payload)
           )
           .subscribe((status, err) => {
+            console.log('Channel status:', status);
             if (err) console.error('.subscribe - err TEAM:', err);
           });
       });

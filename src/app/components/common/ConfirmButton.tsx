@@ -1,18 +1,17 @@
 // ConfirmButton.tsx
 import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { Button } from '@/app/components/ui/button';
-//import { useCanSelect } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useEnsureContext from '@/app/hooks/useEnsureContext';
 import useTeams from '@/app/hooks/useTeams';
 import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { View } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ConfirmButton = () => {
   const socket = useEnsureContext(SocketContext);
- // const { canSelect, setCanSelect } = useCanSelect();
+  const [localCanSelect, setLocalCanSelect] = useState<boolean>(true);
 
   const { room } = roomStore((state) => ({
     room: state.room,
@@ -22,31 +21,14 @@ const ConfirmButton = () => {
 
   const { currentTeam: team, otherTeam } = useTeams();
 
-
-
-  // useEffect(() => {
-  //   if (team) {
-  //     setCanSelect(team.canSelect);
-  //   }
-    
-  // }, [setCanSelect]);
-    
-  // useEffect(() => {
-  //   const handleButton = () => {
-  //     console.log('TIMER_FALSE');
-  //     setCanSelect(false);
-  //   };
-  //   socket.on('TIMER_FALSE', handleButton);
-
-  //   return () => {
-  //     socket.off('TIMER_FALSE', handleButton);
-  //   };
-  // }, [setCanSelect, socket]);
-
   useEffect(() => {
     //setCanSelect(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setLocalCanSelect(true);
   }, []);
+
+  useEffect(() => {
+    setLocalCanSelect(team?.canSelect as boolean);
+  }, [team]);
 
   if (!team)
     return (
@@ -69,7 +51,8 @@ const ConfirmButton = () => {
 
 
   const handleConfirmSelection = async () => {
-   // setCanSelect(false);
+    // setCanSelect(false);
+    setLocalCanSelect(false);
     if (socket) {
       //socket?.emit('STOP_TIMER', { roomid: room?.id });
       socket.emit('SELECT_CHAMPION', {
@@ -98,7 +81,7 @@ const ConfirmButton = () => {
                 !currentTeam?.clicked_hero || !team.canSelect
               }
             >
-              {!team.canSelect ? (
+              {!team.canSelect || !localCanSelect ? (
                 <LoadingCircle color="black" size="w-4 h-4" />
               ) : (
                 <>{buttonText}</>
@@ -109,14 +92,14 @@ const ConfirmButton = () => {
       ) : (
         <div className="flex w-full flex-col items-center justify-center">
           <p className="text-sm  opacity-80">Ce n’est pas votre tour</p>
-          <p className="text-md px-12 text-center font-medium">
+          <div className="text-md px-12 text-center font-medium">
             {`En attente de l'autre équipe`}
             <div className="sending-animation ">
               <span className="sending-animation-dot">.</span>
               <span className="sending-animation-dot">.</span>
               <span className="sending-animation-dot">.</span>
             </div>
-          </p>
+          </div>
         </div>
       )}
     </div>
