@@ -20,7 +20,6 @@ export type Database = {
           ready: boolean | null;
           red: number | null;
           status: string | null;
-          timer: string | null;
         };
         Insert: {
           blue?: number | null;
@@ -32,7 +31,6 @@ export type Database = {
           ready?: boolean | null;
           red?: number | null;
           status?: string | null;
-          timer?: string | null;
         };
         Update: {
           blue?: number | null;
@@ -44,7 +42,6 @@ export type Database = {
           ready?: boolean | null;
           red?: number | null;
           status?: string | null;
-          timer?: string | null;
         };
         Relationships: [
           {
@@ -67,7 +64,6 @@ export type Database = {
         Row: {
           clicked_hero: string | null;
           color: string | null;
-          connected: boolean | null;
           created_at: string | null;
           heroes_ban: Json | null;
           heroes_selected: Json | null;
@@ -80,7 +76,6 @@ export type Database = {
         Insert: {
           clicked_hero?: string | null;
           color?: string | null;
-          connected?: boolean | null;
           created_at?: string | null;
           heroes_ban?: Json | null;
           heroes_selected?: Json | null;
@@ -93,7 +88,6 @@ export type Database = {
         Update: {
           clicked_hero?: string | null;
           color?: string | null;
-          connected?: boolean | null;
           created_at?: string | null;
           heroes_ban?: Json | null;
           heroes_selected?: Json | null;
