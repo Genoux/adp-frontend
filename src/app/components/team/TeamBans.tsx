@@ -58,7 +58,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
         return (
           <motion.div
             animate={{ opacity: !team.isturn ? 0.8 : 1 }}
-            key={index + hero.id}
+            key={index}
             className="relative h-full w-full overflow-hidden"
           >
             {isBorderSlot && (

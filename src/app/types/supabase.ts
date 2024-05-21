@@ -74,11 +74,8 @@ export type Database = {
           id: number;
           isturn: boolean | null;
           name: string | null;
-          nb_turn: number | null;
           ready: boolean | null;
           room: number | null;
-          selected_hero: string | null;
-          socketid: string | null;
         };
         Insert: {
           clicked_hero?: string | null;
@@ -90,11 +87,8 @@ export type Database = {
           id?: number;
           isturn?: boolean | null;
           name?: string | null;
-          nb_turn?: number | null;
           ready?: boolean | null;
           room?: number | null;
-          selected_hero?: string | null;
-          socketid?: string | null;
         };
         Update: {
           clicked_hero?: string | null;
@@ -106,11 +100,8 @@ export type Database = {
           id?: number;
           isturn?: boolean | null;
           name?: string | null;
-          nb_turn?: number | null;
           ready?: boolean | null;
           room?: number | null;
-          selected_hero?: string | null;
-          socketid?: string | null;
         };
         Relationships: [
           {

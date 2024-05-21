@@ -107,7 +107,7 @@ function Home() {
           >
             <div className="flex flex-col items-center justify-center">
               <Link
-                className="mb-4 inline-flex items-center gap-1 bg-muted py-1 pl-2 pr-3 text-sm font-bold"
+                className="mb-4 inline-flex items-center gap-1 bg-muted py-1 pl-2 pr-3 text-sm font-bold rounded-full"
                 href="http://tournoishaq.ca/"
                 target="_blank"
               >

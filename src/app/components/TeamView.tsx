@@ -4,7 +4,7 @@ import { defaultTransition } from '@/app/lib/animationConfig';
 import { supabase } from '@/app/lib/supabase/client';
 import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
 interface Team {
@@ -113,13 +113,13 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ image, position }) => (
     exit={{ opacity: 0 }}
   >
     {image && (
-      <NextImage
+      <Image
         src={`/images/champions/splash/${image
           ?.toLowerCase()
           .replace(/\s+/g, '')
           .replace(/[\W_]+/g, '')}.jpg`}
-        width={960}
-        height={360}
+        objectFit='cover'
+        layout='fill'
         quality={100}
         className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
         alt={image}

@@ -57,6 +57,7 @@ const StaticChampionsList = ({
           })}
         >
           <motion.div
+            initial={{ opacity: 0 }}
             animate={{
               opacity: isHovered ? 1 : 0,
             }}
@@ -101,7 +102,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
   const [hoveredHero, setHoveredHero] = useState<string | null>(null); // State to track hovered hero
 
   const handleClickHero = (hero: Hero) => {
-    if (!team?.isturn) return;
+    if (!team?.isturn || !team.canSelect) return;
     if (room?.status !== 'select' && room?.status !== 'ban') return;
     if (hero.selected) return;
     if (selectedHero === hero.name) return;
@@ -114,7 +115,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
   return (
     <motion.div
       animate={{
-        opacity: !team?.isturn && room?.status !== 'planning' ? 0.8 : 1,
+        opacity: !team?.isturn && room?.status !== 'planning' ? 1 : 1,
       }}
       className={clsx(
         'relative z-0 grid grid-cols-10 gap-2', className

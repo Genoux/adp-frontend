@@ -38,13 +38,7 @@ const ConfirmButton = () => {
 
   const isBanPhase = room?.status === 'ban';
 
-  const buttonText = team.isturn
-    ? isBanPhase
-      ? 'Confirmer le Ban'
-      : 'Confirmer la Selection'
-    : `C'est à l'équipe ${otherTeam?.color} de ${
-        isBanPhase ? 'bannir' : 'choisir'
-      }`;
+  const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection'
 
   const handleConfirmSelection = async () => {
     // setCanSelect(false);
@@ -74,7 +68,7 @@ const ConfirmButton = () => {
             className="w-64"
             disabled={!currentTeam?.clicked_hero || !team.canSelect}
           >
-            {!team.canSelect || !localCanSelect ? (
+            {!team.canSelect ? (
               <LoadingCircle color="black" size="w-4 h-4" />
             ) : (
               <>{buttonText}</>

@@ -20,7 +20,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (team.isturn && room?.status === 'select' && team.nb_turn > 0) {
+    if (team.isturn && team.canSelect  && room?.status === 'select') {
       const timer = setTimeout(() => {
         setBorderIndex(
           team.heroes_selected.findIndex((hero: Hero) => !hero.selected)

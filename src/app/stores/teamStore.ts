@@ -5,7 +5,6 @@ import { create } from 'zustand';
 type Team = {
   id: number;
   isturn: boolean;
-  nb_turn: number;
   name: string | null;
   clicked_hero: string | null;
   room: string;

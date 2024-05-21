@@ -22,6 +22,18 @@ interface SpectatorProps {
     roomid: string;
   };
 }
+
+
+const BanPhaseOverlay: React.FC = () => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 0.1 }}
+    exit="exit"
+    transition={{ delay: 0.2, duration: 1, ease: 'linear' }}
+    className="fixed left-0 top-0 -z-50 h-full w-full bg-red-900 opacity-50"
+  />
+);
+
 const Spectator = ({ params }: SpectatorProps) => {
   const roomid = params.roomid;
 
@@ -112,18 +124,19 @@ const Spectator = ({ params }: SpectatorProps) => {
               src={`/images/champions/splash/${currentImage
                 ?.toLowerCase()
                 .replace(/\s+/g, '')}.jpg`}
-              width={500}
-              height={500}
-              rel="preload"
+              layout='fill'
+              objectFit='cover'
+              quality={100}
               className={`h-full w-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue'
                 ? 'fade-gradient-left'
                 : 'fade-gradient-right'
                 }`}
-              alt={``}
+              alt={currentImage}
             />
           )}
         </div>
         <AnimatePresence mode="wait">
+          {room?.status === 'ban' && <BanPhaseOverlay />}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

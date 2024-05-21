@@ -11,16 +11,14 @@ export const metadata = {
   icons: {
     icon: [
       {
-        media: '(prefers-color-scheme: light)',
-        url: '/images/favicon-light.ico',
-        href: '/images/favicon-light.ico',
-      },
-      {
-        media: '(prefers-color-scheme: dark)',
-        url: '/images/favicon-dark.ico',
-        href: '/images/favicon-dark.ico',
+        url: "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/favicon.png",
+        href: "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/favicon.png",
       },
     ],
+  },
+  openGraph: {
+    images:
+      "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/opengraph-image.jpg",
   },
 };
 
