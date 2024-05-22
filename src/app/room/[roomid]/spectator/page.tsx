@@ -143,12 +143,14 @@ const Spectator = ({ params }: SpectatorProps) => {
             exit={{ opacity: 0 }}
             transition={{ defaultTransition }}
           >
-            <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
+            <div className="mx-auto flex h-screen min-h-[752px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
               <RoomStatusBar className="z-90 fixed left-0 top-0" />
               <section className="flex h-full flex-col gap-4 p-4">
                 <div className="h-12"></div>
                 <div className="flex h-full flex-col justify-between gap-4">
+                  <div className='px-40'>
                   <ChampionsPool />
+                  </div>
                   <DraftView />
                 </div>
               </section>
