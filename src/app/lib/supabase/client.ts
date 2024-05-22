@@ -12,4 +12,4 @@ const tournament = createClient(
   { db: { schema: 'live_tournament' } }
 );
 
-export {supabase, tournament};
+export { supabase, tournament };

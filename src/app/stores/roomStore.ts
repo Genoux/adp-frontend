@@ -1,8 +1,12 @@
 import { supabase } from '@/app/lib/supabase/client';
-import { Database } from '@/app/types/supabase';
 import { create } from 'zustand';
 
-type Room = Database['aram_draft_pick']['Tables']['rooms']['Row'];
+type Room = {
+  id: string;
+  name: string;
+  status: string;
+  heroes_pool: any[];
+};
 
 interface RoomState {
   room: Room | null;

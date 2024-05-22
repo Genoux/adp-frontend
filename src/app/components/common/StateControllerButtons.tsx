@@ -1,9 +1,9 @@
 import {
-  setBan,
+  setDraft,
   setFinish,
   setPlanning,
-  setSelect,
   setWaiting,
+  userTrigger,
 } from '@/app/utils/stateController';
 import { useEffect, useState } from 'react';
 
@@ -33,10 +33,10 @@ const StateControllerButtons: React.FC<StateControllerButtonsProps> = ({
           setPlanning(roomid);
           break;
         case '3':
-          setBan(roomid);
+          setDraft(roomid);
           break;
         case '4':
-          setSelect(roomid);
+          userTrigger(roomid);
           break;
         case '5':
           setFinish(roomid);
@@ -56,18 +56,18 @@ const StateControllerButtons: React.FC<StateControllerButtonsProps> = ({
   if (!isVisible) return null;
 
   return (
-    <div className="flex hidden flex-row gap-4">
+    <div className="hidden flex-row gap-4">
       <button className="btn btn-primary" onClick={() => setWaiting(roomid)}>
         Set Waiting
       </button>
       <button className="btn btn-primary" onClick={() => setPlanning(roomid)}>
         Set Planning
       </button>
-      <button className="btn btn-primary" onClick={() => setBan(roomid)}>
+      <button className="btn btn-primary" onClick={() => setDraft(roomid)}>
         Set Ban
       </button>
-      <button className="btn btn-primary" onClick={() => setSelect(roomid)}>
-        Set Select
+      <button className="btn btn-primary" onClick={() => userTrigger(roomid)}>
+        Trigger select
       </button>
       <button className="btn btn-primary" onClick={() => setFinish(roomid)}>
         Set Finish

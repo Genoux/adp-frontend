@@ -6,13 +6,13 @@ const useTeam = () => {
 
   const currentTeam = useMemo(() => {
     return teams?.find(
-      (team: { id: any }) => team.id.toString() === currentTeamId
+      (team: { id: number }) => team.id.toString() === currentTeamId
     );
   }, [teams, currentTeamId]);
 
   const otherTeam = useMemo(() => {
     return teams?.find(
-      (team: { id: any }) => team.id.toString() !== currentTeamId
+      (team: { id: number }) => team.id.toString() !== currentTeamId
     );
   }, [teams, currentTeamId]);
 

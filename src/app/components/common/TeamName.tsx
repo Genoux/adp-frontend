@@ -1,24 +1,28 @@
 import React from 'react';
 
 interface TeamNameProps {
-  color: string; // Add the color property
-  name: string; // Add the name property
+  color: string;
+  name: string;
 }
 
-const TeamName: React.FC<TeamNameProps> = ({
-  name, // Use the name property
-  color,
-}) => {
+const TeamName: React.FC<TeamNameProps> = ({ name, color }) => {
   return (
     <>
-      <div
-        className={`bg-${color}-500 border bg-opacity-25 border-${color} flex h-7 w-fit items-center gap-2 rounded-md px-2`}
-      >
+      {color === 'blue' ? (
         <div
-          className={`h-2.5 w-2.5 rounded-full text-sm font-medium bg-${color}`}
-        ></div>
-        {name}
-      </div>
+          className={`flex h-7 w-fit items-center gap-2 border border-blue-500 border-opacity-40 bg-blue-600 bg-opacity-25 px-2`}
+        >
+          <div className={`h-2.5 w-2.5 bg-blue-600 text-sm font-medium`}></div>
+          {name}
+        </div>
+      ) : (
+        <div
+          className={`flex h-7 w-fit items-center gap-2 border border-red-500 border-opacity-40 bg-red-600 bg-opacity-25 px-2`}
+        >
+          <div className={`h-2.5 w-2.5 bg-red-600 text-sm font-medium`}></div>
+          {name}
+        </div>
+      )}
     </>
   );
 };

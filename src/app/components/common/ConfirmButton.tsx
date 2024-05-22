@@ -1,44 +1,31 @@
 // ConfirmButton.tsx
 import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { Button } from '@/app/components/ui/button';
-import { useCanSelect } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useEnsureContext from '@/app/hooks/useEnsureContext';
 import useTeams from '@/app/hooks/useTeams';
 import { roomStore } from '@/app/stores/roomStore';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { View } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ConfirmButton = () => {
   const socket = useEnsureContext(SocketContext);
-  const { canSelect, setCanSelect } = useCanSelect();
+  const [localCanSelect, setLocalCanSelect] = useState<boolean>(true);
 
-  const { room } = roomStore((state) => ({
-    room: state.room,
-    error: state.error,
-    isLoading: state.isLoading,
-  }));
+  const { room, isLoading } = roomStore();
 
   const { currentTeam: team, otherTeam } = useTeams();
 
-    
   useEffect(() => {
-    const handleButton = () => {
-      console.log('TIMER_FALSE');
-      setCanSelect(false);
-    };
-    socket.on('TIMER_FALSE', handleButton);
-
-    return () => {
-      socket.off('TIMER_FALSE', handleButton);
-    };
-  }, [setCanSelect, socket]);
-
-  useEffect(() => {
-    setCanSelect(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setLocalCanSelect(true);
   }, []);
+
+  useEffect(() => {
+    setLocalCanSelect(team?.canSelect as boolean);
+  }, [team]);
+
+  if (isLoading) return <div>Loading...</div>;
 
   if (!team)
     return (
@@ -51,20 +38,13 @@ const ConfirmButton = () => {
 
   const isBanPhase = room?.status === 'ban';
 
-  const buttonText = team.isturn
-    ? isBanPhase
-      ? 'Confirmer le Ban'
-      : 'Confirmer la Selection'
-    : `C'est à l'équipe ${otherTeam?.color} de ${
-        isBanPhase ? 'bannir' : 'choisir'
-    }`;
-
+  const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection'
 
   const handleConfirmSelection = async () => {
+    // setCanSelect(false);
+    setLocalCanSelect(false);
     if (socket) {
-      setCanSelect(false);
-      socket?.emit('STOP_TIMER', { roomid: room?.id });
-
+      //socket?.emit('STOP_TIMER', { roomid: room?.id });
       socket.emit('SELECT_CHAMPION', {
         teamid: team?.id,
         roomid: room?.id,
@@ -74,45 +54,41 @@ const ConfirmButton = () => {
   };
 
   return (
-    <div className="flex w-full justify-center">
+    <motion.div
+      initial={{ opacity: 0 }} // start at half the size
+      animate={{ opacity: 1 }} // animate to full size
+      transition={{ duration: 0.15, delay: 0.2 }}
+      className="flex w-full justify-center"
+    >
       {team.isturn ? (
-        <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0 }} // start at half the size
-            animate={{ opacity: 1 }} // animate to full size
-            transition={{ duration: 1 }}
-            exit={{ opacity: 0, transition: { duration: 1 } }}
+        <div>
+          <Button
+            size="lg"
+            onClick={handleConfirmSelection}
+            className="w-64"
+            disabled={!currentTeam?.clicked_hero || !team.canSelect}
           >
-            <Button
-              size="default"
-              onClick={handleConfirmSelection}
-              className="w-64"
-              disabled={
-                !currentTeam?.clicked_hero || !canSelect || !team.isturn
-              }
-            >
-              {!canSelect ? (
-                <LoadingCircle color="black" size="w-4 h-4" />
-              ) : (
-                <>{buttonText}</>
-              )}
-            </Button>
-          </motion.div>
-        </AnimatePresence>
+            {!team.canSelect ? (
+              <LoadingCircle color="black" size="w-4 h-4" />
+            ) : (
+              <>{buttonText}</>
+            )}
+          </Button>
+        </div>
       ) : (
         <div className="flex w-full flex-col items-center justify-center">
-          <p className="text-sm  opacity-80">Ce n’est pas votre tour</p>
-          <p className="text-md px-12 text-center font-medium">
+          <p className="text-sm opacity-80">Ce n’est pas votre tour</p>
+          <div className="text-md px-12 text-center font-medium">
             {`En attente de l'autre équipe`}
             <div className="sending-animation ">
               <span className="sending-animation-dot">.</span>
               <span className="sending-animation-dot">.</span>
               <span className="sending-animation-dot">.</span>
             </div>
-          </p>
+          </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

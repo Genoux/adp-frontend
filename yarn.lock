@@ -431,7 +431,7 @@
 
 "@next/swc-darwin-arm64@14.1.4":
   version "14.1.4"
-  resolved "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-14.1.4.tgz"
+  resolved "https://registry.yarnpkg.com/@next/swc-darwin-arm64/-/swc-darwin-arm64-14.1.4.tgz#a3bca0dc4393ac4cf3169bbf24df63441de66bb7"
   integrity sha512-ubmUkbmW65nIAOmoxT1IROZdmmJMmdYvXIe8211send9ZYJu+SqxSnJM4TrPj9wmL6g9Atvj0S/2cFmMSS99jg==
 
 "@next/swc-darwin-x64@14.1.4":
@@ -471,7 +471,7 @@
 
 "@next/swc-win32-x64-msvc@14.1.4":
   version "14.1.4"
-  resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-14.1.4.tgz#bccf5beccfde66d6c66fa4e2509118c796385eda"
+  resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-14.1.4.tgz"
   integrity sha512-4Rto21sPfw555sZ/XNLqfxDUNeLhNYGO2dlPqsnuCg8N8a2a9u1ltqBOPQ4vj1Gf7eJC0W2hHG2eYUHuiXgY2w==
 
 "@nodelib/fs.scandir@2.1.5":
@@ -2216,7 +2216,7 @@ esbuild-windows-32@0.14.47:
 
 esbuild-windows-64@0.14.47:
   version "0.14.47"
-  resolved "https://registry.yarnpkg.com/esbuild-windows-64/-/esbuild-windows-64-0.14.47.tgz#2564c3fcf0c23d701edb71af8c52d3be4cec5f8a"
+  resolved "https://registry.npmjs.org/esbuild-windows-64/-/esbuild-windows-64-0.14.47.tgz"
   integrity sha512-/Pk5jIEH34T68r8PweKRi77W49KwanZ8X6lr3vDAtOlH5EumPE4pBHqkCUdELanvsT14yMXLQ/C/8XPi1pAtkQ==
 
 esbuild-windows-arm64@0.14.47:
@@ -2791,10 +2791,10 @@ graphemer@^1.4.0:
   resolved "https://registry.npmjs.org/graphemer/-/graphemer-1.4.0.tgz"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
 
-haq-assets@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/haq-assets/-/haq-assets-1.1.1.tgz#8d559064abc9a6fcb57302a88ad21b71f39482ef"
-  integrity sha512-ReEuhzgKnWdy1uFQCHkOJvXzZf4VY1WfL9z/7Hs0LTdOwHQfkg+4dWJW4NMxQhBnip/6tEw5Ti/ZRTQWh+UKQQ==
+haq-assets@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/haq-assets/-/haq-assets-1.1.2.tgz#c8609c240ea3d8f540d86f8c5c25c61cbb55da11"
+  integrity sha512-Sn0pHjXzbDrIPpJ7X1elpiQjFh+OSgxgQeCll7JBLfNbvI6wKdZk9cL5z00WCC/eGMHFXZVUyARUOzEMUjDpFw==
   dependencies:
     react "^18.3.1"
     react-dom "^18.3.1"

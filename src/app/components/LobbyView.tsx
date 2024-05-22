@@ -6,8 +6,6 @@ import useTeams from '@/app/hooks/useTeams';
 import { supabase } from '@/app/lib/supabase/client';
 import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
-import { motion } from 'framer-motion';
-import { defaultTransition } from '../lib/animationConfig';
 
 interface Team {
   [key: string]: any;
@@ -23,7 +21,7 @@ const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
   const text = team.color === 'blue' ? 'text-blue' : 'text-red';
 
   return (
-    <div className="flex h-16 w-full items-center justify-between rounded-md border bg-[#0a0a0c] p-4">
+    <div className="flex h-16 w-full items-center justify-between border bg-[#0a0a0c] p-4">
       <div>
         <h1>{team.name}</h1>
         {currentTeam.name === team.name && (
@@ -39,7 +37,7 @@ const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
   );
 };
 
-const ReadyView = () => {
+const LobbyView = () => {
   const socket = useEnsureContext(SocketContext);
 
   const { room, error } = roomStore((state) => ({
@@ -64,7 +62,6 @@ const ReadyView = () => {
       .eq('id', currentTeam.id)
       .select('*, room(*)')
       .single();
-    
 
     if (data && !error) {
       socket.emit('TEAM_READY', { roomid: room.id, teamid: currentTeam?.id });
@@ -72,13 +69,8 @@ const ReadyView = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ defaultTransition, delay: 0.25, duration: 0.25 }}
-      className='flex flex-col items-center justify-center h-screen'
-    >
-      <div className="border-b border-opacity-25 mb-4 pb-4 text-center">
+    <div className="mx-auto flex h-screen w-fit flex-col items-center justify-center">
+      <div className="mb-4 border-b border-opacity-25 pb-4 text-center">
         <h1 className="text-2xl font-bold">Salle d’attente</h1>
         <p className="text-sm font-normal opacity-50">
           {'En attente que les deux équipes soient prêtes'}
@@ -101,12 +93,12 @@ const ReadyView = () => {
           </div>
         ) : (
           <Button size="lg" className="w-full" onClick={handleReadyClick}>
-            {'Confirmer prêt'}
+            <span>{'Confirmer prêt'}</span>
           </Button>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
-export default ReadyView;
+export default LobbyView;

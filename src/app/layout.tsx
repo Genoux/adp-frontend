@@ -1,9 +1,9 @@
 import './globals.css';
 import { ThemeProvider } from '@/app/components/ui/theme-provider';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistSans } from 'geist/font/sans';
 import Image from 'next/image';
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
   title: 'HAQ - Aram draft pick',
@@ -11,16 +11,14 @@ export const metadata = {
   icons: {
     icon: [
       {
-        media: '(prefers-color-scheme: light)',
-        url: '/images/favicon-light.ico',
-        href: '/images/favicon-light.ico',
-      },
-      {
-        media: '(prefers-color-scheme: dark)',
-        url: '/images/favicon-dark.ico',
-        href: '/images/favicon-dark.ico',
+        url: "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/favicon.png",
+        href: "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/favicon.png",
       },
     ],
+  },
+  openGraph: {
+    images:
+      "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/opengraph-image.jpg",
   },
 };
 
@@ -32,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${GeistSans.className}  overflow-x-hidden`}
+        className={`${GeistSans.className}  mx-auto min-w-[1024px] overflow-x-hidden`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <Image

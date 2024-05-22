@@ -1,20 +1,20 @@
-'use client'
+'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
-import supabase from '@/app/lib/supabase/auth/supabase-browser';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
-import Link from 'next/link';
+import supabase from '@/app/lib/supabase/auth/supabase-browser';
 import { User } from '@supabase/supabase-js';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { FormEvent, useEffect, useState } from 'react';
 
 export default function LoginPage() {
   const isDev = process.env.NODE_ENV === 'development';
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const [email, setEmail] = useState('john.olivierb@gmail.com')
-  const [password, setPassword] = useState('123456')
+  const [email, setEmail] = useState('john.olivierb@gmail.com');
+  const [password, setPassword] = useState('123456');
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
@@ -35,7 +35,7 @@ export default function LoginPage() {
   }, [isDev]);
 
   const handleLogin = async (e: FormEvent) => {
-    console.log("handleLogin - e:", e);
+    console.log('handleLogin - e:', e);
     e.preventDefault();
 
     setEmailError(false);
@@ -50,44 +50,52 @@ export default function LoginPage() {
       setPasswordError(!isPasswordValid);
 
       // Trigger the shake animation by toggling its state
-      setTriggerShake(prevState => !prevState);
+      setTriggerShake((prevState) => !prevState);
     }
 
     const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
+    });
 
     if (error) {
-      console.error('Error logging in:', error.message)
+      console.error('Error logging in:', error.message);
       setEmailError(true);
       setPasswordError(true);
 
-      setTriggerShake(prevState => !prevState);
-      return
+      setTriggerShake((prevState) => !prevState);
+      return;
     }
     setUser(data.user); // Update user state
-    console.log("handleLogin - user:", user);
+    console.log('handleLogin - user:', user);
 
     router.push('/admin/rooms'); // Redirect to the admin dashboard
-  }
-
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
-      className="flex flex-col items-center rounded-md border p-6 w-fit mx-auto">
+      className="mx-auto flex w-fit flex-col items-center border p-6"
+    >
       <div className="flex flex-col">
-        <div className="flex flex-col gap-1 text-center mb-6">
-          <h3 className="font-semibold leading-none tracking-tight text-lg">Connection admin</h3>
-          <p className="text-sm text-muted-foreground">{"Si vous n'êtes pas admin, retournez à "}<Link className='underline text-white' href="/">{"l'accueil"}</Link></p>
+        <div className="mb-6 flex flex-col gap-1 text-center">
+          <h3 className="text-lg font-semibold leading-none tracking-tight">
+            Connection admin
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {"Si vous n'êtes pas admin, retournez à "}
+            <Link className="text-white underline" href="/">
+              {"l'accueil"}
+            </Link>
+          </p>
         </div>
-        <div className='flex flex-col gap-4'>
+        <div className="flex flex-col gap-4">
           <motion.div
             animate={emailError ? shakeAnimation : {}}
-            key={triggerShake ? 'shake1' : 'shake2'}>
+            key={triggerShake ? 'shake1' : 'shake2'}
+          >
             <Input
               type="email"
               name="email"
@@ -101,7 +109,8 @@ export default function LoginPage() {
 
           <motion.div
             animate={passwordError ? shakeAnimation : {}}
-            key={triggerShake ? 'shake3' : 'shake4'}>
+            key={triggerShake ? 'shake3' : 'shake4'}
+          >
             <Input
               type="password"
               name="password"

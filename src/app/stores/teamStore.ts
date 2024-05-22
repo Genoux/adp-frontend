@@ -1,8 +1,17 @@
 import { supabase } from '@/app/lib/supabase/client';
-import { Database } from '@/app/types/supabase';
+//import { Database } from '@/app/types/supabase';
 import { create } from 'zustand';
 
-type Team = Database['aram_draft_pick']['Tables']['teams']['Row'];
+type Team = {
+  id: number;
+  isturn: boolean;
+  name: string | null;
+  clicked_hero: string | null;
+  room: string;
+  ready: boolean;
+  color: string | null;
+  canSelect: boolean;
+};
 
 interface TeamState {
   teams: Team[] | null;
@@ -32,8 +41,7 @@ const useTeamStore = create<TeamState>((set, get) => ({
 
       set({ teams });
 
-      // Set up real-time subscriptions for all teams in the room
-      teams?.forEach((team: Team) => {
+      teams.forEach((team: Team) => {
         supabase
           .channel(team.id.toString())
           .on(
@@ -47,6 +55,7 @@ const useTeamStore = create<TeamState>((set, get) => ({
             (payload) => get().handleTeamUpdate(payload)
           )
           .subscribe((status, err) => {
+            console.log('Channel status:', status);
             if (err) console.error('.subscribe - err TEAM:', err);
           });
       });
