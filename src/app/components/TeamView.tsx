@@ -117,10 +117,10 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ image, position }) => (
         src={`/images/champions/splash/${image
           ?.toLowerCase()
           .replace(/\s+/g, '')
-          .replace(/[\W_]+/g, '')}.jpg`}
+          .replace(/[\W_]+/g, '')}.webp`}
         objectFit='cover'
         layout='fill'
-        quality={100}
+        quality={80}
         className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
         alt={image}
       />

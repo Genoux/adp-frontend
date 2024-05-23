@@ -82,7 +82,7 @@ const StaticChampionsList = ({
               width={200}
               height={200}
               quality={80}
-              src={`/images/champions/tiles/${imageName}.jpg`}
+              src={`/images/champions/tiles/${imageName}.webp`}
             />
           </motion.div>
         </div>
@@ -193,7 +193,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                   width={200}
                   height={200}
                   quality={80}
-                  src={`/images/champions/tiles/${imageName}.jpg`}
+                  src={`/images/champions/tiles/${imageName}.webp`}
                 />
               </motion.div>
             </motion.div>
