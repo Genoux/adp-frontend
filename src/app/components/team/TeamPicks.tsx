@@ -2,25 +2,22 @@ import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface Hero {
-  name: string;
-  id: string;
-  selected: boolean;
+  [key:string]: any;
 }
 
 interface Team {
   [key: string]: any;
-  applyHeightVariants?: boolean;
 }
 
-const TeamPicks: React.FC<Team> = ({ team }) => {
+const TeamPicks = ({ team } :Team) => {
   const { room } = roomStore();
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (team.isturn && team.canSelect  && room?.status === 'select') {
+    if (team.isturn && team.canSelect && room?.status === 'select') {
       const timer = setTimeout(() => {
         setBorderIndex(
           team.heroes_selected.findIndex((hero: Hero) => !hero.selected)
@@ -38,33 +35,30 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
     }
   }, [team.clicked_hero]);
 
+  const getHeroImageSrc = (id: string) =>
+    `/images/champions/splash/${
+      id
+        ? id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')
+        : 'placeholder'
+    }.webp`;
+
+  const borderHeroImageSrc = useMemo(
+    () => getHeroImageSrc(team.clicked_hero || 'placeholder'),
+    [team.clicked_hero]
+  );
+
   return (
     <motion.div className="flex h-full w-full gap-2">
-      {Array.from({ length: 5 }).map((_, index) => {
-        const hero = team.heroes_selected[index];
+      {team.heroes_selected.map((hero: Hero, index: number) => {
         const isBorderSlot = index === borderIndex;
         const isEmptySlot = !isBorderSlot && !hero.id;
-        const imageSrc = `/images/champions/splash/${
-          hero.id
-            ? hero.id
-                .toLowerCase()
-                .replace(/\s+/g, '')
-                .replace(/[\W_]+/g, '')
-            : 'placeholder'
-        }.jpg`;
-        const ClickedHero = `/images/champions/splash/${
-          team.clicked_hero
-            ? team.clicked_hero
-                .toLowerCase()
-                .replace(/\s+/g, '')
-                .replace(/[\W_]+/g, '')
-            : 'placeholder'
-        }.jpg`;
+        const heroImageSrc = getHeroImageSrc(hero.id);
+
         return (
           <motion.div
-            animate={{ opacity: !team.isturn ? 0.8 : 1 }}
             key={index}
             className="relative h-full w-full overflow-hidden"
+            animate={{ opacity: !team.isturn ? 0.8 : 1 }}
           >
             {isBorderSlot && (
               <AnimatePresence>
@@ -73,13 +67,13 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                 </div>
                 <div className="relative h-full w-full overflow-hidden">
                   <motion.div
+                    className="glow-yellow-10 absolute inset-0 z-50 border border-yellow bg-opacity-10 bg-gradient-to-t from-yellow-transparent to-transparent"
                     animate={{ opacity: [0.2, 0.7] }}
                     transition={{
                       duration: 1,
                       repeat: Infinity,
                       repeatType: 'reverse',
                     }}
-                    className="glow-yellow-10 absolute inset-0 z-50 border border-yellow bg-opacity-10 bg-gradient-to-t from-yellow-transparent to-transparent"
                   />
                   {team.clicked_hero && (
                     <motion.div
@@ -88,11 +82,11 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                     >
                       <Image
                         alt={team.clicked_hero}
-                        src={ClickedHero}
+                        src={borderHeroImageSrc}
                         layout="fill"
                         objectFit="cover"
                         quality={80}
-                        className={clsx('sepia', {})}
+                        className="sepia"
                       />
                     </motion.div>
                   )}
@@ -118,7 +112,7 @@ const TeamPicks: React.FC<Team> = ({ team }) => {
                 >
                   <Image
                     alt={hero.name}
-                    src={imageSrc}
+                    src={heroImageSrc}
                     layout="fill"
                     objectFit="cover"
                     quality={80}

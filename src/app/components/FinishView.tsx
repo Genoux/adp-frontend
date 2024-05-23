@@ -38,7 +38,7 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
           src={`/images/champions/splash/${hero.id
             .toLowerCase()
             .replace(/\s+/g, '')
-            .replace(/[\W_]+/g, '')}.jpg`}
+            .replace(/[\W_]+/g, '')}.webp`}
           alt={hero.name}
           fill
           style={{ objectFit: 'cover' }}

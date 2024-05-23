@@ -1,21 +1,17 @@
-import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface Hero {
-  name: string;
-  id: string;
-  selected: boolean;
+  [key: string]: any;
 }
 
 interface Team {
   [key: string]: any;
 }
 
-const TeamBans: React.FC<Team> = ({ team }) => {
-  const { room } = roomStore();
+const TeamBans = ({ team }: Team) => {
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -24,7 +20,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
     } else {
       setBorderIndex(null);
     }
-  }, [team, room]);
+  }, [team]);
 
   useEffect(() => {
     if (!team.clicked_hero) {
@@ -32,34 +28,30 @@ const TeamBans: React.FC<Team> = ({ team }) => {
     }
   }, [team.clicked_hero]);
 
+  const getHeroImageSrc = (id: string) =>
+    `/images/champions/splash/${
+      id
+        ? id.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')
+        : 'placeholder'
+    }.webp`;
+
+  const borderHeroImageSrc = useMemo(
+    () => getHeroImageSrc(team.clicked_hero || 'placeholder'),
+    [team.clicked_hero]
+  );
+
   return (
     <motion.div className="flex h-full w-full gap-2">
-      {Array.from({ length: 3 }).map((_, index) => {
-        const hero = team.heroes_ban[index];
+      {team.heroes_ban.map((hero: Hero, index: number) => {
         const isBorderSlot = index === borderIndex;
         const isEmptySlot = !isBorderSlot && !hero.id;
-        const imageSrc = `/images/champions/splash/${
-          hero.id
-            ? hero.id
-                .toLowerCase()
-                .replace(/\s+/g, '')
-                .replace(/[\W_]+/g, '')
-            : 'placeholder'
-        }.jpg`;
-        const ClickedHero = `/images/champions/splash/${
-          team.clicked_hero
-            ? team.clicked_hero
-                .toLowerCase()
-                .replace(/\s+/g, '')
-                .replace(/[\W_]+/g, '')
-            : 'placeholder'
-        }.jpg`;
+        const heroImageSrc = getHeroImageSrc(hero.id);
 
         return (
           <motion.div
-            animate={{ opacity: !team.isturn ? 0.8 : 1 }}
             key={index}
             className="relative h-full w-full overflow-hidden"
+            animate={{ opacity: !team.isturn ? 0.8 : 1 }}
           >
             {isBorderSlot && (
               <AnimatePresence>
@@ -68,13 +60,13 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                 </div>
                 <div className="relative h-full w-full overflow-hidden">
                   <motion.div
+                    className="glow-red-10 absolute inset-0 z-40 border border-red bg-opacity-10 bg-gradient-to-t from-red to-transparent"
                     animate={{ opacity: [0.2, 0.7] }}
                     transition={{
                       duration: 1,
                       repeat: Infinity,
                       repeatType: 'reverse',
                     }}
-                    className="glow-red-10 absolute inset-0 z-40 border border-red bg-opacity-10 bg-gradient-to-t from-red to-transparent"
                   />
                   {team.clicked_hero && (
                     <motion.div
@@ -83,7 +75,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                     >
                       <Image
                         alt={team.clicked_hero}
-                        src={ClickedHero}
+                        src={borderHeroImageSrc}
                         layout="fill"
                         objectFit="cover"
                         quality={80}
@@ -115,7 +107,7 @@ const TeamBans: React.FC<Team> = ({ team }) => {
                 >
                   <Image
                     alt={hero.name}
-                    src={imageSrc}
+                    src={heroImageSrc}
                     layout="fill"
                     objectFit="cover"
                     quality={80}
