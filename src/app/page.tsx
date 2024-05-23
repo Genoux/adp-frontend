@@ -103,7 +103,7 @@ function Home() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={defaultTransition}
-            className="mx-auto mt-12 flex max-w-[980px] flex-col items-center justify-center gap-12"
+            className="mx-auto mt-12 flex max-w-[980px] h-screen flex-col items-center justify-center gap-12"
           >
             <div className="flex flex-col items-center justify-center">
               <Link

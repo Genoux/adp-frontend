@@ -48,7 +48,7 @@ const Spectator = ({ params }: SpectatorProps) => {
   useEffect(() => {
     fetchRoom(roomid);
     fetchTeams(roomid);
-  }, []);
+  }, [fetchRoom, fetchTeams, roomid]);
 
   useEffect(() => {
     if (teams) {

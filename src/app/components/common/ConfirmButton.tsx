@@ -7,23 +7,12 @@ import useTeams from '@/app/hooks/useTeams';
 import { roomStore } from '@/app/stores/roomStore';
 import { motion } from 'framer-motion';
 import { View } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
 
 const ConfirmButton = () => {
   const socket = useEnsureContext(SocketContext);
-  const [localCanSelect, setLocalCanSelect] = useState<boolean>(true);
-
   const { room, isLoading } = roomStore();
-
   const { currentTeam: team, otherTeam } = useTeams();
 
-  useEffect(() => {
-    setLocalCanSelect(true);
-  }, []);
-
-  useEffect(() => {
-    setLocalCanSelect(team?.canSelect as boolean);
-  }, [team]);
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -35,16 +24,10 @@ const ConfirmButton = () => {
       </div>
     );
   const currentTeam = team.isturn ? team : otherTeam;
-
-  const isBanPhase = room?.status === 'ban';
-
   const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection'
 
   const handleConfirmSelection = async () => {
-    // setCanSelect(false);
-    setLocalCanSelect(false);
     if (socket) {
-      //socket?.emit('STOP_TIMER', { roomid: room?.id });
       socket.emit('SELECT_CHAMPION', {
         teamid: team?.id,
         roomid: room?.id,
