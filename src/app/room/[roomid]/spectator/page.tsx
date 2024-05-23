@@ -123,7 +123,7 @@ const Spectator = ({ params }: SpectatorProps) => {
             <Image
               src={`/images/champions/splash/${currentImage
                 ?.toLowerCase()
-                .replace(/\s+/g, '')}.jpg`}
+                .replace(/\s+/g, '')}.webp`}
               layout='fill'
               objectFit='cover'
               quality={100}
