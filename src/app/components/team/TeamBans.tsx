@@ -4,23 +4,19 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
 interface Hero {
-  name: string;
-  id: string;
-  selected: boolean;
+  [key: string]: any;
 }
 
 interface Team {
-  isturn: boolean;
-  heroes_ban: Hero[];
-  clicked_hero?: string;
+  [key: string]: any;
 }
 
-const TeamBans: React.FC<{ team: Team }> = ({ team }) => {
+const TeamBans = ({ team }: Team) => {
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (team.isturn) {
-      setBorderIndex(team.heroes_ban.findIndex((hero) => !hero.selected));
+      setBorderIndex(team.heroes_ban.findIndex((hero: Hero) => !hero.selected));
     } else {
       setBorderIndex(null);
     }
@@ -46,7 +42,7 @@ const TeamBans: React.FC<{ team: Team }> = ({ team }) => {
 
   return (
     <motion.div className="flex h-full w-full gap-2">
-      {team.heroes_ban.map((hero, index) => {
+      {team.heroes_ban.map((hero: Hero, index: number) => {
         const isBorderSlot = index === borderIndex;
         const isEmptySlot = !isBorderSlot && !hero.id;
         const heroImageSrc = getHeroImageSrc(hero.id);

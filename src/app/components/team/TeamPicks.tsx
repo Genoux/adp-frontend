@@ -5,19 +5,14 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
 interface Hero {
-  name: string;
-  id: string;
-  selected: boolean;
+  [key:string]: any;
 }
 
 interface Team {
-  isturn: boolean;
-  canSelect: boolean;
-  heroes_selected: Hero[];
-  clicked_hero?: string;
+  [key: string]: any;
 }
 
-const TeamPicks: React.FC<{ team: Team }> = ({ team }) => {
+const TeamPicks = ({ team } :Team) => {
   const { room } = roomStore();
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
@@ -25,7 +20,7 @@ const TeamPicks: React.FC<{ team: Team }> = ({ team }) => {
     if (team.isturn && team.canSelect && room?.status === 'select') {
       const timer = setTimeout(() => {
         setBorderIndex(
-          team.heroes_selected.findIndex((hero) => !hero.selected)
+          team.heroes_selected.findIndex((hero: Hero) => !hero.selected)
         );
       }, 1000);
       return () => clearTimeout(timer);
@@ -54,7 +49,7 @@ const TeamPicks: React.FC<{ team: Team }> = ({ team }) => {
 
   return (
     <motion.div className="flex h-full w-full gap-2">
-      {team.heroes_selected.map((hero, index) => {
+      {team.heroes_selected.map((hero: Hero, index: number) => {
         const isBorderSlot = index === borderIndex;
         const isEmptySlot = !isBorderSlot && !hero.id;
         const heroImageSrc = getHeroImageSrc(hero.id);
