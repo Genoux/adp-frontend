@@ -7,12 +7,34 @@ import useTeams from '@/app/hooks/useTeams';
 import { roomStore } from '@/app/stores/roomStore';
 import { motion } from 'framer-motion';
 import { View } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { PostgrestError } from '@supabase/supabase-js';
+import { Bug } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/app/components/ui/alert-dialog"
 
 const ConfirmButton = () => {
   const socket = useEnsureContext(SocketContext);
   const { room, isLoading } = roomStore();
   const { currentTeam: team, otherTeam } = useTeams();
+  const [err, setErr] = useState(false);
+  const [errMessage, setErrMessage] = useState<PostgrestError>();
 
+  useEffect(() => {
+    if (socket) {
+      socket.on('err', (data) => {
+        setErrMessage(data);
+        setErr(true);
+      });
+    }
+  }, [socket]);
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -37,41 +59,60 @@ const ConfirmButton = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }} // start at half the size
-      animate={{ opacity: 1 }} // animate to full size
-      transition={{ duration: 0.15, delay: 0.2 }}
-      className="flex w-full justify-center"
-    >
-      {team.isturn ? (
-        <div>
-          <Button
-            size="lg"
-            onClick={handleConfirmSelection}
-            className="w-64"
-            disabled={!currentTeam?.clicked_hero || !team.canSelect}
-          >
-            {!team.canSelect ? (
-              <LoadingCircle color="black" size="w-4 h-4" />
-            ) : (
-              <>{buttonText}</>
-            )}
-          </Button>
-        </div>
-      ) : (
-        <div className="flex w-full flex-col items-center justify-center">
-          <p className="text-sm opacity-80">Ce n’est pas votre tour</p>
-          <div className="text-md px-12 text-center font-medium">
-            {`En attente de l'autre équipe`}
-            <div className="sending-animation ">
-              <span className="sending-animation-dot">.</span>
-              <span className="sending-animation-dot">.</span>
-              <span className="sending-animation-dot">.</span>
+    <>
+      <AlertDialog open={err}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className='flex gap-2'><Bug /> Une erreur est survenue du côté serveur.</AlertDialogTitle>
+            <AlertDialogDescription>
+              Veuillez recharger la page et réessayer. Si le problème persiste, veuillez contacter un administrateur.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <pre>ERR: {errMessage?.code}</pre>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => {
+              window.location.reload()
+              setErr(false);
+            }}>Refresh</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <motion.div
+        initial={{ opacity: 0 }} // start at half the size
+        animate={{ opacity: 1 }} // animate to full size
+        transition={{ duration: 0.15, delay: 0.2 }}
+        className="flex w-full justify-center"
+      >
+        {team.isturn ? (
+          <div>
+            <Button
+              size="lg"
+              onClick={handleConfirmSelection}
+              className="w-64"
+              disabled={!currentTeam?.clicked_hero || !team.canSelect}
+            >
+              {!team.canSelect ? (
+                <LoadingCircle color="black" size="w-4 h-4" />
+              ) : (
+                <>{buttonText}</>
+              )}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex w-full flex-col items-center justify-center">
+            <p className="text-sm opacity-80">Ce n’est pas votre tour</p>
+            <div className="text-md px-12 text-center font-medium">
+              {`En attente de l'autre équipe`}
+              <div className="sending-animation ">
+                <span className="sending-animation-dot">.</span>
+                <span className="sending-animation-dot">.</span>
+                <span className="sending-animation-dot">.</span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </motion.div>
+        )}
+      </motion.div>
+    </>
   );
 };
 

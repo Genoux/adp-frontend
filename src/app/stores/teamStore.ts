@@ -1,5 +1,4 @@
 import { supabase } from '@/app/lib/supabase/client';
-//import { Database } from '@/app/types/supabase';
 import { create } from 'zustand';
 
 type Team = {
@@ -17,6 +16,8 @@ interface TeamState {
   teams: Team[] | null;
   currentTeamId: string | null;
   isLoading: boolean;
+  isSubscribed: boolean;
+  subscriptions: Record<number, boolean>;
   error: Error | null;
   fetchTeams: (roomid: string) => Promise<void>;
   setCurrentTeamId: (teamId: string) => void;
@@ -27,10 +28,12 @@ const useTeamStore = create<TeamState>((set, get) => ({
   teams: null,
   currentTeamId: null,
   isLoading: false,
+  isSubscribed: false,
+  subscriptions: {},
   error: null,
 
   fetchTeams: async (roomid: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null, isSubscribed: false });
     try {
       const { data: teams, error } = await supabase
         .from('teams')
@@ -41,24 +44,40 @@ const useTeamStore = create<TeamState>((set, get) => ({
 
       set({ teams });
 
-      teams.forEach((team: Team) => {
-        supabase
-          .channel(team.id.toString())
-          .on(
-            'postgres_changes',
-            {
-              event: 'UPDATE',
-              schema: 'aram_draft_pick',
-              table: 'teams',
-              filter: `id=eq.${team.id}`,
-            },
-            (payload) => get().handleTeamUpdate(payload)
-          )
-          .subscribe((status, err) => {
-            console.log('Channel status:', status);
-            if (err) console.error('.subscribe - err TEAM:', err);
+      const subscriptionPromises = teams.map((team: Team) => {
+        if (!get().subscriptions[team.id]) {
+          return new Promise<void>((resolve, reject) => {
+            supabase
+              .channel(team.id.toString())
+              .on(
+                'postgres_changes',
+                {
+                  event: 'UPDATE',
+                  schema: 'aram_draft_pick',
+                  table: 'teams',
+                  filter: `id=eq.${team.id}`,
+                },
+                (payload) => get().handleTeamUpdate(payload)
+              )
+              .subscribe((status, err) => {
+                if (err) {
+                  console.error('.subscribe - err TEAM:', err);
+                  reject(err);
+                } else {
+                  console.log(`Channel subscribed to team ${team.id}`);
+                  set((state) => ({
+                    subscriptions: { ...state.subscriptions, [team.id]: true },
+                  }));
+                  resolve();
+                }
+              });
           });
+        }
+        return Promise.resolve(); // Already subscribed
       });
+
+      await Promise.all(subscriptionPromises);
+      set({ isSubscribed: true });
     } catch (error) {
       set({ error: error as Error });
     } finally {
@@ -68,7 +87,9 @@ const useTeamStore = create<TeamState>((set, get) => ({
 
   setCurrentTeamId: (teamId: string) => {
     set({ currentTeamId: teamId });
+    console.log('Set currentTeamId:', teamId); // Debugging
   },
+
   handleTeamUpdate: (payload) => {
     const currentTeams = get().teams;
     let updatedTeams = currentTeams;
