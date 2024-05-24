@@ -4,8 +4,8 @@ import SocketContext from '@/app/context/SocketContext';
 import useEnsureContext from '@/app/hooks/useEnsureContext';
 import useTeams from '@/app/hooks/useTeams';
 import { supabase } from '@/app/lib/supabase/client';
-import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
+import { useEffect, useState } from 'react';
 
 interface Team {
   [key: string]: any;
@@ -24,10 +24,8 @@ const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
     <div className="flex h-16 w-full items-center justify-between border bg-[#0a0a0c] p-4">
       <div>
         <h1>{team.name}</h1>
-        {currentTeam.name === team.name && (
-          <p
-            className={clsx(`${text} text-xs`)}
-          >{`Vous êtes l'équipe ${color}`}</p>
+        {currentTeam?.name === team.name && (
+          <p className={clsx(`${text} text-xs`)}>{`Vous êtes l'équipe ${color}`}</p>
         )}
       </div>
       <div>
@@ -39,21 +37,18 @@ const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
 
 const LobbyView = () => {
   const socket = useEnsureContext(SocketContext);
-
-  const { room, error } = roomStore((state) => ({
-    room: state.room,
-    error: state.error,
-    isLoading: state.isLoading,
-  }));
-
   const { currentTeam, otherTeam, redTeam, blueTeam } = useTeams();
+  const [isReadyToInteract, setIsReadyToInteract] = useState(false);
 
-  if (!room || error) {
-    return <div>Room not found</div>;
-  }
+  useEffect(() => {
+    if (currentTeam && socket) {
+      setIsReadyToInteract(true);
+    }
+  }, [currentTeam, socket]);
 
-  if (!currentTeam || !otherTeam || !redTeam || !blueTeam)
+  if (!currentTeam || !otherTeam || !redTeam || !blueTeam) {
     return <div>Team not found</div>;
+  }
 
   const handleReadyClick = async () => {
     const { data, error } = await supabase
@@ -64,7 +59,7 @@ const LobbyView = () => {
       .single();
 
     if (data && !error) {
-      socket.emit('TEAM_READY', { roomid: room.id, teamid: currentTeam?.id });
+      socket.emit('TEAM_READY', { roomid: data.room.id, teamid: currentTeam.id });
     }
   };
 
@@ -84,7 +79,7 @@ const LobbyView = () => {
       <div className="flex h-12 items-center justify-center">
         {currentTeam.ready ? (
           <div className="w-full text-center">
-            <span className="pr-0.5 text-base">{`En attende de ${otherTeam.name}`}</span>
+            <span className="pr-0.5 text-base">{`En attente de ${otherTeam.name}`}</span>
             <div className="sending-animation">
               <span className="sending-animation-dot">.</span>
               <span className="sending-animation-dot">.</span>
@@ -92,7 +87,7 @@ const LobbyView = () => {
             </div>
           </div>
         ) : (
-          <Button size="lg" className="w-full" onClick={handleReadyClick}>
+          <Button size="lg" className="w-full" onClick={handleReadyClick} disabled={!isReadyToInteract}>
             <span>{'Confirmer prêt'}</span>
           </Button>
         )}

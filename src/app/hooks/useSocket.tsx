@@ -12,6 +12,7 @@ interface SocketHandlers {
 
 export default function useSocket(
   roomid: string,
+  teamid?: string,
   handlers: SocketHandlers = {}
 ) {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -43,7 +44,8 @@ export default function useSocket(
       }
       setSocket(newSocket);
       setIsConnected(true);
-      newSocket.emit('joinRoom', { roomid });
+      
+      newSocket.emit('joinRoom', { roomid, teamid });
       console.log('Successfully joined room ' + roomid);
     });
 
@@ -74,7 +76,7 @@ export default function useSocket(
       }
       setSocket(null);
     };
-  }, [handlers.eventHandlers, roomid]);
+  }, [handlers.eventHandlers, roomid, teamid]);
 
   return { socket, isConnected }; // Return the socket
 }

@@ -15,7 +15,7 @@ const TeamBans = ({ team }: Team) => {
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (team.isturn) {
+    if (team.isturn && team.canSelect) {
       setBorderIndex(team.heroes_ban.findIndex((hero: Hero) => !hero.selected));
     } else {
       setBorderIndex(null);

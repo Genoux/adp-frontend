@@ -21,7 +21,6 @@ const requestOptions: RequestInit = {
 };
 
 async function resetArray(roomid: string): Promise<void> {
-  console.log('resetArray - roomid:', roomid);
   try {
     // Fetch current heroes_pool from the room
     const { data: room, error: fetchError } = await supabase

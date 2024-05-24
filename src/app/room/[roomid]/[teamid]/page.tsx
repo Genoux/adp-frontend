@@ -26,35 +26,25 @@ interface RoomProps {
   };
 }
 
-interface Room {
-  [key: string]: any;
-}
-
 export default function Room({ params }: RoomProps) {
   const { roomid, teamid } = params;
-  const { socket, isConnected } = useSocket(roomid);
-  const { fetchTeams, isLoading, error, setCurrentTeamId } = useTeamStore();
-  const {
-    room,
-    fetchRoom,
-    isLoading: isLoadingRoom,
-    error: errorRoom,
-  } = roomStore();
+  const { socket, isConnected } = useSocket(roomid, teamid);
+  const { fetchTeams, isLoading: isLoadingTeams, error: errorTeams, setCurrentTeamId } = useTeamStore();
+  const { fetchRoom, room, isLoading: isLoadingRoom, error: errorRoom } = roomStore();
 
   useEffect(() => {
     fetchTeams(roomid);
     setCurrentTeamId(teamid);
     fetchRoom(roomid);
-  }, [roomid, teamid, fetchTeams, setCurrentTeamId, fetchRoom]);
+  }, [fetchRoom, fetchTeams, roomid, setCurrentTeamId, teamid]);
 
-  if (error || errorRoom) return <ErrorMessage />;
-  if (isLoading || isLoadingRoom || !isConnected) return <LoadingScreen />;
+  if (errorTeams || errorRoom) return <ErrorMessage />;
+  if (isLoadingTeams || isLoadingRoom || !isConnected) return <LoadingScreen />;
 
   const isLobbyView = room?.status === 'waiting';
   const isPlanningView = room?.status === 'planning';
   const isFinishView = room?.status === 'done';
-  const isRoomView =
-    (room && room?.status === 'select') || room?.status === 'ban';
+  const isRoomView = room && (room.status === 'select' || room.status === 'ban');
 
   return (
     <main>
@@ -66,7 +56,7 @@ export default function Room({ params }: RoomProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ defaultTransition }}
+              transition={defaultTransition}
             >
               <LobbyView />
             </motion.div>
@@ -78,7 +68,7 @@ export default function Room({ params }: RoomProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ defaultTransition }}
+                transition={defaultTransition}
               >
                 <FinishView />
               </motion.div>
@@ -90,7 +80,7 @@ export default function Room({ params }: RoomProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ defaultTransition }}
+              transition={defaultTransition}
               className="flex flex-col gap-12 px-4 pt-12"
             >
               <PlanningView />
@@ -104,7 +94,7 @@ export default function Room({ params }: RoomProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ defaultTransition }}
+                transition={defaultTransition}
               >
                 <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
                   <RoomStatusBar className="z-90 fixed left-0 top-0" />
