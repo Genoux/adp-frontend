@@ -27,12 +27,14 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
     room: state.room,
     isLoading: state.isLoading,
   }));
-  const { currentTeam: team, otherTeam, blueTeam, redTeam } = useTeams();
-  const currentTeam = team?.isturn ? team : otherTeam;
+  const { currentTeam, blueTeam, redTeam } = useTeams();
+  
+  //TODO: Make sure to check if the team is the current team and this chage works
+ // const currentTeam = team?.isturn ? team : otherTeam;
 
   useEffect(() => {
-    setSelectedChampion(team?.clicked_hero || null);
-  }, [team]);
+    setSelectedChampion(currentTeam?.clicked_hero || null);
+  }, [currentTeam]);
 
   useEffect(() => {
     const updateImage = (
@@ -49,15 +51,15 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
   }, [blueTeam, redTeam]);
 
   const handleClickedHero = async (hero: Hero) => {
-    if (!team || hero.name === team.clicked_hero) return;
+    if (!currentTeam || hero.name === currentTeam.clicked_hero) return;
     await supabase
       .from('teams')
       .update({ clicked_hero: hero.name })
-      .eq('id', team.id);
+      .eq('id', currentTeam.id);
   };
 
   if (isLoading) return <div>Loading...</div>;
-  if (!team || !currentTeam) return <div>Team not found</div>;
+  if (!currentTeam) return <div>Team not found</div>;
 
   return (
     <>
@@ -81,7 +83,7 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
         className={className}
       >
         <ChampionsPool
-          team={team}
+          team={currentTeam}
           selectedChampion={selectedChampion}
           handleClickedHero={handleClickedHero}
         />
