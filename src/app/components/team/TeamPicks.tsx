@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
+
+//TODO: Maybe if not user turn pick should alsway be 1 opacity?
 interface Hero {
   [key:string]: any;
 }

@@ -38,13 +38,15 @@ export default function Room({ params }: RoomProps) {
     fetchRoom(roomid);
   }, [fetchRoom, fetchTeams, roomid, setCurrentTeamId, teamid]);
 
-  if (errorTeams || errorRoom) return <ErrorMessage />;
+
   if (isLoadingTeams || isLoadingRoom || !isConnected) return <LoadingScreen />;
 
   const isLobbyView = room?.status === 'waiting';
   const isPlanningView = room?.status === 'planning';
   const isFinishView = room?.status === 'done';
   const isRoomView = room && (room.status === 'select' || room.status === 'ban');
+
+  if (errorTeams || errorRoom) return <ErrorMessage />;
 
   return (
     <main>
