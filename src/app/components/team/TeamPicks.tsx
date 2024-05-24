@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
+
+//TODO: Maybe if not user turn pick should alsway be 1 opacity?
 interface Hero {
   [key:string]: any;
 }
@@ -119,7 +121,7 @@ const TeamPicks = ({ team } :Team) => {
                   />
                 </motion.div>
               )}
-              <div className="absolute bottom-0 left-0 right-0 z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-black to-transparent pb-6 text-center text-sm text-white">
+              <div className="absolute bottom-0 left-0 right-0 z-50 flex h-full w-full items-end justify-center bg-black bg-opacity-40 pb-6 text-center text-sm text-white">
                 {hero.name}
               </div>
             </div>

@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import { roomStore } from '@/app/stores/roomStore';
 
 interface Hero {
   [key: string]: any;
@@ -12,15 +13,19 @@ interface Team {
 }
 
 const TeamBans = ({ team }: Team) => {
+  const { room } = roomStore();
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
-
+  
   useEffect(() => {
-    if (team.isturn && team.canSelect) {
-      setBorderIndex(team.heroes_ban.findIndex((hero: Hero) => !hero.selected));
+    if (team.isturn && team.canSelect && room?.status === 'ban') {
+      const timer = setTimeout(() => {
+        setBorderIndex(team.heroes_ban.findIndex((hero: Hero) => !hero.selected));
+      }, 1000);
+      return () => clearTimeout(timer);
     } else {
       setBorderIndex(null);
     }
-  }, [team]);
+  }, [room, team]);
 
   useEffect(() => {
     if (!team.clicked_hero) {
@@ -114,7 +119,7 @@ const TeamBans = ({ team }: Team) => {
                   />
                 </motion.div>
               )}
-              <div className="absolute bottom-0 left-0 right-0 z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-black to-transparent pb-6 text-center text-sm text-white">
+              <div className="absolute bottom-0 left-0 right-0 z-50 flex h-full w-full items-end justify-center bg-black bg-opacity-10 pb-6 text-center text-sm text-white">
                 {hero.name}
               </div>
             </div>
