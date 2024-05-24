@@ -87,7 +87,7 @@ const TeamPicks = ({ team } :Team) => {
                         src={borderHeroImageSrc}
                         layout="fill"
                         objectFit="cover"
-                        quality={80}
+                        quality={50}
                         className="sepia"
                       />
                     </motion.div>
@@ -117,7 +117,7 @@ const TeamPicks = ({ team } :Team) => {
                     src={heroImageSrc}
                     layout="fill"
                     objectFit="cover"
-                    quality={80}
+                    quality={50}
                   />
                 </motion.div>
               )}

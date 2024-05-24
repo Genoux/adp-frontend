@@ -129,9 +129,9 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                 <ImageHash
                   alt={hero.name}
                   blurhash={blurHash}
-                  width={200}
-                  height={200}
-                  quality={80}
+                  width={150}
+                  height={150}
+                  quality={50}
                   src={`/images/champions/tiles/${imageName}.webp`}
                 />
               </motion.div>

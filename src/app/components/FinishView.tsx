@@ -40,9 +40,9 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
             .replace(/\s+/g, '')
             .replace(/[\W_]+/g, '')}.webp`}
           alt={hero.name}
-          fill
-          style={{ objectFit: 'cover' }}
-          sizes="100% 100%"
+          objectFit='cover'
+          layout='fill'
+          quality={50}
         />
       )}
     </div>

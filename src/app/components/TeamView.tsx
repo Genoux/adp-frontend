@@ -28,7 +28,7 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
     isLoading: state.isLoading,
   }));
   const { currentTeam, blueTeam, redTeam } = useTeams();
-  
+
   //TODO: Make sure to check if the team is the current team and this chage works
  // const currentTeam = team?.isturn ? team : otherTeam;
 

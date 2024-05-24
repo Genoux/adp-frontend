@@ -126,7 +126,7 @@ const Spectator = ({ params }: SpectatorProps) => {
                 .replace(/\s+/g, '')}.webp`}
               layout='fill'
               objectFit='cover'
-              quality={100}
+              quality={50}
               className={`h-full w-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue'
                 ? 'fade-gradient-left'
                 : 'fade-gradient-right'
