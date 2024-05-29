@@ -3,17 +3,19 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { roomStore } from '@/app/stores/roomStore';
+import useTeams from '@/app/hooks/useTeams';
 
-interface Hero {
+type Hero = {
   [key: string]: any;
 }
 
-interface Team {
+type Team = {
   [key: string]: any;
 }
 
 const TeamBans = ({ team }: Team) => {
   const { room } = roomStore();
+  const { currentTeam } = useTeams();
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -56,7 +58,7 @@ const TeamBans = ({ team }: Team) => {
           <motion.div
             key={index}
             className="relative h-full w-full overflow-hidden"
-            animate={{ opacity: !team.isturn ? 0.8 : 1 }}
+            animate={{ opacity: !currentTeam?.isturn ? 0.5 : 1 }}
           >
             {isBorderSlot && (
               <AnimatePresence>

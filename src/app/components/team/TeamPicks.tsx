@@ -3,19 +3,19 @@ import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import useTeams from '@/app/hooks/useTeams';
 
-
-//TODO: Maybe if not user turn pick should alsway be 1 opacity?
-interface Hero {
+type Hero = {
   [key:string]: any;
 }
 
-interface Team {
+type Team ={
   [key: string]: any;
 }
 
 const TeamPicks = ({ team } :Team) => {
   const { room } = roomStore();
+  const { currentTeam } = useTeams();
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const TeamPicks = ({ team } :Team) => {
           <motion.div
             key={index}
             className="relative h-full w-full overflow-hidden"
-            animate={{ opacity: !team.isturn ? 0.8 : 1 }}
+            animate={{ opacity: !currentTeam?.isturn ? 0.5 : 1 }}
           >
             {isBorderSlot && (
               <AnimatePresence>
@@ -121,7 +121,7 @@ const TeamPicks = ({ team } :Team) => {
                   />
                 </motion.div>
               )}
-              <div className="absolute bottom-0 left-0 right-0 z-50 flex h-full w-full items-end justify-center bg-black bg-opacity-40 pb-6 text-center text-sm text-white">
+              <div className="absolute bottom-0 left-0 right-0 z-50 flex h-1/2 w-full items-end justify-center bg-gradient-to-t from-black to-transparent pb-6 text-center text-sm text-white">
                 {hero.name}
               </div>
             </div>

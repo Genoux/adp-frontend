@@ -93,7 +93,7 @@ const Display: React.FC<DisplayProps> = ({
             'bg-[#353535]': isSpectator,
           })}
         ></div>
-        <label>{isSpectator ? 'spectateur' : team.name}</label>
+        <label>{isSpectator ? 'Spectateur' : team.name}</label>
       </div>
       <div className="flex flex-row items-center gap-2">
         <Input
@@ -123,9 +123,9 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
-        className="border bg-black bg-opacity-20 p-8"
+        className="border bg-black bg-opacity-20 p-6"
       >
-        <div className="mb-4 pb-4 text-left">
+        <div className="mb-6 text-left">
           <h1 className="text-2xl font-bold">Chambre générée</h1>
           <p className="text-sm font-normal opacity-50">
             {'Rejoignez une chambre associée à votre équipe'}

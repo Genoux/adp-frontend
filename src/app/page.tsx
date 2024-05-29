@@ -10,8 +10,8 @@ import { Logo } from 'haq-assets';
 import { ArrowLeft, BedDouble } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-
-interface Room {
+import NoticeBanner from '@/app/components/common/NoticeBanner';
+type Room = {
   id: number;
   name: string;
   blue: Team;
@@ -19,27 +19,26 @@ interface Room {
   status: string;
   [key: string]: any;
 }
-
-interface BlueTeam {
+type BlueTeam = {
   id: number;
   name: string;
   color: string;
 }
 
-interface RedTeam {
+type RedTeam = {
   id: number;
   name: string;
   color: string;
 }
 
-interface Team {
+type Team = {
   id: number;
   name: string;
   borderColor: string;
   color: string;
   btnText: string;
 }
-interface TeamsName {
+type TeamsName = {
   blueTeamName: string;
   redTeamName: string;
 }
@@ -91,19 +90,20 @@ function Home() {
   };
 
   return (
-    <main className="flex h-full flex-col items-center justify-start">
+    <AnimatePresence mode='wait'>
+    <main className="h-screen flex items-center justify-center">
       {appMode === 'false' ? (
         <div className="flex h-full animate-pulse flex-col items-center justify-center gap-2">
           <BedDouble className="h-6 w-6" />
           <h1 className="text-2xl font-semibold">Zzzzzz</h1>
         </div>
       ) : (
-        <AnimatePresence>
+      
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={defaultTransition}
-            className="mx-auto mt-12 flex max-w-[980px] h-screen flex-col items-center justify-center gap-12"
+            transition={{ defaultTransition, delay: 0.2 }}
+            className="mx-auto flex flex-col items-center justify-center gap-10"
           >
             <div className="flex flex-col items-center justify-center">
               <Link
@@ -114,27 +114,27 @@ function Home() {
                 <Logo size={18} />
                 Tournois HAQ
               </Link>
-              <h1 className="text-center text-5xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1]">
-                Aram Draft Pick{' '}
-                <span className="text-xs tracking-normal">v{appVersion}</span>
+              <h1 className="text-center text-6xl font-bold tracking-tighter flex justify-end">
+                Aram Draft Pick
+                <p className="text-xs tracking-normal">v{appVersion}</p>
+
               </h1>
-              <span className="max-w-[750px] text-center text-sm text-muted-foreground md:text-xl">
+              <span className="text-center text-sm text-muted-foreground">
                 Système de Pick & Ban Personnalisé pour ARAM avec 30 Champions
                 Partagés
               </span>
             </div>
-
             {loading ? (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 transition={defaultTransition}
-                className="flex h-[440px] flex-col items-center justify-center"
+                className="flex h-[402px] w-full flex-col items-center justify-center"
               >
                 <LoadingCircle />
               </motion.div>
             ) : room && blueTeam && redTeam ? (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 ">
                 <motion.div
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -153,28 +153,33 @@ function Home() {
                 />
               </div>
             ) : (
-              <>
+              <div className='h-[402px] flex flex-col gap-6 justify-start items-center'>
                 <RoomCreationForm
                   submit={(data: TeamsName) => createRoom(data as TeamsName)}
                 />
-              </>
+                <NoticeBanner message="Si votre équipe n'apparaît pas dans la liste, veuillez contacter un administrateur" />
+              </div>
             )}
+
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ defaultTransition, delay: 0.2 }}
+              className="pb-16"
+            >
+              <footer className="w-full text-sm leading-loose  text-muted-foreground ">
+                <p className="text-center">
+                  All Rights Reserved © 2024 Howling Abyss Quebec
+                </p>
+              </footer>
+            </motion.div>
           </motion.div>
-        </AnimatePresence>
+
+  
       )}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ defaultTransition, delay: 0.2 }}
-        className="py-16"
-      >
-        <footer className="w-full text-sm leading-loose  text-muted-foreground ">
-          <p className="text-center">
-            All Rights Reserved © 2024 Howling Abyss Quebec
-          </p>
-        </footer>
-      </motion.div>
-    </main>
+
+      </main>
+      </AnimatePresence>
   );
 }
 
