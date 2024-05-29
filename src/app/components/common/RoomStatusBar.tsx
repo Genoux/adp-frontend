@@ -3,7 +3,6 @@ import Timer from '@/app/components/common/RoomTimer';
 import TeamName from '@/app/components/common/TeamName';
 import useTeams from '@/app/hooks/useTeams';
 import { defaultTransition } from '@/app/lib/animationConfig';
-import { roomStore } from '@/app/stores/roomStore';
 import { motion } from 'framer-motion';
 import React from 'react';
 
@@ -16,17 +15,17 @@ interface TeamIndicatorProps {
   orientation: 'left' | 'right';
 }
 
-const getStatusText = (color: string, room: { status: string }) => {
-  const isBanPhase = room?.status === 'ban';
-  const teamName = color.charAt(0).toUpperCase() + color.slice(1);
-  const toFrench = teamName === 'Blue' ? 'Bleue' : 'Rouge';
-  if (color) {
-    return isBanPhase
-      ? `C'est à vous de bannir, vous êtes l'équipe ${toFrench}`
-      : `C'est à vous de choisir, vous êtes l'équipe ${toFrench}`;
-  }
-  return '';
-};
+// const getStatusText = (currentTeam: Team, room: { status: string }) => {
+//   const isBanPhase = room?.status === 'ban';
+//   const teamName = currentTeam.color.charAt(0).toUpperCase() + currentTeam.color.slice(1);
+//   const toFrench = teamName === 'Blue' ? 'Bleue' : 'Rouge';
+//   if (currentTeam.color && currentTeam.isturn) {
+//     return isBanPhase
+//       ? `C'est à vous de bannir, vous êtes l'équipe ${toFrench}`
+//       : `C'est à vous de choisir, vous êtes l'équipe ${toFrench}`;
+//   }
+//   return '';
+// };
 
 // Component for the team indicator with arrow and name
 const TeamIndicator: React.FC<TeamIndicatorProps> = ({ team, orientation }) => {
@@ -65,8 +64,7 @@ interface RoomStatusBarProps {
 
 // The main component for the Room status bar
 const RoomStatusBar: React.FC<RoomStatusBarProps> = ({ className }) => {
-  const { room } = roomStore();
-  const { currentTeam, redTeam, blueTeam } = useTeams();
+  const { redTeam, blueTeam } = useTeams();
 
   return (
     <div
@@ -76,11 +74,6 @@ const RoomStatusBar: React.FC<RoomStatusBarProps> = ({ className }) => {
         <TeamIndicator team={blueTeam as Team} orientation="right" />
         <div className="flex w-full flex-col items-center">
           <Timer />
-          {currentTeam && (
-            <p className="text-center text-xs font-normal text-[#737373]">
-            {getStatusText(currentTeam?.color ?? '', { status: room?.status ?? '' })}
-            </p>
-          )}
         </div>
         <TeamIndicator team={redTeam as Team} orientation="left" />
       </div>

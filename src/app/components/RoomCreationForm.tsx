@@ -1,8 +1,4 @@
-import NoticeBanner from '@/app/components/common/NoticeBanner';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { InputForm } from '@/app/components/forms/InputForm'; // Ensure the import path is correct
 import { InputSelect } from '@/app/components/forms/InputSelect'; // Ensure the import path is correct
-
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import React from 'react';
@@ -41,7 +37,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
         <InputSelect submit={(data) => submit(data)} />
         {/* <InputForm submit={(data) => submit(data)} /> */}
       </motion.div>
-      <NoticeBanner message="Si votre équipe n'apparaît pas dans la liste, veuillez contacter un administrateur" />
+    
     </>
   );
 };
