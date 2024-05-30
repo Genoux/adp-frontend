@@ -99,7 +99,7 @@ export default function Room({ params }: RoomProps) {
                 transition={defaultTransition}
               >
                 <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
-                  <RoomStatusBar className="z-90 fixed left-0 top-0" />
+                  <RoomStatusBar className="" />
                   <section className="flex h-full flex-col gap-4 px-4 pb-4 pt-2">
                     <div className="h-16"></div>
                     <div className="flex h-full flex-col justify-between gap-4">
