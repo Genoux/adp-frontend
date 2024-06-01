@@ -19,7 +19,7 @@ export const metadata = {
     images:
       "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/opengraph-image.jpg",
     siteName: 'HAQ - Aram draft pick',
-    url: 'https://aram-draft-pick.vercel.app/',
+    url: 'https://draft.tournoishaq.ca/',
   },
 };
 
