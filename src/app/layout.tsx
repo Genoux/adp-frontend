@@ -18,6 +18,10 @@ export const metadata = {
   openGraph: {
     images:
       "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/opengraph-image.jpg",
+    siteName: 'HAQ - Aram draft pick',
+    title: 'HAQ - Aram draft pick',
+    description: 'Aram draft pick for League of Legends ARAM mode',
+    url: 'https://aram-draft-pick.vercel.app/',
   },
 };
 
