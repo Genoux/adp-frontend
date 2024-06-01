@@ -103,11 +103,11 @@ function Home() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ defaultTransition, delay: 0.2 }}
-            className="mx-auto flex flex-col items-center justify-center gap-10"
+            className="mx-auto flex flex-col items-center justify-center gap-6"
           >
             <div className="flex flex-col items-center justify-center">
               <Link
-                className="mb-4 inline-flex items-center gap-1 bg-muted py-1 pl-2 pr-3 text-sm font-bold rounded-full"
+                className="mb-4 inline-flex items-center gap-1 bg-muted py-1 pl-2 pr-3 text-sm font-normal rounded-full"
                 href="http://tournoishaq.ca/"
                 target="_blank"
               >
@@ -165,7 +165,7 @@ function Home() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ defaultTransition, delay: 0.2 }}
-              className="pb-16"
+              className="pb-6"
             >
               <footer className="w-full text-sm leading-loose  text-muted-foreground ">
                 <p className="text-center">
