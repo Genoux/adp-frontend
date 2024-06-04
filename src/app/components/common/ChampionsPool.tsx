@@ -62,7 +62,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
         opacity: !team?.isturn && room?.status !== 'planning' ? 0.8 : 1,
       }}
       className={clsx(
-        'relative z-0 grid grid-cols-10 gap-2', className
+        'relative grid grid-cols-10 gap-2', className
       )}
     >
       {room.heroes_pool.map((hero: Hero, index: number) => {
@@ -77,7 +77,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
         return (
           <AnimatePresence key={index}>
             <motion.div
-              className={clsx('relative z-10 overflow-hidden', {
+              className={clsx('relative overflow-hidden', {
                 'pointer-events-none grayscale': hero.selected,
                 'cursor-pointer': !hero.selected && team?.isturn,
                 'glow-yellow z-50 border border-yellow bg-transparent':
@@ -124,7 +124,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                   scale: isHovered && !isSelected ? 1.2 : 1,
                 }}
                 transition={{ duration: 0.1, defaultTransition }}
-                className="relative z-10 overflow-hidden"
+                className="relative overflow-hidden"
               >
                 <ImageHash
                   alt={hero.name}

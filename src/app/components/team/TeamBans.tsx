@@ -57,7 +57,7 @@ const TeamBans = ({ team }: Team) => {
         return (
           <motion.div
             key={index}
-            className="relative -z-10 h-full w-full overflow-hidden"
+            className="relative h-full w-full overflow-hidden"
             animate={{ opacity: !currentTeam?.isturn ? 0.5 : 1 }}
           >
             {isBorderSlot && (

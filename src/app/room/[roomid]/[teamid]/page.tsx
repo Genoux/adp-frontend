@@ -83,7 +83,7 @@ export default function Room({ params }: RoomProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={defaultTransition}
-              className="flex flex-col gap-12 px-4 pt-12"
+              className='flex flex-col gap-8 py-6'
             >
               <PlanningView />
               <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
@@ -99,9 +99,8 @@ export default function Room({ params }: RoomProps) {
                 transition={defaultTransition}
               >
                 <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
-                  <RoomStatusBar className="" />
-                  <section className="flex h-full flex-col gap-4 px-4 pb-4 pt-2">
-                    <div className="h-16"></div>
+                  <RoomStatusBar />
+                  <section className="flex h-full flex-col gap-4 p-4">
                     <div className="flex h-full flex-col justify-between gap-4">
                       <TeamView />
                       <DraftView />
