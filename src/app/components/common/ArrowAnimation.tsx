@@ -1,32 +1,33 @@
+import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 
 interface ArrowAnimationProps {
-  roomStatus: 'ban' | 'select' | string | null | undefined;
   teamIsTurn?: boolean | null | undefined;
   orientation?: 'left' | 'right';
 }
 
 const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
-  roomStatus,
   teamIsTurn = false,
   orientation = 'right',
 }) => {
-  const [visibleRoomStatus, setVisibleRoomStatus] = useState(roomStatus);
+  const { room } = roomStore();
+
+  const [visibleRoomStatus, setVisibleRoomStatus] = useState(room?.status);
   const arrows = [0, 1, 2];
 
   useEffect(() => {
-    const time = roomStatus === 'ban' ? 0 : 1000;
+    const time = room?.status === 'ban' ? 0 : 1000;
     // First hide the current state
-    setVisibleRoomStatus(null);
+    setVisibleRoomStatus('');
 
     // Then after a delay, show the new state
     const timer = setTimeout(() => {
-      setVisibleRoomStatus(roomStatus);
+      setVisibleRoomStatus(room?.status);
     }, time); // delay of 1000ms
 
     return () => clearTimeout(timer);
-  }, [roomStatus]);
+  }, [room?.status]);
 
   if (!teamIsTurn || visibleRoomStatus === null) {
     return null;
@@ -48,7 +49,7 @@ const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
         transition={{ delay: 0 }}
       >
         <div
-          className={`flex items-center justify-center gap-2 rounded border-opacity-20 px-3 py-1 transition-all delay-1000 ${flexDirection}`}
+          className={`flex items-center justify-center gap-2 rounded border-opacity-20 px-3 py-1 delay-1000 ${flexDirection}`}
         >
           <div className="flex space-x-0.5">
             {arrows.map((i) => (

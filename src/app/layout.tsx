@@ -1,26 +1,25 @@
 import './globals.css';
 import { ThemeProvider } from '@/app/components/ui/theme-provider';
-import { GeistSans } from 'geist/font/sans';
-import Image from 'next/image';
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { GeistSans } from 'geist/font/sans';
 
 export const metadata = {
   title: 'HAQ - Aram draft pick',
-  description: 'Aram draft pick for League of Legends',
+  description: 'Aram draft pick for League of Legends ARAM mode',
   icons: {
     icon: [
       {
-        media: '(prefers-color-scheme: light)',
-        url: '/images/favicon-light.ico',
-        href: '/images/favicon-light.ico',
-      },
-      {
-        media: '(prefers-color-scheme: dark)',
-        url: '/images/favicon-dark.ico',
-        href: '/images/favicon-dark.ico',
+        url: "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/favicon.png",
+        href: "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/favicon.png",
       },
     ],
+  },
+  openGraph: {
+    images:
+      "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/opengraph-image.jpg",
+    siteName: 'HAQ - Aram draft pick',
+    url: 'https://draft.tournoishaq.ca/',
   },
 };
 
@@ -32,16 +31,9 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${GeistSans.className} mx-auto h-full min-w-[1024px] max-w-[1440px]`}
+        className={`${GeistSans.className}  mx-auto min-w-[1024px] overflow-x-hidden`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <Image
-            className="fixed left-0 top-0 -z-10 h-full w-full opacity-50"
-            src="/bg-fog.png"
-            alt="HAQ"
-            width={1440}
-            height={200}
-          />
           {children}
           <SpeedInsights />
           <Analytics />

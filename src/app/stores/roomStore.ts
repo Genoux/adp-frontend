@@ -1,14 +1,19 @@
-import supabase from '@/app/services/supabase';
-import { Database } from '@/app/types/supabase';
+import { supabase } from '@/app/lib/supabase/client';
 import { create } from 'zustand';
 
-type Room = Database['public']['Tables']['rooms']['Row'];
+type Room = {
+  id: string;
+  name: string;
+  status: string;
+  heroes_pool: any[];
+};
 
 interface RoomState {
   room: Room | null;
   isLoading: boolean;
+  isSubscribed: boolean;
   error: Error | null;
-  handleRoomUpdate: (payload: any, teamId: string) => void;
+  handleRoomUpdate: (payload: any) => void;
   fetchRoom: (roomId: string) => Promise<void>;
 }
 
@@ -19,10 +24,13 @@ const handleRoomUpdate = (set: any) => (payload: any) => {
 export const roomStore = create<RoomState>((set) => ({
   room: null,
   isLoading: false,
+  isSubscribed: false,
   error: null,
+
   handleRoomUpdate: handleRoomUpdate(set),
+
   fetchRoom: async (roomId: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null, isSubscribed: false });
     try {
       const { data: room, error } = await supabase
         .from('rooms')
@@ -43,7 +51,7 @@ export const roomStore = create<RoomState>((set) => ({
           'postgres_changes',
           {
             event: 'UPDATE',
-            schema: 'public',
+            schema: 'aram_draft_pick',
             table: 'rooms',
             filter: `id=eq.${roomId}`,
           },
@@ -52,11 +60,11 @@ export const roomStore = create<RoomState>((set) => ({
           }
         )
         .subscribe((status, err) => {
-          if (!err) {
-            console.log('Received event ROOM: ', status);
-            return;
+          if (err) {
+            console.error('.subscribe - err ROOM:', err);
           } else {
-            console.log('.subscribe - err ROOM:', err);
+            console.log(`Channel subscribed to room ${roomId}`);
+            set({ isSubscribed: true });
           }
         });
     } catch (error) {

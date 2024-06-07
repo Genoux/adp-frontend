@@ -27,14 +27,14 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({ message }) => {
           exit="exit"
           variants={variants}
           transition={{ delay: 2, ...defaultTransition }}
-          className="mx-auto flex w-fit cursor-pointer items-center justify-between gap-6 rounded-md border border-opacity-25 bg-[#0a0a0c] px-4 py-3 text-white"
+          className="mx-auto flex w-fit cursor-pointer items-center justify-between gap-6 border border-opacity-25 bg-[#0a0a0c] px-4 py-3 text-white"
         >
           <div className="flex items-center gap-2">
             <Info size={16} color="#BBBBBB" />
             <p className="text-sm font-normal text-[#b8b8b8]">{message}</p>
           </div>
           <X
-            className="cursor-pointer transition-all hover:opacity-70"
+            className="cursor-pointer hover:opacity-70"
             size={14}
             onClick={() => setIsVisible(false)}
           />

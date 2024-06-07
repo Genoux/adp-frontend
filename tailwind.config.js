@@ -2,25 +2,25 @@
 module.exports = {
   darkMode: ['class'],
   content: [
-    './pages/**/*.{ts,tsx}',
+    //'./pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
   ],
+  prefix: '',
   theme: {
-    container: {
-      center: true,
-      padding: '2rem',
-      screens: {
-        '2xl': '1440px',
-      },
-    },
     extend: {
+      minWidth: {
+        screen: '1024px',
+      },
+      maxWidth: {
+        screen: '1440px', // Custom max-width at 1440px
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        background: 'var(--background)',
+        background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
@@ -77,14 +77,19 @@ module.exports = {
           main: 'cubic-bezier(0,.45,.54,1)',
         },
       },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
       keyframes: {
         'accordion-down': {
-          from: { height: 0 },
+          from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
           from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: 0 },
+          to: { height: '0' },
         },
       },
       animation: {

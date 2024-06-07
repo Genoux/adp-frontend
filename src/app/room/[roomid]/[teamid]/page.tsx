@@ -1,7 +1,9 @@
 'use client';
 
 import ErrorMessage from '@/app/components/common/ErrorMessage';
+import LoadingScreen from '@/app/components/common/LoadingScreen';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
+import RoomStatusBar from '@/app/components/common/RoomStatusBar';
 import StateControllerButtons from '@/app/components/common/StateControllerButtons';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
@@ -9,13 +11,13 @@ import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
 import TeamView from '@/app/components/TeamView';
 import { BlurHashProvider } from '@/app/context/BlurHashContext';
-import { CanSelectProvider } from '@/app/context/CanSelectContext';
 import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
+import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
-import { AnimatePresence } from 'framer-motion';
-import React, { useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 interface RoomProps {
   params: {
@@ -25,84 +27,91 @@ interface RoomProps {
 }
 
 export default function Room({ params }: RoomProps) {
-  const roomid = params.roomid;
-  const teamid = params.teamid;
-
-  const { socket, isConnected } = useSocket(roomid);
-  const { teams, fetchTeams, isLoading, error, setCurrentTeamId } =
-    useTeamStore();
-  const {
-    room,
-    fetchRoom,
-    isLoading: isLoadingRoom,
-    error: errorRoom,
-  } = roomStore();
+  const { roomid, teamid } = params;
+  const { socket, isConnected } = useSocket(roomid, teamid);
+  const { fetchTeams, isLoading: isLoadingTeams, error: errorTeams, setCurrentTeamId } = useTeamStore();
+  const { fetchRoom, room, isLoading: isLoadingRoom, error: errorRoom } = roomStore();
 
   useEffect(() => {
     fetchTeams(roomid);
     setCurrentTeamId(teamid);
-  }, [roomid, fetchTeams, setCurrentTeamId, teamid]);
-
-  useEffect(() => {
     fetchRoom(roomid);
-  }, [roomid, fetchRoom]);
+  }, [fetchRoom, fetchTeams, roomid, setCurrentTeamId, teamid]);
 
-  if (error || errorRoom) {
-    return <ErrorMessage />;
-  }
 
-  if (isLoading || isLoadingRoom || !isConnected) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <div className='flex gap-1'>
-          <p>Connection en cours</p>
-          <div className="sending-animation">
-            <span className="sending-animation-dot">.</span>
-            <span className="sending-animation-dot">.</span>
-            <span className="sending-animation-dot">.</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (isLoadingTeams || isLoadingRoom || !isConnected) return <LoadingScreen />;
 
-  if (!room || !teams) return null;
+  const isLobbyView = room?.status === 'waiting';
+  const isPlanningView = room?.status === 'planning';
+  const isFinishView = room?.status === 'done';
+  const isRoomView = room && (room.status === 'select' || room.status === 'ban');
 
-  const isLobbyView = room.cycle === -1;
-  const isPlanningView = room.cycle === 0;
-  const isFinishView = room.status === 'done';
-  const isRoomView =
-    room.cycle !== 0 && room.cycle !== -1 && room.status !== 'done';
+  if (errorTeams || errorRoom) return <ErrorMessage />;
 
   return (
-    <main className="flex h-full flex-col items-center justify-start">
-      <StateControllerButtons roomid={room.id as any} />
-      <AnimatePresence mode="wait">
-        <SocketContext.Provider value={socket}>
-          <BlurHashProvider>
-            {isLobbyView ? (
-              <section className="flex h-full flex-col justify-center gap-10">
-                <LobbyView />
-              </section>
-            ) : isFinishView ? (
-              <FinishView />
-            ) : (
-              <section className="h-full" id="main">
-                {isPlanningView && (
-                  <div className="flex flex-col">
-                    <PlanningView />
-                    <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
-                  </div>
-                )}
-                <CanSelectProvider>
-                  {isRoomView && <TeamView />}
-                  {isRoomView && <DraftView />}
-                </CanSelectProvider>
-              </section>
-            )}
-          </BlurHashProvider>
-        </SocketContext.Provider>
-      </AnimatePresence>
+    <main>
+      <StateControllerButtons roomid={roomid} />
+      <SocketContext.Provider value={socket}>
+        <BlurHashProvider>
+          {isLobbyView && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={defaultTransition}
+            >
+              <LobbyView />
+            </motion.div>
+          )}
+
+          {isFinishView && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={defaultTransition}
+              >
+                <FinishView />
+              </motion.div>
+            </AnimatePresence>
+          )}
+
+          {isPlanningView && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={defaultTransition}
+              className='flex flex-col gap-8 py-6'
+            >
+              <PlanningView />
+              <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
+            </motion.div>
+          )}
+
+          {isRoomView && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={defaultTransition}
+              >
+                <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
+                  <RoomStatusBar />
+                  <section className="flex h-full flex-col gap-4 p-4">
+                    <div className="flex h-full flex-col justify-between gap-4">
+                      <TeamView />
+                      <DraftView />
+                    </div>
+                  </section>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </BlurHashProvider>
+      </SocketContext.Provider>
     </main>
   );
 }
