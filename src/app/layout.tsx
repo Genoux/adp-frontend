@@ -6,7 +6,7 @@ import { GeistSans } from 'geist/font/sans';
 
 export const metadata = {
   title: 'HAQ - Aram draft pick',
-  description: 'Aram draft pick for League of Legends',
+  description: 'Aram draft pick for League of Legends ARAM mode',
   icons: {
     icon: [
       {
@@ -18,6 +18,8 @@ export const metadata = {
   openGraph: {
     images:
       "https://sdedknsmucuwsvgfxrxs.supabase.co/storage/v1/object/public/Assets/opengraph-image.jpg",
+    siteName: 'HAQ - Aram draft pick',
+    url: 'https://draft.tournoishaq.ca/',
   },
 };
 

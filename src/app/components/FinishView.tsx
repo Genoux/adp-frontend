@@ -59,7 +59,7 @@ const TeamDisplay = ({
   position,
   reverseAnimation,
 }: TeamDisplayProps) => (
-  <div className={`flex flex-col items-${position} w-full`}>
+  <div className={`flex flex-col items-${position} w-full px-10`}>
     <motion.div
       initial={{ opacity: 0, x: reverseAnimation ? 100 : -100 }}
       animate={{ opacity: 1, x: 0 }}
@@ -69,7 +69,7 @@ const TeamDisplay = ({
         ease: [0.34, 1.56, 0.64, 1],
         duration: 0.2,
       }}
-      className="mb-4 text-5xl font-black uppercase"
+      className="mb-4 text-3xl font-black uppercase"
     >
       {team.name}
     </motion.div>
@@ -100,13 +100,14 @@ const FinishView: React.FC = () => {
   if (!redTeam || !blueTeam) return null;
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col items-center justify-center">
-      <AnimatePresence>
+    <div className="mx-auto flex flex-col items-center justify-center">
+      <AnimatePresence mode='wait'>
         {showTitle && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ defaultTransition, duration: 1, delay: 1 }}
+            transition={{ defaultTransition, duration: 1, delay: .5 }}
+            exit={{ opacity: 0 }}
             className="absolute left-0 top-0 flex h-full w-full items-center justify-center text-center"
           >
             <h1 className="text-6xl font-black uppercase">Draft terminé</h1>
@@ -114,7 +115,7 @@ const FinishView: React.FC = () => {
         )}
       </AnimatePresence>
       {showTeams && (
-        <div className="flex w-full items-center justify-center gap-6 pb-6 pt-6">
+        <div className="flex w-full flex-grow h-full items-center justify-center gap-6 pb-6 pt-6">
           <div className="w-full">
             <motion.div
               initial={{ x: -100, opacity: 0 }}
@@ -127,7 +128,7 @@ const FinishView: React.FC = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ defaultTransition, delay: 2, duration: 0.2 }}
+            transition={{ defaultTransition, delay: 2, duration: 0.5 }}
             className="text-5xl font-black uppercase"
           >
             VS
@@ -137,7 +138,7 @@ const FinishView: React.FC = () => {
             <motion.div
               initial={{ x: 100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ defaultTransition, delay: 1, duration: 1 }}
+              transition={{ defaultTransition, delay: 2, duration: 0.5 }}
               className="fixed right-0 top-0 -z-10 h-full w-1/2 border-r-8 border-red-600 bg-gradient-to-l from-[#ff22121c] to-transparent"
             ></motion.div>
             <TeamDisplay

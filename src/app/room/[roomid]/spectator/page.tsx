@@ -100,9 +100,7 @@ const Spectator = ({ params }: SpectatorProps) => {
     return (
       <SocketContext.Provider value={socket}>
         <BlurHashProvider>
-          <div className="flex flex-col gap-12 px-4 pt-12">
             <Planningview />
-          </div>
         </BlurHashProvider>
       </SocketContext.Provider>
     );

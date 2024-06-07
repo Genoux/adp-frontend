@@ -14,7 +14,7 @@ const DraftView: React.FC<DraftViewProps> = ({ className }) => {
   return (
     <div
       className={clsx(
-        'flex h-full flex-col justify-evenly gap-4 border border-[#8f8f8f] border-opacity-5 bg-neutral-950 bg-opacity-40 p-4',
+        'flex h-full flex-col justify-evenly gap-4 border border-[#8f8f8f] bg-black bg-opacity-25 border-opacity-5 p-4',
         className
       )}
     >

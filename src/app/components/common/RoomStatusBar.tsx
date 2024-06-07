@@ -58,7 +58,7 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({ team, orientation }) => {
   );
 };
 
-interface RoomStatusBarProps {
+type RoomStatusBarProps = {
   className?: string; // Optional className prop
 }
 
@@ -68,13 +68,11 @@ const RoomStatusBar: React.FC<RoomStatusBarProps> = ({ className }) => {
 
   return (
     <div
-      className={`z-90 box-border w-full border-b border-neutral-400 border-opacity-20 bg-black/40 py-3 backdrop-blur-md ${className}`}
+      className={`box-border w-full border-b border-neutral-400 border-opacity-20 bg-black/40 py-3 backdrop-blur-md ${className}`}
     >
-      <div className="mx-auto grid w-full max-w-screen grid-cols-3 items-center justify-center px-4">
+      <div className="mx-auto grid max-w-screen grid-cols-3 px-4">
         <TeamIndicator team={blueTeam as Team} orientation="right" />
-        <div className="flex w-full flex-col items-center">
-          <Timer />
-        </div>
+        <Timer />
         <TeamIndicator team={redTeam as Team} orientation="left" />
       </div>
     </div>
