@@ -11,10 +11,11 @@ interface CheckImagesResponse {
   brokenImages: BrokenImage[];
 }
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 describe('Check Images API', () => {
   it('should return and empty array', async () => {
-    const response = await fetch('http://localhost:3000/api/checkImages', {
+    const response = await fetch(`${baseUrl}/api/checkImages`, {
       method: 'POST',
     });
     const responseBody = await response.text();

@@ -3,8 +3,10 @@ import { NextResponse } from 'next/server';
 import { champions } from '@/app/utils/champions';
 import axios from 'axios';
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
 const getImageUrl = (imageName: string, type: 'splash' | 'tiles') => {
-  return `http://localhost:3000/images/champions/${type}/${imageName
+  return `${baseUrl}/images/champions/${type}/${imageName
     ?.toLowerCase()
     .replace(/\s+/g, '')
     .replace(/[\W_]+/g, '')}.webp`;
