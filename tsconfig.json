@@ -24,6 +24,6 @@
       "!/*": ["./public/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "__tests__/checkImages.test.js", "__tests__/checkImages.test.js"],
   "exclude": ["node_modules"]
 }
