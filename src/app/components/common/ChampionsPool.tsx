@@ -79,6 +79,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
             <motion.div
               className={clsx('relative overflow-hidden', {
                 'pointer-events-none grayscale': hero.selected,
+                //'pointer-events-none': !team?.isturn,
                 'cursor-pointer': !hero.selected && team?.isturn,
                 'glow-yellow z-50 border border-yellow bg-transparent':
                   isSelected && room.status === 'select',

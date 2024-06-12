@@ -39,8 +39,8 @@ function generateArray(key: string, length: number) {
 }
 
 async function createRoom(blueTeamName: string, redTeamName: string) {
-  console.log(blueTeamName);
-  console.log(redTeamName);
+  console.log("createRoom - redTeamName:", redTeamName);
+  console.log("createRoom - blueTeamName:", blueTeamName);
   const champions = await randomChampions();
   const roomName: string = uniqueNamesGenerator(customConfig);
 
@@ -111,6 +111,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
     }
 
     return { room: updatedRoom, red: redTeam, blue: blueTeam };
+    console.log("createRoom - updatedRoom:", updatedRoom);
   } catch (error) {
     console.log('createRoom - error:', error);
   }

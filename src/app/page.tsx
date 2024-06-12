@@ -71,6 +71,7 @@ function Home() {
       });
 
       const { room, blue, red } = await response.json();
+      
       if (room.error) {
         console.error(room.error);
         return;

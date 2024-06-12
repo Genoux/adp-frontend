@@ -64,7 +64,6 @@ const useTeamStore = create<TeamState>((set, get) => ({
                   console.error('.subscribe - err TEAM:', err);
                   reject(err);
                 } else {
-                  console.log(`Channel subscribed to team ${team.id}`);
                   set((state) => ({
                     subscriptions: { ...state.subscriptions, [team.id]: true },
                   }));

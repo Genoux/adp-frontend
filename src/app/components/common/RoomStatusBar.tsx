@@ -70,7 +70,7 @@ const RoomStatusBar: React.FC<RoomStatusBarProps> = ({ className }) => {
     <div
       className={`box-border w-full border-b border-neutral-400 border-opacity-20 bg-black/40 py-3 backdrop-blur-md ${className}`}
     >
-      <div className="mx-auto grid max-w-screen grid-cols-3 px-4">
+      <div className="mx-auto grid  min-w-screen max-w-screen grid-cols-3 px-4">
         <TeamIndicator team={blueTeam as Team} orientation="right" />
         <Timer />
         <TeamIndicator team={redTeam as Team} orientation="left" />

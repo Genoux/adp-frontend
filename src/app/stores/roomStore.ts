@@ -63,7 +63,6 @@ export const roomStore = create<RoomState>((set) => ({
           if (err) {
             console.error('.subscribe - err ROOM:', err);
           } else {
-            console.log(`Channel subscribed to room ${roomId}`);
             set({ isSubscribed: true });
           }
         });
