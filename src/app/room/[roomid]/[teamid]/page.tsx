@@ -64,7 +64,7 @@ export default function Room({ params }: RoomProps) {
             className='flex flex-col gap-6 relative'
           >
             <PlanningView />
-            <NoticeBanner className="-mt-[100px]" message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
+            <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
           </motion.div>
         );
       case 'done':
@@ -94,7 +94,7 @@ export default function Room({ params }: RoomProps) {
                 <RoomStatusBar className="z-90 fixed left-0 top-0" />
                 <section className="flex h-full flex-col gap-4 pb-4 pt-4">
                   <div className="h-12"></div>
-                  <div className="flex h-full flex-col justify-between gap-4">
+                  <div className="z-10 flex h-full flex-col justify-between gap-4 px-4">
                     <TeamView />
                     <DraftView />
                   </div>

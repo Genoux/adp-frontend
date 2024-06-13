@@ -84,7 +84,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
               transition={{ duration: 0.4, delay: 0.01 * index, defaultTransition }}
               className={clsx('relative overflow-hidden', {
                 'pointer-events-none grayscale': hero.selected,
-                'pointer-events-none': !team?.isturn || !team.canSelect,
+                'pointer-events-none': (!team?.isturn || !team.canSelect) && room?.status !== 'planning',
                 'cursor-pointer': !hero.selected && team?.isturn,
               })}
               onClick={team?.isturn ? () => handleClickedHero(hero) : undefined}
