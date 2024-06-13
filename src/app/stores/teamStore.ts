@@ -77,6 +77,7 @@ const useTeamStore = create<TeamState>((set, get) => ({
 
       await Promise.all(subscriptionPromises);
       set({ isSubscribed: true });
+      console.log('Subscribed to postgres_changes');
     } catch (error) {
       set({ error: error as Error });
     } finally {
@@ -86,7 +87,6 @@ const useTeamStore = create<TeamState>((set, get) => ({
 
   setCurrentTeamId: (teamId: string) => {
     set({ currentTeamId: teamId });
-    console.log('Set currentTeamId:', teamId); // Debugging
   },
 
   handleTeamUpdate: (payload) => {

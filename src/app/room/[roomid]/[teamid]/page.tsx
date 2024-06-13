@@ -11,16 +11,12 @@ import FinishView from '@/app/components/FinishView';
 import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
 import TeamView from '@/app/components/TeamView';
-import { BlurHashProvider } from '@/app/context/BlurHashContext';
-import SocketContext from '@/app/context/SocketContext';
-import useSocket from '@/app/hooks/useSocket';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
-
-//import PreloadImages from '@/app/components/PreloadImages';
+import useSocket from '@/app/hooks/useSocket';
 
 interface RoomProps {
   params: {
@@ -31,7 +27,7 @@ interface RoomProps {
 
 export default function Room({ params }: RoomProps) {
   const { roomid, teamid } = params;
-  const { socket, isConnected } = useSocket(roomid, teamid);
+  const { isConnected } = useSocket(roomid, teamid);
   const { fetchTeams, isLoading: isLoadingTeams, error: errorTeams, setCurrentTeamId } = useTeamStore();
   const { fetchRoom, room, isLoading: isLoadingRoom, error: errorRoom } = roomStore();
 
@@ -115,11 +111,7 @@ export default function Room({ params }: RoomProps) {
   return (
     <main>
       <StateControllerButtons roomid={roomid} />
-      <SocketContext.Provider value={socket}>
-        <BlurHashProvider>
-          {renderContent()}
-        </BlurHashProvider>
-      </SocketContext.Provider>
+      {renderContent()}
     </main>
   );
 }

@@ -7,7 +7,6 @@ import RoomStatusBar from '@/app/components/common/RoomStatusBar';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
 import Planningview from '@/app/components/PlanningView';
-import { BlurHashProvider } from '@/app/context/BlurHashContext';
 import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
@@ -150,11 +149,8 @@ const Spectator = ({ params }: SpectatorProps) => {
 
   return (
     <SocketContext.Provider value={socket}>
-      <BlurHashProvider>
         {renderContent()}
-      </BlurHashProvider>
     </SocketContext.Provider>
-
   );
 };
 

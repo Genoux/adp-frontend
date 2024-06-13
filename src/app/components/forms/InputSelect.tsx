@@ -55,7 +55,6 @@ export function InputSelect({ submit }: FormSelectProps) {
   useEffect(() => {
     async function fetchTeams() {
       const { data, error } = await tournament.from('teams').select('*');
-      console.log('fetchTeams - data:', data);
       if (error) {
         console.error('Failed to fetch teams:', error);
       } else {
@@ -74,7 +73,6 @@ export function InputSelect({ submit }: FormSelectProps) {
     }
 
     submit(data);
-    console.log('onSubmit - data:', data);
   }
 
   return (

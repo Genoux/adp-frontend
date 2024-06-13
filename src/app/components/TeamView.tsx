@@ -1,7 +1,6 @@
 import ChampionsPool from '@/app/components/common/ChampionsPool';
 import useTeams from '@/app/hooks/useTeams';
 import { defaultTransition } from '@/app/lib/animationConfig';
-//import { supabase } from '@/app/lib/supabase/client';
 import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
@@ -109,7 +108,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ image, position }) => (
   >
     {image && (
       <Image
-        src={`/images/champions/splash/${image
+        src={`/images/champions/floatingSplash/${image
           ?.toLowerCase()
           .replace(/\s+/g, '')
           .replace(/[\W_]+/g, '')}.webp`}

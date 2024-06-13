@@ -18,6 +18,7 @@ const PreloadImages = () => {
       const imageName = champion.name.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '');
       preloadImage(`/images/champions/splash/${imageName}.webp`);
       preloadImage(`/images/champions/tiles/${imageName}.webp`);
+      preloadImage(`/images/champions/floatingSplash/${imageName}.webp`);
     });
   }, []);
 

@@ -32,10 +32,10 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
     <div className="absolute left-0 bottom-0 z-50 flex pb-6 h-full w-full items-end justify-center bg-gradient-to-t from-[#00000096] via-transparent to-[#0000004d] text-center">
       <p className="text-sm xl:text-xl font-black uppercase">{hero.name}</p>
     </div>
-    <div key={hero.id} className='w-full overflow-hidden relative' style={{ height: 'calc(100vh - 140px)', maxHeight: '864px', minHeight: '320px' }}>
+    <div key={hero.id} className='w-full overflow-hidden relative' style={{ height: 'calc(100vh - 140px)', maxHeight: '664px', minHeight: '320px' }}>
       {hero.id && (
         <Image
-          src={`/images/champions/splash/${hero.id
+          src={`/images/champions/floatingSplash/${hero.id
             .toLowerCase()
             .replace(/\s+/g, '')
             .replace(/[\W_]+/g, '')}.webp`}
@@ -43,7 +43,6 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
           layout='fill'
           objectFit='cover'
           className='w-full'
-          quality={80}
         />
       )}
     </div>
@@ -106,7 +105,7 @@ const FinishView: React.FC = () => {
   if (!redTeam || !blueTeam) return null;
 
   return (
-    <div className="mx-auto flex flex-col items-center justify-center h-screen px-4">
+    <div className="mx-auto flex flex-col items-center justify-center h-screen px-4 max-w-screen">
       <AnimatePresence mode='wait'>
         {showTitle && (
           <motion.div
