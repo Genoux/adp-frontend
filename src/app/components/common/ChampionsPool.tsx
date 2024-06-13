@@ -77,14 +77,14 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
         return (
           <AnimatePresence key={index}>
             <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, defaultTransition }}
               className={clsx('relative overflow-hidden', {
                 'pointer-events-none grayscale': hero.selected,
                 //'pointer-events-none': !team?.isturn,
                 'cursor-pointer': !hero.selected && team?.isturn,
-                'glow-yellow z-50 border border-yellow bg-transparent':
-                  isSelected && room.status === 'select',
-                'glow-red border-2 border-red-700 bg-opacity-20 p-0.5':
-                  isSelected && room.status === 'ban',
               })}
               onClick={team?.isturn ? () => handleClickHero(hero) : undefined}
               onHoverStart={() => handleHoverStart(hero.name)}
@@ -104,13 +104,17 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                 </motion.div>
               )}
               {isSelected && (
-                <div
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2, defaultTransition }}
                   className={clsx(
                     'absolute left-0 top-0 z-50 h-full w-full overflow-hidden bg-gradient-to-t',
                     {
-                      'from-red to-transparent':
+                      'from-red to-transparent glow-red  border-red-700 border-2 p-4':
                         isSelected && room.status === 'ban',
-                      'from-yellow-transparent to-transparent':
+                      'from-yellow-transparent to-transparent border-yellow border-2 p-4':
                         isSelected && room.status === 'select',
                     }
                   )}
@@ -118,7 +122,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                   <p className="flex h-full items-center justify-center text-xs font-bold">
                     {hero.name}
                   </p>
-                </div>
+                </motion.div>
               )}
               <motion.div
                 animate={{

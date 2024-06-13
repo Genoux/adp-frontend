@@ -61,7 +61,6 @@ function Home() {
   });
 
   const createRoom = async (data: TeamsName) => {
-    console.log('createRoom - data:', data);
     setLoading(true);
     try {
       const response = await fetch(`/api/generateroom/`, {

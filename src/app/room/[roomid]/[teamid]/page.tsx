@@ -18,6 +18,7 @@ import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
+//import PreloadImages from '@/app/components/PreloadImages';
 
 interface RoomProps {
   params: {
