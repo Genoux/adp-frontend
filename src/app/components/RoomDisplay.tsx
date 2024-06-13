@@ -7,7 +7,6 @@ import {
   TooltipTrigger,
 } from '@/app/components/ui/tooltip';
 import { defaultTransition } from '@/app/lib/animationConfig';
-import copyToClipboard from '@/app/utils/copyToClipboard';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckIcon, CopyIcon } from 'lucide-react';
@@ -17,6 +16,22 @@ import { useState } from 'react';
 interface RoomDisplayProps {
   [key: string]: any;
 }
+
+const copyToClipboard = (link: string) => {
+  const copy = window.location.href + link;
+
+  navigator.clipboard
+    .writeText(copy)
+    .then(() => {
+      console.log('Copied to clipboard successfully!');
+    })
+    .catch((err) => {
+      console.error('Could not copy text: ', err);
+      throw new Error('Could not copy text');
+    });
+
+  return { message: 'Copied to clipboard' };
+};
 
 const CopyButton: React.FC<{ link: string }> = ({ link }) => {
   const [copied, setCopied] = useState(false);

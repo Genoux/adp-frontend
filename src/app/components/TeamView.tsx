@@ -1,7 +1,7 @@
 import ChampionsPool from '@/app/components/common/ChampionsPool';
 import useTeams from '@/app/hooks/useTeams';
 import { defaultTransition } from '@/app/lib/animationConfig';
-import { supabase } from '@/app/lib/supabase/client';
+//import { supabase } from '@/app/lib/supabase/client';
 import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
@@ -11,9 +11,6 @@ interface Team {
   [key: string]: any;
 }
 
-interface Hero {
-  name: string | null;
-}
 
 type TeamViewProps = {
   className?: string;
@@ -47,13 +44,13 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
     updateImage(redTeam, setCurrentImageRed);
   }, [blueTeam, redTeam]);
 
-  const handleClickedHero = async (hero: Hero) => {
-    if (!currentTeam || hero.name === currentTeam.clicked_hero) return;
-    await supabase
-      .from('teams')
-      .update({ clicked_hero: hero.name })
-      .eq('id', currentTeam.id);
-  };
+  // const handleClickedHero = async (hero: Hero) => {
+  //   if (!currentTeam || hero.name === currentTeam.clicked_hero) return;
+  //   await supabase
+  //     .from('teams')
+  //     .update({ clicked_hero: hero.name })
+  //     .eq('id', currentTeam.id);
+  // };
 
   if (isLoading) return <div>Loading...</div>;
   if (!currentTeam) return <div>Team not found</div>;
@@ -82,7 +79,6 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
         <ChampionsPool
           team={currentTeam}
           selectedChampion={selectedChampion}
-          handleClickedHero={handleClickedHero}
         />
       </motion.div>
     </>

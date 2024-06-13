@@ -1,5 +1,6 @@
 'use client';
 
+import '@/app/utils/strings';
 import ChampionsPool from '@/app/components/common/ChampionsPool';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';

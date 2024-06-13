@@ -1,5 +1,6 @@
 'use client';
 
+import '@/app/utils/strings';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
@@ -18,6 +19,7 @@ import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
+
 //import PreloadImages from '@/app/components/PreloadImages';
 
 interface RoomProps {

@@ -5,6 +5,8 @@ import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState, useCallback } from 'react';
+import { supabase } from '@/app/lib/supabase/client';
+import useTeams from '@/app/hooks/useTeams';
 
 interface Hero {
   id: string;
@@ -27,24 +29,36 @@ interface ChampionsPoolProps {
   className?: string;
 }
 
+
+
 const ChampionsPool: React.FC<ChampionsPoolProps> = ({
   team,
-  handleClickedHero = () => {},
   className = '',
 }) => {
   const { room } = roomStore();
+  const { currentTeam } = useTeams();
   const blurHashes: BlurHashes = useBlurHash();
-  const [selectedHero, setSelectedHero] = useState<string | null>(null);
+ // const [selectedHero, setSelectedHero] = useState<string | null>(null);
   const [hoveredHero, setHoveredHero] = useState<string | null>(null); // State to track hovered hero
 
-  const handleClickHero = useCallback((hero: Hero) => {
+
+  const handleClickedHero = useCallback(async (hero: Hero) => {
     if (!team?.isturn || !team.canSelect) return;
     if (room?.status !== 'select' && room?.status !== 'ban') return;
     if (hero.selected) return;
-    if (selectedHero === hero.name) return;
-    setSelectedHero(hero.name);
-    handleClickedHero(hero);
-  }, [team, room, selectedHero, handleClickedHero]);
+   // if (selectedHero === hero.name) return;
+   // setSelectedHero(hero.name);
+   //updateClickedHero(hero);
+
+   if (!currentTeam || hero.name === currentTeam.clicked_hero) return;
+      console.log('clicked hero', hero.name);
+   await supabase
+   .from('teams')
+   .update({ clicked_hero: hero.name })
+     .eq('id', currentTeam.id);
+  }, [team?.isturn, team?.canSelect, room?.status, currentTeam]);
+  
+
 
   const handleHoverStart = useCallback((heroName: string) => {
     setHoveredHero(heroName);
@@ -86,7 +100,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                 //'pointer-events-none': !team?.isturn,
                 'cursor-pointer': !hero.selected && team?.isturn,
               })}
-              onClick={team?.isturn ? () => handleClickHero(hero) : undefined}
+              onClick={team?.isturn ? () => handleClickedHero(hero) : undefined}
               onHoverStart={() => handleHoverStart(hero.name)}
               onHoverEnd={handleHoverEnd}
             >

@@ -56,7 +56,7 @@ const TeamBans = ({ team }: Team) => {
         const hasHeroId = hero?.id && hero.id !== '';
         return (
           <motion.div
-            key={index}
+            key={`${index}-${hero.id}`}
             className="relative h-full w-full overflow-hidden"
             animate={{ opacity: !currentTeam?.isturn ? 0.5 : 1 }}
           >
@@ -92,58 +92,58 @@ const TeamBans = ({ team }: Team) => {
                 </div>
               </AnimatePresence>
             )}
-             <div
-      className={clsx(
-        'relative h-full overflow-hidden border bg-black bg-opacity-20',
-        {
-          'border border-white border-opacity-10': isEmptySlot,
-          'border border-white border-opacity-0': !isEmptySlot,
-        }
-      )}
-    >
-      {isHeroSelected ? (
-        hasHeroId ? (
-          <motion.div
-            className="absolute left-0 top-0 h-full w-full grayscale"
-            initial={{ scale: 1.2 }}
-            animate={{ scale: 1 }}
-            transition={{
-              duration: 0.5,
-              ease: [1, -0.6, 0.3, 1.2],
-              delay: 0.2,
-            }}
-          >
-            <Image
-              alt={hero?.name}
-              src={heroImageSrc}
-              layout="fill"
-              objectFit="cover"
-              quality={80}
-            />
-          </motion.div>
-        ) : (
-          <div className="bg-zinc-900 bg-opacity-10 h-full w-full flex justify-center items-center">
-            <svg
-              width="32"
-              height="33"
-              viewBox="0 0 32 33"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+            <div
+              className={clsx(
+                'relative h-full overflow-hidden border bg-black bg-opacity-20',
+                {
+                  'border border-white border-opacity-10': isEmptySlot,
+                  'border border-white border-opacity-0': !isEmptySlot,
+                }
+              )}
             >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M31.3943 4.03759C32.2019 3.23022 32.2019 1.9212 31.3943 1.11383C30.5871 0.306458 29.278 0.306458 28.4708 1.11383L16 13.5846L3.52932 1.11383C2.72191 0.306458 1.4129 0.306458 0.605528 1.11383C-0.201843 1.9212 -0.201843 3.23022 0.605528 4.03759L13.0762 16.5083L0.605528 28.979C-0.201843 29.7866 -0.201843 31.0954 0.605528 31.9029C1.4129 32.7101 2.72191 32.7101 3.52932 31.9029L16 19.4321L28.4708 31.9029C29.278 32.7101 30.5871 32.7101 31.3943 31.9029C32.2019 31.0954 32.2019 29.7866 31.3943 28.979L18.9238 16.5083L31.3943 4.03759Z"
-                fill="#232328"
-              />
-            </svg>
-          </div>
-        )
-      ) : null}
-      <div className="absolute bottom-0 left-0 right-0 z-50 flex h-full w-full items-end justify-center bg-black bg-opacity-10 pb-6 text-center text-sm text-white">
-        {hero?.name}
-      </div>
-    </div>
+              {isHeroSelected ? (
+                hasHeroId ? (
+                  <motion.div
+                    className="absolute left-0 top-0 h-full w-full grayscale"
+                    initial={{ scale: 1.2 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                      duration: 0.5,
+                      ease: [1, -0.6, 0.3, 1.2],
+                      delay: 0.2,
+                    }}
+                  >
+                    <Image
+                      alt={hero?.name}
+                      src={heroImageSrc}
+                      layout="fill"
+                      objectFit="cover"
+                      quality={80}
+                    />
+                  </motion.div>
+                ) : (
+                  <div className="bg-zinc-900 bg-opacity-10 h-full w-full flex justify-center items-center">
+                    <svg
+                      width="32"
+                      height="33"
+                      viewBox="0 0 32 33"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M31.3943 4.03759C32.2019 3.23022 32.2019 1.9212 31.3943 1.11383C30.5871 0.306458 29.278 0.306458 28.4708 1.11383L16 13.5846L3.52932 1.11383C2.72191 0.306458 1.4129 0.306458 0.605528 1.11383C-0.201843 1.9212 -0.201843 3.23022 0.605528 4.03759L13.0762 16.5083L0.605528 28.979C-0.201843 29.7866 -0.201843 31.0954 0.605528 31.9029C1.4129 32.7101 2.72191 32.7101 3.52932 31.9029L16 19.4321L28.4708 31.9029C29.278 32.7101 30.5871 32.7101 31.3943 31.9029C32.2019 31.0954 32.2019 29.7866 31.3943 28.979L18.9238 16.5083L31.3943 4.03759Z"
+                        fill="#232328"
+                      />
+                    </svg>
+                  </div>
+                )
+              ) : null}
+              <div className="absolute bottom-0 left-0 right-0 z-50 flex h-full w-full items-end justify-center bg-black bg-opacity-10 pb-6 text-center text-sm text-white">
+                {hero?.name}
+              </div>
+            </div>
           </motion.div>
         );
       })}
