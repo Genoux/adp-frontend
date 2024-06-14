@@ -1,10 +1,11 @@
-import ImageHash from '@/app/components/common/ImageHash';
-import { useBlurHash } from '@/app/context/BlurHashContext';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState, useCallback } from 'react';
+import { supabase } from '@/app/lib/supabase/client';
+import useTeams from '@/app/hooks/useTeams';
+import Image from 'next/image';
 
 interface Hero {
   id: string;
@@ -16,10 +17,6 @@ interface Team {
   [key: string]: any;
 }
 
-interface BlurHashes {
-  [key: string]: string;
-}
-
 interface ChampionsPoolProps {
   team?: Team;
   selectedChampion?: string | null;
@@ -29,22 +26,27 @@ interface ChampionsPoolProps {
 
 const ChampionsPool: React.FC<ChampionsPoolProps> = ({
   team,
-  handleClickedHero = () => {},
   className = '',
 }) => {
   const { room } = roomStore();
-  const blurHashes: BlurHashes = useBlurHash();
-  const [selectedHero, setSelectedHero] = useState<string | null>(null);
+  const { currentTeam } = useTeams();
   const [hoveredHero, setHoveredHero] = useState<string | null>(null); // State to track hovered hero
 
-  const handleClickHero = useCallback((hero: Hero) => {
+  const handleClickedHero = useCallback(async (hero: Hero) => {
     if (!team?.isturn || !team.canSelect) return;
     if (room?.status !== 'select' && room?.status !== 'ban') return;
     if (hero.selected) return;
-    if (selectedHero === hero.name) return;
-    setSelectedHero(hero.name);
-    handleClickedHero(hero);
-  }, [team, room, selectedHero, handleClickedHero]);
+    // if (selectedHero === hero.name) return;
+    // setSelectedHero(hero.name);
+    //updateClickedHero(hero);
+
+    if (!currentTeam || hero.name === currentTeam.clicked_hero) return;
+    console.log('clicked hero', hero.name);
+    await supabase
+      .from('teams')
+      .update({ clicked_hero: hero.name })
+      .eq('id', currentTeam.id);
+  }, [team?.isturn, team?.canSelect, room?.status, currentTeam]);
 
   const handleHoverStart = useCallback((heroName: string) => {
     setHoveredHero(heroName);
@@ -72,20 +74,20 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
           .toLowerCase()
           .replace(/\s+/g, '')
           .replace(/[\W_]+/g, '');
-        const blurHash = blurHashes[imageName];
 
         return (
           <AnimatePresence key={index}>
             <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, delay: 0.01 * index, defaultTransition }}
               className={clsx('relative overflow-hidden', {
                 'pointer-events-none grayscale': hero.selected,
+                'pointer-events-none': (!team?.isturn || !team.canSelect) && room?.status !== 'planning',
                 'cursor-pointer': !hero.selected && team?.isturn,
-                'glow-yellow z-50 border border-yellow bg-transparent':
-                  isSelected && room.status === 'select',
-                'glow-red border-2 border-red-700 bg-opacity-20 p-0.5':
-                  isSelected && room.status === 'ban',
               })}
-              onClick={team?.isturn ? () => handleClickHero(hero) : undefined}
+              onClick={team?.isturn ? () => handleClickedHero(hero) : undefined}
               onHoverStart={() => handleHoverStart(hero.name)}
               onHoverEnd={handleHoverEnd}
             >
@@ -103,13 +105,13 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                 </motion.div>
               )}
               {isSelected && (
-                <div
+                <motion.div
                   className={clsx(
                     'absolute left-0 top-0 z-50 h-full w-full overflow-hidden bg-gradient-to-t',
                     {
-                      'from-red to-transparent':
+                      'from-red to-transparent glow-red  border-red-700 border-2 p-4':
                         isSelected && room.status === 'ban',
-                      'from-yellow-transparent to-transparent':
+                      'from-yellow-transparent to-transparent border-yellow border p-4':
                         isSelected && room.status === 'select',
                     }
                   )}
@@ -117,7 +119,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                   <p className="flex h-full items-center justify-center text-xs font-bold">
                     {hero.name}
                   </p>
-                </div>
+                </motion.div>
               )}
               <motion.div
                 animate={{
@@ -126,12 +128,11 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                 transition={{ duration: 0.1, defaultTransition }}
                 className="relative overflow-hidden"
               >
-                <ImageHash
+                <Image
                   alt={hero.name}
-                  blurhash={blurHash}
                   width={150}
                   height={150}
-                  quality={50}
+                  priority
                   src={`/images/champions/tiles/${imageName}.webp`}
                 />
               </motion.div>

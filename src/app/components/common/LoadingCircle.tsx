@@ -17,7 +17,7 @@ const CircleLoader: React.FC<LoaderProps> = ({
       r="20"
       fill="none"
       stroke={color}
-      strokeWidth="4"
+      strokeWidth="2"
     />
   </svg>
 );

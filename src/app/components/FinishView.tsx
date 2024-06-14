@@ -19,8 +19,8 @@ interface HeroDisplayProps {
 
 const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 1.2 }}
-    animate={{ opacity: 1, scale: 1 }}
+    initial={{ opacity: 0, y: -10 }}
+    animate={{ opacity: 1, y: 0 }}
     transition={{
       defaultTransition,
       delay: animationDelay,
@@ -29,25 +29,26 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
     }}
     className="relative h-full min-h-[150px] w-full overflow-hidden"
   >
-    <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gradient-to-t from-[#00000096] via-transparent to-[#0000004d] text-center">
-      <p className="text-xl font-black uppercase">{hero.name}</p>
+    <div className="absolute left-0 bottom-0 z-50 flex pb-6 h-full w-full items-end justify-center bg-gradient-to-t from-[#00000096] via-transparent to-[#0000004d] text-center">
+      <p className="text-sm xl:text-xl font-black uppercase">{hero.name}</p>
     </div>
-    <div className="absolute left-0 top-0 h-full w-full">
+    <div key={hero.id} className='w-full overflow-hidden relative' style={{ height: 'calc(100vh - 140px)', maxHeight: '664px', minHeight: '320px' }}>
       {hero.id && (
         <Image
-          src={`/images/champions/splash/${hero.id
+          src={`/images/champions/floatingSplash/${hero.id
             .toLowerCase()
             .replace(/\s+/g, '')
             .replace(/[\W_]+/g, '')}.webp`}
           alt={hero.name}
-          objectFit='cover'
           layout='fill'
-          quality={50}
+          objectFit='cover'
+          className='w-full'
         />
       )}
     </div>
   </motion.div>
 );
+
 interface TeamDisplayProps {
   team: Team;
   position: string;
@@ -58,26 +59,32 @@ const TeamDisplay = ({
   team,
   position,
   reverseAnimation,
-}: TeamDisplayProps) => (
-  <div className={`flex flex-col items-${position} w-full px-10`}>
-    <motion.div
-      initial={{ opacity: 0, x: reverseAnimation ? 100 : -100 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{
-        defaultTransition,
-        delay: 2,
-        ease: [0.34, 1.56, 0.64, 1],
-        duration: 0.2,
-      }}
-      className="mb-4 text-3xl font-black uppercase"
-    >
-      {team.name}
-    </motion.div>
-    {team.heroes_selected.map((hero: Hero, index: number) => (
-      <HeroDisplay key={index} hero={hero} animationDelay={0.5 + index * 0.3} />
-    ))}
-  </div>
-);
+}: TeamDisplayProps) => {
+  const heroes = reverseAnimation ? [...team.heroes_selected].reverse() : team.heroes_selected;
+  
+  return (
+    <div className='mx-6 py-6'>
+      <motion.div
+        initial={{ opacity: 0, x: reverseAnimation ? 100 : -100 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+          defaultTransition,
+          delay: 2,
+          ease: [0.34, 1.56, 0.64, 1],
+          duration: 0.2,
+        }}
+        className={`mb-4 text-3xl font-black w-full flex uppercase justify-${position}`}
+      >
+        {team.name}
+      </motion.div>
+      <div className={`flex ${reverseAnimation ? 'flex-row-reverse' : ''}`}>
+        {heroes.map((hero: Hero, index: number) => (
+          <HeroDisplay key={index} hero={hero} animationDelay={0.5 + index * 0.3} />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const FinishView: React.FC = () => {
   const { redTeam, blueTeam } = useTeams();
@@ -97,10 +104,8 @@ const FinishView: React.FC = () => {
 
   if (!redTeam || !blueTeam) return null;
 
-  if (!redTeam || !blueTeam) return null;
-
   return (
-    <div className="mx-auto flex flex-col items-center justify-center">
+    <div className="mx-auto flex flex-col items-center justify-center h-screen px-4 max-w-screen">
       <AnimatePresence mode='wait'>
         {showTitle && (
           <motion.div
@@ -115,31 +120,31 @@ const FinishView: React.FC = () => {
         )}
       </AnimatePresence>
       {showTeams && (
-        <div className="flex w-full flex-grow h-full items-center justify-center gap-6 pb-6 pt-6">
-          <div className="w-full">
+        <div className="flex w-full flex-grow h-full items-center justify-center">
+          <div className="w-full flex flex-col gap-4 relative">
             <motion.div
               initial={{ x: -100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ defaultTransition, delay: 1, duration: 1 }}
-              className="fixed left-0 top-0 -z-10 h-full w-1/2 border-l-8 border-blue-600 bg-gradient-to-r from-[#0f9efd15] to-transparent"
+              transition={{ defaultTransition, delay: .8, duration: 1 }}
+              className="w-full h-full absolute -z-10 top-0 left-0 border-l-8 border-blue-600 bg-gradient-to-r from-[#0f9efd15] to-transparent"
             ></motion.div>
             <TeamDisplay team={blueTeam} position="start" />
           </div>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ defaultTransition, delay: 2, duration: 0.5 }}
-            className="text-5xl font-black uppercase"
+            transition={{ defaultTransition, delay: 2, duration: 1 }}
+            className="text-4xl font-black uppercase"
           >
             VS
           </motion.div>
 
-          <div className="w-full">
+          <div className="w-full flex flex-col gap-4 relative">
             <motion.div
               initial={{ x: 100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ defaultTransition, delay: 2, duration: 0.5 }}
-              className="fixed right-0 top-0 -z-10 h-full w-1/2 border-r-8 border-red-600 bg-gradient-to-l from-[#ff22121c] to-transparent"
+              transition={{ defaultTransition, delay: .8, duration: 1 }}
+              className="w-full h-full absolute -z-10 top-0 left-0 border-r-8 border-red-600 bg-gradient-to-l from-[#ff22121c] to-transparent"
             ></motion.div>
             <TeamDisplay
               team={redTeam}
