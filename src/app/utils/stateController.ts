@@ -2,7 +2,6 @@ import { supabase } from '@/app/lib/supabase/client';
 
 const local =
   process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:4000';
-console.log('local:', local);
 
 const myHeaders = new Headers();
 myHeaders.append('Content-Type', '');

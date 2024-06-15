@@ -1,11 +1,12 @@
 import TeamStatus from '@/app/components/common/TeamStatus';
 import { Button } from '@/app/components/ui/button';
-import SocketContext from '@/app/context/SocketContext';
-import useEnsureContext from '@/app/hooks/useEnsureContext';
+import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
 import { supabase } from '@/app/lib/supabase/client';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import LoadingCircle from './common/LoadingCircle';
+import ErrorMessage from './common/ErrorMessage';
+import useTeamStore from '@/app/stores/teamStore';
 
 interface Team {
   [key: string]: any;
@@ -28,26 +29,18 @@ const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
           <p className={clsx(`${text} text-xs`)}>{`Vous êtes l'équipe ${color}`}</p>
         )}
       </div>
-      <div>
         <TeamStatus team={team} showReadyState={true} />
-      </div>
     </div>
   );
 };
 
 const LobbyView = () => {
-  const socket = useEnsureContext(SocketContext);
+  const { socket } = useSocket();
+  const { isSubscribed } = useTeamStore();
   const { currentTeam, otherTeam, redTeam, blueTeam } = useTeams();
-  const [isReadyToInteract, setIsReadyToInteract] = useState(false);
 
-  useEffect(() => {
-    if (currentTeam && socket) {
-      setIsReadyToInteract(true);
-    }
-  }, [currentTeam, socket]);
-
-  if (!currentTeam || !otherTeam || !redTeam || !blueTeam) {
-    return <div>Team not found</div>;
+  if (!currentTeam || !otherTeam || !redTeam || !blueTeam || !socket) {
+    return <ErrorMessage />;
   }
 
   const handleReadyClick = async () => {
@@ -87,8 +80,9 @@ const LobbyView = () => {
             </div>
           </div>
         ) : (
-          <Button size="lg" className="w-full" onClick={handleReadyClick} disabled={!isReadyToInteract}>
-            <span>{'Confirmer prêt'}</span>
+          <Button size="lg" className="w-56" onClick={handleReadyClick} disabled={!socket && !currentTeam && !isSubscribed} variant={socket && currentTeam && isSubscribed ? 'default' : 'outline'}>
+            {socket && isSubscribed ? 'Confirmer prêt' :
+              <LoadingCircle size='h-3 w-3' />}
           </Button>
         )}
       </div>

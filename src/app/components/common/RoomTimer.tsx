@@ -1,5 +1,4 @@
-import SocketContext from '@/app/context/SocketContext';
-import useEnsureContext from '@/app/hooks/useEnsureContext';
+import useSocket from '@/app/hooks/useSocket';
 import { useCallback, useEffect, useState } from 'react';
 
 interface TimerProps {
@@ -9,7 +8,7 @@ interface TimerProps {
 const Timer: React.FC<TimerProps> = ({ className, size = 'medium' }) => {
   const [timer, setTimer] = useState<string>('');
 
-  const socket = useEnsureContext(SocketContext);
+  const { socket } = useSocket();
 
   const handleSocketEvents = useCallback((event: string) => {
     setTimer(event);

@@ -1,8 +1,7 @@
 // ConfirmButton.tsx
 import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { Button } from '@/app/components/ui/button';
-import SocketContext from '@/app/context/SocketContext';
-import useEnsureContext from '@/app/hooks/useEnsureContext';
+import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
 import { roomStore } from '@/app/stores/roomStore';
 import { motion } from 'framer-motion';
@@ -21,7 +20,7 @@ import {
 } from "@/app/components/ui/alert-dialog"
 
 const ConfirmButton = () => {
-  const socket = useEnsureContext(SocketContext);
+  const { socket } = useSocket()
   const { room, isLoading } = roomStore();
   const { currentTeam: team, otherTeam } = useTeams();
   const [err, setErr] = useState(false);

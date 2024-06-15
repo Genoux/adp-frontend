@@ -7,7 +7,6 @@ import {
   TooltipTrigger,
 } from '@/app/components/ui/tooltip';
 import { defaultTransition } from '@/app/lib/animationConfig';
-import copyToClipboard from '@/app/utils/copyToClipboard';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckIcon, CopyIcon } from 'lucide-react';
@@ -17,6 +16,22 @@ import { useState } from 'react';
 interface RoomDisplayProps {
   [key: string]: any;
 }
+
+const copyToClipboard = (link: string) => {
+  const copy = window.location.href + link;
+
+  navigator.clipboard
+    .writeText(copy)
+    .then(() => {
+      console.log('Copied to clipboard successfully!');
+    })
+    .catch((err) => {
+      console.error('Could not copy text: ', err);
+      throw new Error('Could not copy text');
+    });
+
+  return { message: 'Copied to clipboard' };
+};
 
 const CopyButton: React.FC<{ link: string }> = ({ link }) => {
   const [copied, setCopied] = useState(false);
@@ -30,19 +45,16 @@ const CopyButton: React.FC<{ link: string }> = ({ link }) => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>
-          <Button
-            size={'sm'}
-            className="bg-white text-black"
-            onMouseLeave={() => setCopied(false)}
-            onClick={handleCopyClick}
-          >
+        <TooltipTrigger
+        className="bg-white text-black p-2.5"
+        onMouseLeave={() => setCopied(false)}
+        onClick={handleCopyClick}
+        >
             {copied ? (
               <CheckIcon className="h-4 w-4 text-red-300" color="black" />
             ) : (
               <CopyIcon className="h-4 w-4" />
             )}
-          </Button>
         </TooltipTrigger>
         <TooltipContent>
           <p>{"Copier l'URL"}</p>
@@ -102,9 +114,9 @@ const Display: React.FC<DisplayProps> = ({
           onClick={handleInputClick}
         />
         <Link href={`/${link}`} target="_blank" passHref>
-          <Button size={'sm'}>
-            {isSpectator ? 'Rejoindre' : team.btnText}
-          </Button>
+            <Button size={'sm'}>
+              {isSpectator ? 'Rejoindre' : team.btnText}
+            </Button>
         </Link>
         <CopyButton link={link} />
       </div>

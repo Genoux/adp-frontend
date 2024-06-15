@@ -39,13 +39,10 @@ function generateArray(key: string, length: number) {
 }
 
 async function createRoom(blueTeamName: string, redTeamName: string) {
-  console.log(blueTeamName);
-  console.log(redTeamName);
   const champions = await randomChampions();
   const roomName: string = uniqueNamesGenerator(customConfig);
 
   try {
-    // Step 1: Create room without team_ids
     const { data: room, error: roomError } = await supabase
       .from('rooms')
       .insert({ name: roomName })
@@ -111,7 +108,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
     }
 
     return { room: updatedRoom, red: redTeam, blue: blueTeam };
-  } catch (error) {
+  } catch (error) { 
     console.log('createRoom - error:', error);
   }
 }

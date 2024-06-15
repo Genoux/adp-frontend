@@ -54,7 +54,9 @@
 
 @layer base {
   button, input, textarea, select, div {
-    border-radius: 2px !important; /* Equivalent to Tailwind's 'rounded-sm' */
+    &:not(.box-border){
+      border-radius: 4px !important; /* Equivalent to Tailwind's 'rounded-sm' */
+    }
   }
   
   .dark {
