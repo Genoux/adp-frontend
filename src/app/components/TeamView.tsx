@@ -76,6 +76,7 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
         className={className}
       >
         <ChampionsPool
+          className='px-24'
           team={currentTeam}
           selectedChampion={selectedChampion}
         />
@@ -112,8 +113,8 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ image, position }) => (
           ?.toLowerCase()
           .replace(/\s+/g, '')
           .replace(/[\W_]+/g, '')}.webp`}
-        objectFit='cover'
         layout='fill'
+        sizes='(max-width: 1024px) 100vw, 1024px'
         quality={80}
         className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
         alt={image}

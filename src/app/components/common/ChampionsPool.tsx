@@ -1,7 +1,7 @@
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import React, { useState, useCallback } from 'react';
 import { supabase } from '@/app/lib/supabase/client';
 import useTeams from '@/app/hooks/useTeams';
@@ -41,7 +41,6 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
     //updateClickedHero(hero);
 
     if (!currentTeam || hero.name === currentTeam.clicked_hero) return;
-    console.log('clicked hero', hero.name);
     await supabase
       .from('teams')
       .update({ clicked_hero: hero.name })
@@ -57,11 +56,11 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
   }, []);
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
-
+  
   return (
     <motion.div
       animate={{
-        opacity: !team?.isturn && room?.status !== 'planning' ? 0.8 : 1,
+        opacity: team?.isturn || room?.status === 'planning' || team === undefined ? 1 : 0.8,
       }}
       className={clsx(
         'relative grid grid-cols-10 gap-2', className
@@ -76,8 +75,8 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
           .replace(/[\W_]+/g, '');
 
         return (
-          <AnimatePresence key={index}>
-            <motion.div
+          <motion.div
+            key={index}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -137,7 +136,6 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
                 />
               </motion.div>
             </motion.div>
-          </AnimatePresence>
         );
       })}
     </motion.div>

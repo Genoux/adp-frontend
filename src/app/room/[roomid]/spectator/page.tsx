@@ -133,9 +133,9 @@ const Spectator = ({ params }: SpectatorProps) => {
                 <div className="mx-auto flex h-screen min-h-[752px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
                   <RoomStatusBar className="z-90 fixed left-0 top-0" />
                   <section className="flex h-full flex-col gap-4 pb-4 pt-4">
-                    <div className="h-12"></div>
-                    <div className="flex h-full flex-col justify-between gap-4">
-                      <ChampionsPool />
+                    <div className="h-14"></div>
+                    <div className="flex h-full flex-col justify-between gap-4 px-4">
+                      <ChampionsPool className='px-24' />
                       <DraftView />
                     </div>
                   </section>

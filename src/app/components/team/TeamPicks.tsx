@@ -42,7 +42,7 @@ const TeamPicks = ({ team }: Team) => {
           <motion.div
             key={index}
             className="relative -z-10 h-full w-full overflow-hidden"
-            animate={{ opacity: !currentTeam?.isturn ? 0.5 : 1 }}
+            animate={{ opacity: currentTeam?.isturn || currentTeam === undefined ? 1 : 0.5 }}
           >
             {isBorderSlot && (
               <AnimatePresence mode='wait'>

@@ -83,7 +83,6 @@ export default function Room({ params }: RoomProps) {
       case 'select':
       case 'ban':
         return (
-          <AnimatePresence mode="wait">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -93,7 +92,7 @@ export default function Room({ params }: RoomProps) {
               <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
                 <RoomStatusBar className="z-90 fixed left-0 top-0" />
                 <section className="flex h-full flex-col gap-4 pb-4 pt-4">
-                  <div className="h-12"></div>
+                  <div className="h-14"></div>
                   <div className="z-10 flex h-full flex-col justify-between gap-4 px-4">
                     <TeamView />
                     <DraftView />
@@ -101,7 +100,6 @@ export default function Room({ params }: RoomProps) {
                 </section>
               </div>
             </motion.div>
-          </AnimatePresence>
         );
       default:
         return null;

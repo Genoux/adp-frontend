@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { roomStore } from '@/app/stores/roomStore';
 import useTeams from '@/app/hooks/useTeams';
@@ -47,11 +47,11 @@ const TeamBans = ({ team }: Team) => {
           <motion.div
             key={hero.id || index}
             className="relative h-full w-full overflow-hidden"
-            animate={{ opacity: !currentTeam?.isturn ? 0.5 : 1 }}
+            animate={{ opacity: currentTeam?.isturn || currentTeam === undefined ? 1 : 0.5 }}
           >
             {isBorderSlot && (
-              <AnimatePresence mode='wait'>
-                <div className="absolute bottom-0 left-0 right-0 z-50 flex h-1/2 w-full items-end justify-center pb-6 text-center text-sm text-white">
+              <>
+                <div className="absolute bottom-0 left-0 right-0 z-50 flex h-1/2 w-full items-end justify-center pb-4 text-center text-sm text-white">
                   {team.clicked_hero}
                 </div>
                 <motion.div
@@ -60,8 +60,7 @@ const TeamBans = ({ team }: Team) => {
                   transition={{
                     duration: 0.2,
                   }}
-                  exit={{ opacity: 0 }}
-                  className="relative h-full w-full overflow-hidden">
+                  exit={{ opacity: 0 }}>
                   <motion.div
                     className="glow-red-10 absolute inset-0 z-40 border border-red bg-opacity-10 bg-gradient-to-t from-red to-transparent"
                     animate={{ opacity: [0.5, 1] }}
@@ -83,15 +82,15 @@ const TeamBans = ({ team }: Team) => {
                     </motion.div>
                   )}
                 </motion.div>
-              </AnimatePresence>
+              </>
             )}
-            <div className={clsx('relative h-full overflow-hidden border bg-black bg-opacity-20', {
-              'border border-white border-opacity-10': isEmptySlot,
-              'border border-white border-opacity-0': !isEmptySlot,
+            <div className={clsx('relative h-full overflow-hidden border border-white bg-black bg-opacity-20', {
+             'border-opacity-10': isEmptySlot,
+              'border-opacity-0': !isEmptySlot,
             })}>
               {isHeroSelected && hasHeroId && (
                 <motion.div
-                  className="absolute z-10 left-0 top-0 h-full w-full grayscale bg-background"
+                  className="h-full w-full grayscale bg-transparent"
                   initial={{ scale: 1.3 }}
                   animate={{ scale: 1 }}
                   transition={{
@@ -99,6 +98,7 @@ const TeamBans = ({ team }: Team) => {
                     ease: [1, -0.6, 0.3, 1.2],
                   }}
                 >
+                  <div className="absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-t from-black to-transparent" />
                   <HeroImage type='tiles' heroId={hero.id} altText={team.clicked_hero || 'Selected Hero'} />
                 </motion.div>
               )}
@@ -120,11 +120,11 @@ const TeamBans = ({ team }: Team) => {
                   </svg>
                 </div>
               ) :
-              <div className="absolute bottom-0 left-0 right-0 z-10 flex h-1/2 w-full items-end justify-center bg-gradient-to-t from-black to-transparent pb-6 text-center text-sm text-white">
-              {hero?.name}
-            </div>
+                <div className="absolute bottom-0 left-0 right-0 z-10 flex h-full w-full items-end justify-center pb-4 text-center text-sm text-white">
+                  {hero?.name}
+                </div>
               }
-             
+
             </div>
           </motion.div>
         );
