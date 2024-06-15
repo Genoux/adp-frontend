@@ -5,7 +5,6 @@ import ErrorMessage from '@/app/components/common/ErrorMessage';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
-import StateControllerButtons from '@/app/components/common/StateControllerButtons';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
 import LobbyView from '@/app/components/LobbyView';
@@ -108,7 +107,6 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <main>
-      <StateControllerButtons roomid={roomid} />
       {renderContent()}
     </main>
   );
