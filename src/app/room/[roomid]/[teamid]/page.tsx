@@ -16,6 +16,7 @@ import useTeamStore from '@/app/stores/teamStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 import useSocket from '@/app/hooks/useSocket';
+import StateControllerButtons from '@/app/components/common/StateControllerButtons';
 
 interface RoomProps {
   params: {
@@ -107,6 +108,7 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <main>
+      {process.env.NODE_ENV === 'development' && <StateControllerButtons roomid={roomid} />}
       {renderContent()}
     </main>
   );
