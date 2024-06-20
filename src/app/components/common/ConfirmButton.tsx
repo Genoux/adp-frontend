@@ -9,6 +9,7 @@ import { View } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { PostgrestError } from '@supabase/supabase-js';
 import { Bug } from 'lucide-react';
+import AnimatedDot from '@/app/components/common/AnimatedDot';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -100,13 +101,9 @@ const ConfirmButton = () => {
         ) : (
           <div className="flex w-full flex-col items-center justify-center">
             <p className="text-sm opacity-80">Ce n’est pas votre tour</p>
-            <div className="text-md px-12 text-center font-medium">
-              {`En attente de l'autre équipe`}
-              <div className="sending-animation ">
-                <span className="sending-animation-dot">.</span>
-                <span className="sending-animation-dot">.</span>
-                <span className="sending-animation-dot">.</span>
-              </div>
+            <div className="text-md px-12 text-center font-medium flex gap-0.5">
+              <p className='whitespace-nowrap'>{`En attente de l'autre équipe`}</p>
+              <AnimatedDot />
             </div>
           </div>
         )}

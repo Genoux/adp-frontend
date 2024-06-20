@@ -1,7 +1,7 @@
 import useTeams from '@/app/hooks/useTeams';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
 import { useEffect, useState } from 'react';
 
 interface Hero {
@@ -34,14 +34,13 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
     </div>
     <div key={hero.id} className='w-full overflow-hidden relative' style={{ height: 'calc(100vh - 140px)', maxHeight: '664px', minHeight: '320px' }}>
       {hero.id && (
-        <Image
-          src={`/images/champions/floatingSplash/${hero.id
-            .toLowerCase()
-            .replace(/\s+/g, '')
-            .replace(/[\W_]+/g, '')}.webp`}
+        <ExtendedImage
+          src={hero.id}
           alt={hero.name}
-          layout='fill'
-          objectFit='cover'
+          variant='splash'
+          type='splash'
+          fill
+          style={{ objectFit: 'cover' }}
           className='w-full'
         />
       )}

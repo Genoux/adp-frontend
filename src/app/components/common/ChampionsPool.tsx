@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import React, { useState, useCallback } from 'react';
 import { supabase } from '@/app/lib/supabase/client';
 import useTeams from '@/app/hooks/useTeams';
-import Image from 'next/image';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
 
 interface Hero {
   id: string;
@@ -36,9 +36,6 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
     if (!team?.isturn || !team.canSelect) return;
     if (room?.status !== 'select' && room?.status !== 'ban') return;
     if (hero.selected) return;
-    // if (selectedHero === hero.name) return;
-    // setSelectedHero(hero.name);
-    //updateClickedHero(hero);
 
     if (!currentTeam || hero.name === currentTeam.clicked_hero) return;
     await supabase
@@ -56,7 +53,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
   }, []);
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
-  
+
   return (
     <motion.div
       animate={{
@@ -69,73 +66,71 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
       {room.heroes_pool.map((hero: Hero, index: number) => {
         const isSelected = hero.name === team?.clicked_hero;
         const isHovered = hero.name === hoveredHero;
-        const imageName = hero.id
-          .toLowerCase()
-          .replace(/\s+/g, '')
-          .replace(/[\W_]+/g, '');
 
         return (
           <motion.div
             key={index}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4, delay: 0.01 * index, defaultTransition }}
-              className={clsx('relative overflow-hidden', {
-                'pointer-events-none grayscale': hero.selected,
-                'pointer-events-none': (!team?.isturn || !team.canSelect) && room?.status !== 'planning',
-                'cursor-pointer': !hero.selected && team?.isturn,
-              })}
-              onClick={team?.isturn ? () => handleClickedHero(hero) : undefined}
-              onHoverStart={() => handleHoverStart(hero.name)}
-              onHoverEnd={handleHoverEnd}
-            >
-              {isHovered && !isSelected && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={defaultTransition}
-                  className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
-                >
-                  <p className="flex h-full items-center justify-center text-xs font-bold">
-                    {hero.name}
-                  </p>
-                </motion.div>
-              )}
-              {isSelected && (
-                <motion.div
-                  className={clsx(
-                    'absolute left-0 top-0 z-50 h-full w-full overflow-hidden bg-gradient-to-t',
-                    {
-                      'from-red to-transparent glow-red  border-red-700 border-2 p-4':
-                        isSelected && room.status === 'ban',
-                      'from-yellow-transparent to-transparent border-yellow border p-4':
-                        isSelected && room.status === 'select',
-                    }
-                  )}
-                >
-                  <p className="flex h-full items-center justify-center text-xs font-bold">
-                    {hero.name}
-                  </p>
-                </motion.div>
-              )}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, delay: 0.01 * index, defaultTransition }}
+            className={clsx('relative overflow-hidden', {
+              'pointer-events-none grayscale': hero.selected,
+              'pointer-events-none': (!team?.isturn || !team.canSelect) && room?.status !== 'planning',
+              'cursor-pointer': !hero.selected && team?.isturn,
+            })}
+            onClick={team?.isturn ? () => handleClickedHero(hero) : undefined}
+            onHoverStart={() => handleHoverStart(hero.name)}
+            onHoverEnd={handleHoverEnd}
+          >
+            {isHovered && !isSelected && (
               <motion.div
-                animate={{
-                  scale: isHovered && !isSelected ? 1.2 : 1,
-                }}
-                transition={{ duration: 0.1, defaultTransition }}
-                className="relative overflow-hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={defaultTransition}
+                className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
               >
-                <Image
-                  alt={hero.name}
-                  width={150}
-                  height={150}
-                  priority
-                  src={`/images/champions/tiles/${imageName}.webp`}
-                />
+                <p className="flex h-full items-center justify-center text-xs font-bold">
+                  {hero.name}
+                </p>
               </motion.div>
+            )}
+            {isSelected && (
+              <motion.div
+                className={clsx(
+                  'absolute left-0 top-0 z-50 h-full w-full overflow-hidden bg-gradient-to-t',
+                  {
+                    'from-red to-transparent glow-red  border-red-700 border-2 p-4':
+                      isSelected && room.status === 'ban',
+                    'from-yellow-transparent to-transparent border-yellow border p-4':
+                      isSelected && room.status === 'select',
+                  }
+                )}
+              >
+                <p className="flex h-full items-center justify-center text-xs font-bold">
+                  {hero.name}
+                </p>
+              </motion.div>
+            )}
+            <motion.div
+              animate={{
+                scale: isHovered && !isSelected ? 1.2 : 1,
+              }}
+              transition={{ duration: 0.1, defaultTransition }}
+              className="relative overflow-hidden"
+            >
+              <ExtendedImage
+                alt={hero.name}
+                width={150}
+                height={150}
+                priority
+                type='tiles'
+                variant='w=150'
+                src={`/champions/tiles/${hero.name}`}
+              />
             </motion.div>
+          </motion.div>
         );
       })}
     </motion.div>

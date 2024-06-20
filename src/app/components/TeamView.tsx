@@ -3,13 +3,11 @@ import useTeams from '@/app/hooks/useTeams';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
 import React, { useEffect, useState } from 'react';
-
 interface Team {
   [key: string]: any;
 }
-
 
 type TeamViewProps = {
   className?: string;
@@ -108,14 +106,12 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ image, position }) => (
     exit={{ opacity: 0 }}
   >
     {image && (
-      <Image
-        src={`/images/champions/floatingSplash/${image
-          ?.toLowerCase()
-          .replace(/\s+/g, '')
-          .replace(/[\W_]+/g, '')}.webp`}
-        layout='fill'
-        sizes='(max-width: 1024px) 100vw, 1024px'
-        quality={80}
+      <ExtendedImage
+        src={image}
+        type='splash'
+        variant='splash'
+        fill
+        sizes='100vw'
         className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
         alt={image}
       />

@@ -1,16 +1,16 @@
-import Image from 'next/image';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
 
 const HeroImage = ({ type, heroId, altText }: { type: string; heroId: string; altText: string }) => {
-  const imageSrc = `/images/champions/${type}/${heroId.toLowerCase().replace(/\s+/g, '').replace(/[\W_]+/g, '')}.webp`;
 
   return (
-    <Image
+    <ExtendedImage
       alt={altText}
-      src={imageSrc}
-      layout="fill"
-      objectFit="cover"
-      priority
-      quality={100}
+      variant={type}
+      type={type}
+      src={heroId}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      style={{ objectPosition: 'center', objectFit: 'cover' }}
+      fill
     />
   );
 };

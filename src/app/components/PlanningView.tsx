@@ -27,7 +27,7 @@ export const PlanningView = ({ className }: PlanningViewProps) => {
         <div className="flex flex-col items-center gap-4">
           <Timer className="w-full" size="large" />
           <div className="text-center">
-            <h1 className="text-3xl font-bold">Phase de planification</h1>
+            <h1 className="text-3xl font-bold w-full whitespace-nowrap">Phase de planification</h1>
             <p className="text-base text-[#737373]">
               {'Analyse de la sélection de champions'}
             </p>

@@ -85,12 +85,12 @@ const TeamBans = ({ team }: Team) => {
               </>
             )}
             <div className={clsx('relative h-full overflow-hidden border border-white bg-black bg-opacity-20', {
-             'border-opacity-10': isEmptySlot,
+              'border-opacity-10': isEmptySlot,
               'border-opacity-0': !isEmptySlot,
             })}>
               {isHeroSelected && hasHeroId && (
                 <motion.div
-                  className="h-full w-full grayscale bg-transparent"
+                  className="h-full w-full grayscale bg-transparent relative"
                   initial={{ scale: 1.3 }}
                   animate={{ scale: 1 }}
                   transition={{

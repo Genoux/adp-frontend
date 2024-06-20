@@ -13,11 +13,12 @@ import useTeams from '@/app/hooks/useTeams';
 import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { Eye } from 'lucide-react';
-import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { defaultTransition } from '@/app/lib/animationConfig';
-
+import AnimatedDot from '@/app/components/common/AnimatedDot';
+import LoadingScreen from '@/app/components/common/LoadingScreen';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
 interface SpectatorProps {
   params: {
     roomid: string;
@@ -60,24 +61,9 @@ const Spectator = ({ params }: SpectatorProps) => {
     }
   }, [teams]);
 
-  if (!isConnected || isLoading || loadTeam) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <div className="flex gap-1">
-          <p>Connection en cours</p>
-          <div className="sending-animation">
-            <span className="sending-animation-dot">.</span>
-            <span className="sending-animation-dot">.</span>
-            <span className="sending-animation-dot">.</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (!isConnected || isLoading || loadTeam) return <LoadingScreen />;
 
-  if (!blueTeam || !redTeam || !room) {
-    return <ErrorMessage />;
-  }
+  if (!blueTeam || !redTeam || !room) return <ErrorMessage />;
 
   const renderContent = () => {
     switch (room?.status) {
@@ -87,12 +73,7 @@ const Spectator = ({ params }: SpectatorProps) => {
             <Eye size={40} className="mb-4" />
             <h1 className="text-2xl font-bold">Vous êtes spectateur</h1>
             <div className="opacity-50">
-              <span className="pr-0.5 text-base">{`En attende des équipes`}</span>
-              <div className="sending-animation">
-                <span className="sending-animation-dot">.</span>
-                <span className="sending-animation-dot">.</span>
-                <span className="sending-animation-dot">.</span>
-              </div>
+              <span className="pr-0.5 text-base flex gap-1">{`En attende des équipes`} <AnimatedDot /></span>
             </div>
           </div>
         );
@@ -107,18 +88,17 @@ const Spectator = ({ params }: SpectatorProps) => {
               className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 -z-10 h-full w-3/12`}
             >
               {currentImage && (
-                <Image
-                  src={`/images/champions/splash/${currentImage
-                    ?.toLowerCase()
-                    .replace(/\s+/g, '')}.webp`}
-                  layout='fill'
-                  objectFit='cover'
-                  quality={50}
+                <ExtendedImage
+                  src={currentImage}
+                  fill
+                  type='splash'
+                  variant='splash'
+                  style={{ objectFit: 'cover' }}
+                  alt={currentImage}
                   className={`h-full w-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue'
                     ? 'fade-gradient-left'
                     : 'fade-gradient-right'
                     }`}
-                  alt={currentImage}
                 />
               )}
             </div>
