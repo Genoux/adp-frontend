@@ -27,6 +27,8 @@ const ExtendedImage: React.FC<ExtendedImageProps> = ({ src, type, variant, alt, 
       placeholder='blur'
       blurDataURL={imageUrl}
       alt={alt}
+      sizes='100%'
+      quality={80}
       {...props}
     />
   );

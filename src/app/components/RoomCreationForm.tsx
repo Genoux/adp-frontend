@@ -1,4 +1,5 @@
-import { InputSelect } from '@/app/components/forms/InputSelect'; // Ensure the import path is correct
+import { InputSelect } from '@/app/components/forms/InputSelect';
+import { InputForm } from '@/app/components/forms/InputForm';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import React from 'react';
@@ -34,8 +35,8 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
             }
           </p>
         </div>
-        <InputSelect submit={(data) => submit(data)} />
-        {/* <InputForm submit={(data) => submit(data)} /> */}
+      <div className='hidden'>  <InputSelect submit={(data) => submit(data)} /></div>
+        <InputForm submit={(data) => submit(data)} /> 
       </motion.div>
     
     </>

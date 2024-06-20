@@ -122,11 +122,11 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
             >
               <ExtendedImage
                 alt={hero.name}
-                width={150}
-                height={150}
+                width={380}
+                height={380}
                 priority
                 type='tiles'
-                variant='w=150'
+                variant='tiles'
                 src={`/champions/tiles/${hero.name}`}
               />
             </motion.div>

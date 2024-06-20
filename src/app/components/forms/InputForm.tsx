@@ -21,10 +21,16 @@ const FormSchema = z
       .string()
       .min(2, "Chaque équipe doit avoir un nom d'au moins 2 caractères"),
   })
-  .refine((data) => data.blueTeamName !== data.redTeamName, {
-    message: 'Les deux équipes ne peuvent pas avoir le même nom',
-    path: ['redTeamName'],
+  .superRefine(({ blueTeamName, redTeamName }, ctx) => {
+    if (blueTeamName === redTeamName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Les deux équipes ne peuvent pas avoir le même nom',
+        path: ['redTeamName'],
+      });
+    }
   });
+
 export interface InputFormProps {
   submit: (data: z.infer<typeof FormSchema>) => void;
 }
@@ -32,7 +38,7 @@ export interface InputFormProps {
 export function InputForm({ submit }: InputFormProps) {
   const form = useForm({
     resolver: zodResolver(FormSchema),
-    mode: 'onChange', // This line ensures validation on change
+    mode: 'onSubmit', // Validate only on submit
     defaultValues: {
       blueTeamName: '',
       redTeamName: '',
@@ -42,20 +48,23 @@ export function InputForm({ submit }: InputFormProps) {
   const {
     handleSubmit,
     control,
-    formState: { errors },
-    watch,
+    formState: { errors, isSubmitted },
+    reset,
   } = form;
-  const blueTeamName = watch('blueTeamName');
-  const redTeamName = watch('redTeamName');
-  const errorMessage =
-    errors.blueTeamName?.message || errors.redTeamName?.message;
+
+  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    submit(data);
+    reset(); // Reset form fields after submission
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(submit)} className="flex w-full flex-col">
-        {errorMessage && (
-          <FormMessage className="mb-4">{errorMessage}</FormMessage>
-        )}
+      <form onSubmit={handleSubmit(onSubmit)} className="flex w-full flex-col">
+        {isSubmitted && (errors.blueTeamName?.message || errors.redTeamName?.message) ? (
+          <FormMessage className="mb-4">
+            {errors.blueTeamName?.message || errors.redTeamName?.message}
+          </FormMessage>
+        ) : null}
         <div className="flex flex-col gap-6">
           <FormField
             control={control}
@@ -92,7 +101,6 @@ export function InputForm({ submit }: InputFormProps) {
           size={'lg'}
           className="mt-6 disabled:border disabled:bg-white disabled:bg-opacity-10 disabled:font-normal disabled:text-white disabled:text-opacity-30"
           type="submit"
-          disabled={!blueTeamName || !redTeamName}
         >
           Créer une chambre
         </Button>

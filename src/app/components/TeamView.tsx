@@ -41,14 +41,6 @@ const TeamView: React.FC<TeamViewProps> = ({ className }) => {
     updateImage(redTeam, setCurrentImageRed);
   }, [blueTeam, redTeam]);
 
-  // const handleClickedHero = async (hero: Hero) => {
-  //   if (!currentTeam || hero.name === currentTeam.clicked_hero) return;
-  //   await supabase
-  //     .from('teams')
-  //     .update({ clicked_hero: hero.name })
-  //     .eq('id', currentTeam.id);
-  // };
-
   if (isLoading) return <div>Loading...</div>;
   if (!currentTeam) return <div>Team not found</div>;
 
@@ -109,9 +101,8 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ image, position }) => (
       <ExtendedImage
         src={image}
         type='splash'
-        variant='splash'
+        variant='full'
         fill
-        sizes='100vw'
         className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
         alt={image}
       />

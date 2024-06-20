@@ -156,7 +156,7 @@ function Home() {
               <div className='h-[402px] flex flex-col gap-6 justify-start items-center'>
                 <RoomCreationForm
                   submit={(data: TeamsName) => createRoom(data as TeamsName)}
-                />
+                      />
                 <NoticeBanner message="Si votre équipe n'apparaît pas dans la liste, veuillez contacter un administrateur" />
               </div>
             )}
