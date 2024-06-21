@@ -9,7 +9,7 @@ import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
 import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
-import TeamView from '@/app/components/TeamView';
+import SelectionsView from '@/app/components/SelectionsView';
 import { defaultTransition } from '@/app/lib/animationConfig';
 import { roomStore } from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
@@ -39,10 +39,10 @@ export default function Room({ params }: RoomProps) {
 
   if (isLoadingTeams || isLoadingRoom || !isConnected) return <LoadingScreen />;
 
-  if (errorTeams || errorRoom) return <ErrorMessage />;
+  if (errorTeams || errorRoom || !room) return <ErrorMessage />;
 
   const renderContent = () => {
-    switch (room?.status) {
+    switch (room.status) {
       case 'waiting':
         return (
           <motion.div
@@ -94,7 +94,7 @@ export default function Room({ params }: RoomProps) {
                 <section className="flex h-full flex-col gap-4 pb-4 pt-4">
                   <div className="h-14"></div>
                   <div className="z-10 flex h-full flex-col justify-between gap-4 px-4">
-                    <TeamView />
+                    <SelectionsView />
                     <DraftView />
                   </div>
                 </section>

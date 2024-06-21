@@ -1,4 +1,5 @@
-import TeamStatus from '@/app/components/common/TeamStatus';
+'use client'
+
 import { Button } from '@/app/components/ui/button';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
@@ -7,41 +8,60 @@ import LoadingCircle from '@/app/components/common/LoadingCircle';
 import AnimatedDot from '@/app/components/common/AnimatedDot';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
 import useTeamStore from '@/app/stores/teamStore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { CheckIcon } from 'lucide-react';
 
-interface Team {
+
+type Team = {
   [key: string]: any;
 }
 
-interface TeamDisplayProps {
+type TeamDisplayProps = {
   team: Team;
   currentTeam: Team;
 }
 
 const TeamDisplay = ({ team, currentTeam }: TeamDisplayProps) => {
-  const color = team.color === 'blue' ? 'bleue' : 'rouge';
-  const text = team.color === 'blue' ? 'text-blue' : 'text-red';
 
   return (
     <div className="flex h-16 w-full items-center justify-between border bg-[#0a0a0c] p-4">
       <div>
         <h1>{team.name}</h1>
         {currentTeam?.name === team.name && (
-          <p className={text + " text-xs"}>{`Vous êtes l'équipe ${color}`}</p>
+          <p className={`text-xs text-${team.color}`}>{`Vous êtes l'équipe ${team.color === 'blue' ? 'bleue' : 'rouge'}`}</p>
         )}
       </div>
-      <TeamStatus team={team} showReadyState={true} />
+      {team.ready ? (
+        <div className="flex h-6 items-center gap-1 border border-green-500 bg-green-500 bg-opacity-10 px-2 py-1">
+          <CheckIcon className="h-3 w-3 text-green-500" />
+          <p className="-mt-0.5 pr-0.5 text-xs font-medium">prêt</p>
+        </div>
+      ) : (
+        <div className="flex h-6 items-center gap-1 border border-gray-700 px-2 py-1 opacity-70">
+          <div className="mr-1 h-2 w-2 bg-zinc-600"></div>
+          <p className="-mt-0.5 pr-0.5 text-xs font-light">{`pas prêt`}</p>
+        </div>
+      )}
     </div>
   );
 };
 
 const LobbyView = () => {
-  const { socket } = useSocket();
+  const { socket, isConnected } = useSocket();
   const { isSubscribed } = useTeamStore();
-  const { currentTeam, otherTeam, redTeam, blueTeam } = useTeams();
+  const { currentTeam, redTeam, blueTeam } = useTeams();
   const [clicked, setClicked] = useState(false);
+  const [online, setOnline] = useState(false);
 
-  if (!currentTeam || !otherTeam || !redTeam || !blueTeam || !socket) {
+  useEffect(() => {
+    if (isConnected && isSubscribed) {
+      setOnline(true);
+    } else {
+      setOnline(false);
+    }
+  }, [isConnected, isSubscribed]);
+
+  if (!currentTeam || !redTeam || !blueTeam || !socket) {
     return <ErrorMessage />;
   }
 
@@ -52,19 +72,13 @@ const LobbyView = () => {
       .from('teams')
       .update({ ready: true })
       .eq('id', currentTeam.id)
-      .select('*, room(*)')
+      .select('*')
       .single();
 
     if (data && !error) {
-      socket.emit('TEAM_READY', { roomid: data.room.id, teamid: currentTeam.id });
+      socket.emit('TEAM_READY', { roomid: data.room, teamid: currentTeam.id });
     }
-
-    setTimeout(() => {
-      setClicked(false);
-    }, 1000);
   };
-
-  const buttonDisabled = !socket || !currentTeam || !isSubscribed || clicked;
 
   return (
     <div className="mx-auto flex h-screen w-fit flex-col items-center justify-center">
@@ -74,20 +88,29 @@ const LobbyView = () => {
           En attente que les deux équipes soient prêtes
         </p>
       </div>
-      <div className="mb-12 flex w-full flex-col gap-4">
-        <TeamDisplay team={blueTeam} currentTeam={currentTeam} />
-        <TeamDisplay team={redTeam} currentTeam={currentTeam} />
-      </div>
-
-      <div className="flex h-12 items-center justify-center">
-        {currentTeam.ready ? (
-            <p className="flex text-base gap-1">En attente de {otherTeam.name}<AnimatedDot /></p>
-        ) : (
-          <Button size="lg" className="w-56" onClick={handleReadyClick} disabled={buttonDisabled} variant={!buttonDisabled ? 'default' : 'outline'}>
-            {socket && isSubscribed && !clicked ? 'Confirmer prêt' : <LoadingCircle size='h-3 w-3' />}
-          </Button>
-        )}
-      </div>
+      <section className='flex flex-col gap-8 w-full'>
+        <div className="flex w-full flex-col gap-4">
+          <TeamDisplay team={blueTeam} currentTeam={currentTeam} />
+          <TeamDisplay team={redTeam} currentTeam={currentTeam} />
+        </div>
+        <div className="flex h-12 items-center justify-center">
+          {currentTeam.ready ? (
+            <div className="flex text-base gap-1">{"En attente de l'autre équipe"}<AnimatedDot /></div>
+          ) : (
+            <>
+              {online ? (
+                <Button size="lg" className="w-56" onClick={handleReadyClick} disabled={!online} variant={!clicked ? 'default' : 'outline'}>
+                  {!clicked ? 'Confirmer prêt' : <LoadingCircle size='h-3 w-3' />}
+                </Button>
+              ) : (
+                <Button size="lg" className="w-56" disabled={true} variant={'outline'}>
+                  <LoadingCircle size='h-3 w-3' />
+                </Button>
+              )}
+            </>
+          )}
+        </div>
+      </section>
     </div>
   );
 };

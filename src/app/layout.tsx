@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/app/components/ui/theme-provider';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistSans } from 'geist/font/sans';
+import { Toaster } from "@/app/components/ui/toaster"
 
 export const metadata = {
   title: 'HAQ - Aram draft pick',
@@ -35,6 +36,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
+          <Toaster />
           <SpeedInsights />
           <Analytics />
         </ThemeProvider>

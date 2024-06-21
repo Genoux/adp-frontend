@@ -1,17 +1,20 @@
 import { roomStore } from '@/app/stores/roomStore';
 import clsx from 'clsx';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import useTeams from '@/app/hooks/useTeams';
-import HeroImage from './HeroImage';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
 
 type Hero = {
+  id: string;
+  name: string;
+  selected: boolean;
   [key: string]: any;
-}
+};
 
 type Team = {
   [key: string]: any;
-}
+};
 
 const TeamPicks = ({ team }: Team) => {
   const { room } = roomStore();
@@ -20,17 +23,12 @@ const TeamPicks = ({ team }: Team) => {
 
   useEffect(() => {
     if (team.isturn && team.canSelect && room?.status === 'select') {
-      setBorderIndex(team.heroes_selected.findIndex((hero: Hero) => !hero.selected));
+      const index = team.heroes_selected.findIndex((hero: Hero) => !hero.selected);
+      setBorderIndex(index);
     } else {
       setBorderIndex(null);
     }
   }, [team, room]);
-
-  useEffect(() => {
-    if (!team.clicked_hero) {
-      setBorderIndex(null);
-    }
-  }, [team.clicked_hero]);
 
   return (
     <motion.div className="flex h-full w-full gap-2">
@@ -40,79 +38,50 @@ const TeamPicks = ({ team }: Team) => {
 
         return (
           <motion.div
-            key={index}
-            className="relative -z-10 h-full w-full overflow-hidden"
-            animate={{ opacity: currentTeam?.isturn || currentTeam === undefined ? 1 : 0.5 }}
+            key={`${index} ${hero.id}`}
+            className={clsx('relative h-full w-full overflow-hidden border border-white bg-black bg-opacity-20', {
+              'border-opacity-5': isEmptySlot,
+              'border-opacity-0': !isEmptySlot,
+            })}
+            animate={{ opacity: currentTeam?.isturn || currentTeam === undefined ? 1 : 0.8 }}
           >
             {isBorderSlot && (
-              <AnimatePresence mode='wait'>
-                {/*The border */}
-                <motion.div
-                  className="glow-yellow-10 absolute inset-0 z-40 border border-yellow bg-opacity-10 bg-gradient-to-t from-yellow-transparent to-transparent"
-                  animate={{ opacity: [0.4, 1] }}
-                  initial={{ opacity: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                    repeatType: 'reverse',
-                  }}
-                />
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{
-                    duration: 0.2,
-                    delay: 0.2,
-                  }}
-                  className="absolute bottom-0 left-0 right-0 z-50 flex h-1/2 w-full items-end justify-center pb-6 text-center text-sm text-white">
-                  {team.clicked_hero}
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: 0.2,
-                  }}
-                  exit={{ opacity: 0 }}
-                  className="relative h-full w-full overflow-hidden">
+              <motion.div
+                className="glow-yellow-10 absolute inset-0 z-40 border border-yellow bg-opacity-10 bg-gradient-to-t from-yellow-transparent to-transparent"
+                animate={{ opacity: [0.4, 1] }}
+                initial={{ opacity: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  repeatType: 'reverse',
+                }}
+              />
+            )}
 
-                  {team.clicked_hero && (
-                    <motion.div
-                      className="absolute inset-0 z-10 sepia"
-                      initial={{ scale: 1.2 }}
-                    >
-                      <HeroImage type='splash' heroId={team.clicked_hero} altText={team.clicked_hero || 'Selected Hero'} />
-                    </motion.div>
+            {!isEmptySlot && (
+              <>
+                <motion.div
+                  initial={{ scale: 1.25 }}
+                  animate={{ scale: isBorderSlot ? 1.25 : 1 }}
+                  className={clsx('h-full w-full', { sepia: isBorderSlot })}
+                  transition={{ duration: 0.4, delay: 0.5, ease: [1, -0.6, 0.3, 1.2] }}
+                >
+                  {(team.clicked_hero || hero.id) && (
+                    <ExtendedImage
+                      alt={team.clicked_hero || ''}
+                      type={'centered'}
+                      src={isBorderSlot ? team.clicked_hero : hero.id}
+                      style={{ objectPosition: 'center', objectFit: 'cover' }}
+                      fill
+                    />
                   )}
                 </motion.div>
-              </AnimatePresence>
+                <p className="z-10 text-sm absolute bottom-0 items-end left-0 h-full w-full flex justify-center pb-4">
+                  {isBorderSlot ? team.clicked_hero : hero.name}
+                </p>
+              </>
             )}
-            <div
-              className={clsx('relative h-full overflow-hidden border', {
-                'border border-white border-opacity-10': isEmptySlot,
-                'border border-white border-opacity-0': !isEmptySlot,
-              })}
-            >
-              {hero.id && (
-                <motion.div
-                  className="absolute left-0 top-0 h-full w-full"
-                  initial={{ scale: 1.2 }}
-                  animate={{ scale: 1 }}
-                  transition={{
-                    duration: 0.5,
-                    ease: [1, -0.6, 0.3, 1.2],
-                    delay: 0.2,
-                  }}
-                >
-                  <HeroImage type='splash' heroId={hero.id} altText={team.clicked_hero || 'Selected Hero'} />
-                </motion.div>
-              )}
-              <div className="absolute bottom-0 left-0 right-0 z-10 flex h-1/2 w-full items-end justify-center bg-gradient-to-t from-black to-transparent pb-6 text-center text-sm text-white">
-                {hero.name}
-              </div>
-            </div>
           </motion.div>
         );
       })}

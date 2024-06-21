@@ -11,14 +11,18 @@ import { ArrowLeft, BedDouble } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
+import { useToast } from "@/app/components/ui/use-toast"
+
 type Room = {
   id: number;
   name: string;
   blue: Team;
   red: Team;
   status: string;
+  heroes_pool: { id: number; name: string; imageUrl: string }[];
   [key: string]: any;
 }
+
 type BlueTeam = {
   id: number;
   name: string;
@@ -48,6 +52,8 @@ function Home() {
   const [redTeam, setRedTeam] = useState<Team | null>(null);
   const [blueTeam, setBlueTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast()
+  const appState = process.env.NEXT_PUBLIC_APP_STATE;
   const appMode = process.env.NEXT_PUBLIC_APP_MODE;
 
   const mapTeamStructure = (
@@ -70,10 +76,9 @@ function Home() {
       });
 
       const { room, blue, red } = await response.json();
-      
+
       if (room.error) {
-        console.error(room.error);
-        return;
+        throw new Error(room.error);
       }
 
       const mappedBlueTeam = mapTeamStructure(blue, 'blue');
@@ -83,7 +88,12 @@ function Home() {
       setRedTeam(mappedRedTeam);
       setRoom({ ...room, blue: mappedBlueTeam, red: mappedRedTeam });
     } catch (error) {
-      console.error('Failed to create room:', error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Something went wrong. Please try again later.",
+      })
+      console.error('Failed to create room!:', error);
     } finally {
       setLoading(false);
     }
@@ -91,19 +101,18 @@ function Home() {
 
   return (
     <AnimatePresence mode='wait'>
-    <main className="h-screen flex items-center justify-center">
-      {appMode === 'false' ? (
-        <div className="flex h-full animate-pulse flex-col items-center justify-center gap-2">
-          <BedDouble className="h-6 w-6" />
-          <h1 className="text-2xl font-semibold">Zzzzzz</h1>
-        </div>
-      ) : (
-      
+      <main className="h-screen flex items-center justify-center" style={{ height: 'calc(100vh - 126px)' }}>
+        {appState === 'false' ? (
+          <div className="flex h-full animate-pulse flex-col items-center justify-center gap-2">
+            <BedDouble className="h-6 w-6" />
+            <h1 className="text-2xl font-semibold">Zzzzzz</h1>
+          </div>
+        ) : (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ defaultTransition, delay: 0.2 }}
-            className="mx-auto flex flex-col items-center justify-center gap-6"
+            className="mx-auto flex flex-col items-center justify-center gap-8"
           >
             <div className="flex flex-col items-center justify-center">
               <Link
@@ -117,11 +126,9 @@ function Home() {
               <h1 className="text-center text-6xl font-bold tracking-tighter flex justify-end">
                 Aram Draft Pick
                 <p className="text-xs tracking-normal">v{appVersion}</p>
-
               </h1>
               <span className="text-center text-sm text-muted-foreground">
-                Système de Pick & Ban Personnalisé pour ARAM avec 30 Champions
-                Partagés
+                Système de Pick & Ban Personnalisé pour ARAM avec 30 Champions Partagés
               </span>
             </div>
             {loading ? (
@@ -134,7 +141,7 @@ function Home() {
                 <LoadingCircle />
               </motion.div>
             ) : room && blueTeam && redTeam ? (
-              <div className="flex flex-col gap-2 ">
+              <div className="h-[402px] flex flex-col gap-2">
                 <motion.div
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -142,44 +149,24 @@ function Home() {
                   onClick={() => {
                     setRoom(null);
                   }}
-                  className="flex w-fit cursor-pointer border p-1  hover:-translate-x-1 hover:bg-white hover:bg-opacity-5"
+                  className="flex w-fit cursor-pointer border p-1 hover:-translate-x-1 hover:bg-white hover:bg-opacity-5"
                 >
                   <ArrowLeft size={18} />
                 </motion.div>
-                <RoomDisplay
-                  room={room}
-                  blueTeam={blueTeam}
-                  redTeam={redTeam}
-                />
+                <RoomDisplay room={room} blueTeam={blueTeam} redTeam={redTeam} />
               </div>
             ) : (
               <div className='h-[402px] flex flex-col gap-6 justify-start items-center'>
-                <RoomCreationForm
-                  submit={(data: TeamsName) => createRoom(data as TeamsName)}
-                      />
-                <NoticeBanner message="Si votre équipe n'apparaît pas dans la liste, veuillez contacter un administrateur" />
+                <RoomCreationForm submit={(data: TeamsName) => createRoom(data as TeamsName)} />
+                {appMode === 'tournament' && (
+                  <NoticeBanner message="Si votre équipe n'apparaît pas dans la liste, veuillez contacter un administrateur" />
+                )}
               </div>
             )}
-
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ defaultTransition, delay: 0.2 }}
-              className="pb-6"
-            >
-              <footer className="w-full text-sm leading-loose  text-muted-foreground ">
-                <p className="text-center">
-                  All Rights Reserved © 2024 Howling Abyss Quebec
-                </p>
-              </footer>
-            </motion.div>
           </motion.div>
-
-  
-      )}
-
+        )}
       </main>
-      </AnimatePresence>
+    </AnimatePresence>
   );
 }
 

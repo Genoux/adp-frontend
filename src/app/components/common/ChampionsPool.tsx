@@ -19,12 +19,10 @@ interface Team {
 
 interface ChampionsPoolProps {
   team?: Team;
-  selectedChampion?: string | null;
-  handleClickedHero?: (hero: Hero) => void;
   className?: string;
 }
 
-const ChampionsPool: React.FC<ChampionsPoolProps> = ({
+const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
   team,
   className = '',
 }) => {
@@ -37,10 +35,10 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
     if (room?.status !== 'select' && room?.status !== 'ban') return;
     if (hero.selected) return;
 
-    if (!currentTeam || hero.name === currentTeam.clicked_hero) return;
+    if (!currentTeam || hero.id === currentTeam.clicked_hero) return;
     await supabase
       .from('teams')
-      .update({ clicked_hero: hero.name })
+      .update({ clicked_hero: hero.id })
       .eq('id', currentTeam.id);
   }, [team?.isturn, team?.canSelect, room?.status, currentTeam]);
 
@@ -64,12 +62,12 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
       )}
     >
       {room.heroes_pool.map((hero: Hero, index: number) => {
-        const isSelected = hero.name === team?.clicked_hero;
-        const isHovered = hero.name === hoveredHero;
+        const isSelected = hero.id === team?.clicked_hero;
+        const isHovered = hero.id === hoveredHero;
 
         return (
           <motion.div
-            key={index}
+            key={hero.id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -80,8 +78,8 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
               'cursor-pointer': !hero.selected && team?.isturn,
             })}
             onClick={team?.isturn ? () => handleClickedHero(hero) : undefined}
-            onHoverStart={() => handleHoverStart(hero.name)}
-            onHoverEnd={handleHoverEnd}
+            onMouseEnter={() => handleHoverStart(hero.id)}
+            onMouseLeave={handleHoverEnd}
           >
             {isHovered && !isSelected && (
               <motion.div
@@ -121,13 +119,12 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
               className="relative overflow-hidden"
             >
               <ExtendedImage
-                alt={hero.name}
+                alt={hero.id}
                 width={380}
                 height={380}
                 priority
                 type='tiles'
-                variant='tiles'
-                src={`/champions/tiles/${hero.name}`}
+                src={hero.id}
               />
             </motion.div>
           </motion.div>
@@ -135,7 +132,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = ({
       })}
     </motion.div>
   );
-};
+});
 
 ChampionsPool.displayName = 'ChampionsPool';
 

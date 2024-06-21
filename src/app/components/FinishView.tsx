@@ -37,8 +37,7 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
         <ExtendedImage
           src={hero.id}
           alt={hero.name}
-          variant='splash'
-          type='splash'
+          type='centered'
           fill
           style={{ objectFit: 'cover' }}
           className='w-full'

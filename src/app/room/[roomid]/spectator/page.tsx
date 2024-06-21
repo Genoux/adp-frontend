@@ -92,7 +92,6 @@ const Spectator = ({ params }: SpectatorProps) => {
                   src={currentImage}
                   fill
                   type='splash'
-                  variant='splash'
                   style={{ objectFit: 'cover' }}
                   alt={currentImage}
                   className={`h-full w-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue'

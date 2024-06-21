@@ -155,7 +155,7 @@ export const champions = [
     selected: false,
   },
   {
-    id: "Fiddlesticks",
+    id: "FiddleSticks",
     name: "Fiddlesticks",
     selected: false,
   },
@@ -402,11 +402,6 @@ export const champions = [
   {
     id: "MissFortune",
     name: "Miss fortune",
-    selected: false,
-  },
-  {
-    id: "MonkeyKing",
-    name: "MonkeyKing",
     selected: false,
   },
   {
@@ -762,6 +757,11 @@ export const champions = [
   {
     id: "Warwick",
     name: "Warwick",
+    selected: false,
+  },
+  {
+    id: "MonkeyKing",
+    name: "Wukong",
     selected: false,
   },
   {

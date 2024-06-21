@@ -39,7 +39,9 @@
     "__tests__/checkImages.test.js",
     "__tests__/checkImages.test.js",
     ".next/types/**/*.ts",
-    "next.config.js"
+    "next.config.js",
+    "postcss.config.js",
+    "tailwind.config.js"
   ],
   "exclude": [
     "node_modules"

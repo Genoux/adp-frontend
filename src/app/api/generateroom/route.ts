@@ -2,13 +2,6 @@ import { champions } from '@/app/utils/champions';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import {
-  adjectives,
-  animals,
-  colors,
-  Config,
-  uniqueNamesGenerator,
-} from 'unique-names-generator';
 
 export const runtime = 'edge';
 
@@ -18,12 +11,9 @@ const supabase = createClient(SUPABASE_URL ?? '', SUPABASE_ANON_KEY ?? '', {
   db: { schema: 'aram_draft_pick' },
 });
 
-const customConfig: Config = {
-  dictionaries: [adjectives, colors, animals],
-  length: 2,
-  separator: ' ',
-  style: 'capital',
-};
+function randomInt8() {
+  return Math.floor(Math.random() * 256);
+}
 
 async function randomChampions() {
   const shuffledChampions = [...champions].sort(() => Math.random() - 0.5);
@@ -40,12 +30,12 @@ function generateArray(key: string, length: number) {
 
 async function createRoom(blueTeamName: string, redTeamName: string) {
   const champions = await randomChampions();
-  const roomName: string = uniqueNamesGenerator(customConfig);
+  const id = randomInt8();
 
   try {
     const { data: room, error: roomError } = await supabase
       .from('rooms')
-      .insert({ name: roomName })
+      .insert({id: id})
       .select('id')
       .single();
 
