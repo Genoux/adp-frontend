@@ -30,7 +30,7 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
     className="relative h-full min-h-[150px] w-full overflow-hidden"
   >
     <div className="absolute left-0 bottom-0 z-50 flex pb-6 h-full w-full items-end justify-center bg-gradient-to-t from-[#00000096] via-transparent to-[#0000004d] text-center">
-      <p className="text-sm xl:text-xl font-black uppercase">{hero.name}</p>
+      <p className="text-sm xl:text-md font-bold uppercase">{hero.name}</p>
     </div>
     <div key={hero.id} className='w-full overflow-hidden relative' style={{ height: 'calc(100vh - 140px)', maxHeight: '664px', minHeight: '320px' }}>
       {hero.id && (

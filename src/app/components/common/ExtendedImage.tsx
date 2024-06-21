@@ -1,7 +1,7 @@
 // components/ExtendedImage.tsx
 import Image, { ImageProps } from 'next/image';
 import React from 'react';
-//https://imagedelivery.net/obj8qQ0FaKD6VU0bck1DVA/caitlyn-tiles/w=150
+
 const baseURL = 'http://ddragon.leagueoflegends.com/cdn/img/champion'; // Set your base URL for images
 
 interface ExtendedImageProps extends ImageProps {

@@ -93,7 +93,6 @@ function Home() {
         title: "Uh oh! Something went wrong.",
         description: "Something went wrong. Please try again later.",
       })
-      console.error('Failed to create room!:', error);
     } finally {
       setLoading(false);
     }
