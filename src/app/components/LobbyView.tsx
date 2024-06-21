@@ -99,7 +99,7 @@ const LobbyView = () => {
           ) : (
             <>
               {online ? (
-                <Button size="lg" className="w-56" onClick={handleReadyClick} disabled={!online} variant={!clicked ? 'default' : 'outline'}>
+                <Button size="lg" className="w-56" onClick={handleReadyClick} disabled={clicked} variant={'default'}>
                   {!clicked ? 'Confirmer prêt' : <LoadingCircle size='h-3 w-3' />}
                 </Button>
               ) : (
