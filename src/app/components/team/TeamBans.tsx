@@ -1,8 +1,9 @@
-import { roomStore } from '@/app/stores/roomStore';
+
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import useTeams from '@/app/hooks/useTeams';
+import useRoomStore from '@/app/stores/roomStore';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 
 type Hero = {
@@ -17,7 +18,7 @@ type Team = {
 };
 
 const TeamBans = ({ team }: Team) => {
-  const { room } = roomStore();
+  const { room } = useRoomStore();
   const { currentTeam } = useTeams();
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 

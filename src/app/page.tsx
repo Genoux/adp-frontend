@@ -3,7 +3,7 @@
 import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { RoomCreationForm } from '@/app/components/RoomCreationForm';
 import { RoomDisplay } from '@/app/components/RoomDisplay';
-import { defaultTransition } from '@/app/lib/animationConfig';
+import defaultTransition from '@/app/lib/animationConfig';
 import { appVersion } from '@/app/utils/version';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Logo } from 'haq-assets';

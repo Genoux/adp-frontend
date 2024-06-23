@@ -2,7 +2,7 @@ import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 import Timer from '@/app/components/common/RoomTimer';
 import TeamName from '@/app/components/common/TeamName';
 import useTeams from '@/app/hooks/useTeams';
-import { defaultTransition } from '@/app/lib/animationConfig';
+import defaultTransition from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import React from 'react';
 

@@ -3,7 +3,7 @@ import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { Button } from '@/app/components/ui/button';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
-import { roomStore } from '@/app/stores/roomStore';
+import useRoomStore from '@/app/stores/roomStore';
 import { motion } from 'framer-motion';
 import { View } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -22,7 +22,7 @@ import {
 
 const ConfirmButton = () => {
   const { socket } = useSocket()
-  const { room, isLoading } = roomStore();
+  const { room, isLoading } = useRoomStore();
   const { currentTeam: team, otherTeam } = useTeams();
   const [err, setErr] = useState(false);
   const [errMessage, setErrMessage] = useState<PostgrestError>();

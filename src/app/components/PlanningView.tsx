@@ -1,7 +1,7 @@
 import ChampionsPool from '@/app/components/common/ChampionsPool';
 import Timer from '@/app/components/common/RoomTimer';
 import useTeams from '@/app/hooks/useTeams';
-import { roomStore } from '@/app/stores/roomStore';
+import useRoomStore from '@/app/stores/roomStore';
 import clsx from 'clsx';
 
 type PlanningViewProps = {
@@ -9,7 +9,7 @@ type PlanningViewProps = {
 };
 
 export const PlanningView = ({ className }: PlanningViewProps) => {
-  const { room } = roomStore();
+  const { room } = useRoomStore();
   const { blueTeam, redTeam } = useTeams();
   const teamNameStyle = 'text-xl uppercase font-extrabold px-4 py-3 w-64 bg-opacity-10 truncate'
 

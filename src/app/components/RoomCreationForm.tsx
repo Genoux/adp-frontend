@@ -1,6 +1,6 @@
 import { InputSelect } from '@/app/components/forms/InputSelect';
 import { InputForm } from '@/app/components/forms/InputForm';
-import { defaultTransition } from '@/app/lib/animationConfig';
+import defaultTransition from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import React from 'react';
 

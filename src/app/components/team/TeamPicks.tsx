@@ -1,4 +1,4 @@
-import { roomStore } from '@/app/stores/roomStore';
+import useRoomStore from '@/app/stores/roomStore';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
@@ -17,9 +17,10 @@ type Team = {
 };
 
 const TeamPicks = ({ team }: Team) => {
-  const { room } = roomStore();
+  const { room } = useRoomStore();
   const { currentTeam } = useTeams();
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
+  const [name, setName] = useState<string | null>(null);
 
   useEffect(() => {
     if (team.isturn && team.canSelect && room?.status === 'select') {
@@ -27,6 +28,7 @@ const TeamPicks = ({ team }: Team) => {
       setBorderIndex(index);
     } else {
       setBorderIndex(null);
+      setName(null);
     }
   }, [team, room]);
 
@@ -71,15 +73,20 @@ const TeamPicks = ({ team }: Team) => {
                     <ExtendedImage
                       alt={team.clicked_hero || ''}
                       type={'centered'}
+                      fill
                       src={isBorderSlot ? team.clicked_hero : hero.id}
                       style={{ objectPosition: 'center', objectFit: 'cover' }}
-                      fill
+                      onLoad={() => {
+                        setName(team.clicked_hero || hero.id);
+                      }}
                     />
                   )}
                 </motion.div>
-                <p className="z-10 text-sm absolute bottom-0 items-end left-0 h-full w-full flex justify-center pb-4">
-                  {isBorderSlot ? team.clicked_hero : hero.name}
-                </p>
+                {(name || hero.name) && (
+                  <p className="z-10 text-sm absolute bottom-0 items-end left-0 h-full w-full flex justify-center pb-4">
+                    {isBorderSlot ? name : hero.name}
+                  </p>
+                )}
               </>
             )}
           </motion.div>

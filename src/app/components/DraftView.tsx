@@ -18,7 +18,7 @@ const DraftView: React.FC<DraftViewProps> = ({ className }) => {
         className
       )}
     >
-      <div className="grid max-h-[100px] min-h-[100px] w-full grid-cols-3 items-center">
+      <div className="grid max-h-[60px] min-h-[60px] w-full grid-cols-3 items-center">
         <TeamBans team={blueTeam} />
         <ConfirmButton />
         <TeamBans team={redTeam} />

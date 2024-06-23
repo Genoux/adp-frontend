@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/app/components/ui/tooltip';
-import { defaultTransition } from '@/app/lib/animationConfig';
+import defaultTransition from '@/app/lib/animationConfig';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckIcon, CopyIcon } from 'lucide-react';

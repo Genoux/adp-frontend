@@ -12,13 +12,13 @@ interface ExtendedImageProps extends ImageProps {
 
 const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt, ...props }) => {
   const imageUrl = `${baseURL}/${type}/${src}_0.jpg`;
+
   return (
     <Image
       src={imageUrl}
       placeholder='blur'
-      blurDataURL={imageUrl}
+      blurDataURL={'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/utJ+gAAAABJRU5ErkJggg=='}
       alt={alt}
-      sizes='100%'
       quality={80}
       {...props}
     />
