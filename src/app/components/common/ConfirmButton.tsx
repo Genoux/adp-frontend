@@ -19,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/app/components/ui/alert-dialog"
+import { supabase } from '@/app/lib/supabase/client';
 
 const ConfirmButton = () => {
   const { socket } = useSocket()
@@ -26,6 +27,7 @@ const ConfirmButton = () => {
   const { currentTeam: team, otherTeam } = useTeams();
   const [err, setErr] = useState(false);
   const [errMessage, setErrMessage] = useState<PostgrestError>();
+  const [button, setButton] = useState(false);
 
   useEffect(() => {
     if (socket) {
@@ -35,6 +37,14 @@ const ConfirmButton = () => {
       });
     }
   }, [socket]);
+
+  useEffect(() => {
+   if(!team?.canSelect || team.clicked_hero === null){
+     setButton(false);
+   }else {
+     setButton(true);
+   }
+  }, [team])
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -49,6 +59,12 @@ const ConfirmButton = () => {
   const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection'
 
   const handleConfirmSelection = async () => {
+    setButton(false);
+
+    await supabase.from('teams').update({
+      canSelect: false,
+    }).eq('id', team?.id);
+
     if (socket) {
       socket.emit('SELECT_CHAMPION', {
         teamid: team?.id,
@@ -89,7 +105,7 @@ const ConfirmButton = () => {
               size="lg"
               onClick={handleConfirmSelection}
               className="w-64"
-              disabled={!currentTeam?.clicked_hero || !team.canSelect}
+              disabled={!button}
             >
               {!team.canSelect ? (
                 <LoadingCircle color="black" size="w-4 h-4" />
