@@ -51,7 +51,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
       )}
     >
       {room.heroes_pool.map((hero: Hero, index: number) => {
-        const isSelected = hero.id === currentTeam?.clicked_hero;
+        const isSelected = hero.id === currentTeam?.clicked_hero && currentTeam?.isturn;
         const isHovered = hero.id === hoveredHero;
 
         return (
@@ -78,7 +78,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
                 transition={defaultTransition}
                 className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
               >
-                <p className="flex h-full items-center justify-center text-xs font-bold">
+                <p className="flex h-full text-center w-full items-center justify-center text-xs font-bold">
                   {hero.name}
                 </p>
               </motion.div>
@@ -88,14 +88,14 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
                 className={clsx(
                   'absolute left-0 top-0 z-50 h-full w-full overflow-hidden bg-gradient-to-t',
                   {
-                    'from-red to-transparent glow-red  border-red-700 border-2 p-4':
+                    'from-red to-transparent glow-red  border-red-700 border-2':
                       isSelected && room.status === 'ban',
-                    'from-yellow-transparent to-transparent border-yellow border p-4':
+                    'from-yellow-transparent to-transparent border-yellow border':
                       isSelected && room.status === 'select',
                   }
                 )}
               >
-                <p className="flex h-full items-center justify-center text-xs font-bold">
+                <p className="flex h-full text-center w-full items-center justify-center text-xs font-semibold">
                   {hero.name}
                 </p>
               </motion.div>

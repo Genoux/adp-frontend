@@ -100,7 +100,7 @@ function Home() {
 
   return (
     <AnimatePresence mode='wait'>
-      <main className="h-screen flex items-center justify-center" style={{ height: 'calc(100vh - 126px)' }}>
+      <main className="h-screen flex items-center justify-center">
         {appState === 'false' ? (
           <div className="flex h-full animate-pulse flex-col items-center justify-center gap-2">
             <BedDouble className="h-6 w-6" />

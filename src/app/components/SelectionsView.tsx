@@ -24,19 +24,24 @@ const SelectionsView = ({ className }: SelectionViewProps) => {
   return (
     <>
       {turnTeam?.clicked_hero && (
-        <div className={clsx('fixed top-0 -z-10 h-full w-3/12', {
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ defaultTransition, duration: 1 }}
+          className={clsx('fixed top-0 -z-10 h-full w-3/12', {
           'fade-gradient-left left-0': turnTeam?.color === 'blue',
           'fade-gradient-right right-0': turnTeam?.color === 'red',
         }
         )}>
           <ExtendedImage
-            src={turnTeam?.clicked_hero || ''}
-            alt={turnTeam?.clicked_hero || ''}
+            src={turnTeam?.clicked_hero}
+            alt={turnTeam?.clicked_hero}
             fill
             style={{ objectPosition: 'center', objectFit: 'cover' }}
             type='centered'
           />
-        </div>
+        </motion.div>
       )}
       {room?.status === 'ban' && (
         <motion.div
@@ -59,29 +64,5 @@ const SelectionsView = ({ className }: SelectionViewProps) => {
     </>
   );
 };
-
-// const ImageComponent: React.FC<{ image: string; position: 'left' | 'right' }> = ({ image, position }) => (
-//   <AnimatePresence mode='wait'>
-//     <motion.div
-//       className={`fixed top-0 -z-10 h-full w-3/12 ${position === 'left' ? 'left-0' : 'right-0'}`}
-//       initial={{ opacity: 0 }}
-//       animate={{ opacity: 1 }}
-//       exit={{ opacity: 0 }}
-//       transition={{ defaultTransition, delay: 0, duration: 0.3 }}
-//     >
-//       {image && (
-//         <ExtendedImage
-//           src={image}
-//           type='centered'
-//           fill
-//           className={`h-full w-full object-cover object-center opacity-50 ${position === 'left' ? 'fade-gradient-left' : 'fade-gradient-right'}`}
-//           alt={image}
-//         />
-//       )}
-//     </motion.div>
-//   </AnimatePresence>
-// );
-
-SelectionsView.displayName = 'SelectionsView';
 
 export default SelectionsView;

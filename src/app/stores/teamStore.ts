@@ -18,6 +18,7 @@ interface TeamState {
   currentTeamId: string | null;
   isLoading: boolean;
   error: Error | null;
+  isSubscribed: boolean;
   fetchTeams: (roomid: string) => Promise<void>;
   setCurrentTeamId: (teamId: string) => void;
   updateTeam: (teamId: string, updates: Partial<Team>) => Promise<void>;
@@ -53,8 +54,10 @@ const useTeamStore = create<TeamState>((set) => {
           .subscribe((status, err) => {
             if (err) {
               console.error('.subscribe - err TEAM:', err);
+              set({ isSubscribed: false });
             } else {
               subscriptions[team.id] = () => channel.unsubscribe();
+              set({ isSubscribed: true });
             }
           });
       }
@@ -66,6 +69,7 @@ const useTeamStore = create<TeamState>((set) => {
     currentTeamId: null,
     isLoading: false,
     error: null,
+    isSubscribed: false,
     fetchTeams: async (roomid: string) => {
       set({ isLoading: true, error: null });
       try {
@@ -99,6 +103,7 @@ const useTeamStore = create<TeamState>((set) => {
     unsubscribe: () => {
       Object.values(subscriptions).forEach((unsubscribe) => unsubscribe());
       subscriptions = {};
+      set({ isSubscribed: false });
     },
   };
 });

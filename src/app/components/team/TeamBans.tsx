@@ -21,14 +21,14 @@ const TeamBans = ({ team }: Team) => {
   const { room } = useRoomStore();
   const { currentTeam } = useTeams();
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
-
   useEffect(() => {
-    if (team.isturn && team.canSelect && room?.status === 'ban') {
+    if(room?.status !== 'ban') return;
+    if (team.isturn && team.canSelect) {
       setBorderIndex(team.heroes_ban.findIndex((hero: Hero) => !hero.selected));
     } else {
       setBorderIndex(null);
     }
-  }, [team, room]);
+  }, [room?.status, team]);
 
   return (
     <motion.div className="flex h-full w-full gap-2">
@@ -62,7 +62,7 @@ const TeamBans = ({ team }: Team) => {
                   className="h-full w-full grayscale"
                   initial={{ scale: 1.25 }}
                   animate={{ scale: isBorderSlot ? 1.25 : 1 }}
-                  transition={{ duration: 0.4, delay: 0.2, ease: [1, -0.6, 0.3, 1.2] }}
+                  transition={{ duration: 0.4, ease: [1, -0.6, 0.3, 1.2] }}
                 >
                   {(team.clicked_hero || hero.id) && (
                     <ExtendedImage
