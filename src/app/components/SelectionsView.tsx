@@ -6,11 +6,7 @@ import { motion } from 'framer-motion';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 import clsx from 'clsx';
 
-type SelectionViewProps = {
-  className?: string;
-};
-
-const SelectionsView = ({ className }: SelectionViewProps) => {
+const SelectionsView = () => {
   const { room, isLoading } = useRoomStore((state) => ({
     room: state.room,
     isLoading: state.isLoading,
@@ -52,15 +48,7 @@ const SelectionsView = ({ className }: SelectionViewProps) => {
           className="fixed left-0 top-0 -z-50 h-full w-full bg-red-900 opacity-50"
         />
       )}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ defaultTransition, duration: 0.2 }}
-        className={clsx('flex h-full w-full flex-col items-center justify-center', className)}
-      >
-
-        <ChampionsPool className='px-0 xl:px-28' />
-      </motion.div>
+      <ChampionsPool className='px-0 xl:px-28' />
     </>
   );
 };

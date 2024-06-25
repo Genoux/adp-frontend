@@ -19,10 +19,12 @@ interface TeamState {
   isLoading: boolean;
   error: Error | null;
   isSubscribed: boolean;
+  teamAction: boolean;
   fetchTeams: (roomid: string) => Promise<void>;
   setCurrentTeamId: (teamId: string) => void;
   updateTeam: (teamId: string, updates: Partial<Team>) => Promise<void>;
   unsubscribe: () => void;
+  setTeamAction: (value: boolean) => void;
 }
 
 const useTeamStore = create<TeamState>((set) => {
@@ -70,6 +72,7 @@ const useTeamStore = create<TeamState>((set) => {
     isLoading: false,
     error: null,
     isSubscribed: false,
+    teamAction: true,
     fetchTeams: async (roomid: string) => {
       set({ isLoading: true, error: null });
       try {
@@ -105,6 +108,7 @@ const useTeamStore = create<TeamState>((set) => {
       subscriptions = {};
       set({ isSubscribed: false });
     },
+    setTeamAction: (value: boolean) => set({ teamAction: value }),
   };
 });
 

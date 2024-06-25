@@ -101,7 +101,7 @@ const FinishView: React.FC = () => {
   if (!redTeam || !blueTeam) return null;
 
   return (
-    <div className="mx-auto flex flex-col items-center justify-center h-screen px-4 max-w-screen">
+    <div className="mx-auto flex flex-col items-center justify-center h-screen px-4">
       <AnimatePresence mode='wait'>
         {showTitle && (
           <motion.div

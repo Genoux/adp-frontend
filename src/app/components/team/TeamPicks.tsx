@@ -22,14 +22,14 @@ const TeamPicks = ({ team }: Team) => {
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if(room?.status !== 'select') return;
+    if (room?.status !== 'select') return;
     if (team.isturn && team.canSelect) {
       const index = team.heroes_selected.findIndex((hero: Hero) => !hero.selected);
       setBorderIndex(index);
     } else {
-      setBorderIndex(null);
+      // setBorderIndex(null);
     }
-  }, [room?.status, team]);
+  }, [room?.status, team.isturn, team.canSelect, team.heroes_selected]);
 
   return (
     <motion.div className="flex h-full w-full gap-2">
@@ -46,7 +46,7 @@ const TeamPicks = ({ team }: Team) => {
             })}
             animate={{ opacity: currentTeam?.isturn || currentTeam === undefined ? 1 : 0.8 }}
           >
-            {isBorderSlot && (
+            {(isBorderSlot || hero.id === null) && (
               <motion.div
                 className="glow-yellow-10 absolute inset-0 z-40 border border-yellow bg-opacity-10 bg-gradient-to-t from-yellow-transparent to-transparent"
                 animate={{ opacity: [0.4, 1] }}
@@ -59,32 +59,31 @@ const TeamPicks = ({ team }: Team) => {
                 }}
               />
             )}
-
-            {!isEmptySlot && (
-              <>
+            <>
+              {(isBorderSlot || hero.id) && (
                 <motion.div
                   initial={{ scale: 1.25 }}
                   animate={{ scale: isBorderSlot ? 1.25 : 1 }}
                   className={clsx('h-full w-full', { sepia: isBorderSlot })}
                   transition={{ duration: 0.4, ease: [1, -0.6, 0.3, 1.2] }}
                 >
-                  {(team.clicked_hero || hero.id) && (
-                    <ExtendedImage
-                      alt={team.clicked_hero || ''}
-                      type={'centered'}
-                      fill
-                      src={isBorderSlot ? team.clicked_hero : hero.id}
-                      style={{ objectPosition: 'center', objectFit: 'cover' }}
-                    />
-                  )}
+                  <ExtendedImage
+                    alt={team.clicked_hero}
+                    type={'centered'}
+                    fill
+                    src={isBorderSlot || !hero.id ? team.clicked_hero : hero.id}
+                    style={{ objectPosition: 'center', objectFit: 'cover' }}
+                  />
                 </motion.div>
-                {(team.clicked_hero || hero.name) && (
+
+              )}
+              {/* {(team.clicked_hero || hero.name) && (
                   <p className="z-10 text-sm absolute bottom-0 items-end left-0 h-full w-full flex justify-center pb-4">
                     {isBorderSlot ? team.clicked_hero : hero.name}
                   </p>
-                )}
-              </>
-            )}
+                )} */}
+            </>
+
           </motion.div>
         );
       })}

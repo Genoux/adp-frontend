@@ -34,6 +34,8 @@ const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt
     return canvas.toDataURL();
   }, [blurHash]);
 
+  if(!src) return null;
+
   return (
     <Image
       src={imageUrl}

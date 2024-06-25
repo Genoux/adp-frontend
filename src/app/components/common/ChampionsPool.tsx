@@ -24,11 +24,13 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
   const { room } = useRoomStore();
   const { currentTeam } = useTeams();
   const [hoveredHero, setHoveredHero] = useState<string | null>(null); // State to track hovered hero
-  const { updateTeam } = useTeamStore();
+  const { updateTeam, teamAction } = useTeamStore();
 
   const handleClickedHero = useCallback((hero: Hero) => {
-    if (!currentTeam || hero.id === currentTeam.clicked_hero) return;
+    if (!currentTeam?.canSelect || hero.id === currentTeam.clicked_hero) return;
+    
     updateTeam(currentTeam.id, { clicked_hero: hero.id });
+
   }, [currentTeam, updateTeam]);
 
   const handleHoverStart = useCallback((heroName: string) => {
@@ -44,7 +46,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
   return (
     <motion.div
       animate={{
-        opacity: currentTeam?.isturn || room?.status === 'planning' || currentTeam === undefined ? 1 : 0.8,
+        opacity: teamAction ? 1 : 0.8,
       }}
       className={clsx(
         'relative grid grid-cols-10 gap-2', className
@@ -53,6 +55,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
       {room.heroes_pool.map((hero: Hero, index: number) => {
         const isSelected = hero.id === currentTeam?.clicked_hero && currentTeam?.isturn;
         const isHovered = hero.id === hoveredHero;
+        const canInteract = room?.status !== 'planning' && ((currentTeam?.isturn && currentTeam.canSelect) || currentTeam === undefined);
 
         return (
           <motion.div
@@ -63,10 +66,10 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
             transition={{ duration: 0.4, delay: 0.01 * index, defaultTransition }}
             className={clsx('relative overflow-hidden', {
               'pointer-events-none grayscale': hero.selected,
-              'pointer-events-none': (!currentTeam?.isturn || !currentTeam.canSelect) && room?.status !== 'planning',
-              'cursor-pointer': !hero.selected && currentTeam?.isturn,
+              'pointer-events-none': (!currentTeam?.isturn || !currentTeam?.canSelect || !teamAction) && room?.status !== 'planning',
+              'cursor-pointer': !hero.selected && canInteract,
             })}
-            onClick={currentTeam?.isturn ? () => handleClickedHero(hero) : undefined}
+            onClick={canInteract ? () => handleClickedHero(hero) : undefined}
             onMouseEnter={() => handleHoverStart(hero.id)}
             onMouseLeave={handleHoverEnd}
           >

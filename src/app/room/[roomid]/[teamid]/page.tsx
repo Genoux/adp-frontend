@@ -28,12 +28,12 @@ const DraftingView = () => (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ defaultTransition, duration: 1, delay: 1 }}
-      className="mx-auto flex h-screen min-h-[768px]  w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
+      transition={{ defaultTransition, duration: 0.8, delay: 0.3 }}
+      className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
       <RoomStatusBar className="z-90 fixed left-0 top-0" />
       <section className="flex h-full flex-col gap-4">
         <div className="h-14"></div>
-        <div className="z-10 flex h-full flex-col justify-between gap-4 px-4">
+        <div className="z-10 flex h-full flex-col justify-between px-4 gap-4 pt-4">
           <SelectionsView />
           <DraftView />
         </div>
@@ -82,9 +82,8 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={defaultTransition}
-          className={clsx('h-screen', {
+          className={clsx('h-screen pb-4', {
             'flex flex-col': room.status === 'select' || room.status === 'ban',
-            'pt-4': room.status !== 'waiting',
           })}
         >
           {ViewComponent && <ViewComponent />}

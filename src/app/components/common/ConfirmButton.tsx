@@ -3,6 +3,7 @@ import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { Button } from '@/app/components/ui/button';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
+import useTeamStore from '@/app/stores/teamStore';
 import useRoomStore from '@/app/stores/roomStore';
 import { motion } from 'framer-motion';
 import { View } from 'lucide-react';
@@ -10,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { PostgrestError } from '@supabase/supabase-js';
 import { Bug } from 'lucide-react';
 import AnimatedDot from '@/app/components/common/AnimatedDot';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,10 +26,10 @@ import { supabase } from '@/app/lib/supabase/client';
 const ConfirmButton = () => {
   const { socket } = useSocket()
   const { room, isLoading } = useRoomStore();
-  const { currentTeam: team, otherTeam } = useTeams();
+  const { currentTeam: team } = useTeams();
+  const { setTeamAction } = useTeamStore();
   const [err, setErr] = useState(false);
   const [errMessage, setErrMessage] = useState<PostgrestError>();
-  const [button, setButton] = useState(false);
 
   useEffect(() => {
     if (socket) {
@@ -39,14 +41,16 @@ const ConfirmButton = () => {
   }, [socket]);
 
   useEffect(() => {
-   if(!team?.canSelect || team.clicked_hero === null){
-     setButton(false);
-   }else {
-     setButton(true);
-   }
-  }, [team])
+    setTeamAction(team?.canSelect as boolean)
+  }, [])
+  
+  useEffect(() => {
+    if(team?.canSelect){
+      setTeamAction(team.canSelect)
+    }
+  }, [setTeamAction, team?.canSelect]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading || !socket) return <div>Loading...</div>;
 
   if (!team)
     return (
@@ -55,23 +59,19 @@ const ConfirmButton = () => {
         <p className="text-center uppercase">spectateur</p>
       </div>
     );
-  const currentTeam = team.isturn ? team : otherTeam;
   const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection'
 
-  const handleConfirmSelection = async () => {
-    setButton(false);
 
+
+  const handleConfirmSelection = async () => {
+    setTeamAction(false)
     await supabase.from('teams').update({
       canSelect: false,
-    }).eq('id', team?.id);
+    }).eq('id', team?.id).select('*');
 
-    if (socket) {
-      socket.emit('SELECT_CHAMPION', {
-        teamid: team?.id,
-        roomid: room?.id,
-        selectedChampion: currentTeam?.clicked_hero,
-      });
-    }
+    socket.emit('SELECT_CHAMPION', {
+      roomid: room?.id,
+    });
   };
 
   return (
@@ -100,20 +100,22 @@ const ConfirmButton = () => {
         className="flex w-full justify-center"
       >
         {team.isturn ? (
-          <div>
-            <Button
-              size="lg"
-              onClick={handleConfirmSelection}
-              className="w-64"
-              disabled={!button}
-            >
-              {!team.canSelect ? (
-                <LoadingCircle color="black" size="w-4 h-4" />
-              ) : (
-                <>{buttonText}</>
-              )}
-            </Button>
-          </div>
+          <>
+            {!team.canSelect ? (
+              <div className="flex justify-center">
+                <LoadingCircle color="white" size="w-4 h-4" />
+              </div>
+            ) : (
+              <Button
+                size="lg"
+                onClick={handleConfirmSelection}
+                className="w-64"
+                disabled={team.clicked_hero === null}
+              >
+                {buttonText}
+              </Button>
+            )}
+          </>
         ) : (
           <div className="flex w-full flex-col items-center justify-center">
             <p className="text-sm opacity-80">Ce n’est pas votre tour</p>
