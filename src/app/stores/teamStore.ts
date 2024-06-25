@@ -1,8 +1,9 @@
 import { supabase } from '@/app/lib/supabase/client';
 import { create } from 'zustand';
+import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 
 type Team = {
-  id: number;
+  id: string;
   isturn: boolean;
   name: string | null;
   clicked_hero: string | null;
@@ -13,99 +14,98 @@ type Team = {
 };
 
 interface TeamState {
-  teams: Team[] | null;
+  teams: Team[];
   currentTeamId: string | null;
   isLoading: boolean;
-  isSubscribed: boolean;
-  subscriptions: Record<number, boolean>;
   error: Error | null;
+  isSubscribed: boolean;
   fetchTeams: (roomid: string) => Promise<void>;
   setCurrentTeamId: (teamId: string) => void;
-  handleTeamUpdate: (payload: any) => void;
+  updateTeam: (teamId: string, updates: Partial<Team>) => Promise<void>;
+  unsubscribe: () => void;
 }
 
-const useTeamStore = create<TeamState>((set, get) => ({
-  teams: null,
-  currentTeamId: null,
-  isLoading: false,
-  isSubscribed: false,
-  subscriptions: {},
-  error: null,
+const useTeamStore = create<TeamState>((set) => {
+  let subscriptions: Record<string, () => void> = {};
 
-  fetchTeams: async (roomid: string) => {
-    set({ isLoading: true, error: null, isSubscribed: false });
-    try {
-      const { data: teams, error } = await supabase
-        .from('teams')
-        .select('*')
-        .eq('room', roomid);
-
-      if (error) throw error;
-
-      set({ teams });
-
-      const subscriptionPromises = teams.map((team: Team) => {
-        if (!get().subscriptions[team.id]) {
-          return new Promise<void>((resolve, reject) => {
-            supabase
-              .channel(team.id.toString())
-              .on(
-                'postgres_changes',
-                {
-                  event: 'UPDATE',
-                  schema: 'aram_draft_pick',
-                  table: 'teams',
-                  filter: `id=eq.${team.id}`,
-                },
-                (payload) => get().handleTeamUpdate(payload)
-              )
-              .subscribe((status, err) => {
-                if (err) {
-                  console.error('.subscribe - err TEAM:', err);
-                  reject(err);
-                } else {
-                  set((state) => ({
-                    subscriptions: { ...state.subscriptions, [team.id]: true },
-                  }));
-                  resolve();
-                }
-              });
-          });
-        }
-        return Promise.resolve(); // Already subscribed
-      });
-
-      await Promise.all(subscriptionPromises);
-      set({ isSubscribed: true });
-      console.log('Subscribed to postgres_changes');
-    } catch (error) {
-      set({ error: error as Error });
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
-  setCurrentTeamId: (teamId: string) => {
-    set({ currentTeamId: teamId });
-  },
-
-  handleTeamUpdate: (payload) => {
-    const currentTeams = get().teams;
-    let updatedTeams = currentTeams;
-
-    if (currentTeams) {
-      updatedTeams = currentTeams.map((team) =>
+  const handleTeamUpdate = (payload: RealtimePostgresUpdatePayload<Team>) => {
+    set((state) => ({
+      teams: state.teams.map((team) =>
         team.id === payload.new.id ? { ...team, ...payload.new } : team
-      );
-    }
+      ),
+    }));
+  };
 
-    set({ teams: updatedTeams });
+  const subscribeToTeams = async (teams: Team[]) => {
+    teams.forEach((team) => {
+      if (!subscriptions[team.id]) {
+        const channel = supabase
+          .channel(team.id.toString())
+          .on(
+            'postgres_changes',
+            {
+              event: 'UPDATE',
+              schema: 'aram_draft_pick',
+              table: 'teams',
+              filter: `id=eq.${team.id}`,
+            },
+            handleTeamUpdate
+          )
+          .subscribe((status, err) => {
+            if (err) {
+              console.error('.subscribe - err TEAM:', err);
+              set({ isSubscribed: false });
+            } else {
+              subscriptions[team.id] = () => channel.unsubscribe();
+              set({ isSubscribed: true });
+            }
+          });
+      }
+    });
+  };
 
-    // Also update the currentTeamId if needed
-    if (get().currentTeamId === payload.new.id) {
-      set({ currentTeamId: payload.new.id });
-    }
-  },
-}));
+  return {
+    teams: [],
+    currentTeamId: null,
+    isLoading: false,
+    error: null,
+    isSubscribed: false,
+    fetchTeams: async (roomid: string) => {
+      set({ isLoading: true, error: null });
+      try {
+        const { data: teams, error } = await supabase
+          .from('teams')
+          .select('*')
+          .eq('room', roomid);
+        if (error) throw error;
+        set({ teams });
+        await subscribeToTeams(teams);
+      } catch (error) {
+        set({ error: error as Error });
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+    setCurrentTeamId: (teamId: string) => set({ currentTeamId: teamId }),
+    updateTeam: async (teamId: string, updates: Partial<Team>) => {
+      try {
+        const { error } = await supabase
+          .from('teams')
+          .update(updates)
+          .eq('id', teamId);
+        if (error) throw error;
+        handleTeamUpdate({ new: { id: teamId, ...updates } as Team } as RealtimePostgresUpdatePayload<Team>);
+      } catch (error) {
+        console.error('Error updating team:', error);
+        set({ error: error as Error });
+      }
+    },
+    unsubscribe: () => {
+      Object.values(subscriptions).forEach((unsubscribe) => unsubscribe());
+      subscriptions = {};
+      set({ isSubscribed: false });
+    },
+  };
+});
 
 export default useTeamStore;

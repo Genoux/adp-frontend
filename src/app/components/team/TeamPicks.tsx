@@ -1,4 +1,4 @@
-import { roomStore } from '@/app/stores/roomStore';
+import useRoomStore from '@/app/stores/roomStore';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
@@ -17,18 +17,19 @@ type Team = {
 };
 
 const TeamPicks = ({ team }: Team) => {
-  const { room } = roomStore();
+  const { room } = useRoomStore();
   const { currentTeam } = useTeams();
   const [borderIndex, setBorderIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (team.isturn && team.canSelect && room?.status === 'select') {
+    if(room?.status !== 'select') return;
+    if (team.isturn && team.canSelect) {
       const index = team.heroes_selected.findIndex((hero: Hero) => !hero.selected);
       setBorderIndex(index);
     } else {
       setBorderIndex(null);
     }
-  }, [team, room]);
+  }, [room?.status, team]);
 
   return (
     <motion.div className="flex h-full w-full gap-2">
@@ -65,21 +66,23 @@ const TeamPicks = ({ team }: Team) => {
                   initial={{ scale: 1.25 }}
                   animate={{ scale: isBorderSlot ? 1.25 : 1 }}
                   className={clsx('h-full w-full', { sepia: isBorderSlot })}
-                  transition={{ duration: 0.4, delay: 0.5, ease: [1, -0.6, 0.3, 1.2] }}
+                  transition={{ duration: 0.4, ease: [1, -0.6, 0.3, 1.2] }}
                 >
                   {(team.clicked_hero || hero.id) && (
                     <ExtendedImage
                       alt={team.clicked_hero || ''}
                       type={'centered'}
+                      fill
                       src={isBorderSlot ? team.clicked_hero : hero.id}
                       style={{ objectPosition: 'center', objectFit: 'cover' }}
-                      fill
                     />
                   )}
                 </motion.div>
-                <p className="z-10 text-sm absolute bottom-0 items-end left-0 h-full w-full flex justify-center pb-4">
-                  {isBorderSlot ? team.clicked_hero : hero.name}
-                </p>
+                {(team.clicked_hero || hero.name) && (
+                  <p className="z-10 text-sm absolute bottom-0 items-end left-0 h-full w-full flex justify-center pb-4">
+                    {isBorderSlot ? team.clicked_hero : hero.name}
+                  </p>
+                )}
               </>
             )}
           </motion.div>

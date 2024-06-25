@@ -1,5 +1,5 @@
 import useTeams from '@/app/hooks/useTeams';
-import { defaultTransition } from '@/app/lib/animationConfig';
+import defaultTransition from '@/app/lib/animationConfig';
 import { AnimatePresence, motion } from 'framer-motion';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 import { useEffect, useState } from 'react';
@@ -93,9 +93,7 @@ const FinishView: React.FC = () => {
     if (showTitle) {
       setTimeout(() => {
         setShowTitle(false);
-        setTimeout(() => {
-          setShowTeams(true);
-        }, 0);
+        setShowTeams(true);
       }, 2000);
     }
   }, [showTitle]);
@@ -136,7 +134,6 @@ const FinishView: React.FC = () => {
           >
             VS
           </motion.div>
-
           <div className="w-full flex flex-col gap-4 relative">
             <motion.div
               initial={{ x: 100, opacity: 0 }}

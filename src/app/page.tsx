@@ -3,7 +3,7 @@
 import LoadingCircle from '@/app/components/common/LoadingCircle';
 import { RoomCreationForm } from '@/app/components/RoomCreationForm';
 import { RoomDisplay } from '@/app/components/RoomDisplay';
-import { defaultTransition } from '@/app/lib/animationConfig';
+import defaultTransition from '@/app/lib/animationConfig';
 import { appVersion } from '@/app/utils/version';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Logo } from 'haq-assets';
@@ -100,7 +100,7 @@ function Home() {
 
   return (
     <AnimatePresence mode='wait'>
-      <main className="h-screen flex items-center justify-center" style={{ height: 'calc(100vh - 126px)' }}>
+      <main className="h-screen flex items-center justify-center">
         {appState === 'false' ? (
           <div className="flex h-full animate-pulse flex-col items-center justify-center gap-2">
             <BedDouble className="h-6 w-6" />

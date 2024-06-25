@@ -1,4 +1,4 @@
-import { roomStore } from '@/app/stores/roomStore';
+import useRoomStore from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 
@@ -11,7 +11,7 @@ const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
   teamIsTurn = false,
   orientation = 'right',
 }) => {
-  const { room } = roomStore();
+  const { room } = useRoomStore();
 
   const [visibleRoomStatus, setVisibleRoomStatus] = useState(room?.status);
   const arrows = [0, 1, 2];

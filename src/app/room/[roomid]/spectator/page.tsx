@@ -10,12 +10,12 @@ import Planningview from '@/app/components/PlanningView';
 import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
-import { roomStore } from '@/app/stores/roomStore';
+import useRoomStore from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { Eye } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { defaultTransition } from '@/app/lib/animationConfig';
+import defaultTransition from '@/app/lib/animationConfig';
 import AnimatedDot from '@/app/components/common/AnimatedDot';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
@@ -40,7 +40,7 @@ const Spectator = ({ params }: SpectatorProps) => {
 
   const { socket, isConnected } = useSocket(roomid);
   const { teams, fetchTeams, isLoading: loadTeam } = useTeamStore();
-  const { room, fetchRoom, isLoading } = roomStore();
+  const { room, fetchRoom, isLoading } = useRoomStore();
   const { redTeam, blueTeam } = useTeams();
 
   const [currentImage, setCurrentImage] = useState<string | null>(null);
