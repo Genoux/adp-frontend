@@ -1,5 +1,4 @@
 import defaultTransition from '@/app/lib/animationConfig';
-
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import React, { useState, useCallback } from 'react';
@@ -7,6 +6,7 @@ import ExtendedImage from '@/app/components/common/ExtendedImage';
 import useRoomStore from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import useTeams from '@/app/hooks/useTeams';
+import useCurrentHero from '@/app/hooks/useCurrentHero';
 
 type Hero = {
   id: string;
@@ -23,23 +23,26 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
 }) => {
   const { room } = useRoomStore();
   const { currentTeam } = useTeams();
-  const [hoveredHero, setHoveredHero] = useState<string | null>(null); // State to track hovered hero
+  const [hoveredHero, setHoveredHero] = useState<string | null>(null);
   const { updateTeam, teamAction } = useTeamStore();
+  const currentHero = useCurrentHero();
 
   const handleClickedHero = useCallback((hero: Hero) => {
-    if (!currentTeam?.canSelect || hero.id === currentTeam.clicked_hero) return;
-    
-    updateTeam(currentTeam.id, { clicked_hero: hero.id });
+    if (!currentTeam?.canSelect) return;
 
-  }, [currentTeam, updateTeam]);
+    const updateArray = room?.status === 'ban' ? 'heroes_ban' : 'heroes_selected';
+    const currentArray = currentTeam[updateArray];
 
-  const handleHoverStart = useCallback((heroName: string) => {
-    setHoveredHero(heroName);
-  }, []);
+    const firstEmptyIndex = currentArray.findIndex(item => !item.selected);
+    if (firstEmptyIndex !== -1) {
+      const updatedArray = [...currentArray];
+      updatedArray[firstEmptyIndex] = { ...hero, selected: false };
 
-  const handleHoverEnd = useCallback(() => {
-    setHoveredHero(null);
-  }, []);
+      updateTeam(currentTeam.id, {
+        [updateArray]: updatedArray,
+      });
+    }
+  }, [currentTeam, updateTeam, room?.status]);
 
   if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
 
@@ -53,7 +56,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
       )}
     >
       {room.heroes_pool.map((hero: Hero, index: number) => {
-        const isSelected = hero.id === currentTeam?.clicked_hero && currentTeam?.isturn;
+        const isSelected = hero.id === currentHero?.id && currentTeam?.isturn;
         const isHovered = hero.id === hoveredHero;
         const canInteract = room?.status !== 'planning' && ((currentTeam?.isturn && currentTeam.canSelect) || currentTeam === undefined);
 
@@ -66,12 +69,12 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
             transition={{ duration: 0.4, delay: 0.01 * index, defaultTransition }}
             className={clsx('relative overflow-hidden', {
               'pointer-events-none grayscale': hero.selected,
-              'pointer-events-none': (!currentTeam?.isturn || !currentTeam?.canSelect || !teamAction) && room?.status !== 'planning',
+              'pointer-events-none': (!currentTeam?.isturn || !currentTeam?.canSelect || !teamAction) && room?.status !== 'planning',
               'cursor-pointer': !hero.selected && canInteract,
             })}
             onClick={canInteract ? () => handleClickedHero(hero) : undefined}
-            onMouseEnter={() => handleHoverStart(hero.id)}
-            onMouseLeave={handleHoverEnd}
+            onMouseEnter={() => setHoveredHero(hero.id)}
+            onMouseLeave={() => setHoveredHero(null)}
           >
             {isHovered && !isSelected && (
               <motion.div

@@ -3,6 +3,8 @@ import { useEffect, useState, useMemo } from 'react';
 import useTeams from '@/app/hooks/useTeams';
 import useRoomStore from '@/app/stores/roomStore';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
+import defaultTransition from '@/app/lib/animationConfig';
+import clsx from 'clsx';
 
 type Hero = {
   id: string | null;
@@ -30,9 +32,9 @@ const TeamBans = ({ team }: { team: Team }) => {
     );
   }, [room?.status, team.isturn, team.canSelect, team.heroes_ban]);
 
-  const opacity = useMemo(() => 
+  const opacity = useMemo(() =>
     currentTeam?.isturn || currentTeam === undefined ? 1 : 0.8,
-  [currentTeam]);
+    [currentTeam]);
 
   return (
     <motion.div className="flex h-full w-full gap-2" animate={{ opacity }}>
@@ -49,7 +51,7 @@ const TeamBans = ({ team }: { team: Team }) => {
   );
 };
 
-const HeroBanSlot = ({ hero, index, isCurrentSlot, isTurn }: {
+const HeroBanSlot = ({ hero, isCurrentSlot, isTurn }: {
   hero: Hero;
   index: number;
   isCurrentSlot: boolean;
@@ -60,13 +62,24 @@ const HeroBanSlot = ({ hero, index, isCurrentSlot, isTurn }: {
 
   return (
     <motion.div
-      className={`relative h-full w-full overflow-hidden border ${
-        isCurrentSlot && isTurn ? 'border-red' : 'border-white border-opacity-5'
-      } bg-black bg-opacity-20`}
+      className={`relative h-full w-full overflow-hidden border ${isCurrentSlot && isTurn ? 'border-red' : 'border-white border-opacity-5'
+        } bg-black bg-opacity-20`}
     >
       {isCurrentSlot && isTurn && <BorderAnimation />}
       {showImage ? (
-        <HeroImage hero={hero} isCurrentSlot={isCurrentSlot} />
+        <>
+          <p className={clsx('absolute z-50 w-full h-full flex justify-center items-center font-semibold text-xs tracking-wider')}>{hero.name}</p>
+          <motion.div
+            className='w-full h-full flex justify-center items-center'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ defaultTransition }}
+          >
+        
+          <HeroImage hero={hero} isCurrentSlot={isCurrentSlot} />
+          </motion.div>
+        </>
       ) : showX ? (
         <EmptySelectedSlot />
       ) : null}
@@ -102,9 +115,6 @@ const HeroImage = ({ hero, isCurrentSlot }: { hero: Hero; isCurrentSlot: boolean
         fill
       />
     </motion.div>
-    <p className='z-20 text-sm absolute bottom-0 items-end left-0 h-full w-full flex justify-center pb-4'>
-      {hero.name}
-    </p>
   </>
 );
 

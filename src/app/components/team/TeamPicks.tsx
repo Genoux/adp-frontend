@@ -31,9 +31,9 @@ const TeamPicks = ({ team }: { team: Team }) => {
     }
   }, [room?.status, team.isturn, team.canSelect, team.heroes_selected]);
 
-  const opacity = useMemo(() => 
+  const opacity = useMemo(() =>
     currentTeam?.isturn || currentTeam === undefined ? 1 : 0.8,
-  [currentTeam]);
+    [currentTeam]);
 
   return (
     <motion.div className="flex h-full w-full gap-2" animate={{ opacity }}>
@@ -64,17 +64,29 @@ const HeroPickSlot = ({ hero, isCurrentSlot, isTurn, teamId }: {
 
   return (
     <motion.div
-      className={`relative h-full w-full overflow-hidden border ${
-        isEmptySlot ? 'border-white border-opacity-5' : 'border-opacity-0'
-      } bg-black bg-opacity-20`}
+      className={`relative h-full w-full overflow-hidden border ${isEmptySlot ? 'border-white border-opacity-5' : 'border-opacity-0'
+        } bg-black bg-opacity-20`}
     >
       {(showBorder || hero.selected === null) && <BorderAnimation />}
       {showImage && (
-        <HeroImage 
-          hero={hero}
-          isCurrentSlot={isCurrentSlot}
-          teamId={teamId}
-        />
+        <>
+          <p className='absolute z-50 w-full h-full flex justify-center items-end pb-6 font-semibold text-sm tracking-wide'>{hero.name}</p>
+          <motion.div
+            className='absolute z-20 w-full h-full'
+            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <HeroImage
+              hero={hero}
+              isCurrentSlot={isCurrentSlot}
+              teamId={teamId}
+            />
+
+          </motion.div>
+        </>
+
       )}
     </motion.div>
   );
@@ -94,8 +106,8 @@ const BorderAnimation = () => (
   />
 );
 
-const HeroImage = ({ hero, isCurrentSlot, teamId }: { 
-  hero: Hero; 
+const HeroImage = ({ hero, isCurrentSlot, teamId }: {
+  hero: Hero;
   isCurrentSlot: boolean;
   teamId: string;
 }) => (
