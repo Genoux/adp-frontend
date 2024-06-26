@@ -12,6 +12,8 @@ import useCurrentHero from '@/app/hooks/useCurrentHero';
 import { supabase } from '@/app/lib/supabase/client';
 
 // TODO: Test without teamAction. Might not need if we base the current hero on his selection array
+// TODO: FIx glitch loader
+// TODO: Fix the bug where a user need to select 2 champ on the second selection the button is still active therefore the user can submit a null champion
 
 const ConfirmButton: React.FC = () => {
   const { socket } = useSocket();
