@@ -43,9 +43,9 @@ const ConfirmButton = () => {
   useEffect(() => {
     setTeamAction(team?.canSelect as boolean)
   }, [])
-  
+
   useEffect(() => {
-    if(team?.canSelect){
+    if (team?.canSelect) {
       setTeamAction(team.canSelect)
     }
   }, [setTeamAction, team?.canSelect]);
@@ -93,39 +93,46 @@ const ConfirmButton = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
       <motion.div
         initial={{ opacity: 0 }} // start at half the size
         animate={{ opacity: 1 }} // animate to full size
         transition={{ duration: 0.15, delay: 0.2 }}
         className="flex w-full justify-center"
       >
-        {team.isturn ? (
+        {team.ready && (
           <>
-            {!team.canSelect ? (
-              <div className="flex justify-center">
-                <LoadingCircle color="white" size="w-4 h-4" />
-              </div>
+            {team.isturn ? (
+              <>
+                {!team.canSelect ? (
+                  <div className="flex justify-center">
+                    <LoadingCircle color="white" size="w-4 h-4" />
+                  </div>
+                ) : (
+                  <Button
+                    size="lg"
+                    onClick={handleConfirmSelection}
+                    className="w-64"
+                    disabled={team.clicked_hero === null}
+                  >
+                    {buttonText}
+                  </Button>
+                )}
+              </>
             ) : (
-              <Button
-                size="lg"
-                onClick={handleConfirmSelection}
-                className="w-64"
-                disabled={team.clicked_hero === null}
-              >
-                {buttonText}
-              </Button>
-            )}
+              <div className="flex w-full flex-col items-center justify-center">
+                <p className="text-sm opacity-80">Ce n’est pas votre tour</p>
+                <div className="text-md px-12 text-center font-medium flex gap-0.5">
+                  <p className='whitespace-nowrap'>{`En attente de l'autre équipe`}</p>
+                  <AnimatedDot />
+                </div>
+              </div>
+            )
+            }
           </>
-        ) : (
-          <div className="flex w-full flex-col items-center justify-center">
-            <p className="text-sm opacity-80">Ce n’est pas votre tour</p>
-            <div className="text-md px-12 text-center font-medium flex gap-0.5">
-              <p className='whitespace-nowrap'>{`En attente de l'autre équipe`}</p>
-              <AnimatedDot />
-            </div>
-          </div>
         )}
       </motion.div>
+
     </>
   );
 };

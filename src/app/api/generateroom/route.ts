@@ -25,7 +25,7 @@ async function randomChampions() {
 }
 
 function generateArray(key: string, length: number) {
-  return new Array(length).fill({ [key]: null, selected: false });
+  return new Array(length).fill({ id: null, [key]: null, selected: false });
 }
 
 async function createRoom(blueTeamName: string, redTeamName: string) {
