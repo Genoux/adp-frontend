@@ -11,7 +11,7 @@ type Hero = {
 type Team = {
   id: string;
   isturn: boolean;
-  name: string | null;
+  name: string;
   clicked_hero: string | null;
   heroes_selected: Hero[];
   heroes_ban: Hero[];

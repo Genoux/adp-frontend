@@ -11,26 +11,24 @@ import useRoomStore from '@/app/stores/roomStore';
 import useCurrentHero from '@/app/hooks/useCurrentHero';
 import { supabase } from '@/app/lib/supabase/client';
 
+// TODO: Test without teamAction. Might not need if we base the current hero on his selection array
+
 const ConfirmButton: React.FC = () => {
   const { socket } = useSocket();
   const { room, isLoading } = useRoomStore();
-  const { currentTeam: team } = useTeams();
-  const { setTeamAction } = useTeamStore();
+  const { currentTeam } = useTeams();
+  const { setTeamAction, teamAction } = useTeamStore();
   const currentHero = useCurrentHero();
 
   useEffect(() => {
-    setTeamAction(team?.canSelect as boolean);
-  }, []);
-
-  useEffect(() => {
-    if (team?.canSelect) {
-      setTeamAction(team.canSelect);
+    if (currentTeam?.canSelect !== undefined) {
+      setTeamAction(currentTeam.canSelect);
     }
-  }, [setTeamAction, team?.canSelect]);
+  }, [currentTeam?.canSelect, setTeamAction]);
 
   if (isLoading || !socket) return <div>Loading...</div>;
 
-  if (!team)
+  if (!currentTeam)
     return (
       <div className="flex flex-col items-center justify-center gap-2">
         <View size={21} />
@@ -42,54 +40,56 @@ const ConfirmButton: React.FC = () => {
 
   const handleConfirmSelection = async () => {
     setTeamAction(false);
-    await supabase.from('teams').update({
-      canSelect: false,
-    }).eq('id', team?.id).select('*');
+    
+    await supabase.from('teams').update({ canSelect: false }).eq('id', currentTeam?.id).select('*');
+
     socket.emit('SELECT_CHAMPION', {
       roomid: room?.id,
     });
   };
 
+  const LoadingState = () => (
+    <div className="flex justify-center">
+      <LoadingCircle color="white" size="w-4 h-4" />
+    </div>
+  );
+
+  const TurnWaitingState = () => (
+    <div className="flex w-full flex-col items-center justify-center">
+      <p className="text-sm opacity-80">{"Ce n'est pas votre tour"}</p>
+      <div className="text-md px-12 text-center font-medium flex gap-0.5">
+        <p className="whitespace-nowrap">{`En attente de l'autre équipe`}</p>
+        <AnimatedDot />
+      </div>
+    </div>
+  );
+
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.15, delay: 0.2 }}
-        className="flex w-full justify-center"
-      >
-        {team.ready && (
-          <>
-            {team.isturn ? (
-              <>
-                {!team.canSelect ? (
-                  <div className="flex justify-center">
-                    <LoadingCircle color="white" size="w-4 h-4" />
-                  </div>
-                ) : (
-                  <Button
-                    size="lg"
-                    onClick={handleConfirmSelection}
-                    className="w-64"
-                    disabled={currentHero === null}
-                  >
-                    {buttonText}
-                  </Button>
-                )}
-              </>
-            ) : (
-              <div className="flex w-full flex-col items-center justify-center">
-                <p className="text-sm opacity-80">{"Ce n'est pas votre tour"}</p>
-                <div className="text-md px-12 text-center font-medium flex gap-0.5">
-                  <p className='whitespace-nowrap'>{`En attente de l'autre équipe`}</p>
-                  <AnimatedDot />
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </motion.div>
-    </>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.15, delay: 0.2 }}
+      className="flex w-full justify-center"
+    >
+      {currentTeam.ready && (
+        currentTeam.isturn ? (
+          !currentTeam.canSelect || !teamAction ? (
+            <LoadingState />
+          ) : (
+            <Button
+              size="lg"
+              onClick={handleConfirmSelection}
+              className="w-64"
+              disabled={currentHero === null}
+            >
+              {buttonText}
+            </Button>
+          )
+        ) : (
+          <TurnWaitingState />
+        )
+      )}
+    </motion.div>
   );
 };
 

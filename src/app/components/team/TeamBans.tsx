@@ -1,6 +1,7 @@
+// TODO: Fix types
+
 import { motion } from 'framer-motion';
 import { useEffect, useState, useMemo } from 'react';
-import useTeams from '@/app/hooks/useTeams';
 import useRoomStore from '@/app/stores/roomStore';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 import defaultTransition from '@/app/lib/animationConfig';
@@ -13,28 +14,39 @@ type Hero = {
 };
 
 type Team = {
+  id: string;
   isturn: boolean;
-  canSelect: boolean;
+  name: string;
+  clicked_hero: string | null;
+  heroes_selected: Hero[];
   heroes_ban: Hero[];
-  clicked_hero?: string;
+  room: string;
+  ready: boolean;
+  color: string | null;
+  canSelect: boolean;
 };
 
-const TeamBans = ({ team }: { team: Team }) => {
+interface TeamBansProps {
+  team: Team | undefined;
+}
+
+const TeamBans: React.FC<TeamBansProps> = ({ team }) => {
   const { room } = useRoomStore();
-  const { currentTeam } = useTeams();
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (room?.status !== 'ban') return;
+    if (room?.status !== 'ban' || !team) return;
     setCurrentIndex(team.isturn && team.canSelect
       ? team.heroes_ban.findIndex(hero => !hero.selected)
       : null
     );
-  }, [room?.status, team.isturn, team.canSelect, team.heroes_ban]);
+  }, [room?.status, team]);
 
   const opacity = useMemo(() =>
-    currentTeam?.isturn || currentTeam === undefined ? 1 : 0.8,
-    [currentTeam]);
+    team?.isturn || team === undefined ? 1 : 0.8,
+    [team]);
+
+  if (!team) return null;
 
   return (
     <motion.div className="flex h-full w-full gap-2" animate={{ opacity }}>
@@ -76,8 +88,7 @@ const HeroBanSlot = ({ hero, isCurrentSlot, isTurn }: {
             exit={{ opacity: 0 }}
             transition={{ defaultTransition }}
           >
-        
-          <HeroImage hero={hero} isCurrentSlot={isCurrentSlot} />
+            <HeroImage hero={hero} isCurrentSlot={isCurrentSlot} />
           </motion.div>
         </>
       ) : showX ? (

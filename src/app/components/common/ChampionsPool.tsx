@@ -49,7 +49,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({
   return (
     <motion.div
       animate={{
-        opacity: teamAction ? 1 : 0.8,
+        opacity: teamAction || room.status === 'planning' ? 1 : 0.8,
       }}
       className={clsx(
         'relative grid grid-cols-10 gap-2', className
