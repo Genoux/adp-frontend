@@ -7,6 +7,7 @@ type Room = {
   name: string;
   status: string;
   heroes_pool: any[];
+  ready: boolean;
 };
 
 type RoomState ={
@@ -62,6 +63,7 @@ const useRoomStore = create<RoomState>((set) => {
       name: payload.new.name,
       status: payload.new.status,
       heroes_pool: payload.new.heroes_pool,
+      ready: payload.new.ready,
     };
     set({ room: updatedRoom });
   }

@@ -47,8 +47,8 @@ async function resetArray(roomid: string): Promise<void> {
       throw new Error('Error updating heroes pool');
     }
 
-    const resetSelected = Array(5).fill({ name: null, selected: false });
-    const resetBan = Array(3).fill({ name: null, selected: false });
+    const resetSelected = Array(5).fill({ id: null, name: null, selected: false });
+    const resetBan = Array(3).fill({ id: null, name: null, selected: false });
 
     const { error: resetError } = await supabase
       .from('teams')

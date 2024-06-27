@@ -5,34 +5,35 @@ import useRoomStore from '@/app/stores/roomStore';
 import { motion } from 'framer-motion';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 import clsx from 'clsx';
+import useCurrentHero from '@/app/hooks/useCurrentHero';
 
 const SelectionsView = () => {
   const { room, isLoading } = useRoomStore((state) => ({
     room: state.room,
     isLoading: state.isLoading,
   }));
-
   const { currentTeam, turnTeam } = useTeams();
+  const currentHero = useCurrentHero();
 
   if (isLoading) return <div>Loading...</div>;
   if (!currentTeam) return <div>Team not found</div>;
 
   return (
     <>
-      {turnTeam?.clicked_hero && (
+      {currentHero && turnTeam && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ defaultTransition, duration: 1 }}
+          transition={{ defaultTransition }}
           className={clsx('fixed top-0 -z-10 h-full w-3/12', {
-          'fade-gradient-left left-0': turnTeam?.color === 'blue',
-          'fade-gradient-right right-0': turnTeam?.color === 'red',
-        }
-        )}>
+            'fade-gradient-left left-0': turnTeam.color === 'blue',
+            'fade-gradient-right right-0': turnTeam.color === 'red',
+          })}
+        >
           <ExtendedImage
-            src={turnTeam?.clicked_hero}
-            alt={turnTeam?.clicked_hero}
+            src={currentHero.id || ''}
+            alt={currentHero.name || ''}
             fill
             style={{ objectPosition: 'center', objectFit: 'cover' }}
             type='centered'

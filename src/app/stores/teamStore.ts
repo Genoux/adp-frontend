@@ -2,11 +2,19 @@ import { supabase } from '@/app/lib/supabase/client';
 import { create } from 'zustand';
 import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 
+type Hero = {
+  id: string | null;
+  name: string;
+  selected: boolean;
+};
+
 type Team = {
   id: string;
   isturn: boolean;
-  name: string | null;
+  name: string;
   clicked_hero: string | null;
+  heroes_selected: Hero[];
+  heroes_ban: Hero[];
   room: string;
   ready: boolean;
   color: string | null;
@@ -19,12 +27,12 @@ interface TeamState {
   isLoading: boolean;
   error: Error | null;
   isSubscribed: boolean;
-  teamAction: boolean;
+  currentSelection: string | null;
   fetchTeams: (roomid: string) => Promise<void>;
   setCurrentTeamId: (teamId: string) => void;
   updateTeam: (teamId: string, updates: Partial<Team>) => Promise<void>;
   unsubscribe: () => void;
-  setTeamAction: (value: boolean) => void;
+  setCurrentSelection: (heroId: string | null) => void;
 }
 
 const useTeamStore = create<TeamState>((set) => {
@@ -72,7 +80,7 @@ const useTeamStore = create<TeamState>((set) => {
     isLoading: false,
     error: null,
     isSubscribed: false,
-    teamAction: true,
+    currentSelection: null,
     fetchTeams: async (roomid: string) => {
       set({ isLoading: true, error: null });
       try {
@@ -92,12 +100,14 @@ const useTeamStore = create<TeamState>((set) => {
     setCurrentTeamId: (teamId: string) => set({ currentTeamId: teamId }),
     updateTeam: async (teamId: string, updates: Partial<Team>) => {
       try {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('teams')
           .update(updates)
-          .eq('id', teamId);
+          .eq('id', teamId).select('*').single();
         if (error) throw error;
-        handleTeamUpdate({ new: { id: teamId, ...updates } as Team } as RealtimePostgresUpdatePayload<Team>);
+        if(data && data.isturn) {
+          handleTeamUpdate({ new: { id: teamId, ...updates } as Team } as RealtimePostgresUpdatePayload<Team>);
+        }
       } catch (error) {
         console.error('Error updating team:', error);
         set({ error: error as Error });
@@ -108,7 +118,7 @@ const useTeamStore = create<TeamState>((set) => {
       subscriptions = {};
       set({ isSubscribed: false });
     },
-    setTeamAction: (value: boolean) => set({ teamAction: value }),
+    setCurrentSelection: (heroId: string | null) => set({ currentSelection: heroId }),
   };
 });
 
