@@ -7,120 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  aram_draft_pick: {
-    Tables: {
-      rooms: {
-        Row: {
-          blue: number | null
-          created_at: string | null
-          cycle: number
-          heroes_pool: Json | null
-          id: number
-          ready: boolean | null
-          red: number | null
-          status: string | null
-        }
-        Insert: {
-          blue?: number | null
-          created_at?: string | null
-          cycle?: number
-          heroes_pool?: Json | null
-          id?: number
-          ready?: boolean | null
-          red?: number | null
-          status?: string | null
-        }
-        Update: {
-          blue?: number | null
-          created_at?: string | null
-          cycle?: number
-          heroes_pool?: Json | null
-          id?: number
-          ready?: boolean | null
-          red?: number | null
-          status?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "rooms_blue_fkey"
-            columns: ["blue"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "rooms_red_fkey"
-            columns: ["red"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      teams: {
-        Row: {
-          canSelect: boolean | null
-          clicked_hero: string | null
-          color: string | null
-          created_at: string | null
-          heroes_ban: Json | null
-          heroes_selected: Json | null
-          id: number
-          isturn: boolean | null
-          name: string | null
-          ready: boolean | null
-          room: number | null
-        }
-        Insert: {
-          canSelect?: boolean | null
-          clicked_hero?: string | null
-          color?: string | null
-          created_at?: string | null
-          heroes_ban?: Json | null
-          heroes_selected?: Json | null
-          id?: number
-          isturn?: boolean | null
-          name?: string | null
-          ready?: boolean | null
-          room?: number | null
-        }
-        Update: {
-          canSelect?: boolean | null
-          clicked_hero?: string | null
-          color?: string | null
-          created_at?: string | null
-          heroes_ban?: Json | null
-          heroes_selected?: Json | null
-          id?: number
-          isturn?: boolean | null
-          name?: string | null
-          ready?: boolean | null
-          room?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "teams_room_fkey"
-            columns: ["room"]
-            isOneToOne: false
-            referencedRelation: "rooms"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      [_ in never]: never
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -146,37 +32,129 @@ export type Database = {
       [_ in never]: never
     }
   }
-  live_tournament: {
+  public: {
     Tables: {
-      teams: {
+      registrations: {
         Row: {
           coaches: Json | null
           created_at: string
-          email: string | null
+          email: string
           id: number
-          name: string | null
-          players: Json | null
+          name: string
+          players: Json
           substitutes: Json | null
         }
         Insert: {
           coaches?: Json | null
           created_at?: string
-          email?: string | null
+          email: string
           id?: number
-          name?: string | null
-          players?: Json | null
+          name: string
+          players?: Json
           substitutes?: Json | null
         }
         Update: {
           coaches?: Json | null
           created_at?: string
-          email?: string | null
+          email?: string
           id?: number
-          name?: string | null
-          players?: Json | null
+          name?: string
+          players?: Json
           substitutes?: Json | null
         }
         Relationships: []
+      }
+      rooms: {
+        Row: {
+          blue_team_id: number | null
+          created_at: string | null
+          cycle: number
+          heroes_pool: Json
+          id: number
+          ready: boolean
+          red_team_id: number | null
+          status: string
+        }
+        Insert: {
+          blue_team_id?: number | null
+          created_at?: string | null
+          cycle?: number
+          heroes_pool?: Json
+          id?: number
+          ready?: boolean
+          red_team_id?: number | null
+          status?: string
+        }
+        Update: {
+          blue_team_id?: number | null
+          created_at?: string | null
+          cycle?: number
+          heroes_pool?: Json
+          id?: number
+          ready?: boolean
+          red_team_id?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rooms_blue_team_fkey"
+            columns: ["blue_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rooms_red_team_fkey"
+            columns: ["red_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          can_select: boolean
+          color: string
+          heroes_ban: Json
+          heroes_selected: Json
+          id: number
+          is_turn: boolean
+          name: string
+          ready: boolean
+          room_id: number | null
+        }
+        Insert: {
+          can_select?: boolean
+          color: string
+          heroes_ban?: Json
+          heroes_selected?: Json
+          id?: number
+          is_turn?: boolean
+          name: string
+          ready?: boolean
+          room_id?: number | null
+        }
+        Update: {
+          can_select?: boolean
+          color?: string
+          heroes_ban?: Json
+          heroes_selected?: Json
+          id?: number
+          is_turn?: boolean
+          name?: string
+          ready?: boolean
+          room_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_room_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -189,24 +167,11 @@ export type Database = {
       [_ in never]: never
     }
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-  public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      [_ in never]: never
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
+      hero: {
+        id: string | null
+        name: string | null
+        selected: boolean | null
+      }
     }
   }
   storage: {
@@ -486,10 +451,6 @@ export type Database = {
           updated_at: string
         }[]
       }
-      operation: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
       search: {
         Args: {
           prefix: string
@@ -601,3 +562,4 @@ export type Enums<
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
     : never
+

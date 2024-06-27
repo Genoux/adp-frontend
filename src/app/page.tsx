@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import { useToast } from "@/app/components/ui/use-toast"
-
+//TODO: Fix types
 type Room = {
   id: number;
   name: string;

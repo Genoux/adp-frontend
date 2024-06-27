@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
+
+//TODO: SET socket so we can reuse it without passing roomid and teamid
 interface EventHandlers {
   eventName: string;
   eventHandler: (data: any) => void;
@@ -14,8 +16,8 @@ let socket: Socket | null = null;
 let retryInterval: NodeJS.Timeout | null = null;
 
 export default function useSocket(
-  roomid?: string,
-  teamid?: string,
+  roomid?: number,
+  teamid?: number,
   handlers: SocketHandlers = {}
 ) {
   const [isConnected, setIsConnected] = useState<boolean>(false);

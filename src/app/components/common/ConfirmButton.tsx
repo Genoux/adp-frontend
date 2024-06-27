@@ -20,11 +20,11 @@ const ConfirmButton: React.FC = () => {
   const currentHero = useCurrentHero();
 
   const handleConfirmSelection = useCallback(async () => {
-    if (!currentTeam?.canSelect) return;
+    if (!currentTeam?.can_select) return;
     try {
       const { data, error } = await supabase
         .from('teams')
-        .update({ canSelect: false })
+        .update({ can_select: false })
         .eq('id', currentTeam?.id)
         .select('*');
       if (error) throw error;
@@ -77,8 +77,8 @@ const ConfirmButton: React.FC = () => {
       transition={{ duration: 0.15, delay: 0.2 }}
       className="flex w-full justify-center"
     >
-      {currentTeam.isturn ? (
-        !currentTeam?.canSelect ? (
+      {currentTeam.is_turn ? (
+        !currentTeam?.can_select ? (
           <LoadingState />
         ) : (
           <Button

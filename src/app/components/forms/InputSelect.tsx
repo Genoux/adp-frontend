@@ -14,23 +14,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/components/ui/select';
-import { tournament } from '@/app/lib/supabase/client';
+import { supabase } from '@/app/lib/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { Database } from '@/app/types/supabase'; // Adjust this import path as needed
+
+// Define types using the generated Supabase types
+type Team = Database['public']['Tables']['registrations']['Row'];
 
 const FormSchema = z.object({
   blueTeamName: z.string({
-    required_error: 'Please select an email to display.',
+    required_error: 'Please select a blue team.',
   }),
   redTeamName: z.string({
-    required_error: 'Please select an email to display.',
+    required_error: 'Please select a red team.',
   }),
 });
-interface Team {
-  name: string;
-}
 
 interface FormSelectProps {
   submit: (data: z.infer<typeof FormSchema>) => void;
@@ -54,11 +55,16 @@ export function InputSelect({ submit }: FormSelectProps) {
 
   useEffect(() => {
     async function fetchTeams() {
-      const { data, error } = await tournament.from('teams').select('*');
+
+      const { data, error } = await supabase
+      .from('registrations')
+      .select('*')
+
       if (error) {
         console.error('Failed to fetch teams:', error);
-      } else {
-        setTeams(data || []);
+        setErrorMessage('Failed to fetch teams. Please try again.');
+      } else if (data) {
+        setTeams(data);
       }
     }
     fetchTeams();
@@ -106,7 +112,7 @@ export function InputSelect({ submit }: FormSelectProps) {
                     </FormControl>
                     <SelectContent>
                       {teams.map((team) => (
-                        <SelectItem key={team.name} value={team.name}>
+                        <SelectItem key={team.id} value={team.name}>
                           {team.name}
                         </SelectItem>
                       ))}
@@ -137,7 +143,7 @@ export function InputSelect({ submit }: FormSelectProps) {
                     </FormControl>
                     <SelectContent>
                       {teams.map((team) => (
-                        <SelectItem key={team.name} value={team.name}>
+                        <SelectItem key={team.id} value={team.name}>
                           {team.name}
                         </SelectItem>
                       ))}

@@ -31,7 +31,7 @@ const FormSchema = z
     }
   });
 
-export interface InputFormProps {
+export type InputFormProps = {
   submit: (data: z.infer<typeof FormSchema>) => void;
 }
 

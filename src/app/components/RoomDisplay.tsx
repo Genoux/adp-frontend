@@ -13,6 +13,8 @@ import { CheckIcon, CopyIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
+
+//TODO: Fix types
 interface RoomDisplayProps {
   [key: string]: any;
 }

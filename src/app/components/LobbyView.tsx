@@ -11,10 +11,9 @@ import useTeamStore from '@/app/stores/teamStore';
 import { useEffect, useState } from 'react';
 import { CheckIcon } from 'lucide-react';
 import { useToast } from './ui/use-toast';
+import { Database } from '@/app/types/supabase';
 
-type Team = {
-  [key: string]: any;
-}
+type Team = Database["public"]["Tables"]["teams"]["Row"];
 
 type TeamDisplayProps = {
   team: Team;
@@ -118,7 +117,7 @@ const LobbyView: React.FC = () => {
         .single();
 
       if (data && !error) {
-        socket.emit('TEAM_READY', { roomid: data.room, teamid: currentTeam.id });
+        socket.emit('TEAM_READY', { roomid: data.room_id, teamid: currentTeam.id });
         return;
       }
 

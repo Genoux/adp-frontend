@@ -19,8 +19,8 @@ import clsx from 'clsx';
 
 type RoomProps = {
   params: {
-    roomid: string;
-    teamid: string;
+    roomID: string;
+    teamID: string;
   };
 };
 //min-h-[768px] w-full flex-col items-center justify-center
@@ -49,16 +49,18 @@ const viewComponents = {
   ban: DraftingView,
 };
 
-export default function Room({ params: { roomid, teamid } }: RoomProps) {
-  const { isConnected } = useSocket(roomid, teamid);
-  const { fetchTeams, isLoading: isLoadingTeams, error: errorTeams, setCurrentTeamId } = useTeamStore();
+export default function Room({ params: { roomID, teamID } }: RoomProps) {
+  const roomIDNumber = parseInt(roomID, 10);
+  const teamIDNumber = parseInt(teamID, 10);
+  const { isConnected } = useSocket(roomIDNumber, teamIDNumber);
+  const { fetchTeams, isLoading: isLoadingTeams, error: errorTeams, setCurrentTeamID } = useTeamStore();
   const { fetchRoom, room, isLoading: isLoadingRoom, error: errorRoom } = useRoomStore();
 
   useEffect(() => {
-    setCurrentTeamId(teamid);
-    fetchTeams(roomid);
-    fetchRoom(roomid);
-  }, [fetchRoom, fetchTeams, roomid, setCurrentTeamId, teamid]);
+    setCurrentTeamID(teamIDNumber);
+    fetchTeams(roomIDNumber);
+    fetchRoom(roomIDNumber);
+  }, [fetchRoom, fetchTeams, roomID, setCurrentTeamID, teamID]);
 
   if (isLoadingTeams || isLoadingRoom || !isConnected) {
     return <LoadingScreen />;
@@ -76,7 +78,7 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
 
   return (
     <main>
-      {process.env.NODE_ENV === 'development' && <StateControllerButtons roomid={roomid} />}
+      {process.env.NODE_ENV === 'development' && <StateControllerButtons roomID={roomIDNumber} />}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

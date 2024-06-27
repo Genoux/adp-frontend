@@ -8,12 +8,9 @@ import useTeams from '@/app/hooks/useTeams';
 import useCurrentHero from '@/app/hooks/useCurrentHero';
 import defaultTransition from '@/app/lib/animationConfig';
 import debounce from 'lodash/debounce';
+import { Database } from '@/app/types/supabase';
 
-type Hero = {
-  id: string;
-  name: string;
-  selected: boolean;
-}
+type Hero = Database["public"]["CompositeTypes"]["hero"];
 
 type ChampionsPoolProps = {
   className?: string;
@@ -27,7 +24,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({ className = ''
   const [hoveredHero, setHoveredHero] = useState<string | null>(null);
   const { updateTeam } = useTeamStore();
   const currentHero = useCurrentHero();
-  const canInteract = currentTeam?.canSelect && currentTeam.isturn;
+  const canInteract = currentTeam?.can_select && currentTeam.is_turn;
   
   const debouncedSetHoveredHero = useMemo(
     () => debounce((heroId: string | null) => setHoveredHero(heroId), DEBOUNCE_TIME),
@@ -50,7 +47,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({ className = ''
     () => debounce((hero: Hero) => {
       if (!canInteract) return;
       const updateArray = room?.status === 'ban' ? 'heroes_ban' : 'heroes_selected';
-      const currentArray = currentTeam[updateArray];
+      const currentArray = currentTeam[updateArray] as Hero[];
 
       const firstEmptyIndex = currentArray.findIndex(item => !item.selected);
       if (firstEmptyIndex !== -1) {
@@ -74,7 +71,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({ className = ''
       }}
       className={clsx('relative grid grid-cols-10 gap-2', className)}
     >
-      {room.heroes_pool.map((hero: Hero, index: number) => {
+      {(room.heroes_pool as Hero[]).map((hero, index) => {
         const isSelected = hero.id === currentHero?.id;
         const isHovered = hero.id === hoveredHero;
 
@@ -128,14 +125,16 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({ className = ''
               transition={{ defaultTransition, duration: 0.1}}
               className="relative overflow-hidden"
             >
-              <ExtendedImage
-                alt={hero.id}
-                width={380}
-                height={380}
-                priority
-                type='tiles'
-                src={hero.id}
-              />
+              {hero.id && (
+                <ExtendedImage
+                  alt={hero.id}
+                  width={380}
+                  height={380}
+                  priority
+                  type='tiles'
+                  src={hero.id}
+                />
+              )}
             </motion.div>
           </motion.div>
         );

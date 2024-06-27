@@ -53,7 +53,7 @@ const Spectator = ({ params }: SpectatorProps) => {
 
   useEffect(() => {
     if (teams) {
-      const currentTeam = teams.find((team) => team.isturn);
+      const currentTeam = teams.find((team) => team.is_turn);
       if (currentTeam) {
         setCurrentImage(currentTeam.clicked_hero || '');
         setCurrentTeam(currentTeam);

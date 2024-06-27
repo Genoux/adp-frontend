@@ -5,59 +5,39 @@ import { useEffect, useState, useMemo } from 'react';
 import useTeams from '@/app/hooks/useTeams';
 import useRoomStore from '@/app/stores/roomStore';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
+import { Database } from '@/app/types/supabase';
 
-type Hero = {
-  id: string | null;
-  name: string;
-  selected: boolean | null;
-};
+type Team = Database["public"]["Tables"]["teams"]["Row"];
+type Hero = Database["public"]["CompositeTypes"]["hero"];
 
-export type Team = {
-  id: string;
-  isturn: boolean;
-  name: string;
-  clicked_hero: string | null;
-  heroes_selected: Hero[];
-  heroes_ban: Hero[];
-  room: string;
-  ready: boolean;
-  color: string | null;
-  canSelect: boolean;
-};
-
-interface TeamPicksProps {
-  team: Team | undefined;
-}
-
-const TeamPicks: React.FC<TeamPicksProps> = ({ team }) => {
+const TeamPicks = ({ team }: { team: Team }) => {
   const { room } = useRoomStore();
   const { currentTeam } = useTeams();
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (room?.status !== 'select' || !team) return;
-    if (team.isturn && team.canSelect) {
-      const index = team.heroes_selected.findIndex((hero: Hero) => !hero.selected);
+    if (team.is_turn && team.can_select) {
+      const index = (team.heroes_selected as Hero[]).findIndex((hero) => !hero.selected);
       setCurrentIndex(index);
     }
   }, [room?.status, team]);
 
   const opacity = useMemo(() =>
-    currentTeam?.isturn || currentTeam === undefined ? 1 : 0.8,
+    currentTeam?.is_turn || currentTeam === undefined ? 1 : 0.8,
     [currentTeam]);
 
   if (!team) return null;
 
   return (
     <motion.div className="flex h-full w-full gap-2" animate={{ opacity }}>
-      {team.heroes_selected.map((hero: Hero, index: number) => (
+      {(team.heroes_selected as Hero[]).map((hero, index) => (
         <HeroPickSlot
           key={`${index}-${hero.id}`}
           hero={hero}
           index={index}
           isCurrentSlot={index === currentIndex}
-          isTurn={team.isturn}
-          teamId={team.id}
+          is_turn={team.is_turn}
         />
       ))}
     </motion.div>
@@ -68,13 +48,12 @@ interface HeroPickSlotProps {
   hero: Hero;
   index: number;
   isCurrentSlot: boolean;
-  isTurn: boolean;
-  teamId: string;
+  is_turn: boolean;
 }
 
-const HeroPickSlot: React.FC<HeroPickSlotProps> = ({ hero, isCurrentSlot, isTurn, teamId }) => {
+const HeroPickSlot: React.FC<HeroPickSlotProps> = ({ hero, isCurrentSlot, is_turn }) => {
   const showImage = hero.id !== undefined && hero.id !== null;
-  const showBorder = isCurrentSlot && isTurn;
+  const showBorder = isCurrentSlot && is_turn;
   const isEmptySlot = !showBorder && !showImage;
 
   return (
@@ -96,7 +75,6 @@ const HeroPickSlot: React.FC<HeroPickSlotProps> = ({ hero, isCurrentSlot, isTurn
             <HeroImage
               hero={hero}
               isCurrentSlot={isCurrentSlot}
-              teamId={teamId}
             />
           </motion.div>
         </>
@@ -122,23 +100,24 @@ const BorderAnimation = () => (
 interface HeroImageProps {
   hero: Hero;
   isCurrentSlot: boolean;
-  teamId: string;
 }
 
-const HeroImage: React.FC<HeroImageProps> = ({ hero, isCurrentSlot, teamId }) => (
+const HeroImage: React.FC<HeroImageProps> = ({ hero, isCurrentSlot }) => (
   <motion.div
     initial={{ scale: 1.25 }}
     animate={{ scale: hero.selected ? 1 : 1.25 }}
     className={`h-full w-full ${isCurrentSlot && !hero.selected ? 'sepia' : ''}`}
     transition={{ duration: 0.4, ease: [1, -0.6, 0.3, 1.2] }}
   >
-    <ExtendedImage
-      alt={teamId}
-      type="centered"
-      fill
-      src={hero.id || ''}
-      style={{ objectPosition: 'center', objectFit: 'cover' }}
-    />
+    {hero.id && (
+      <ExtendedImage
+        alt={hero.id}
+        type="centered"
+        fill
+        src={hero.id}
+        style={{ objectPosition: 'center', objectFit: 'cover' }}
+      />
+    )}
   </motion.div>
 );
 
