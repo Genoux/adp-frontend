@@ -11,7 +11,6 @@ const useCurrentHero = () => {
 
     const currentArray = room.status === 'ban' ? turnTeam.heroes_ban : turnTeam.heroes_selected;
     
-    // Find the first non-selected hero in the array
     const currentHero = currentArray.find(hero => hero && !hero.selected);
 
     return currentHero || null;

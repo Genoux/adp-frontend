@@ -85,7 +85,7 @@ const HeroPickSlot: React.FC<HeroPickSlotProps> = ({ hero, isCurrentSlot, isTurn
       {(showBorder || hero.selected === null) && <BorderAnimation />}
       {showImage && (
         <>
-          <p className='absolute z-50 w-full h-full flex justify-center items-end pb-6 font-semibold text-sm tracking-wide'>{hero.name}</p>
+          <p className='absolute z-50 w-full h-full flex justify-center text-center items-end pb-6 font-semibold text-sm tracking-wide'>{hero.name}</p>
           <motion.div
             className='absolute z-20 w-full h-full'
             animate={{ opacity: 1 }}

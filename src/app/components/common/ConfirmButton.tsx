@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { View } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
@@ -6,30 +6,44 @@ import LoadingCircle from '@/app/components/common/LoadingCircle';
 import AnimatedDot from '@/app/components/common/AnimatedDot';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
-import useTeamStore from '@/app/stores/teamStore';
 import useRoomStore from '@/app/stores/roomStore';
 import useCurrentHero from '@/app/hooks/useCurrentHero';
 import { supabase } from '@/app/lib/supabase/client';
+import debounce from 'lodash/debounce';
 
-// TODO: Test without teamAction. Might not need if we base the current hero on his selection array
-// TODO: FIx glitch loader
-// TODO: Fix the bug where a user need to select 2 champ on the second selection the button is still active therefore the user can submit a null champion
+const DEBOUNCE_TIME = 300; // ms
 
 const ConfirmButton: React.FC = () => {
   const { socket } = useSocket();
   const { room, isLoading } = useRoomStore();
   const { currentTeam } = useTeams();
-  const { setTeamAction, teamAction } = useTeamStore();
   const currentHero = useCurrentHero();
 
-  useEffect(() => {
-    if (currentTeam?.canSelect !== undefined) {
-      setTeamAction(currentTeam.canSelect);
+  const handleConfirmSelection = useCallback(async () => {
+    if (!currentTeam?.canSelect) return;
+    try {
+      const { data, error } = await supabase
+        .from('teams')
+        .update({ canSelect: false })
+        .eq('id', currentTeam?.id)
+        .select('*');
+      if (error) throw error;
+      if (data) {
+        socket?.emit('SELECT_CHAMPION', {
+          roomid: room?.id,
+        });
+      }
+    } catch (error) {
+      console.error('Error confirming selection:', error);
     }
-  }, [currentTeam?.canSelect, setTeamAction]);
+  }, [currentTeam, room, socket]);
+
+  const debouncedHandleConfirmSelection = useMemo(
+    () => debounce(handleConfirmSelection, DEBOUNCE_TIME, { leading: true, trailing: false }),
+    [handleConfirmSelection]
+  );
 
   if (isLoading || !socket) return <div>Loading...</div>;
-
   if (!currentTeam)
     return (
       <div className="flex flex-col items-center justify-center gap-2">
@@ -39,16 +53,6 @@ const ConfirmButton: React.FC = () => {
     );
 
   const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection';
-
-  const handleConfirmSelection = async () => {
-    setTeamAction(false);
-    
-    await supabase.from('teams').update({ canSelect: false }).eq('id', currentTeam?.id).select('*');
-
-    socket.emit('SELECT_CHAMPION', {
-      roomid: room?.id,
-    });
-  };
 
   const LoadingState = () => (
     <div className="flex justify-center">
@@ -73,23 +77,21 @@ const ConfirmButton: React.FC = () => {
       transition={{ duration: 0.15, delay: 0.2 }}
       className="flex w-full justify-center"
     >
-      {currentTeam.ready && (
-        currentTeam.isturn ? (
-          !currentTeam.canSelect || !teamAction ? (
-            <LoadingState />
-          ) : (
-            <Button
-              size="lg"
-              onClick={handleConfirmSelection}
-              className="w-64"
-              disabled={currentHero === null}
-            >
-              {buttonText}
-            </Button>
-          )
+      {currentTeam.isturn ? (
+        !currentTeam?.canSelect ? (
+          <LoadingState />
         ) : (
-          <TurnWaitingState />
+          <Button
+            size="lg"
+            onClick={debouncedHandleConfirmSelection}
+            className="w-64"
+            disabled={currentHero?.id === null}
+          >
+            {buttonText}
+          </Button>
         )
+      ) : (
+        <TurnWaitingState />
       )}
     </motion.div>
   );
