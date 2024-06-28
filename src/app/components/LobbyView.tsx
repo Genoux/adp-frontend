@@ -14,16 +14,14 @@ import AnimatedDot from '@/app/components/common/AnimatedDot';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
 import { Database } from '@/app/types/supabase';
 
-// Types
 type Team = Database["public"]["Tables"]["teams"]["Row"];
 
-interface TeamDisplayProps {
+type TeamDisplayProps = {
   team: Team;
   currentTeam: Team;
 }
 
-interface ReadyButtonProps {
-  online: boolean;
+type ReadyButtonProps = {
   currentTeam: Team;
   clicked: boolean;
   onReadyClick: () => void;
@@ -35,7 +33,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const isTeamReady = (team: Team) => team.ready;
 
 // Components
-const TeamStatus: React.FC<{ isReady: boolean }> = ({ isReady }) => 
+const TeamStatus: React.FC<{ isReady: boolean }> = ({ isReady }) =>
   isReady ? (
     <div className="flex h-6 items-center gap-1 border border-green-500 bg-green-500 bg-opacity-10 px-2 py-1">
       <CheckIcon className="h-3 w-3 text-green-500" />
@@ -60,14 +58,7 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ team, currentTeam }) => (
   </div>
 );
 
-const ReadyButton: React.FC<ReadyButtonProps> = ({ online, currentTeam, clicked, onReadyClick }) => {
-  if (!online) {
-    return (
-      <Button size="lg" className="w-56" disabled variant="outline">
-        <LoadingCircle size="h-3 w-3" />
-      </Button>
-    );
-  }
+const ReadyButton: React.FC<ReadyButtonProps> = ({ currentTeam, clicked, onReadyClick }) => {
 
   if (isTeamReady(currentTeam)) {
     return (
@@ -95,24 +86,25 @@ const ReadyButton: React.FC<ReadyButtonProps> = ({ online, currentTeam, clicked,
 
 // Main component
 const LobbyView: React.FC = () => {
-  const { socket, isConnected } = useSocket();
-  const { isSubscribed, isLoading } = useTeamStore();
+  const { socket } = useSocket();
+  const { isLoading } = useTeamStore();
   const { currentTeam, redTeam, blueTeam } = useTeams();
   const [clicked, setClicked] = useState<boolean>(false);
-  const [online, setOnline] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
+    if (!currentTeam) return;
     setClicked(isTeamReady(currentTeam));
   }, [currentTeam]);
 
-  useEffect(() => {
-    setOnline(isConnected && isSubscribed);
-  }, [isConnected, isSubscribed]);
 
   const handleReadyClick = useCallback(async () => {
     setClicked(true);
     await sleep(500);
+
+    if (!currentTeam || currentTeam.id === undefined) {
+      throw new Error('Current team or team ID is undefined');
+    }
 
     try {
       const { data, error } = await supabase
@@ -123,7 +115,7 @@ const LobbyView: React.FC = () => {
         .single();
 
       if (data && !error) {
-        socket?.emit('TEAM_READY', { roomid: data.room_id, teamid: currentTeam.id });
+        socket!.emit('TEAM_READY', { roomid: data.room_id, teamid: currentTeam.id });
         return;
       }
 
@@ -140,14 +132,14 @@ const LobbyView: React.FC = () => {
 
   if (isLoading) return <LoadingScreen />;
 
-  if (!currentTeam || !redTeam || !blueTeam || !socket || !isSubscribed) {
+  if (!currentTeam || !redTeam || !blueTeam || !socket) {
     return <ErrorMessage />;
   }
 
   return (
     <div className="mx-auto flex h-screen w-fit flex-col items-center justify-center">
       <div className="mb-4 border-b border-opacity-25 pb-4 text-center">
-        <h1 className="text-2xl font-bold">{'Salle d\'attente' }</h1>
+        <h1 className="text-2xl font-bold">{'Salle d\'attente'}</h1>
         <p className="text-sm font-normal opacity-50">
           En attente que les deux équipes soient prêtes
         </p>
@@ -159,7 +151,6 @@ const LobbyView: React.FC = () => {
         </div>
         <div className="flex h-12 items-center justify-center">
           <ReadyButton
-            online={online}
             currentTeam={currentTeam}
             clicked={clicked}
             onReadyClick={handleReadyClick}

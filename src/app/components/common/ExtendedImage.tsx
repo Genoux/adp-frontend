@@ -12,8 +12,6 @@ interface ExtendedImageProps extends ImageProps {
 }
 
 const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt, width, height, ...props }) => {
-  console.log("src:", src);
-  
   const imageUrl = `${baseURL}/${type}/${src}_0.jpg`;
   const blurHash = (blurhashes as Record<string, string>)[src] || '';
   const blurDataURL = useMemo(() => {

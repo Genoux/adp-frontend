@@ -12,16 +12,13 @@ import Link from 'next/link';
 import { useState } from 'react';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import { useToast } from "@/app/components/ui/use-toast"
-//TODO: Fix types
-type Room = {
-  id: number;
-  name: string;
+import { Database } from '@/app/types/supabase';
+
+type Room = Database['public']['Tables']['rooms']['Row'] & {
   blue: Team;
   red: Team;
-  status: string;
   heroes_pool: { id: number; name: string; imageUrl: string }[];
-  [key: string]: any;
-}
+};
 
 type BlueTeam = {
   id: number;
@@ -38,10 +35,11 @@ type RedTeam = {
 type Team = {
   id: number;
   name: string;
-  borderColor: string;
   color: string;
+  borderColor: string;
   btnText: string;
-}
+};
+
 type TeamsName = {
   blueTeamName: string;
   redTeamName: string;

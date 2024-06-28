@@ -1,70 +1,43 @@
 'use client';
-//TODO: REFACTOR THIS FILE
-import '@/app/utils/strings';
-import ChampionsPool from '@/app/components/common/ChampionsPool';
-import ErrorMessage from '@/app/components/common/ErrorMessage';
+import SelectionsView from '@/app/components/SelectionsView';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
 import Planningview from '@/app/components/PlanningView';
-import SocketContext from '@/app/context/SocketContext';
 import useSocket from '@/app/hooks/useSocket';
-import useTeams from '@/app/hooks/useTeams';
 import useRoomStore from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { Eye } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import defaultTransition from '@/app/lib/animationConfig';
 import AnimatedDot from '@/app/components/common/AnimatedDot';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
-import ExtendedImage from '@/app/components/common/ExtendedImage';
-interface SpectatorProps {
+
+type SpectatorProps = {
   params: {
-    roomid: number;
+    roomID: string;
   };
-}
+};
 
-const BanPhaseOverlay: React.FC = () => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 0.1 }}
-    exit="exit"
-    transition={{ delay: 0.2, duration: 1, ease: 'linear' }}
-    className="fixed left-0 top-0 -z-50 h-full w-full bg-red-900 opacity-50"
-  />
-);
-
-const Spectator = ({ params }: SpectatorProps) => {
-  const roomid = params.roomid;
-
-  const { socket, isConnected } = useSocket(roomid);
-  const { teams, fetchTeams, isLoading: loadTeam, currentSelection } = useTeamStore();
-  const { room, fetchRoom, isLoading } = useRoomStore();
-  const { redTeam, blueTeam } = useTeams();
-
-  const [currentImage, setCurrentImage] = useState<string | null>(null);
-  const [currentTeam, setCurrentTeam] = useState<any | null>(null);
+const Spectator = ({ params: { roomID } }: SpectatorProps) => {
+  const roomIDNumber = parseInt(roomID, 10);
+  const { isConnected } = useSocket(roomIDNumber);
+  const { fetchTeams, isLoading: isLoadingTeams } = useTeamStore();
+  const { room, fetchRoom, isLoading: isLoadingRooms } = useRoomStore();
 
   useEffect(() => {
-    fetchRoom(roomid);
-    fetchTeams(roomid);
-  }, [fetchRoom, fetchTeams, roomid]);
+    fetchRoom(roomIDNumber);
+    fetchTeams(roomIDNumber);
+  }, [fetchRoom, fetchTeams, roomIDNumber]);
 
-  useEffect(() => {
-    if (teams) {
-      const currentTeam = teams.find((team) => team.is_turn);
-      if (currentTeam) {
-        setCurrentImage(currentSelection);
-        setCurrentTeam(currentTeam);
-      }
-    }
-  }, [currentSelection, teams]);
+  if (isLoadingTeams || isLoadingRooms || !isConnected) {
+    return <LoadingScreen />;
+  }
 
-  if (!isConnected || isLoading || loadTeam) return <LoadingScreen />;
-
-  if (!blueTeam || !redTeam || !room) return <ErrorMessage />;
-
+  if (!room) {
+    throw new Error(`Room ${roomIDNumber} not found`);
+  }
   const renderContent = () => {
     switch (room?.status) {
       case 'waiting':
@@ -78,58 +51,33 @@ const Spectator = ({ params }: SpectatorProps) => {
           </div>
         );
       case 'planning':
-        return <Planningview  />;
+        return <Planningview />;
       case 'done':
         return <FinishView />;
       default:
         return (
           <>
-            <div
-              className={`absolute ${currentTeam?.color === 'blue' ? 'left-0' : 'right-0'} top-0 -z-10 h-full w-3/12`}
-            >
-              {currentImage && (
-                <ExtendedImage
-                  src={currentImage}
-                  fill
-                  type='splash'
-                  style={{ objectFit: 'cover' }}
-                  alt={currentImage}
-                  className={`h-full w-full object-cover object-center opacity-50 ${currentTeam?.color === 'blue'
-                    ? 'fade-gradient-left'
-                    : 'fade-gradient-right'
-                    }`}
-                />
-              )}
-            </div>
-            <AnimatePresence mode="wait">
-              {room?.status === 'ban' && <BanPhaseOverlay />}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ defaultTransition }}
-              >
-                <div className="mx-auto flex h-screen min-h-[752px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
-                  <RoomStatusBar className="z-90 fixed left-0 top-0" />
-                  <section className="flex h-full flex-col gap-4 pb-4 pt-4">
-                    <div className="h-14"></div>
-                    <div className="flex h-full flex-col justify-between gap-4 px-4">
-                      <ChampionsPool className='px-24' />
-                      <DraftView />
-                    </div>
-                  </section>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ defaultTransition, duration: 0.8, delay: 0.3 }}
+              className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
+              <RoomStatusBar className="z-90 fixed left-0 top-0" />
+              <section className="flex h-full flex-col gap-4 py-4">
+                <div className="h-16"></div>
+                <div className="z-10 flex h-full flex-col justify-between px-4 gap-4">
+                  <SelectionsView />
+                  <DraftView />
                 </div>
-              </motion.div>
-            </AnimatePresence>
+              </section>
+            </motion.div>
           </>
         );
     }
   };
 
   return (
-    <SocketContext.Provider value={socket}>
-        {renderContent()}
-    </SocketContext.Provider>
+    renderContent()
   );
 };
 

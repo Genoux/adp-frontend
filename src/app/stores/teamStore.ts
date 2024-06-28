@@ -10,7 +10,6 @@ interface TeamState {
   currentTeamID: number | null;
   isLoading: boolean;
   error: Error | null;
-  isSubscribed: boolean;
   currentSelection: string | null;
   fetchTeams: (roomID: number) => Promise<void>;
   setCurrentTeamID: (teamID: number) => void;
@@ -30,31 +29,44 @@ const useTeamStore = create<TeamState>((set) => {
     }));
   };
 
-  const subscribeToTeams = async (teams: Team[]) => {
-    teams.forEach((team) => {
-      if (!subscriptions[team.id]) {
-        const channel = supabase
-          .channel(team.id.toString())
-          .on(
-            'postgres_changes',
-            {
-              event: 'UPDATE',
-              schema: 'public',
-              table: 'teams',
-              filter: `id=eq.${team.id}`,
-            },
-            handleTeamUpdate
-          )
-          .subscribe((status, err) => {
-            if (err) {
-              console.error('.subscribe - err TEAM:', err);
-              set({ isSubscribed: false });
-            } else {
-              subscriptions[team.id] = () => channel.unsubscribe();
-              set({ isSubscribed: true });
-            }
-          });
-      }
+  const subscribeToTeams = async (teams: Team[]): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      let subscribedCount = 0;
+      const totalTeams = teams.length;
+
+      teams.forEach((team) => {
+        if (!subscriptions[team.id]) {
+          const channel = supabase
+            .channel(team.id.toString())
+            .on(
+              'postgres_changes',
+              {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'teams',
+                filter: `id=eq.${team.id}`,
+              },
+              handleTeamUpdate
+            )
+            .subscribe((status, err) => {
+              if (err) {
+                console.error('.subscribe - err TEAM:', err);
+                reject(err);
+              } else {
+                subscriptions[team.id] = () => channel.unsubscribe();
+                subscribedCount++;
+                if (subscribedCount === totalTeams) {
+                  resolve();
+                }
+              }
+            });
+        } else {
+          subscribedCount++;
+          if (subscribedCount === totalTeams) {
+            resolve();
+          }
+        }
+      });
     });
   };
 
@@ -63,8 +75,8 @@ const useTeamStore = create<TeamState>((set) => {
     currentTeamID: null,
     isLoading: false,
     error: null,
-    isSubscribed: false,
     currentSelection: null,
+
     fetchTeams: async (roomID) => {
       set({ isLoading: true, error: null });
       try {
@@ -75,21 +87,24 @@ const useTeamStore = create<TeamState>((set) => {
         if (error) throw error;
         set({ teams });
         await subscribeToTeams(teams);
-      } catch (error) {
-        set({ error: error as Error });
-      } finally {
         set({ isLoading: false });
+      } catch (error) {
+        set({ error: error as Error, isLoading: false });
       }
     },
+
     setCurrentTeamID: (teamID) => set({ currentTeamID: teamID }),
+
     updateTeam: async (teamID, updates: Partial<Team>) => {
       try {
         const { data, error } = await supabase
           .from('teams')
           .update(updates)
-          .eq('id', teamID).select('*').single();
+          .eq('id', teamID)
+          .select('*')
+          .single();
         if (error) throw error;
-        if(data && data.is_turn) {
+        if (data && data.is_turn) {
           handleTeamUpdate({ new: { id: teamID, ...updates } as Team } as RealtimePostgresUpdatePayload<Team>);
         }
       } catch (error) {
@@ -97,11 +112,12 @@ const useTeamStore = create<TeamState>((set) => {
         set({ error: error as Error });
       }
     },
+
     unsubscribe: () => {
       Object.values(subscriptions).forEach((unsubscribe) => unsubscribe());
       subscriptions = {};
-      set({ isSubscribed: false });
     },
+
     setCurrentSelection: (heroID: string | null) => set({ currentSelection: heroID }),
   };
 });

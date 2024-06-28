@@ -115,10 +115,10 @@ export async function userTrigger(roomID: number): Promise<void> {
     });
 
     if (!response.ok) {
-      throw new Error('Error setting finish phase');
+      throw new Error('Error setting Draft phase');
     }
   } catch (error) {
-    console.error('Error setting finish phase:', error);
+    console.error(error);
   }
 }
 
@@ -132,6 +132,6 @@ export async function setFinish(roomID: number): Promise<void> {
       throw new Error('Error setting finish phase');
     }
   } catch (error) {
-    console.error('Error setting finish phase:', error);
+    console.error(error);
   }
 }

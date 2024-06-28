@@ -11,16 +11,16 @@ const Timer = ({ className }: { className?: string }) => {
   }, []);
 
   useEffect(() => {
-    socket?.on('TIMER', handleSocketEvents);
+    socket!.on('TIMER', handleSocketEvents);
 
     return () => {
-      socket?.off('TIMER', handleSocketEvents);
+      socket!.off('TIMER', handleSocketEvents);
     };
   }, [handleSocketEvents, socket]);
 
   return (
     <div className={className}>
-      <h1 className='mx-auto w-fit font-bold text-5xl'>
+      <h1 className='mx-auto w-fit font-bold text-4xl'>
         {timer || '00:00'}
       </h1>
     </div>

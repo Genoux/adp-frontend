@@ -2,13 +2,12 @@ import { InputForm } from '@/app/components/forms/InputForm';
 import defaultTransition from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import React from 'react';
-//TODO: Fix types
-interface TeamsName {
+
+type TeamsName = {
   blueTeamName: string;
   redTeamName: string;
 }
-
-interface RoomCreationFormProps {
+type RoomCreationFormProps = {
   submit: (data: TeamsName) => Promise<void>;
 }
 

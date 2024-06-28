@@ -1,5 +1,3 @@
-// TODO: Fix types
-
 import { motion } from 'framer-motion';
 import { useEffect, useState, useMemo } from 'react';
 import useTeams from '@/app/hooks/useTeams';

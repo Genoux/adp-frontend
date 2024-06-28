@@ -5,10 +5,9 @@ import { Database } from '@/app/types/supabase';
 
 type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
-type RoomState ={
+type RoomState = {
   room: Room | null;
   isLoading: boolean;
-  isSubscribed: boolean;
   error: Error | null;
   fetchRoom: (roomID: number) => Promise<void>;
   unsubscribe: () => void;
@@ -20,11 +19,9 @@ const useRoomStore = create<RoomState>((set) => {
   return {
     room: null,
     isLoading: false,
-    isSubscribed: false,
     error: null,
-
     fetchRoom: async (roomID: number) => {
-      set({ isLoading: true, error: null, isSubscribed: false });
+      set({ isLoading: true, error: null });
       try {
         const { data: room, error } = await supabase
           .from('rooms')
@@ -33,21 +30,22 @@ const useRoomStore = create<RoomState>((set) => {
           .single();
 
         if (error) throw error;
+        
         set({ room });
+        
+        await new Promise<void>((resolve, reject) => {
+          subscribeToRoom(roomID, resolve, reject);
+        });
 
-        subscribeToRoom(roomID);
-      } catch (error) {
-        set({ error: error as Error });
-      } finally {
         set({ isLoading: false });
+      } catch (error) {
+        set({ error: error as Error, isLoading: false });
       }
     },
-
     unsubscribe: () => {
       if (unsubscribe) {
         unsubscribe();
         unsubscribe = null;
-        set({ isSubscribed: false });
       }
     },
   };
@@ -57,7 +55,7 @@ const useRoomStore = create<RoomState>((set) => {
     set({ room: updatedRoom });
   }
 
-  function subscribeToRoom(roomID: number) {
+  function subscribeToRoom(roomID: number, resolve: () => void, reject: (error: Error) => void) {
     const channel = supabase
       .channel(JSON.stringify(roomID))
       .on(
@@ -74,8 +72,9 @@ const useRoomStore = create<RoomState>((set) => {
         if (err) {
           console.error('.subscribe - err ROOM:', err);
           set({ error: err });
+          reject(err);
         } else {
-          set({ isSubscribed: true });
+          resolve();
         }
       });
 

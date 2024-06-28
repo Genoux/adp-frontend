@@ -12,11 +12,10 @@ const SelectionsView = () => {
     room: state.room,
     isLoading: state.isLoading,
   }));
-  const { currentTeam, turnTeam } = useTeams();
+  const { turnTeam } = useTeams();
   const currentHero = useCurrentHero();
 
   if (isLoading) return <div>Loading...</div>;
-  if (!currentTeam) return <div>Team not found</div>;
 
   return (
     <>

@@ -12,12 +12,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { Database } from '@/app/types/supabase';
 
-
-//TODO: Fix types
-interface RoomDisplayProps {
-  [key: string]: any;
-}
+type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
 const copyToClipboard = (link: string) => {
   const copy = window.location.href + link;
@@ -66,18 +63,25 @@ const CopyButton: React.FC<{ link: string }> = ({ link }) => {
   );
 };
 
-interface Team {
+type Team = {
   id?: number;
   name?: string;
-  color?: 'blue' | 'red' | 'spectator';
+  color: 'blue' | 'red' | 'spectator';
+  borderColor?: string;
   btnText?: string;
-}
+};
 
-interface DisplayProps {
+type DisplayProps = {
   team: Team;
-  roomId?: number;
+  roomId: number;
   isSpectator?: boolean;
-}
+};
+
+type RoomDisplayProps = {
+  room: Room;
+  blueTeam: Team;
+  redTeam: Team;
+};
 
 const Display: React.FC<DisplayProps> = ({
   team,
@@ -148,7 +152,7 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
         <div className="flex w-full flex-col justify-center gap-6">
           <Display team={blueTeam} roomId={room.id} />
           <Display team={redTeam} roomId={room.id} />
-          <Display team={{ color: 'spectator' }} roomId={room.id} isSpectator />
+          <Display team={{color: 'spectator' }} roomId={room.id} isSpectator />
         </div>
       </motion.div>
     </AnimatePresence>

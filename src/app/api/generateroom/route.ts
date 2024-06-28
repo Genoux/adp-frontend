@@ -67,7 +67,7 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
     .insert(teamsData.map(team => ({
       ...team,
       heroes_selected: generateArray(5),
-      heroes_ban: generateArray(5),
+      heroes_ban: generateArray(3),
       room_id: roomID,
     })))
     .select('*');
