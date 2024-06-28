@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import useSocket from '@/app/hooks/useSocket';
 import useRoomStore from '@/app/stores/roomStore';
@@ -22,7 +22,7 @@ type RoomProps = {
     teamID: string;
   };
 };
-//min-h-[768px] w-full flex-col items-center justify-center
+
 const DraftingView = () => (
   <motion.div
     initial={{ opacity: 0 }}
@@ -52,16 +52,24 @@ export default function Room({ params: { roomID, teamID } }: RoomProps) {
   const roomIDNumber = parseInt(roomID, 10);
   const teamIDNumber = parseInt(teamID, 10);
   const { isConnected } = useSocket(roomIDNumber);
-  const { fetchTeams, isLoading: isLoadingTeams, setCurrentTeamID } = useTeamStore();
-  const { fetchRoom, room, isLoading: isLoadingRooms } = useRoomStore();
+  const { fetchTeams, setCurrentTeamID } = useTeamStore();
+  const { fetchRoom, room } = useRoomStore();
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
-    setCurrentTeamID(teamIDNumber);
-    fetchTeams(roomIDNumber);
-    fetchRoom(roomIDNumber);
+    const initializeRoom = async () => {
+      setCurrentTeamID(teamIDNumber);
+      await Promise.all([
+        await fetchTeams(roomIDNumber),
+        await fetchRoom(roomIDNumber)
+      ]);
+      setIsInitialLoading(false);
+    };
+
+    initializeRoom();
   }, [fetchRoom, fetchTeams, roomIDNumber, setCurrentTeamID, teamIDNumber]);
 
-  if (isLoadingTeams || isLoadingRooms || !isConnected) {
+  if (isInitialLoading || !isConnected) {
     return <LoadingScreen />;
   }
 

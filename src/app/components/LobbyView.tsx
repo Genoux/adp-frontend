@@ -6,7 +6,6 @@ import { Button } from '@/app/components/ui/button';
 import { useToast } from './ui/use-toast';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
-import useTeamStore from '@/app/stores/teamStore';
 import { supabase } from '@/app/lib/supabase/client';
 import LoadingCircle from '@/app/components/common/LoadingCircle';
 import AnimatedDot from '@/app/components/common/AnimatedDot';

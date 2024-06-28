@@ -95,6 +95,9 @@ export async function setPlanning(roomID: number): Promise<void> {
 }
 
 export async function setDraft(roomID: number): Promise<void> {
+  
+  await resetArray(roomID);
+  
   try {
     const response = await fetch(`${local}/api/draft?roomID=${roomID}`, {
       method: 'POST',

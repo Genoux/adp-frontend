@@ -8,6 +8,7 @@ import defaultTransition from '@/app/lib/animationConfig';
 
 type Team = Database["public"]["Tables"]["teams"]["Row"];
 type Hero = Database["public"]["CompositeTypes"]["hero"];
+type RoomStatus = Pick<Database["public"]["Tables"]["rooms"]["Row"], "status">;
 
 const TeamPicks = ({ team }: { team: Team }) => {
   const { room } = useRoomStore();
@@ -33,6 +34,7 @@ const TeamPicks = ({ team }: { team: Team }) => {
       {(team.heroes_selected as Hero[]).map((hero, index) => (
         <HeroPickSlot
           key={`${index}-${hero.id}`}
+          room={room!}
           hero={hero}
           colorTeam={turnTeam?.color}
           index={index}
@@ -45,6 +47,7 @@ const TeamPicks = ({ team }: { team: Team }) => {
 };
 
 interface HeroPickSlotProps {
+  room: RoomStatus;
   colorTeam: string | undefined;
   hero: Hero;
   index: number;
@@ -52,16 +55,15 @@ interface HeroPickSlotProps {
   is_turn: boolean;
 }
 
-const HeroPickSlot: React.FC<HeroPickSlotProps> = ({colorTeam, hero, isCurrentSlot, is_turn }) => {
-  const showBorder = isCurrentSlot && is_turn;
-  const isEmptySlot = !showBorder && !hero.id;
+const HeroPickSlot: React.FC<HeroPickSlotProps> = ({room, colorTeam, hero, isCurrentSlot, is_turn }) => {
+  const borderAnimation = isCurrentSlot && is_turn && room.status === 'select';
 
   return (
     <motion.div
-      className={`relative h-full w-full overflow-hidden ${!isEmptySlot ? '' : 'border border-zinc-400 border-opacity-5'
+      className={`relative h-full w-full overflow-hidden ${hero.id ? '' : 'border border-zinc-400 border-opacity-5'
         } bg-black bg-opacity-20`}
     >
-      {(showBorder || hero.selected === null) && <BorderAnimation />}
+      {borderAnimation && <BorderAnimation />}
       {hero.id && (
         <>
           <p className='absolute z-50 w-full h-full flex justify-center text-center items-end pb-6 font-semibold text-sm tracking-wide'>{hero.name}</p>

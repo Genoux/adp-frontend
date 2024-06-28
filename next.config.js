@@ -2,7 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['imagedelivery.net', 'ddragon.leagueoflegends.com'], // Add the domain for your CDN
+    unoptimized: true,
+    domains: ['ddragon.leagueoflegends.com'], // Add the domain for your CDN
   },
 };
 

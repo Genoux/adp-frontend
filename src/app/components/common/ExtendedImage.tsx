@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { decode } from 'blurhash';
 import blurhashes from '@/app/data/blurhashes.json';
 
-const baseURL = 'http://ddragon.leagueoflegends.com/cdn/img/champion';
+const baseURL = 'https://ddragon.leagueoflegends.com/cdn/img/champion';
 
 interface ExtendedImageProps extends ImageProps {
   src: string;

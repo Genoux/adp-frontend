@@ -1,3 +1,5 @@
+//TODO: Fix glitch loading when confirming selection
+
 import React, { useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { View } from 'lucide-react';
@@ -54,11 +56,6 @@ const ConfirmButton: React.FC = () => {
 
   const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection';
 
-  const LoadingState = () => (
-    <div className="flex justify-center">
-      <LoadingCircle color="white" size="w-4 h-4" />
-    </div>
-  );
 
   const TurnWaitingState = () => (
     <div className="flex w-full flex-col items-center justify-center">
@@ -78,18 +75,14 @@ const ConfirmButton: React.FC = () => {
       className="flex w-full justify-center"
     >
       {currentTeam.is_turn ? (
-        !currentTeam?.can_select ? (
-          <LoadingState />
-        ) : (
-          <Button
-            size="lg"
-            onClick={debouncedHandleConfirmSelection}
-            className="w-64"
-            disabled={currentHero?.id === null}
-          >
-            {buttonText}
-          </Button>
-        )
+        <Button
+          size="lg"
+          onClick={debouncedHandleConfirmSelection}
+          className="w-64"
+          disabled={currentHero?.id === null && !currentTeam?.can_select}
+        >
+          {buttonText}
+        </Button>
       ) : (
         <TurnWaitingState />
       )}

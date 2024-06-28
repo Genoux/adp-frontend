@@ -8,6 +8,8 @@ import clsx from 'clsx';
 
 type Team = Database["public"]["Tables"]["teams"]["Row"];
 type Hero = Database["public"]["CompositeTypes"]["hero"];
+type RoomStatus = Pick<Database["public"]["Tables"]["rooms"]["Row"], "status">;
+
 
 const TeamBans = ({ team }: { team: Team }) => {
   const { room } = useRoomStore();
@@ -32,6 +34,7 @@ const TeamBans = ({ team }: { team: Team }) => {
       {(team.heroes_ban as Hero[]).map((hero, index) => (
         <HeroBanSlot
           key={`${index}-${hero.id}`}
+          room={room!}
           colorTeam={team.color}
           hero={hero}
           index={index}
@@ -43,23 +46,25 @@ const TeamBans = ({ team }: { team: Team }) => {
   );
 };
 
-const HeroBanSlot = ({ colorTeam, hero, isCurrentSlot, is_turn }: {
+type HeroBanSlotProps = {
+  room: RoomStatus;
   colorTeam: string | undefined;
   hero: Hero;
   index: number;
   isCurrentSlot: boolean;
   is_turn: boolean;
-}) => {
-  const showImage = hero.id !== null;
-  const showX = hero.id === null && hero.selected === true;
+}
+
+const HeroBanSlot = ({ room, colorTeam, hero, isCurrentSlot, is_turn }: HeroBanSlotProps ) => {
+  const borderAnimation = isCurrentSlot && is_turn && room.status === 'ban';
 
   return (
     <motion.div
       className={`relative h-full w-full overflow-hidden ${isCurrentSlot ? 'border-opacity-0' : 'border border-zinc-400 border-opacity-5'
         } bg-black bg-opacity-20`}
     >
-      {isCurrentSlot && is_turn && <BorderAnimation />}
-      {showImage ? (
+      {borderAnimation && <BorderAnimation />}
+      {hero.id ? (
         <>
           <p className={clsx('absolute z-50 w-full h-full flex justify-center items-center font-semibold text-xs tracking-wider')}>{hero.name}</p>
           {!isCurrentSlot ? (
@@ -78,7 +83,7 @@ const HeroBanSlot = ({ colorTeam, hero, isCurrentSlot, is_turn }: {
             <HeroImage hero={hero} isCurrentSlot={isCurrentSlot} />
           </motion.div>
         </>
-      ) : showX ? (
+      ) : hero.id === null && hero.selected === true ? (
         <EmptySelectedSlot />
       ) : null}
     </motion.div>
