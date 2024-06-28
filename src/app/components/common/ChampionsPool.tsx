@@ -67,13 +67,13 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   return (
     <motion.div
       animate={{
-        opacity: canInteract || room.status === 'planning' ? 1 : 0.8,
+        opacity: canInteract || room.status === 'planning' || !currentTeam ? 1 : 0.8,
       }}
       className={clsx('relative grid grid-cols-10 gap-2', className)}
     >
       {(room.heroes_pool as Hero[]).map((hero, index) => {
-        const isSelected = hero.id === currentHero?.id && currentTeam?.is_turn;
-        const isHovered = hero.id === hoveredHero;
+        const isSelected = hero.id === currentHero?.id && canInteract;
+        const isHovered = hero.id === hoveredHero && canInteract;
 
         return (
           <motion.div

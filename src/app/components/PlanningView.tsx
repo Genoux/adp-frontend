@@ -16,7 +16,7 @@ export const PlanningView = ({ className }: { className?: string }) => {
   return (
     <div className={clsx('mx-auto flex max-w-screen-2xl flex-col items-center justify-center px-12', className)} style={{ height: 'calc(100vh - 124px)' }}>
       <div className="flex flex-col items-center gap-4">
-        <Timer className="w-full" />
+        <Timer className="text-5xl" />
         <div className="text-center">
           <h1 className="text-2xl font-bold w-full md:text-3xl">Phase de planification</h1>
           <p className="text-base text-[#737373]">

@@ -1,3 +1,8 @@
+import React, { useState, useCallback } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CheckIcon, CopyIcon } from 'lucide-react';
+import Link from 'next/link';
+import clsx from 'clsx';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import {
@@ -7,39 +12,51 @@ import {
   TooltipTrigger,
 } from '@/app/components/ui/tooltip';
 import defaultTransition from '@/app/lib/animationConfig';
-import clsx from 'clsx';
-import { AnimatePresence, motion } from 'framer-motion';
-import { CheckIcon, CopyIcon } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
 import { Database } from '@/app/types/supabase';
 
 type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
-const copyToClipboard = (link: string) => {
-  const copy = window.location.href + link;
+type TeamType = 'blue' | 'red' | 'spectator';
 
-  navigator.clipboard
-    .writeText(copy)
-    .then(() => {
-      console.log('Copied to clipboard successfully!');
-    })
-    .catch((err) => {
-      console.error('Could not copy text: ', err);
-      throw new Error('Could not copy text');
-    });
+type Team = {
+  id: number;
+  name: string;
+  color: TeamType;
+  borderColor: string;
+  btnText: string;
+};
 
-  return { message: 'Copied to clipboard' };
+type SpectatorTeam = Omit<Team, 'id'> & { color: 'spectator' };
+
+type DisplayProps = {
+  team: Team | SpectatorTeam;
+  roomId: number;
+};
+
+type RoomDisplayProps = {
+  room: Room;
+  blueTeam: Team;
+  redTeam: Team;
+};
+
+const copyToClipboard = async (text: string): Promise<void> => {
+  try {
+    await navigator.clipboard.writeText(text);
+    console.log('Copied to clipboard successfully!');
+  } catch (err) {
+    console.error('Could not copy text: ', err);
+    throw new Error('Could not copy text');
+  }
 };
 
 const CopyButton: React.FC<{ link: string }> = ({ link }) => {
   const [copied, setCopied] = useState(false);
 
-  const handleCopyClick = () => {
-    copyToClipboard(link);
+  const handleCopyClick = useCallback(() => {
+    copyToClipboard(`${window.location.href}${link}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, [link]);
 
   return (
     <TooltipProvider>
@@ -63,39 +80,21 @@ const CopyButton: React.FC<{ link: string }> = ({ link }) => {
   );
 };
 
-type Team = {
-  id?: number;
-  name?: string;
-  color: 'blue' | 'red' | 'spectator';
-  borderColor?: string;
-  btnText?: string;
+const getTeamPath = (roomId: number, team: Team | SpectatorTeam): string => {
+  if (team.color === 'spectator') {
+    return `room/${roomId}/spectator`;
+  }
+  return `room/${roomId}/${team.id}`;
 };
 
-type DisplayProps = {
-  team: Team;
-  roomId: number;
-  isSpectator?: boolean;
-};
+const Display: React.FC<DisplayProps> = ({ team, roomId }) => {
+  const path = getTeamPath(roomId, team);
+  const fullLink = `${window.location.origin}${path}`;
 
-type RoomDisplayProps = {
-  room: Room;
-  blueTeam: Team;
-  redTeam: Team;
-};
-
-const Display: React.FC<DisplayProps> = ({
-  team,
-  roomId,
-  isSpectator = false,
-}) => {
-  const link = isSpectator
-    ? `room/${roomId}/spectator`
-    : `room/${roomId}/${team.id}`;
-
-  const handleInputClick = (event: any) => {
-    event.target.select();
-    copyToClipboard(link);
-  };
+  const handleInputClick = useCallback((event: React.MouseEvent<HTMLInputElement>) => {
+    event.currentTarget.select();
+    copyToClipboard(fullLink);
+  }, [fullLink]);
 
   return (
     <motion.div
@@ -108,23 +107,21 @@ const Display: React.FC<DisplayProps> = ({
           className={clsx('h-2 w-2', {
             'bg-blue': team.color === 'blue',
             'bg-red': team.color === 'red',
-            'bg-[#353535]': isSpectator,
+            'bg-[#353535]': team.color === 'spectator',
           })}
-        ></div>
-        <label>{isSpectator ? 'Spectateur' : team.name}</label>
+        />
+        <label>{team.name}</label>
       </div>
       <div className="flex flex-row items-center gap-2">
         <Input
           readOnly
-          value={`${window.location.origin}/${link}`}
+          value={fullLink}
           onClick={handleInputClick}
         />
-        <Link href={`/${link}`} target="_blank" passHref>
-          <Button size={'sm'}>
-            {isSpectator ? 'Rejoindre' : team.btnText}
-          </Button>
+        <Link href={path} target="_blank" passHref>
+          <Button size={'sm'}>{team.btnText}</Button>
         </Link>
-        <CopyButton link={link} />
+        <CopyButton link={path} />
       </div>
     </motion.div>
   );
@@ -135,13 +132,20 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
   blueTeam,
   redTeam,
 }) => {
+  const spectatorTeam: SpectatorTeam = {
+    name: 'Spectateur',
+    color: 'spectator',
+    borderColor: 'border-gray-500',
+    btnText: 'Rejoindre',
+  };
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
-        className="border bg-black bg-opacity-20 p-6"
+        className="border bg-black bg-opacity-20 px-6 pt-6 pb-12"
       >
         <div className="mb-4 text-left">
           <h1 className="text-2xl font-bold">Chambre générée</h1>
@@ -152,7 +156,7 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
         <div className="flex w-full flex-col justify-center gap-6">
           <Display team={blueTeam} roomId={room.id} />
           <Display team={redTeam} roomId={room.id} />
-          <Display team={{color: 'spectator' }} roomId={room.id} isSpectator />
+          <Display team={spectatorTeam} roomId={room.id} />
         </div>
       </motion.div>
     </AnimatePresence>

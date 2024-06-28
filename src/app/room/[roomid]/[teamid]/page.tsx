@@ -27,7 +27,7 @@ const DraftingView = () => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
-    transition={{ defaultTransition, duration: 0.8, delay: 0.3 }}
+    transition={{ defaultTransition, duration: 0.3, delay: 0.5 }}
     className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
     <RoomStatusBar className="z-90 fixed left-0 top-0" />
     <section className="flex h-full flex-col gap-4 py-4">
@@ -74,20 +74,16 @@ export default function Room({ params: { roomID, teamID } }: RoomProps) {
   return (
     <main>
       {process.env.NODE_ENV === 'development' && <StateControllerButtons roomID={roomIDNumber} />}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={defaultTransition}
-        className={clsx('h-screen', {
+      <div className={clsx('h-screen', {
           'flex flex-col': room.status === 'select' || room.status === 'ban',
+          'flex flex-col h-1/2 ': room.status === 'planning',
         })}
       >
         {ViewComponent && <ViewComponent />}
         {room.status === 'planning' && (
-          <NoticeBanner className='mt-6' message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
+          <NoticeBanner className='' message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
         )}
-      </motion.div>
+      </div>
     </main>
   );
 }

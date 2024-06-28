@@ -9,7 +9,6 @@ import useTeams from '@/app/hooks/useTeams';
 import useTeamStore from '@/app/stores/teamStore';
 import { supabase } from '@/app/lib/supabase/client';
 import LoadingCircle from '@/app/components/common/LoadingCircle';
-import LoadingScreen from '@/app/components/common/LoadingScreen';
 import AnimatedDot from '@/app/components/common/AnimatedDot';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
 import { Database } from '@/app/types/supabase';
@@ -87,7 +86,6 @@ const ReadyButton: React.FC<ReadyButtonProps> = ({ currentTeam, clicked, onReady
 // Main component
 const LobbyView: React.FC = () => {
   const { socket } = useSocket();
-  const { isLoading } = useTeamStore();
   const { currentTeam, redTeam, blueTeam } = useTeams();
   const [clicked, setClicked] = useState<boolean>(false);
   const { toast } = useToast();
@@ -129,8 +127,6 @@ const LobbyView: React.FC = () => {
       setClicked(false);
     }
   }, [currentTeam, socket, toast]);
-
-  if (isLoading) return <LoadingScreen />;
 
   if (!currentTeam || !redTeam || !blueTeam || !socket) {
     return <ErrorMessage />;

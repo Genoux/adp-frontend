@@ -22,7 +22,7 @@ const TeamBans = ({ team }: { team: Team }) => {
   }, [room?.status, team]);
 
   const opacity = useMemo(() =>
-    team?.is_turn || team === undefined ? 1 : 0.8,
+    team?.is_turn || team === undefined ? 1 : 1,
     [team]);
 
   if (!team) return null;
@@ -32,6 +32,7 @@ const TeamBans = ({ team }: { team: Team }) => {
       {(team.heroes_ban as Hero[]).map((hero, index) => (
         <HeroBanSlot
           key={`${index}-${hero.id}`}
+          colorTeam={team.color}
           hero={hero}
           index={index}
           isCurrentSlot={index === currentIndex}
@@ -42,7 +43,8 @@ const TeamBans = ({ team }: { team: Team }) => {
   );
 };
 
-const HeroBanSlot = ({ hero, isCurrentSlot, is_turn }: {
+const HeroBanSlot = ({ colorTeam, hero, isCurrentSlot, is_turn }: {
+  colorTeam: string | undefined;
   hero: Hero;
   index: number;
   isCurrentSlot: boolean;
@@ -53,19 +55,25 @@ const HeroBanSlot = ({ hero, isCurrentSlot, is_turn }: {
 
   return (
     <motion.div
-      className={`relative h-full w-full overflow-hidden border ${isCurrentSlot && is_turn ? 'border-red' : 'border-white border-opacity-5'
+      className={`relative h-full w-full overflow-hidden ${isCurrentSlot ? 'border-opacity-0' : 'border border-zinc-400 border-opacity-5'
         } bg-black bg-opacity-20`}
     >
       {isCurrentSlot && is_turn && <BorderAnimation />}
       {showImage ? (
         <>
           <p className={clsx('absolute z-50 w-full h-full flex justify-center items-center font-semibold text-xs tracking-wider')}>{hero.name}</p>
+          {!isCurrentSlot ? (
+            <div className='bg-zinc-950 opacity-25 z-40 absolute top-0 left-0 w-full h-full mix-blend-multiply'></div>
+          ) : (
+              
+            <div className='bg-red-500 z-40 opacity-30 absolute top-0 left-0 w-full h-full mix-blend-overlay'></div>
+              
+          )}
           <motion.div
             className='w-full h-full flex justify-center items-center'
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ defaultTransition }}
+            animate={{ x: 0, opacity: 1 }}
+            initial={{ x: colorTeam === 'blue' ? -5 : 5, opacity: 0 }}
+            transition={{ defaultTransition, duration: 0.12 }}
           >
             <HeroImage hero={hero} isCurrentSlot={isCurrentSlot} />
           </motion.div>
@@ -80,11 +88,12 @@ const HeroBanSlot = ({ hero, isCurrentSlot, is_turn }: {
 const BorderAnimation = () => (
   <motion.div
     className="glow-red-10 absolute inset-0 z-10 border border-red bg-opacity-10 bg-gradient-to-t from-red to-transparent"
-    animate={{ opacity: [0.5, 1] }}
+    animate={{ opacity: [0.2, 0.6] }}
     transition={{
       duration: 1,
       repeat: Infinity,
       repeatType: 'reverse',
+      defaultTransition,
     }}
   />
 );
@@ -111,7 +120,7 @@ const HeroImage = ({ hero, isCurrentSlot }: { hero: Hero; isCurrentSlot: boolean
 );
 
 const EmptySelectedSlot = () => (
-  <div className="bg-zinc-900 bg-opacity-10 h-full w-full flex justify-center items-center">
+  <div className="bg-zinc-800 bg-opacity-10 h-full w-full flex justify-center items-center">
     <svg
       width="32"
       height="33"

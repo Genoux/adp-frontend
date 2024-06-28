@@ -11,94 +11,88 @@ import { Input } from '@/app/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useState } from 'react';
 
-const FormSchema = z
-  .object({
-    blueTeamName: z
-      .string()
-      .min(2, "Chaque équipe doit avoir un nom d'au moins 2 caractères"),
-    redTeamName: z
-      .string()
-      .min(2, "Chaque équipe doit avoir un nom d'au moins 2 caractères"),
-  })
-  .superRefine(({ blueTeamName, redTeamName }, ctx) => {
-    if (blueTeamName === redTeamName) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Les deux équipes ne peuvent pas avoir le même nom',
-        path: ['redTeamName'],
-      });
-    }
-  });
+const FormSchema = z.object({
+  blueTeamName: z.string().min(2, "Le nom de l'équipe doit contenir au moins 2 caractères"),
+  redTeamName: z.string().min(2, "Le nom de l'équipe doit contenir au moins 2 caractères"),
+}).refine(
+  (data) => data.blueTeamName !== data.redTeamName,
+  {
+    message: 'Les deux équipes ne peuvent pas avoir le même nom',
+    path: ['redTeamName'],
+  }
+);
 
-export type InputFormProps = {
-  submit: (data: z.infer<typeof FormSchema>) => void;
+type FormData = z.infer<typeof FormSchema>;
+
+interface InputFormProps {
+  submit: (data: FormData) => void;
 }
 
 export function InputForm({ submit }: InputFormProps) {
-  const form = useForm({
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
-    mode: 'onSubmit', // Validate only on submit
+    mode: 'onSubmit',
     defaultValues: {
       blueTeamName: '',
       redTeamName: '',
     },
   });
 
-  const {
-    handleSubmit,
-    control,
-    formState: { errors, isSubmitted },
-    reset,
-  } = form;
-
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = (data: FormData) => {
+    setFormError(null);
     submit(data);
-    reset(); // Reset form fields after submission
+    form.reset();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = await form.trigger();
+    if (!result) {
+      const errors = form.formState.errors;
+      if (errors.blueTeamName) {
+        setFormError(errors.blueTeamName.message || null);
+      } else if (errors.redTeamName) {
+        setFormError(errors.redTeamName.message || null);
+      }
+    } else {
+      form.handleSubmit(onSubmit)(e);
+    }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex w-full flex-col">
-        {isSubmitted && (errors.blueTeamName?.message || errors.redTeamName?.message) ? (
+      <form onSubmit={handleSubmit} className="flex w-full flex-col">
+        {formError && (
           <FormMessage className="mb-4">
-            {errors.blueTeamName?.message || errors.redTeamName?.message}
+            {formError}
           </FormMessage>
-        ) : null}
+        )}
         <div className="flex flex-col gap-6">
-          <FormField
-            control={control}
-            name="blueTeamName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-blue">
-                  <span className="h-2 w-2 bg-blue"></span>
-                  Équipe Bleue
-                </FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="redTeamName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-red">
-                  <span className="h-2 w-2 bg-red"></span>
-                  Équipe Rouge
-                </FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          {['blue', 'red'].map((color) => (
+            <FormField
+              key={color}
+              control={form.control}
+              name={`${color}TeamName` as 'blueTeamName' | 'redTeamName'}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={`flex items-center gap-2 text-${color}`}>
+                    <span className={`h-2 w-2 bg-${color}`}></span>
+                    Équipe {color === 'blue' ? 'Bleue' : 'Rouge'}
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          ))}
         </div>
         <Button
-          size={'lg'}
+          size="lg"
           className="mt-6 disabled:border disabled:bg-white disabled:bg-opacity-10 disabled:font-normal disabled:text-white disabled:text-opacity-30"
           type="submit"
         >

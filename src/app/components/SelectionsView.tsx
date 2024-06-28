@@ -1,11 +1,11 @@
 import ChampionsPool from '@/app/components/common/ChampionsPool';
 import useTeams from '@/app/hooks/useTeams';
-import defaultTransition from '@/app/lib/animationConfig';
 import useRoomStore from '@/app/stores/roomStore';
 import { motion } from 'framer-motion';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 import clsx from 'clsx';
 import useCurrentHero from '@/app/hooks/useCurrentHero';
+import defaultTransition from '@/app/lib/animationConfig';
 
 const SelectionsView = () => {
   const { room, isLoading } = useRoomStore((state) => ({
@@ -21,34 +21,29 @@ const SelectionsView = () => {
     <>
       {currentHero && turnTeam && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ defaultTransition }}
-          className={clsx('fixed top-0 -z-10 h-full w-3/12', {
-            'fade-gradient-left left-0': turnTeam.color === 'blue',
-            'fade-gradient-right right-0': turnTeam.color === 'red',
-          })}
-        >
-          <ExtendedImage
-            src={currentHero.id || ''}
-            alt={currentHero.name || ''}
-            fill
-            style={{ objectPosition: 'center', objectFit: 'cover' }}
-            type='centered'
-          />
-        </motion.div>
+        key={currentHero.id}
+        layout
+            initial={{ x: turnTeam.color === 'blue' ? -5 : 5, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.2, defaultTransition }}
+            className={clsx('absolute top-0 -z-10 h-full w-3/12', {
+              'fade-gradient-left left-0': turnTeam.color === 'blue',
+              'fade-gradient-right right-0': turnTeam.color === 'red',
+            })}
+          >
+            <ExtendedImage
+              src={currentHero.id || ''}
+              alt={currentHero.id || ''}
+              style={{ objectPosition: 'center', objectFit: 'cover' }}
+              fill
+              type='centered'
+            />
+          </motion.div>
       )}
-      {room?.status === 'ban' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.1 }}
-          exit="exit"
-          transition={{ delay: 0.2, duration: 1, ease: 'linear' }}
-          className="fixed left-0 top-0 -z-50 h-full w-full bg-red-900 opacity-50"
-        />
+      {room!.status === 'ban' && (
+        <div className="fixed left-0 top-0 -z-50 h-full w-full bg-red-900 bg-opacity-10" />
       )}
-      <ChampionsPool className='px-0 xl:px-28' />
+      <ChampionsPool className='px-0 xl:px-24' />
     </>
   );
 };

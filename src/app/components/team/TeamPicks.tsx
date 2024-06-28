@@ -4,13 +4,14 @@ import useTeams from '@/app/hooks/useTeams';
 import useRoomStore from '@/app/stores/roomStore';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 import { Database } from '@/app/types/supabase';
+import defaultTransition from '@/app/lib/animationConfig';
 
 type Team = Database["public"]["Tables"]["teams"]["Row"];
 type Hero = Database["public"]["CompositeTypes"]["hero"];
 
 const TeamPicks = ({ team }: { team: Team }) => {
   const { room } = useRoomStore();
-  const { currentTeam } = useTeams();
+  const { currentTeam, turnTeam } = useTeams();
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -33,6 +34,7 @@ const TeamPicks = ({ team }: { team: Team }) => {
         <HeroPickSlot
           key={`${index}-${hero.id}`}
           hero={hero}
+          colorTeam={turnTeam?.color}
           index={index}
           isCurrentSlot={index === currentIndex}
           is_turn={team.is_turn}
@@ -43,32 +45,31 @@ const TeamPicks = ({ team }: { team: Team }) => {
 };
 
 interface HeroPickSlotProps {
+  colorTeam: string | undefined;
   hero: Hero;
   index: number;
   isCurrentSlot: boolean;
   is_turn: boolean;
 }
 
-const HeroPickSlot: React.FC<HeroPickSlotProps> = ({ hero, isCurrentSlot, is_turn }) => {
-  const showImage = hero.id !== undefined && hero.id !== null;
+const HeroPickSlot: React.FC<HeroPickSlotProps> = ({colorTeam, hero, isCurrentSlot, is_turn }) => {
   const showBorder = isCurrentSlot && is_turn;
-  const isEmptySlot = !showBorder && !showImage;
+  const isEmptySlot = !showBorder && !hero.id;
 
   return (
     <motion.div
-      className={`relative h-full w-full overflow-hidden border ${isEmptySlot ? 'border-white border-opacity-5' : 'border-opacity-0'
+      className={`relative h-full w-full overflow-hidden ${!isEmptySlot ? '' : 'border border-zinc-400 border-opacity-5'
         } bg-black bg-opacity-20`}
     >
       {(showBorder || hero.selected === null) && <BorderAnimation />}
-      {showImage && (
+      {hero.id && (
         <>
           <p className='absolute z-50 w-full h-full flex justify-center text-center items-end pb-6 font-semibold text-sm tracking-wide'>{hero.name}</p>
           <motion.div
             className='absolute z-20 w-full h-full'
-            animate={{ opacity: 1 }}
-            initial={{ opacity: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
+            animate={{ x: 0, opacity: 1 }}
+            initial={{ x: colorTeam === 'blue' ? -5 : 5, opacity: 0 }}
+            transition={{ duration: 0.12, defaultTransition }}
           >
             <HeroImage
               hero={hero}
@@ -91,6 +92,7 @@ const BorderAnimation = () => (
       duration: 1,
       repeat: Infinity,
       repeatType: 'reverse',
+      defaultTransition,
     }}
   />
 );

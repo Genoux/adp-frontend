@@ -44,6 +44,7 @@ const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt
       alt={alt}
       width={width}
       height={height}
+      sizes='100vw'
       quality={80}
       {...props}
     />

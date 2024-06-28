@@ -1,5 +1,6 @@
 import useSocket from '@/app/hooks/useSocket';
 import { useCallback, useEffect, useState } from 'react';
+import clsx from 'clsx';
 
 const Timer = ({ className }: { className?: string }) => {
   const [timer, setTimer] = useState<string>('');
@@ -20,7 +21,7 @@ const Timer = ({ className }: { className?: string }) => {
 
   return (
     <div className={className}>
-      <h1 className='mx-auto w-fit font-bold text-4xl'>
+      <h1 className={clsx('mx-auto w-fit font-bold text-4xl', className)}>
         {timer || '00:00'}
       </h1>
     </div>
