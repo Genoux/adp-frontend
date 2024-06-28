@@ -1,5 +1,5 @@
 'use client';
-
+//TODO: REFACTOR THIS FILE
 import '@/app/utils/strings';
 import ChampionsPool from '@/app/components/common/ChampionsPool';
 import ErrorMessage from '@/app/components/common/ErrorMessage';
@@ -21,7 +21,7 @@ import LoadingScreen from '@/app/components/common/LoadingScreen';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 interface SpectatorProps {
   params: {
-    roomid: string;
+    roomid: number;
   };
 }
 
@@ -39,7 +39,7 @@ const Spectator = ({ params }: SpectatorProps) => {
   const roomid = params.roomid;
 
   const { socket, isConnected } = useSocket(roomid);
-  const { teams, fetchTeams, isLoading: loadTeam } = useTeamStore();
+  const { teams, fetchTeams, isLoading: loadTeam, currentSelection } = useTeamStore();
   const { room, fetchRoom, isLoading } = useRoomStore();
   const { redTeam, blueTeam } = useTeams();
 
@@ -55,11 +55,11 @@ const Spectator = ({ params }: SpectatorProps) => {
     if (teams) {
       const currentTeam = teams.find((team) => team.is_turn);
       if (currentTeam) {
-        setCurrentImage(currentTeam.clicked_hero || '');
+        setCurrentImage(currentSelection);
         setCurrentTeam(currentTeam);
       }
     }
-  }, [teams]);
+  }, [currentSelection, teams]);
 
   if (!isConnected || isLoading || loadTeam) return <LoadingScreen />;
 

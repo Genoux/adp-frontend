@@ -60,7 +60,7 @@ export default function Room({ params: { roomID, teamID } }: RoomProps) {
     setCurrentTeamID(teamIDNumber);
     fetchTeams(roomIDNumber);
     fetchRoom(roomIDNumber);
-  }, [fetchRoom, fetchTeams, roomID, setCurrentTeamID, teamID]);
+  }, [fetchRoom, fetchTeams, roomIDNumber, setCurrentTeamID, teamIDNumber]);
 
   if (isLoadingTeams || isLoadingRoom || !isConnected) {
     return <LoadingScreen />;

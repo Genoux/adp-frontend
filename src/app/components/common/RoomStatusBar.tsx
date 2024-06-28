@@ -34,7 +34,7 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({ team, orientation }) => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, defaultTransition }}
         >
-          <ArrowAnimation teamis_turn={team?.is_turn} orientation={orientation} />
+          <ArrowAnimation teamis_turn={team.is_turn} orientation={orientation} />
         </motion.div>
         <div className={`${!team.is_turn ? 'opacity-60' : null}`}>
           <TeamName name={team.name} color={team.color} />

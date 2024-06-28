@@ -53,7 +53,7 @@ async function resetArray(roomID: number): Promise<void> {
     const { error: resetError } = await supabase
       .from('teams')
       .update({ heroes_selected: resetSelected, heroes_ban: resetBan })
-      .eq('room', roomID);
+      .eq('room_id', roomID);
 
     if (resetError) {
       throw new Error('Error resetting team selections and bans');
@@ -81,7 +81,6 @@ export async function setWaiting(roomID: number): Promise<void> {
 }
 
 export async function setPlanning(roomID: number): Promise<void> {
-  console.log('setPlanning - roomID:', roomID);
   try {
     const response = await fetch(`${local}/api/planning?roomID=${roomID}`, {
       method: 'POST',
@@ -91,7 +90,7 @@ export async function setPlanning(roomID: number): Promise<void> {
       throw new Error('Error setting planning phase');
     }
   } catch (error) {
-    console.error('Error setting planning phase:', error);
+    console.error(error);
   }
 }
 
