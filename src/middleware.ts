@@ -16,7 +16,7 @@ export async function middleware(req: { nextUrl: { pathname: any; }; url: string
         .select('id')
         .eq('id', roomID)
         .single();
-   
+
       if (roomError || !roomData) {
         return NextResponse.redirect(new URL('/', req.url));
       }

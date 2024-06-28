@@ -5,7 +5,6 @@ import useSocket from '@/app/hooks/useSocket';
 import useRoomStore from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import defaultTransition from '@/app/lib/animationConfig';
-import ErrorMessage from '@/app/components/common/ErrorMessage';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
@@ -53,8 +52,8 @@ export default function Room({ params: { roomID, teamID } }: RoomProps) {
   const roomIDNumber = parseInt(roomID, 10);
   const teamIDNumber = parseInt(teamID, 10);
   const { isConnected } = useSocket(roomIDNumber, teamIDNumber);
-  const { fetchTeams, isLoading: isLoadingTeams, error: errorTeams, setCurrentTeamID } = useTeamStore();
-  const { fetchRoom, room, isLoading: isLoadingRoom, error: errorRoom } = useRoomStore();
+  const { fetchTeams, isLoading: isLoadingTeams, setCurrentTeamID } = useTeamStore();
+  const { fetchRoom, room, isLoading: isLoadingRoom } = useRoomStore();
 
   useEffect(() => {
     setCurrentTeamID(teamIDNumber);
@@ -66,12 +65,8 @@ export default function Room({ params: { roomID, teamID } }: RoomProps) {
     return <LoadingScreen />;
   }
 
-  if (errorTeams || errorRoom) {
-    return <ErrorMessage />;
-  }
-
   if (!room) {
-    return <ErrorMessage />;
+    throw new Error(`Room ${roomIDNumber} not found`);
   }
 
   const ViewComponent = viewComponents[room.status as keyof typeof viewComponents];

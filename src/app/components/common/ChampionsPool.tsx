@@ -12,19 +12,19 @@ import { Database } from '@/app/types/supabase';
 
 type Hero = Database["public"]["CompositeTypes"]["hero"];
 
-type ChampionsPoolProps = {
-  className?: string;
-}
-
 const DEBOUNCE_TIME = 50; // ms
 
-const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({ className = '' }) => {
+const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   const { room } = useRoomStore();
   const { currentTeam } = useTeams();
-  const [hoveredHero, setHoveredHero] = useState<string | null>(null);
   const { updateTeam } = useTeamStore();
   const currentHero = useCurrentHero();
   const canInteract = currentTeam?.can_select && currentTeam.is_turn;
+  const [hoveredHero, setHoveredHero] = useState<string | null>(null);
+
+  if (!room) {
+    throw new Error('Room is not initialized');
+  }
   
   const debouncedSetHoveredHero = useMemo(
     () => debounce((heroId: string | null) => setHoveredHero(heroId), DEBOUNCE_TIME),
@@ -38,15 +38,15 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({ className = ''
   }, [canInteract]);
 
   const handleHoveredHero = useCallback(async (heroID: string | null) => {
-    if (!canInteract) return;
+    if (!canInteract && room.status !== 'planning') return;
     //debounce
     debouncedSetHoveredHero(heroID);
-  }, [canInteract, debouncedSetHoveredHero]);
+  }, [canInteract, debouncedSetHoveredHero, room.status]);
 
   const debouncedHandleClickedHero = useMemo(
     () => debounce((hero: Hero) => {
       if (!canInteract) return;
-      const updateArray = room?.status === 'ban' ? 'heroes_ban' : 'heroes_selected';
+      const updateArray = room.status === 'ban' ? 'heroes_ban' : 'heroes_selected';
       const currentArray = currentTeam[updateArray] as Hero[];
 
       const firstEmptyIndex = currentArray.findIndex(item => !item.selected);
@@ -59,7 +59,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({ className = ''
         });
       }
     }, DEBOUNCE_TIME),
-    [canInteract, currentTeam, updateTeam, room?.status]
+    [canInteract, currentTeam, updateTeam, room.status]
   );
 
   if (!room) return null;
@@ -67,7 +67,7 @@ const ChampionsPool: React.FC<ChampionsPoolProps> = React.memo(({ className = ''
   return (
     <motion.div
       animate={{
-        opacity: canInteract || room?.status === 'planning' ? 1 : 0.8,
+        opacity: canInteract || room.status === 'planning' ? 1 : 0.8,
       }}
       className={clsx('relative grid grid-cols-10 gap-2', className)}
     >

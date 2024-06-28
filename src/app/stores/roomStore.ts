@@ -31,7 +31,6 @@ const useRoomStore = create<RoomState>((set) => {
           .select('*')
           .eq('id', roomID)
           .single();
-        console.log("fetchRoom: - room:", room);
 
         if (error) throw error;
         set({ room });
@@ -53,7 +52,6 @@ const useRoomStore = create<RoomState>((set) => {
     },
   };
 
-  //TODO: TEST THIS 58
   function handleRoomUpdate(payload: RealtimePostgresUpdatePayload<Room>) {
     const updatedRoom: Room = payload.new;
     set({ room: updatedRoom });
