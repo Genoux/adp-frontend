@@ -13,11 +13,7 @@ interface ExtendedImageProps extends ImageProps {
 
 const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt, width, height, ...props }) => {
   const imageUrl = `${baseURL}/${type}/${src}_0.jpg`;
-  
-  // Get the blur hash for the champion using src
   const blurHash = (blurhashes as Record<string, string>)[src] || '';
-  
-  // Convert blur hash to base64 data URL
   const blurDataURL = useMemo(() => {
     if (!blurHash) return undefined;
 
@@ -34,7 +30,11 @@ const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt
     return canvas.toDataURL();
   }, [blurHash]);
 
-  if(!src) return null;
+  if (!src) return null;
+  
+  if(!blurDataURL) {
+    
+  };
 
   return (
     <Image
@@ -44,6 +44,7 @@ const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt
       alt={alt}
       width={width}
       height={height}
+      sizes='100vw'
       quality={80}
       {...props}
     />

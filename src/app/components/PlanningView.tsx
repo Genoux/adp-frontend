@@ -4,11 +4,7 @@ import useTeams from '@/app/hooks/useTeams';
 import useRoomStore from '@/app/stores/roomStore';
 import clsx from 'clsx';
 
-type PlanningViewProps = {
-  className?: string;
-};
-
-export const PlanningView = ({ className }: PlanningViewProps) => {
+export const PlanningView = ({ className }: { className?: string }) => {
   const { room } = useRoomStore();
   const { blueTeam, redTeam } = useTeams();
   const teamNameStyle = 'text-xl uppercase font-extrabold px-4 py-3 w-64 bg-opacity-10 truncate'
@@ -20,7 +16,7 @@ export const PlanningView = ({ className }: PlanningViewProps) => {
   return (
     <div className={clsx('mx-auto flex max-w-screen-2xl flex-col items-center justify-center px-12', className)} style={{ height: 'calc(100vh - 124px)' }}>
       <div className="flex flex-col items-center gap-4">
-        <Timer className="w-full" size="large" />
+        <Timer className="text-5xl" />
         <div className="text-center">
           <h1 className="text-2xl font-bold w-full md:text-3xl">Phase de planification</h1>
           <p className="text-base text-[#737373]">

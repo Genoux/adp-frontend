@@ -1,11 +1,8 @@
 import useSocket from '@/app/hooks/useSocket';
 import { useCallback, useEffect, useState } from 'react';
+import clsx from 'clsx';
 
-interface TimerProps {
-  className?: string;
-  size?: 'small' | 'medium' | 'large';
-}
-const Timer: React.FC<TimerProps> = ({ className, size = 'medium' }) => {
+const Timer = ({ className }: { className?: string }) => {
   const [timer, setTimer] = useState<string>('');
 
   const { socket } = useSocket();
@@ -14,23 +11,17 @@ const Timer: React.FC<TimerProps> = ({ className, size = 'medium' }) => {
     setTimer(event);
   }, []);
 
-  const fontSize = {
-    small: 'text-xl', // example size, adjust as needed
-    medium: 'text-3xl',
-    large: 'text-5xl', // example size, adjust as needed
-  };
-
   useEffect(() => {
-    socket?.on('TIMER', handleSocketEvents);
+    socket!.on('TIMER', handleSocketEvents);
 
     return () => {
-      socket?.off('TIMER', handleSocketEvents);
+      socket!.off('TIMER', handleSocketEvents);
     };
   }, [handleSocketEvents, socket]);
 
   return (
     <div className={className}>
-      <h1 className={`${fontSize[size]} mx-auto w-fit font-bold`}>
+      <h1 className={clsx('mx-auto w-fit font-bold text-4xl', className)}>
         {timer || '00:00'}
       </h1>
     </div>

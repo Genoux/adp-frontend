@@ -1,12 +1,11 @@
-import { CheckIcon } from 'lucide-react'; // Update with your import path for CheckIcon
-import React from 'react';
+import { CheckIcon } from 'lucide-react';
 
-interface TeamStatusProps {
+type TeamStatusProps ={
   team: {
     ready: boolean;
     [key: string]: any;
   };
-  showReadyState?: boolean; // if true, will show the 'ready' state if the team is ready
+  showReadyState?: boolean;
 }
 
 const TeamStatus: React.FC<TeamStatusProps> = ({ team, showReadyState }) => {

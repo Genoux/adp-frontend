@@ -3,16 +3,12 @@ import defaultTransition from '@/app/lib/animationConfig';
 import { AnimatePresence, motion } from 'framer-motion';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 import { useEffect, useState } from 'react';
+import { Database } from '@/app/types/supabase';
 
-interface Hero {
-  [key: string]: any;
-}
+type Team = Database["public"]["Tables"]["teams"]["Row"];
+type Hero = Database["public"]["CompositeTypes"]["hero"];
 
-interface Team {
-  [key: string]: any;
-}
-
-interface HeroDisplayProps {
+type HeroDisplayProps = {
   hero: Hero;
   animationDelay: number;
 }
@@ -36,7 +32,7 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
       {hero.id && (
         <ExtendedImage
           src={hero.id}
-          alt={hero.name}
+          alt={hero.id}
           type='centered'
           fill
           style={{ objectFit: 'cover' }}
@@ -58,7 +54,7 @@ const TeamDisplay = ({
   position,
   reverseAnimation,
 }: TeamDisplayProps) => {
-  const heroes = reverseAnimation ? [...team.heroes_selected].reverse() : team.heroes_selected;
+  const heroes = reverseAnimation ? [...team.heroes_selected as Hero[]].reverse() : team.heroes_selected;
   
   return (
     <div className='mx-6 py-6'>
@@ -76,7 +72,7 @@ const TeamDisplay = ({
         {team.name}
       </motion.div>
       <div className={`flex ${reverseAnimation ? 'flex-row-reverse' : ''}`}>
-        {heroes.map((hero: Hero, index: number) => (
+        {(heroes as Hero[]).map((hero, index) => (
           <HeroDisplay key={index} hero={hero} animationDelay={0.5 + index * 0.3} />
         ))}
       </div>

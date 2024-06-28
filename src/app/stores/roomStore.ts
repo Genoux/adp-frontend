@@ -1,21 +1,15 @@
 import { supabase } from '@/app/lib/supabase/client';
 import { create } from 'zustand';
 import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
+import { Database } from '@/app/types/supabase';
 
-type Room = {
-  id: string;
-  name: string;
-  status: string;
-  heroes_pool: any[];
-  ready: boolean;
-};
+type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
-type RoomState ={
+type RoomState = {
   room: Room | null;
   isLoading: boolean;
-  isSubscribed: boolean;
   error: Error | null;
-  fetchRoom: (roomId: string) => Promise<void>;
+  fetchRoom: (roomID: number) => Promise<void>;
   unsubscribe: () => void;
 }
 
@@ -25,59 +19,52 @@ const useRoomStore = create<RoomState>((set) => {
   return {
     room: null,
     isLoading: false,
-    isSubscribed: false,
     error: null,
-
-    fetchRoom: async (roomId: string) => {
-      set({ isLoading: true, error: null, isSubscribed: false });
+    fetchRoom: async (roomID: number) => {
+      set({ isLoading: true, error: null });
       try {
         const { data: room, error } = await supabase
           .from('rooms')
           .select('*')
-          .eq('id', roomId)
+          .eq('id', roomID)
           .single();
 
         if (error) throw error;
+        
         set({ room });
+        
+        await new Promise<void>((resolve, reject) => {
+          subscribeToRoom(roomID, resolve, reject);
+        });
 
-        subscribeToRoom(roomId);
-      } catch (error) {
-        set({ error: error as Error });
-      } finally {
         set({ isLoading: false });
+      } catch (error) {
+        set({ error: error as Error, isLoading: false });
       }
     },
-
     unsubscribe: () => {
       if (unsubscribe) {
         unsubscribe();
         unsubscribe = null;
-        set({ isSubscribed: false });
       }
     },
   };
 
   function handleRoomUpdate(payload: RealtimePostgresUpdatePayload<Room>) {
-    const updatedRoom: Room = {
-      id: payload.new.id,
-      name: payload.new.name,
-      status: payload.new.status,
-      heroes_pool: payload.new.heroes_pool,
-      ready: payload.new.ready,
-    };
+    const updatedRoom: Room = payload.new;
     set({ room: updatedRoom });
   }
 
-  function subscribeToRoom(roomId: string) {
+  function subscribeToRoom(roomID: number, resolve: () => void, reject: (error: Error) => void) {
     const channel = supabase
-      .channel(roomId)
+      .channel(JSON.stringify(roomID))
       .on(
         'postgres_changes',
         {
           event: 'UPDATE',
-          schema: 'aram_draft_pick',
+          schema: 'public',
           table: 'rooms',
-          filter: `id=eq.${roomId}`,
+          filter: `id=eq.${roomID}`,
         },
         handleRoomUpdate
       )
@@ -85,8 +72,9 @@ const useRoomStore = create<RoomState>((set) => {
         if (err) {
           console.error('.subscribe - err ROOM:', err);
           set({ error: err });
+          reject(err);
         } else {
-          set({ isSubscribed: true });
+          resolve();
         }
       });
 

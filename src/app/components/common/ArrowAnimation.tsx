@@ -2,34 +2,38 @@ import useRoomStore from '@/app/stores/roomStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 
-interface ArrowAnimationProps {
-  teamIsTurn?: boolean | null | undefined;
+type ArrowAnimationProps = {
+  teamis_turn?: boolean | null | undefined;
   orientation?: 'left' | 'right';
 }
 
 const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
-  teamIsTurn = false,
+  teamis_turn = false,
   orientation = 'right',
 }) => {
   const { room } = useRoomStore();
 
-  const [visibleRoomStatus, setVisibleRoomStatus] = useState(room?.status);
+  if (!room) {
+    throw new Error('Room is not initialized');
+  }
+
+  const [visibleRoomStatus, setVisibleRoomStatus] = useState(room.status);
   const arrows = [0, 1, 2];
 
   useEffect(() => {
-    const time = room?.status === 'ban' ? 0 : 1000;
+    const time = room.status === 'ban' ? 0 : 1000;
     // First hide the current state
     setVisibleRoomStatus('');
 
     // Then after a delay, show the new state
     const timer = setTimeout(() => {
-      setVisibleRoomStatus(room?.status);
+      setVisibleRoomStatus(room.status);
     }, time); // delay of 1000ms
 
     return () => clearTimeout(timer);
-  }, [room?.status]);
+  }, [room.status]);
 
-  if (!teamIsTurn || visibleRoomStatus === null) {
+  if (!teamis_turn || visibleRoomStatus === null) {
     return null;
   }
 

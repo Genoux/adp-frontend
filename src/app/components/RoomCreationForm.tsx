@@ -1,15 +1,13 @@
-import { InputSelect } from '@/app/components/forms/InputSelect';
 import { InputForm } from '@/app/components/forms/InputForm';
 import defaultTransition from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import React from 'react';
 
-interface TeamsName {
+type TeamsName = {
   blueTeamName: string;
   redTeamName: string;
 }
-
-interface RoomCreationFormProps {
+type RoomCreationFormProps = {
   submit: (data: TeamsName) => Promise<void>;
 }
 
@@ -35,7 +33,7 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
             }
           </p>
         </div>
-      <div className='hidden'>  <InputSelect submit={(data) => submit(data)} /></div>
+     {/* <div className='hidden'>  <InputSelect submit={(data) => submit(data)} /></div> */}
         <InputForm submit={(data) => submit(data)} /> 
       </motion.div>
     

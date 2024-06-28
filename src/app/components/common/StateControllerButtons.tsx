@@ -7,13 +7,7 @@ import {
 } from '@/app/utils/stateController';
 import { useEffect, useState } from 'react';
 
-interface StateControllerButtonsProps {
-  roomid: string;
-}
-
-const StateControllerButtons: React.FC<StateControllerButtonsProps> = ({
-  roomid,
-}) => {
+const StateControllerButtons = ({ roomID }: { roomID: number }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
@@ -27,19 +21,19 @@ const StateControllerButtons: React.FC<StateControllerButtonsProps> = ({
 
       switch (event.key) {
         case '1':
-          setWaiting(roomid);
+          setWaiting(roomID);
           break;
         case '2':
-          setPlanning(roomid);
+          setPlanning(roomID);
           break;
         case '3':
-          setDraft(roomid);
+          setDraft(roomID);
           break;
         case '4':
-          userTrigger(roomid);
+          userTrigger(roomID);
           break;
         case '5':
-          setFinish(roomid);
+          setFinish(roomID);
           break;
         default:
           break;
@@ -51,25 +45,25 @@ const StateControllerButtons: React.FC<StateControllerButtonsProps> = ({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isVisible, roomid]);
+  }, [isVisible, roomID]);
 
   if (!isVisible) return null;
 
   return (
     <div className="hidden flex-row gap-4">
-      <button className="btn btn-primary" onClick={() => setWaiting(roomid)}>
+      <button className="btn btn-primary" onClick={() => setWaiting(roomID)}>
         Set Waiting
       </button>
-      <button className="btn btn-primary" onClick={() => setPlanning(roomid)}>
+      <button className="btn btn-primary" onClick={() => setPlanning(roomID)}>
         Set Planning
       </button>
-      <button className="btn btn-primary" onClick={() => setDraft(roomid)}>
+      <button className="btn btn-primary" onClick={() => setDraft(roomID)}>
         Set Ban
       </button>
-      <button className="btn btn-primary" onClick={() => userTrigger(roomid)}>
+      <button className="btn btn-primary" onClick={() => userTrigger(roomID)}>
         Trigger select
       </button>
-      <button className="btn btn-primary" onClick={() => setFinish(roomid)}>
+      <button className="btn btn-primary" onClick={() => setFinish(roomID)}>
         Set Finish
       </button>
     </div>

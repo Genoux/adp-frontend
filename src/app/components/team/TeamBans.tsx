@@ -1,92 +1,79 @@
-// TODO: Fix types
-
 import { motion } from 'framer-motion';
 import { useEffect, useState, useMemo } from 'react';
 import useRoomStore from '@/app/stores/roomStore';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 import defaultTransition from '@/app/lib/animationConfig';
+import { Database } from '@/app/types/supabase';
 import clsx from 'clsx';
 
-type Hero = {
-  id: string | null;
-  name: string;
-  selected: boolean;
-};
+type Team = Database["public"]["Tables"]["teams"]["Row"];
+type Hero = Database["public"]["CompositeTypes"]["hero"];
 
-type Team = {
-  id: string;
-  isturn: boolean;
-  name: string;
-  clicked_hero: string | null;
-  heroes_selected: Hero[];
-  heroes_ban: Hero[];
-  room: string;
-  ready: boolean;
-  color: string | null;
-  canSelect: boolean;
-};
-
-interface TeamBansProps {
-  team: Team | undefined;
-}
-
-const TeamBans: React.FC<TeamBansProps> = ({ team }) => {
+const TeamBans = ({ team }: { team: Team }) => {
   const { room } = useRoomStore();
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (room?.status !== 'ban' || !team) return;
-    setCurrentIndex(team.isturn && team.canSelect
-      ? team.heroes_ban.findIndex(hero => !hero.selected)
+    setCurrentIndex(team.is_turn && team.can_select
+      ? (team.heroes_ban as Hero[]).findIndex(hero => !hero.selected)
       : null
     );
   }, [room?.status, team]);
 
   const opacity = useMemo(() =>
-    team?.isturn || team === undefined ? 1 : 0.8,
+    team?.is_turn || team === undefined ? 1 : 1,
     [team]);
 
   if (!team) return null;
 
   return (
     <motion.div className="flex h-full w-full gap-2" animate={{ opacity }}>
-      {team.heroes_ban.map((hero, index) => (
+      {(team.heroes_ban as Hero[]).map((hero, index) => (
         <HeroBanSlot
           key={`${index}-${hero.id}`}
+          colorTeam={team.color}
           hero={hero}
           index={index}
           isCurrentSlot={index === currentIndex}
-          isTurn={team.isturn}
+          is_turn={team.is_turn}
         />
       ))}
     </motion.div>
   );
 };
 
-const HeroBanSlot = ({ hero, isCurrentSlot, isTurn }: {
+const HeroBanSlot = ({ colorTeam, hero, isCurrentSlot, is_turn }: {
+  colorTeam: string | undefined;
   hero: Hero;
   index: number;
   isCurrentSlot: boolean;
-  isTurn: boolean;
+  is_turn: boolean;
 }) => {
   const showImage = hero.id !== null;
   const showX = hero.id === null && hero.selected === true;
 
   return (
     <motion.div
-      className={`relative h-full w-full overflow-hidden border ${isCurrentSlot && isTurn ? 'border-red' : 'border-white border-opacity-5'
+      className={`relative h-full w-full overflow-hidden ${isCurrentSlot ? 'border-opacity-0' : 'border border-zinc-400 border-opacity-5'
         } bg-black bg-opacity-20`}
     >
-      {isCurrentSlot && isTurn && <BorderAnimation />}
+      {isCurrentSlot && is_turn && <BorderAnimation />}
       {showImage ? (
         <>
           <p className={clsx('absolute z-50 w-full h-full flex justify-center items-center font-semibold text-xs tracking-wider')}>{hero.name}</p>
+          {!isCurrentSlot ? (
+            <div className='bg-zinc-950 opacity-25 z-40 absolute top-0 left-0 w-full h-full mix-blend-multiply'></div>
+          ) : (
+              
+            <div className='bg-red-500 z-40 opacity-30 absolute top-0 left-0 w-full h-full mix-blend-overlay'></div>
+              
+          )}
           <motion.div
             className='w-full h-full flex justify-center items-center'
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ defaultTransition }}
+            animate={{ x: 0, opacity: 1 }}
+            initial={{ x: colorTeam === 'blue' ? -5 : 5, opacity: 0 }}
+            transition={{ defaultTransition, duration: 0.12 }}
           >
             <HeroImage hero={hero} isCurrentSlot={isCurrentSlot} />
           </motion.div>
@@ -101,11 +88,12 @@ const HeroBanSlot = ({ hero, isCurrentSlot, isTurn }: {
 const BorderAnimation = () => (
   <motion.div
     className="glow-red-10 absolute inset-0 z-10 border border-red bg-opacity-10 bg-gradient-to-t from-red to-transparent"
-    animate={{ opacity: [0.5, 1] }}
+    animate={{ opacity: [0.2, 0.6] }}
     transition={{
       duration: 1,
       repeat: Infinity,
       repeatType: 'reverse',
+      defaultTransition,
     }}
   />
 );
@@ -118,19 +106,21 @@ const HeroImage = ({ hero, isCurrentSlot }: { hero: Hero; isCurrentSlot: boolean
       animate={{ scale: isCurrentSlot ? 1.25 : 1 }}
       transition={{ duration: 0.4, ease: [1, -0.6, 0.3, 1.2] }}
     >
-      <ExtendedImage
-        alt={hero.name}
-        type="tiles"
-        src={hero.id!}
-        style={{ objectPosition: 'center', objectFit: 'cover' }}
-        fill
-      />
+      {hero.id && (
+        <ExtendedImage
+          alt={hero.id}
+          type="tiles"
+          src={hero.id!}
+          style={{ objectPosition: 'center', objectFit: 'cover' }}
+          fill
+        />
+      )}
     </motion.div>
   </>
 );
 
 const EmptySelectedSlot = () => (
-  <div className="bg-zinc-900 bg-opacity-10 h-full w-full flex justify-center items-center">
+  <div className="bg-zinc-800 bg-opacity-10 h-full w-full flex justify-center items-center">
     <svg
       width="32"
       height="33"

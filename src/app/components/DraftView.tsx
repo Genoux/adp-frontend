@@ -4,11 +4,7 @@ import TeamPicks from '@/app/components/team/TeamPicks';
 import useTeams from '@/app/hooks/useTeams';
 import clsx from 'clsx';
 
-interface DraftViewProps {
-  className?: string | '';
-}
-
-const DraftView: React.FC<DraftViewProps> = ({ className }) => {
+const DraftView = ({ className }: { className?: string }) => {
   const { redTeam, blueTeam } = useTeams();
 
   return (
@@ -19,13 +15,13 @@ const DraftView: React.FC<DraftViewProps> = ({ className }) => {
       )}
     >
       <div className="grid max-h-[100px] min-h-[100px] w-full grid-cols-3 items-center">
-        <TeamBans team={blueTeam} />
+        <TeamBans team={blueTeam!} />
         <ConfirmButton />
-        <TeamBans team={redTeam} />
+        <TeamBans team={redTeam!} />
       </div>
       <div className="grid h-full w-full grid-cols-2 gap-12">
-        <TeamPicks team={blueTeam} />
-        <TeamPicks team={redTeam} />
+        <TeamPicks team={blueTeam!} />
+        <TeamPicks team={redTeam!} />
       </div>
     </div>
   );

@@ -14,11 +14,10 @@ let socket: Socket | null = null;
 let retryInterval: NodeJS.Timeout | null = null;
 
 export default function useSocket(
-  roomid?: string,
-  teamid?: string,
+  roomid?: number,
   handlers: SocketHandlers = {}
 ) {
-  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [, forceUpdate] = useState({});
 
   useEffect(() => {
     if (!socket && roomid) {
@@ -30,11 +29,9 @@ export default function useSocket(
         if (!socket?.connected) {
           console.log('Attempting to reconnect...');
           socket?.connect();
-        } else {
-          if (retryInterval) {
-            clearInterval(retryInterval);
-            retryInterval = null;
-          }
+        } else if (retryInterval) {
+          clearInterval(retryInterval);
+          retryInterval = null;
         }
       };
 
@@ -43,14 +40,13 @@ export default function useSocket(
           clearInterval(retryInterval);
           retryInterval = null;
         }
-        setIsConnected(true);
-
-        socket?.emit('joinRoom', { roomid, teamid });
+        socket?.emit('joinRoom', { roomid });
         console.log('Successfully joined room ' + roomid);
+        forceUpdate({});  // Force a re-render to update the UI
       });
 
       socket.on('disconnect', () => {
-        setIsConnected(false); // Update connection status on disconnect
+        forceUpdate({});  // Force a re-render to update the UI
       });
 
       socket.on('connect_error', () => {
@@ -59,27 +55,25 @@ export default function useSocket(
           retryInterval = setInterval(tryConnect, 2000);
         }
       });
+    }
 
-      if (handlers.eventHandlers) {
-        handlers.eventHandlers.forEach(({ eventName, eventHandler }) => {
-          socket?.on(eventName, eventHandler);
-        });
-      }
-    } else {
-      setIsConnected(socket?.connected || false);
+    if (socket && handlers.eventHandlers) {
+      handlers.eventHandlers.forEach(({ eventName, eventHandler }) => {
+        if (!socket) return;
+        console.log('Adding event handler for ' + eventName);
+        socket.on(eventName, eventHandler);
+      });
     }
 
     return () => {
-      if (retryInterval) {
-        clearInterval(retryInterval);
-        retryInterval = null;
-      }
-      if (socket && roomid) {
-        socket.disconnect();
-        socket = null;
-      }
+      handlers.eventHandlers?.forEach(({ eventName, eventHandler }) => {
+        socket?.off(eventName, eventHandler);
+      });
     };
-  }, [handlers.eventHandlers, roomid, teamid]);
+  }, [roomid, handlers.eventHandlers]);
 
-  return { socket, isConnected }; // Return the socket
+  return {
+    socket,
+    isConnected: socket?.connected || false
+  };
 }
