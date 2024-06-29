@@ -84,12 +84,12 @@ export default function Room({ params: { roomID, teamID } }: RoomProps) {
       {process.env.NODE_ENV === 'development' && <StateControllerButtons roomID={roomIDNumber} />}
       <div className={clsx('h-screen', {
           'flex flex-col': room.status === 'select' || room.status === 'ban',
-          'flex flex-col h-1/2 ': room.status === 'planning',
+          'flex flex-col h-1/2 pt-4': room.status === 'planning',
         })}
       >
         {ViewComponent && <ViewComponent />}
         {room.status === 'planning' && (
-          <NoticeBanner className='' message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
+          <NoticeBanner className='mt-4' message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
         )}
       </div>
     </main>

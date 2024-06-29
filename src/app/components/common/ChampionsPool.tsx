@@ -19,13 +19,13 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   const { currentTeam } = useTeams();
   const { updateTeam } = useTeamStore();
   const currentHero = useCurrentHero();
-  const canInteract = currentTeam?.can_select && currentTeam.is_turn;
+  const canInteract = currentTeam?.can_select && currentTeam?.is_turn && room?.status !== 'planning';
   const [hoveredHero, setHoveredHero] = useState<string | null>(null);
 
   if (!room) {
     throw new Error('Room is not initialized');
   }
-  
+
   const debouncedSetHoveredHero = useMemo(
     () => debounce((heroId: string | null) => setHoveredHero(heroId), DEBOUNCE_TIME),
     []
@@ -38,10 +38,9 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   }, [canInteract]);
 
   const handleHoveredHero = useCallback(async (heroID: string | null) => {
-    if (!canInteract && room.status !== 'planning') return;
-    //debounce
+    if (!canInteract) return;
     debouncedSetHoveredHero(heroID);
-  }, [canInteract, debouncedSetHoveredHero, room.status]);
+  }, [canInteract, debouncedSetHoveredHero]);
 
   const debouncedHandleClickedHero = useMemo(
     () => debounce((hero: Hero) => {
@@ -95,7 +94,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{defaultTransition, duration: 0.1}}
+                transition={{ defaultTransition, duration: 0.1 }}
                 className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
               >
                 <p className="flex h-full text-center w-full items-center justify-center text-xs font-bold">
@@ -122,7 +121,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
               animate={{
                 scale: isHovered && !isSelected ? 1.2 : 1,
               }}
-              transition={{ defaultTransition, duration: 0.1}}
+              transition={{ defaultTransition, duration: 0.1 }}
               className="relative overflow-hidden"
             >
               {hero.id && (

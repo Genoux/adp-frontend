@@ -4,7 +4,6 @@ import React, { useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { View } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
-import LoadingCircle from '@/app/components/common/LoadingCircle';
 import AnimatedDot from '@/app/components/common/AnimatedDot';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';

@@ -8,12 +8,15 @@ type Hero = Database["public"]["CompositeTypes"]["hero"];
 
 export const runtime = 'edge';
 
+const nameMapping: { [key: string]: string } = {
+  "Fiddlesticks": "FiddleSticks",
+};
+
 const fetchChampions = cache(async (): Promise<Hero[]> => {
   const response = await fetch('https://ddragon.leagueoflegends.com/cdn/14.13.1/data/en_US/champion.json');
   const data = await response.json();
-  
   return Object.values(data.data).map((champion: any) => ({
-    id: champion.id,
+    id: nameMapping[champion.id] || champion.id,  // Use the mapped name if it exists
     name: champion.name,
     selected: false,
   }));
