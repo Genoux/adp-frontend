@@ -1,3 +1,5 @@
+//TODO: On dev sometime realtime wont connect we need to handle that
+
 'use client'
 
 import React, { useEffect, useState, useCallback } from 'react';

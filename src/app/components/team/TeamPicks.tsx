@@ -6,10 +6,8 @@ import ExtendedImage from '@/app/components/common/ExtendedImage';
 import { Database } from '@/app/types/supabase';
 import defaultTransition from '@/app/lib/animationConfig';
 
+type Team = Database["public"]["Tables"]["teams"]["Row"];
 type Hero = Database["public"]["CompositeTypes"]["hero"];
-type Team = Database["public"]["Tables"]["teams"]["Row"] & {
-  heroes_selected: Hero[];
-};
 type RoomStatus = Pick<Database["public"]["Tables"]["rooms"]["Row"], "status">;
 
 const TeamPicks = ({ team }: { team: Team }) => {
@@ -33,7 +31,7 @@ const TeamPicks = ({ team }: { team: Team }) => {
 
   return (
     <motion.div className="flex h-full w-full gap-2" animate={{ opacity }}>
-      {(team.heroes_selected).map((hero, index) => (
+      {(team.heroes_selected as Hero[]).map((hero, index) => (
         <HeroPickSlot
           key={`${index}-${hero.id}`}
           room={room!}

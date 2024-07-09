@@ -1,4 +1,4 @@
-//TODO: Fix glitch loading when confirming selection
+//TODO: Fix glitch loading when confirming selection and prevent click if current hero is null
 
 import React, { useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
@@ -78,7 +78,8 @@ const ConfirmButton: React.FC = () => {
           size="lg"
           onClick={debouncedHandleConfirmSelection}
           className="w-64"
-          disabled={currentHero?.id === null && !currentTeam?.can_select}
+          variant={currentHero?.id === null ? 'default' : 'outline'}
+          disabled={currentHero?.id === null || !currentTeam?.can_select}
         >
           {buttonText}
         </Button>
