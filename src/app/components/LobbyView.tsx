@@ -11,7 +11,6 @@ import useTeams from '@/app/hooks/useTeams';
 import { supabase } from '@/app/lib/supabase/client';
 import LoadingCircle from '@/app/components/common/LoadingCircle';
 import AnimatedDot from '@/app/components/common/AnimatedDot';
-import ErrorMessage from '@/app/components/common/ErrorMessage';
 import { Database } from '@/app/types/supabase';
 
 type Team = Database["public"]["Tables"]["teams"]["Row"];
@@ -26,9 +25,6 @@ type ReadyButtonProps = {
   clicked: boolean;
   onReadyClick: () => void;
 }
-
-// Utility functions
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const isTeamReady = (team: Team) => team.ready;
 
@@ -99,7 +95,6 @@ const LobbyView: React.FC = () => {
 
   const handleReadyClick = useCallback(async () => {
     setClicked(true);
-    await sleep(500);
 
     if (!currentTeam || currentTeam.id === undefined) {
       throw new Error('Current team or team ID is undefined');
@@ -130,7 +125,7 @@ const LobbyView: React.FC = () => {
   }, [currentTeam, socket, toast]);
 
   if (!currentTeam || !redTeam || !blueTeam || !socket) {
-    return <ErrorMessage />;
+    throw new Error('Current team or team ID is undefined');
   }
 
   return (

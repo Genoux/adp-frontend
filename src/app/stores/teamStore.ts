@@ -30,12 +30,12 @@ const useTeamStore = create<TeamState>((set) => {
   };
 
   const subscribeToTeams = async (teams: Team[]): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      let subscribedCount = 0;
-      const totalTeams = teams.length;
-
-      teams.forEach((team) => {
-        if (!subscriptions[team.id]) {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 5000; // 5 seconds
+  
+    const subscribeWithRetry = async (team: Team, retries = 0): Promise<void> => {
+      try {
+        return new Promise((resolve, reject) => {
           const channel = supabase
             .channel(team.id.toString())
             .on(
@@ -50,24 +50,25 @@ const useTeamStore = create<TeamState>((set) => {
             )
             .subscribe((status, err) => {
               if (err) {
-                console.error('.subscribe - err TEAM:', err);
-                reject(err);
+                console.error(`.subscribe - err TEAM (attempt ${retries + 1}):`, err);
+                if (retries < MAX_RETRIES) {
+                  setTimeout(() => subscribeWithRetry(team, retries + 1), RETRY_DELAY);
+                } else {
+                  reject(err);
+                }
               } else {
                 subscriptions[team.id] = () => channel.unsubscribe();
-                subscribedCount++;
-                if (subscribedCount === totalTeams) {
-                  resolve();
-                }
+                resolve();
               }
             });
-        } else {
-          subscribedCount++;
-          if (subscribedCount === totalTeams) {
-            resolve();
-          }
-        }
-      });
-    });
+        });
+      } catch (error) {
+        console.error(`Failed to subscribe to team ${team.id} after ${MAX_RETRIES} attempts:`, error);
+        throw error;
+      }
+    };
+  
+    await Promise.all(teams.map(team => subscribeWithRetry(team)));
   };
 
   return {

@@ -1,7 +1,5 @@
-//TODO: Fix glitch loading when confirming selection and prevent click if current hero is null
-
 import React, { useCallback, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { View } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import AnimatedDot from '@/app/components/common/AnimatedDot';
@@ -22,6 +20,7 @@ const ConfirmButton: React.FC = () => {
 
   const handleConfirmSelection = useCallback(async () => {
     if (!currentTeam?.can_select) return;
+
     try {
       const { data, error } = await supabase
         .from('teams')
@@ -55,7 +54,6 @@ const ConfirmButton: React.FC = () => {
 
   const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection';
 
-
   const TurnWaitingState = () => (
     <div className="flex w-full flex-col items-center justify-center">
       <p className="text-sm opacity-80">{"Ce n'est pas votre tour"}</p>
@@ -67,26 +65,28 @@ const ConfirmButton: React.FC = () => {
   );
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.15, delay: 0.2 }}
-      className="flex w-full justify-center"
-    >
-      {currentTeam.is_turn ? (
-        <Button
-          size="lg"
-          onClick={debouncedHandleConfirmSelection}
-          className="w-64"
-          variant={currentHero?.id === null ? 'default' : 'outline'}
-          disabled={currentHero?.id === null || !currentTeam?.can_select}
-        >
-          {buttonText}
-        </Button>
-      ) : (
-        <TurnWaitingState />
-      )}
-    </motion.div>
+    <AnimatePresence mode='wait'>
+      <motion.div
+        initial={{ y: 2, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.15 }}
+        className="flex w-full justify-center"
+      >
+        {currentTeam.is_turn ? (
+          <Button
+            size="lg"
+            onClick={debouncedHandleConfirmSelection}
+            className="w-64"
+            variant={currentHero?.id === null ? 'outline' : 'default'}
+            disabled={currentHero?.id === null || !currentTeam?.can_select}
+          >
+            {!currentTeam?.can_select ? <AnimatedDot /> : <>{buttonText}</>}
+          </Button>
+        ) : (
+          <TurnWaitingState />
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

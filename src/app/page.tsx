@@ -100,7 +100,7 @@ function Home() {
             onClick={() => {setRoom(null);}}
             className='flex w-full justify-center'
           >
-            <Button size={'sm'} variant={'outline'}>{'Nouvelle chambre'}</Button>
+            <Button size={'sm'} variant={'default'}>{'Nouvelle chambre'}</Button>
           </motion.div>
         </div>
       );
