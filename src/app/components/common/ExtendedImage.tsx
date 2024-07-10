@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { decode } from 'blurhash';
 import blurhashes from '@/app/data/blurhashes.json';
 
-const baseURL = 'https://ddragon.leagueoflegends.com/cdn/img/champion';
+//const baseURL = 'https://ddragon.leagueoflegends.com/cdn/img/champion';
 
 interface ExtendedImageProps extends ImageProps {
   src: string;
@@ -12,7 +12,13 @@ interface ExtendedImageProps extends ImageProps {
 }
 
 const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt, width, height, ...props }) => {
-  const imageUrl = `${baseURL}/${type}/${src}_0.jpg`;
+  //const imageUrl = `${baseURL}/${type}/${src}_0.jpg`;
+
+  const imageUrl = useMemo(() =>
+    `https://ddragon.leagueoflegends.com/cdn/img/champion/${type}/${src}_0.jpg`,
+    [type, src]
+  );
+
   const blurHash = (blurhashes as Record<string, string>)[src] || '';
   const blurDataURL = useMemo(() => {
     if (!blurHash) return undefined;
@@ -45,6 +51,7 @@ const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt
       width={width}
       height={height}
       sizes='100vw'
+      priority
       quality={80}
       {...props}
     />

@@ -77,7 +77,7 @@ const ConfirmButton: React.FC = () => {
             size="lg"
             onClick={debouncedHandleConfirmSelection}
             className="w-64"
-            variant={currentHero?.id === null ? 'outline' : 'default'}
+            variant={currentHero?.id === null || !currentTeam?.can_select ? 'outline' : 'default'}
             disabled={currentHero?.id === null || !currentTeam?.can_select}
           >
             {!currentTeam?.can_select ? <AnimatedDot /> : <>{buttonText}</>}

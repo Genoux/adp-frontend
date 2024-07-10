@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState, useMemo } from 'react';
 import useRoomStore from '@/app/stores/roomStore';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
@@ -55,7 +55,7 @@ type HeroBanSlotProps = {
   is_turn: boolean;
 }
 
-const HeroBanSlot = ({ room, colorTeam, hero, isCurrentSlot, is_turn }: HeroBanSlotProps ) => {
+const HeroBanSlot = ({ room, colorTeam, hero, isCurrentSlot, is_turn }: HeroBanSlotProps) => {
   const borderAnimation = isCurrentSlot && is_turn && room.status === 'ban';
 
   return (
@@ -70,18 +70,21 @@ const HeroBanSlot = ({ room, colorTeam, hero, isCurrentSlot, is_turn }: HeroBanS
           {!isCurrentSlot ? (
             <div className='bg-zinc-950 opacity-25 z-40 absolute top-0 left-0 w-full h-full mix-blend-multiply'></div>
           ) : (
-              
+
             <div className='bg-red-500 z-40 opacity-30 absolute top-0 left-0 w-full h-full mix-blend-overlay'></div>
-              
+
           )}
-          <motion.div
-            className='w-full h-full flex justify-center items-center'
-            animate={{ x: 0, opacity: 1 }}
-            initial={{ x: colorTeam === 'blue' ? -5 : 5, opacity: 0 }}
-            transition={{ defaultTransition, duration: 0.12 }}
-          >
-            <HeroImage hero={hero} isCurrentSlot={isCurrentSlot} />
-          </motion.div>
+          <AnimatePresence mode='wait'>
+            <motion.div
+              className='w-full h-full flex justify-center items-center'
+              initial={{ x: colorTeam === 'blue' ? -10 : 10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ defaultTransition, duration: 0.2 }}
+              exit={{ x: colorTeam === 'blue' ? -10 : 10, opacity: 0 }}
+            >
+              <HeroImage hero={hero} isCurrentSlot={isCurrentSlot} />
+            </motion.div>
+          </AnimatePresence>
         </>
       ) : hero.id === null && hero.selected === true ? (
         <EmptySelectedSlot />
@@ -106,7 +109,7 @@ const BorderAnimation = () => (
 const HeroImage = ({ hero, isCurrentSlot }: { hero: Hero; isCurrentSlot: boolean }) => (
   <>
     <motion.div
-      className="h-full w-full grayscale"
+      className="h-full w-full grayscale relative"
       initial={{ scale: 1.25 }}
       animate={{ scale: isCurrentSlot ? 1.25 : 1 }}
       transition={{ duration: 0.4, ease: [1, -0.6, 0.3, 1.2] }}

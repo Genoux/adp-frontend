@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState, useMemo } from 'react';
 import useTeams from '@/app/hooks/useTeams';
 import useRoomStore from '@/app/stores/roomStore';
@@ -55,7 +55,7 @@ interface HeroPickSlotProps {
   is_turn: boolean;
 }
 
-const HeroPickSlot: React.FC<HeroPickSlotProps> = ({room, colorTeam, hero, isCurrentSlot, is_turn }) => {
+const HeroPickSlot: React.FC<HeroPickSlotProps> = ({ room, colorTeam, hero, isCurrentSlot, is_turn }) => {
   const borderAnimation = isCurrentSlot && is_turn && room.status === 'select';
 
   return (
@@ -67,17 +67,21 @@ const HeroPickSlot: React.FC<HeroPickSlotProps> = ({room, colorTeam, hero, isCur
       {hero.id && (
         <>
           <p className='absolute z-50 w-full h-full flex justify-center text-center items-end pb-6 font-semibold text-sm tracking-wide'>{hero.name}</p>
-          <motion.div
-            className='absolute z-20 w-full h-full'
-            animate={{ x: 0, opacity: 1 }}
-            initial={{ x: colorTeam === 'blue' ? -5 : 5, opacity: 0 }}
-            transition={{ duration: 0.12, defaultTransition }}
-          >
-            <HeroImage
-              hero={hero}
-              isCurrentSlot={isCurrentSlot}
-            />
-          </motion.div>
+          <AnimatePresence mode='wait'>
+            <motion.div
+              key={hero.id}
+              className='absolute z-20 w-full h-full'
+              animate={{ x: 0, opacity: 1 }}
+              initial={{ x: colorTeam === 'blue' ? -10 : 10, opacity: 0 }}
+              transition={{ defaultTransition, duration: 0.2 }}
+              exit={{ x: colorTeam === 'blue' ? -10 : 10, opacity: 0 }}
+            >
+              <HeroImage
+                hero={hero}
+                isCurrentSlot={isCurrentSlot}
+              />
+            </motion.div>
+          </AnimatePresence>
         </>
       )}
     </motion.div>

@@ -1,6 +1,3 @@
-//TODO: Fix error fetching room Error fetching room: 
-//Object { code: "22P02", details: null, hint: null, message: 'invalid input syntax for type bigint: "NaN"' }
-
 'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
@@ -18,6 +15,11 @@ import FinishView from '@/app/components/FinishView';
 import SelectionsView from '@/app/components/SelectionsView';
 import DraftView from '@/app/components/DraftView';
 import clsx from 'clsx';
+import { Database } from '@/app/types/supabase';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
+
+type Hero = Database["public"]["CompositeTypes"]["hero"];
+type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
 type RoomProps = {
   params: {
@@ -51,6 +53,25 @@ const viewComponents = {
   ban: DraftingView,
 };
 
+const Preload = ({ champions }: { champions: Hero[] }) => {
+  return (
+    <>
+      {champions.map((champ) => (
+        <ExtendedImage
+          key={champ.id}
+          rel="preload"
+          src={champ.id || ''}
+          alt={champ.id || ''}
+          type='splash'
+          width={1380}
+          height={1380}
+          className='hidden invisible'
+        />
+      ))}
+    </>
+  );
+};
+
 export default function Room({ params: { roomID, teamID } }: RoomProps) {
   const roomIDNumber = parseInt(roomID, 10);
   const teamIDNumber = parseInt(teamID, 10);
@@ -82,8 +103,10 @@ export default function Room({ params: { roomID, teamID } }: RoomProps) {
 
   const ViewComponent = viewComponents[room.status as keyof typeof viewComponents];
 
+
   return (
     <main>
+      <Preload champions={room.heroes_pool as Hero[]} />
       {process.env.NODE_ENV === 'development' && <StateControllerButtons roomID={roomIDNumber} />}
       <div className={clsx('h-screen', {
           'flex flex-col': room.status === 'select' || room.status === 'ban',
