@@ -68,6 +68,7 @@ const useRoomStore = create<RoomState>((set) => {
     isLoading: false,
     error: null,
     fetchRoom: async (roomID: number) => {
+      console.log('fetchRoom', roomID);
       set({ isLoading: true, error: null });
       try {
         const { data: room, error } = await supabase

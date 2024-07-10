@@ -1,3 +1,6 @@
+//TODO: Fix error fetching room Error fetching room: 
+//Object { code: "22P02", details: null, hint: null, message: 'invalid input syntax for type bigint: "NaN"' }
+
 'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
