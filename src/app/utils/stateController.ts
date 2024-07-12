@@ -19,13 +19,13 @@ const requestOptions: RequestInit = {
   redirect: 'follow' as RequestRedirect | undefined,
 };
 
-async function resetArray(roomid: string): Promise<void> {
+async function resetArray(roomID: number): Promise<void> {
   try {
     // Fetch current heroes_pool from the room
     const { data: room, error: fetchError } = await supabase
       .from('rooms')
       .select('heroes_pool')
-      .eq('id', roomid)
+      .eq('id', roomID)
       .single();
 
     if (fetchError || !room) {
@@ -41,19 +41,19 @@ async function resetArray(roomid: string): Promise<void> {
     const { error: updateError } = await supabase
       .from('rooms')
       .update({ heroes_pool: updatedHeroesPool })
-      .eq('id', roomid);
+      .eq('id', roomID);
 
     if (updateError) {
       throw new Error('Error updating heroes pool');
     }
 
-    const resetSelected = Array(5).fill({ name: null, selected: false });
-    const resetBan = Array(3).fill({ name: null, selected: false });
+    const resetSelected = Array(5).fill({ id: null, name: null, selected: false });
+    const resetBan = Array(3).fill({ id: null, name: null, selected: false });
 
     const { error: resetError } = await supabase
       .from('teams')
       .update({ heroes_selected: resetSelected, heroes_ban: resetBan })
-      .eq('room', roomid);
+      .eq('room_id', roomID);
 
     if (resetError) {
       throw new Error('Error resetting team selections and bans');
@@ -63,12 +63,12 @@ async function resetArray(roomid: string): Promise<void> {
   }
 }
 
-export async function setWaiting(roomid: string): Promise<void> {
+export async function setWaiting(roomID: number): Promise<void> {
   try {
-    await resetArray(roomid);
+    await resetArray(roomID);
 
     const response = await fetch(
-      `${local}/api/waiting?roomid=${roomid}`,
+      `${local}/api/waiting?roomID=${roomID}`,
       requestOptions
     );
 
@@ -80,10 +80,9 @@ export async function setWaiting(roomid: string): Promise<void> {
   }
 }
 
-export async function setPlanning(roomid: string): Promise<void> {
-  console.log('setPlanning - roomid:', roomid);
+export async function setPlanning(roomID: number): Promise<void> {
   try {
-    const response = await fetch(`${local}/api/planning?roomid=${roomid}`, {
+    const response = await fetch(`${local}/api/planning?roomID=${roomID}`, {
       method: 'POST',
     });
 
@@ -91,13 +90,16 @@ export async function setPlanning(roomid: string): Promise<void> {
       throw new Error('Error setting planning phase');
     }
   } catch (error) {
-    console.error('Error setting planning phase:', error);
+    console.error(error);
   }
 }
 
-export async function setDraft(roomid: string): Promise<void> {
+export async function setDraft(roomID: number): Promise<void> {
+  
+  await resetArray(roomID);
+  
   try {
-    const response = await fetch(`${local}/api/draft?roomid=${roomid}`, {
+    const response = await fetch(`${local}/api/draft?roomID=${roomID}`, {
       method: 'POST',
     });
 
@@ -109,23 +111,23 @@ export async function setDraft(roomid: string): Promise<void> {
   }
 }
 
-export async function userTrigger(roomid: string): Promise<void> {
+export async function userTrigger(roomID: number): Promise<void> {
   try {
-    const response = await fetch(`${local}/api/usertrigger?roomid=${roomid}`, {
+    const response = await fetch(`${local}/api/usertrigger?roomID=${roomID}`, {
       method: 'POST',
     });
 
     if (!response.ok) {
-      throw new Error('Error setting finish phase');
+      throw new Error('Error setting Draft phase');
     }
   } catch (error) {
-    console.error('Error setting finish phase:', error);
+    console.error(error);
   }
 }
 
-export async function setFinish(roomid: string): Promise<void> {
+export async function setFinish(roomID: number): Promise<void> {
   try {
-    const response = await fetch(`${local}/api/done?roomid=${roomid}`, {
+    const response = await fetch(`${local}/api/done?roomID=${roomID}`, {
       method: 'POST',
     });
 
@@ -133,6 +135,6 @@ export async function setFinish(roomid: string): Promise<void> {
       throw new Error('Error setting finish phase');
     }
   } catch (error) {
-    console.error('Error setting finish phase:', error);
+    console.error(error);
   }
 }

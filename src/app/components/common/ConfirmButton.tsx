@@ -1,117 +1,92 @@
-// ConfirmButton.tsx
-import LoadingCircle from '@/app/components/common/LoadingCircle';
+import React, { useCallback, useMemo } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { View } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
+import AnimatedDot from '@/app/components/common/AnimatedDot';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
-import { roomStore } from '@/app/stores/roomStore';
-import { motion } from 'framer-motion';
-import { View } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { PostgrestError } from '@supabase/supabase-js';
-import { Bug } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/app/components/ui/alert-dialog"
+import useRoomStore from '@/app/stores/roomStore';
+import useCurrentHero from '@/app/hooks/useCurrentHero';
+import { supabase } from '@/app/lib/supabase/client';
+import debounce from 'lodash/debounce';
 
-const ConfirmButton = () => {
-  const { socket } = useSocket()
-  const { room, isLoading } = roomStore();
-  const { currentTeam: team, otherTeam } = useTeams();
-  const [err, setErr] = useState(false);
-  const [errMessage, setErrMessage] = useState<PostgrestError>();
+const DEBOUNCE_TIME = 300; // ms
 
-  useEffect(() => {
-    if (socket) {
-      socket.on('err', (data) => {
-        setErrMessage(data);
-        setErr(true);
-      });
+const ConfirmButton: React.FC = () => {
+  const { socket } = useSocket();
+  const { room, isLoading } = useRoomStore();
+  const { currentTeam } = useTeams();
+  const currentHero = useCurrentHero();
+
+  const handleConfirmSelection = useCallback(async () => {
+    if (!currentTeam?.can_select) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('teams')
+        .update({ can_select: false })
+        .eq('id', currentTeam?.id)
+        .select('*');
+      if (error) throw error;
+      if (data) {
+        socket?.emit('SELECT_CHAMPION', {
+          roomid: room?.id,
+        });
+      }
+    } catch (error) {
+      console.error('Error confirming selection:', error);
     }
-  }, [socket]);
+  }, [currentTeam, room, socket]);
 
-  if (isLoading) return <div>Loading...</div>;
+  const debouncedHandleConfirmSelection = useMemo(
+    () => debounce(handleConfirmSelection, DEBOUNCE_TIME, { leading: true, trailing: false }),
+    [handleConfirmSelection]
+  );
 
-  if (!team)
+  if (isLoading || !socket) return <div>Loading...</div>;
+  if (!currentTeam)
     return (
       <div className="flex flex-col items-center justify-center gap-2">
         <View size={21} />
         <p className="text-center uppercase">spectateur</p>
       </div>
     );
-  const currentTeam = team.isturn ? team : otherTeam;
-  const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection'
 
-  const handleConfirmSelection = async () => {
-    if (socket) {
-      socket.emit('SELECT_CHAMPION', {
-        teamid: team?.id,
-        roomid: room?.id,
-        selectedChampion: currentTeam?.clicked_hero,
-      });
-    }
-  };
+  const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection';
+
+  const TurnWaitingState = () => (
+    <div className="flex w-full flex-col items-center justify-center">
+      <p className="text-sm opacity-80">{"Ce n'est pas votre tour"}</p>
+      <div className="text-md px-12 text-center font-medium flex gap-0.5">
+        <p className="whitespace-nowrap">{`En attente de l'autre équipe`}</p>
+        <AnimatedDot />
+      </div>
+    </div>
+  );
 
   return (
-    <>
-      <AlertDialog open={err}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className='flex gap-2'><Bug /> Une erreur est survenue du côté serveur.</AlertDialogTitle>
-            <AlertDialogDescription>
-              Veuillez recharger la page et réessayer. Si le problème persiste, veuillez contacter un administrateur.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <pre>ERR: {errMessage?.code}</pre>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => {
-              window.location.reload()
-              setErr(false);
-            }}>Refresh</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+    <AnimatePresence mode='wait'>
       <motion.div
-        initial={{ opacity: 0 }} // start at half the size
-        animate={{ opacity: 1 }} // animate to full size
-        transition={{ duration: 0.15, delay: 0.2 }}
+        initial={{ y: 2, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.15 }}
         className="flex w-full justify-center"
       >
-        {team.isturn ? (
-          <div>
-            <Button
-              size="lg"
-              onClick={handleConfirmSelection}
-              className="w-64"
-              disabled={!currentTeam?.clicked_hero || !team.canSelect}
-            >
-              {!team.canSelect ? (
-                <LoadingCircle color="black" size="w-4 h-4" />
-              ) : (
-                <>{buttonText}</>
-              )}
-            </Button>
-          </div>
+        {currentTeam.is_turn ? (
+          <Button
+            size="lg"
+            onClick={debouncedHandleConfirmSelection}
+            className="w-64"
+            variant={currentHero?.id === null || !currentTeam?.can_select ? 'outline' : 'default'}
+            disabled={currentHero?.id === null || !currentTeam?.can_select}
+          >
+            {!currentTeam?.can_select ? <AnimatedDot /> : <>{buttonText}</>}
+          </Button>
         ) : (
-          <div className="flex w-full flex-col items-center justify-center">
-            <p className="text-sm opacity-80">Ce n’est pas votre tour</p>
-            <div className="text-md px-12 text-center font-medium">
-              {`En attente de l'autre équipe`}
-              <div className="sending-animation ">
-                <span className="sending-animation-dot">.</span>
-                <span className="sending-animation-dot">.</span>
-                <span className="sending-animation-dot">.</span>
-              </div>
-            </div>
-          </div>
+          <TurnWaitingState />
         )}
       </motion.div>
-    </>
+    </AnimatePresence>
   );
 };
 

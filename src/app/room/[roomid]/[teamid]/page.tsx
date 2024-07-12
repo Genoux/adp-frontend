@@ -1,115 +1,123 @@
 'use client';
-
-import '@/app/utils/strings';
-import ErrorMessage from '@/app/components/common/ErrorMessage';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import useSocket from '@/app/hooks/useSocket';
+import useRoomStore from '@/app/stores/roomStore';
+import useTeamStore from '@/app/stores/teamStore';
+import defaultTransition from '@/app/lib/animationConfig';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
-import DraftView from '@/app/components/DraftView';
-import FinishView from '@/app/components/FinishView';
+import StateControllerButtons from '@/app/components/common/StateControllerButtons';
 import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
-import TeamView from '@/app/components/TeamView';
-import { defaultTransition } from '@/app/lib/animationConfig';
-import { roomStore } from '@/app/stores/roomStore';
-import useTeamStore from '@/app/stores/teamStore';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect } from 'react';
-import useSocket from '@/app/hooks/useSocket';
-import StateControllerButtons from '@/app/components/common/StateControllerButtons';
+import FinishView from '@/app/components/FinishView';
+import SelectionsView from '@/app/components/SelectionsView';
+import DraftView from '@/app/components/DraftView';
+import clsx from 'clsx';
+import { Database } from '@/app/types/supabase';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
 
-interface RoomProps {
+type Hero = Database["public"]["CompositeTypes"]["hero"];
+type Room = Database["public"]["Tables"]["rooms"]["Row"];
+
+type RoomProps = {
   params: {
     roomid: string;
     teamid: string;
   };
-}
+};
 
-export default function Room({ params }: RoomProps) {
-  const { roomid, teamid } = params;
-  const { isConnected } = useSocket(roomid, teamid);
-  const { fetchTeams, isLoading: isLoadingTeams, error: errorTeams, setCurrentTeamId } = useTeamStore();
-  const { fetchRoom, room, isLoading: isLoadingRoom, error: errorRoom } = roomStore();
+const DraftingView = () => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ defaultTransition, duration: 0.3, delay: 0.5 }}
+    className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
+    <RoomStatusBar className="z-90 fixed left-0 top-0" />
+    <section className="flex h-full flex-col gap-4 py-4">
+      <div className="h-16"></div>
+      <div className="z-10 flex h-full flex-col justify-between px-4 gap-4">
+        <SelectionsView />
+        <DraftView />
+      </div>
+    </section>
+  </motion.div>
+);
+
+const viewComponents = {
+  waiting: LobbyView,
+  planning: PlanningView,
+  done: FinishView,
+  select: DraftingView,
+  ban: DraftingView,
+};
+
+const Preload = ({ champions }: { champions: Hero[] }) => {
+  return (
+    <>
+      {champions.map((champ) => (
+        <ExtendedImage
+          key={champ.id}
+          rel="preload"
+          src={champ.id || ''}
+          alt={champ.id || ''}
+          type='splash'
+          width={1380}
+          height={1380}
+          className='hidden invisible'
+        />
+      ))}
+    </>
+  );
+};
+
+export default function Room({ params: { roomid, teamid } }: RoomProps) {
+  const roomIDNumber = parseInt(roomid, 10);
+  const teamIDNumber = parseInt(teamid, 10);
+  const { isConnected } = useSocket(roomIDNumber);
+  const { fetchTeams, setCurrentTeamID } = useTeamStore();
+  const { fetchRoom, room } = useRoomStore();
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
-    fetchTeams(roomid);
-    setCurrentTeamId(teamid);
-    fetchRoom(roomid);
-  }, [fetchRoom, fetchTeams, roomid, setCurrentTeamId, teamid]);
+    const initializeRoom = async () => {
+      setCurrentTeamID(teamIDNumber);
+      await Promise.all([
+        await fetchTeams(roomIDNumber),
+        await fetchRoom(roomIDNumber)
+      ]);
+      setIsInitialLoading(false);
+    };
 
-  if (isLoadingTeams || isLoadingRoom || !isConnected) return <LoadingScreen />;
+    initializeRoom();
+  }, [fetchRoom, fetchTeams, roomIDNumber, setCurrentTeamID, teamIDNumber]);
 
-  if (errorTeams || errorRoom) return <ErrorMessage />;
+  if (isInitialLoading || !isConnected) {
+    return <LoadingScreen />;
+  }
 
-  const renderContent = () => {
-    switch (room?.status) {
-      case 'waiting':
-        return (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={defaultTransition}
-          >
-            <LobbyView />
-          </motion.div>
-        );
-      case 'planning':
-        return (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={defaultTransition}
-            className='flex flex-col gap-6 relative'
-          >
-            <PlanningView />
-            <NoticeBanner message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
-          </motion.div>
-        );
-      case 'done':
-        return (
-          <AnimatePresence mode="wait">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={defaultTransition}
-            >
-              <FinishView />
-            </motion.div>
-          </AnimatePresence>
-        );
-      case 'select':
-      case 'ban':
-        return (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={defaultTransition}
-            >
-              <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
-                <RoomStatusBar className="z-90 fixed left-0 top-0" />
-                <section className="flex h-full flex-col gap-4 pb-4 pt-4">
-                  <div className="h-14"></div>
-                  <div className="z-10 flex h-full flex-col justify-between gap-4 px-4">
-                    <TeamView />
-                    <DraftView />
-                  </div>
-                </section>
-              </div>
-            </motion.div>
-        );
-      default:
-        return null;
-    }
-  };
+  if (!room) {
+    throw new Error(`Room ${roomIDNumber} not found`);
+  }
+
+  const ViewComponent = viewComponents[room.status as keyof typeof viewComponents];
+
 
   return (
     <main>
-      {process.env.NODE_ENV === 'development' && <StateControllerButtons roomid={roomid} />}
-      {renderContent()}
+      <Preload champions={room.heroes_pool as Hero[]} />
+      {process.env.NODE_ENV === 'development' && <StateControllerButtons roomID={roomIDNumber} />}
+      <div className={clsx('h-screen', {
+          'flex flex-col': room.status === 'select' || room.status === 'ban',
+          'flex flex-col h-1/2 pt-4': room.status === 'planning',
+        })}
+      >
+        {ViewComponent && <ViewComponent />}
+        {room.status === 'planning' && (
+          <NoticeBanner className='mt-4' message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
+        )}
+      </div>
     </main>
   );
 }

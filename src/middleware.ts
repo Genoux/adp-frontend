@@ -6,33 +6,33 @@ export async function middleware(req: { nextUrl: { pathname: any; }; url: string
   const pathSegments = pathname.split('/').filter((segment: any) => segment);
 
   if (pathSegments.length >= 2) {
-    const roomId = pathSegments[1];
-    const teamId = pathSegments.length >= 3 ? pathSegments[2] : null;
+    const roomID = pathSegments[1];
+    const teamID = pathSegments.length >= 3 ? pathSegments[2] : null;
 
     try {
       // Check if the room exists
       const { data: roomData, error: roomError } = await supabase
         .from('rooms')
         .select('id')
-        .eq('id', roomId)
+        .eq('id', roomID)
         .single();
-   
+
       if (roomError || !roomData) {
         return NextResponse.redirect(new URL('/', req.url));
       }
 
       // If it's the spectator route, allow it
-      if (teamId === 'spectator') {
+      if (teamID === 'spectator') {
         return NextResponse.next();
       }
 
       // Check if the team exists in the room
-      if (teamId) {
+      if (teamID) {
         const { data: teamData, error: teamError } = await supabase
           .from('teams')
           .select('id')
-          .eq('id', teamId)
-          .eq('room', roomId)
+          .eq('id', teamID)
+          .eq('room_id', roomID)
           .single();
 
         if (teamError || !teamData) {
@@ -49,5 +49,5 @@ export async function middleware(req: { nextUrl: { pathname: any; }; url: string
 }
 
 export const config = {
-  matcher: ['/room/:roomId/:teamId*'],
+  matcher: ['/room/:roomID/:teamID*'],
 };

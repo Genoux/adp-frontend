@@ -1,18 +1,14 @@
 import useTeams from '@/app/hooks/useTeams';
-import { defaultTransition } from '@/app/lib/animationConfig';
+import defaultTransition from '@/app/lib/animationConfig';
 import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
 import { useEffect, useState } from 'react';
+import { Database } from '@/app/types/supabase';
 
-interface Hero {
-  [key: string]: any;
-}
+type Team = Database["public"]["Tables"]["teams"]["Row"];
+type Hero = Database["public"]["CompositeTypes"]["hero"];
 
-interface Team {
-  [key: string]: any;
-}
-
-interface HeroDisplayProps {
+type HeroDisplayProps = {
   hero: Hero;
   animationDelay: number;
 }
@@ -30,18 +26,16 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
     className="relative h-full min-h-[150px] w-full overflow-hidden"
   >
     <div className="absolute left-0 bottom-0 z-50 flex pb-6 h-full w-full items-end justify-center bg-gradient-to-t from-[#00000096] via-transparent to-[#0000004d] text-center">
-      <p className="text-sm xl:text-xl font-black uppercase">{hero.name}</p>
+      <p className="text-sm xl:text-md font-bold uppercase">{hero.name}</p>
     </div>
     <div key={hero.id} className='w-full overflow-hidden relative' style={{ height: 'calc(100vh - 140px)', maxHeight: '664px', minHeight: '320px' }}>
       {hero.id && (
-        <Image
-          src={`/images/champions/floatingSplash/${hero.id
-            .toLowerCase()
-            .replace(/\s+/g, '')
-            .replace(/[\W_]+/g, '')}.webp`}
-          alt={hero.name}
-          layout='fill'
-          objectFit='cover'
+        <ExtendedImage
+          src={hero.id}
+          alt={hero.id}
+          type='centered'
+          fill
+          style={{ objectFit: 'cover' }}
           className='w-full'
         />
       )}
@@ -60,7 +54,7 @@ const TeamDisplay = ({
   position,
   reverseAnimation,
 }: TeamDisplayProps) => {
-  const heroes = reverseAnimation ? [...team.heroes_selected].reverse() : team.heroes_selected;
+  const heroes = reverseAnimation ? [...team.heroes_selected as Hero[]].reverse() : team.heroes_selected;
   
   return (
     <div className='mx-6 py-6'>
@@ -78,7 +72,7 @@ const TeamDisplay = ({
         {team.name}
       </motion.div>
       <div className={`flex ${reverseAnimation ? 'flex-row-reverse' : ''}`}>
-        {heroes.map((hero: Hero, index: number) => (
+        {(heroes as Hero[]).map((hero, index) => (
           <HeroDisplay key={index} hero={hero} animationDelay={0.5 + index * 0.3} />
         ))}
       </div>
@@ -95,9 +89,7 @@ const FinishView: React.FC = () => {
     if (showTitle) {
       setTimeout(() => {
         setShowTitle(false);
-        setTimeout(() => {
-          setShowTeams(true);
-        }, 0);
+        setShowTeams(true);
       }, 2000);
     }
   }, [showTitle]);
@@ -105,7 +97,7 @@ const FinishView: React.FC = () => {
   if (!redTeam || !blueTeam) return null;
 
   return (
-    <div className="mx-auto flex flex-col items-center justify-center h-screen px-4 max-w-screen">
+    <div className="mx-auto flex flex-col items-center justify-center h-screen px-4">
       <AnimatePresence mode='wait'>
         {showTitle && (
           <motion.div
@@ -138,7 +130,6 @@ const FinishView: React.FC = () => {
           >
             VS
           </motion.div>
-
           <div className="w-full flex flex-col gap-4 relative">
             <motion.div
               initial={{ x: 100, opacity: 0 }}
