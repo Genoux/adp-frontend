@@ -23,8 +23,8 @@ type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
 type RoomProps = {
   params: {
-    roomID: string;
-    teamID: string;
+    roomid: string;
+    teamid: string;
   };
 };
 
@@ -72,9 +72,9 @@ const Preload = ({ champions }: { champions: Hero[] }) => {
   );
 };
 
-export default function Room({ params: { roomID, teamID } }: RoomProps) {
-  const roomIDNumber = parseInt(roomID, 10);
-  const teamIDNumber = parseInt(teamID, 10);
+export default function Room({ params: { roomid, teamid } }: RoomProps) {
+  const roomIDNumber = parseInt(roomid, 10);
+  const teamIDNumber = parseInt(teamid, 10);
   const { isConnected } = useSocket(roomIDNumber);
   const { fetchTeams, setCurrentTeamID } = useTeamStore();
   const { fetchRoom, room } = useRoomStore();

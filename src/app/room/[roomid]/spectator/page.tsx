@@ -17,12 +17,12 @@ import LoadingScreen from '@/app/components/common/LoadingScreen';
 
 type SpectatorProps = {
   params: {
-    roomID: string;
+    roomid: string;
   };
 };
 
-const Spectator = ({ params: { roomID } }: SpectatorProps) => {
-  const roomIDNumber = parseInt(roomID, 10);
+const Spectator = ({ params: { roomid } }: SpectatorProps) => {
+  const roomIDNumber = parseInt(roomid, 10);
   const { isConnected } = useSocket(roomIDNumber);
   const { fetchTeams, isLoading: isLoadingTeams } = useTeamStore();
   const { room, fetchRoom, isLoading: isLoadingRooms } = useRoomStore();
