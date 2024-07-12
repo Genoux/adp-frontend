@@ -38,9 +38,9 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   }, [canInteract]);
 
   const handleHoveredHero = useCallback(async (heroID: string | null) => {
-    if (!canInteract) return;
+    if (!canInteract && room.status !== 'planning') return;
     debouncedSetHoveredHero(heroID);
-  }, [canInteract, debouncedSetHoveredHero]);
+  }, [canInteract, debouncedSetHoveredHero, room.status]);
 
   const debouncedHandleClickedHero = useMemo(
     () => debounce((hero: Hero) => {
@@ -71,8 +71,8 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
       className={clsx('relative grid grid-cols-10 gap-2', className)}
     >
       {(room.heroes_pool as Hero[]).map((hero, index) => {
-        const isSelected = hero.id === currentHero?.id && canInteract;
-        const isHovered = hero.id === hoveredHero && canInteract;
+        const isSelected = hero.id === currentHero?.id;
+        const isHovered = hero.id === hoveredHero;
 
         return (
           <motion.div
