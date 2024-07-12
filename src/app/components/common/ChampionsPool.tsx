@@ -1,146 +1,146 @@
-import { defaultTransition } from '@/app/lib/animationConfig';
-import { roomStore } from '@/app/stores/roomStore';
-import clsx from 'clsx';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import React, { useState, useCallback } from 'react';
-import { supabase } from '@/app/lib/supabase/client';
+import clsx from 'clsx';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
+import useRoomStore from '@/app/stores/roomStore';
+import useTeamStore from '@/app/stores/teamStore';
 import useTeams from '@/app/hooks/useTeams';
-import Image from 'next/image';
+import useCurrentHero from '@/app/hooks/useCurrentHero';
+import defaultTransition from '@/app/lib/animationConfig';
+import debounce from 'lodash/debounce';
+import { Database } from '@/app/types/supabase';
 
-interface Hero {
-  id: string;
-  name: string;
-  selected: boolean;
-}
+type Hero = Database["public"]["CompositeTypes"]["hero"];
 
-interface Team {
-  [key: string]: any;
-}
+const DEBOUNCE_TIME = 50; // ms
 
-interface ChampionsPoolProps {
-  team?: Team;
-  selectedChampion?: string | null;
-  handleClickedHero?: (hero: Hero) => void;
-  className?: string;
-}
-
-const ChampionsPool: React.FC<ChampionsPoolProps> = ({
-  team,
-  className = '',
-}) => {
-  const { room } = roomStore();
+const ChampionsPool = React.memo(({ className }: { className?: string }) => {
+  const { room } = useRoomStore();
   const { currentTeam } = useTeams();
-  const [hoveredHero, setHoveredHero] = useState<string | null>(null); // State to track hovered hero
+  const { updateTeam } = useTeamStore();
+  const currentHero = useCurrentHero();
+  const canInteract = currentTeam?.can_select && currentTeam?.is_turn && room?.status !== 'planning';
+  const [hoveredHero, setHoveredHero] = useState<string | null>(null);
 
-  const handleClickedHero = useCallback(async (hero: Hero) => {
-    if (!team?.isturn || !team.canSelect) return;
-    if (room?.status !== 'select' && room?.status !== 'ban') return;
-    if (hero.selected) return;
-    // if (selectedHero === hero.name) return;
-    // setSelectedHero(hero.name);
-    //updateClickedHero(hero);
+  if (!room) {
+    throw new Error('Room is not initialized');
+  }
 
-    if (!currentTeam || hero.name === currentTeam.clicked_hero) return;
-    await supabase
-      .from('teams')
-      .update({ clicked_hero: hero.name })
-      .eq('id', currentTeam.id);
-  }, [team?.isturn, team?.canSelect, room?.status, currentTeam]);
+  const debouncedSetHoveredHero = useMemo(
+    () => debounce((heroId: string | null) => setHoveredHero(heroId), DEBOUNCE_TIME),
+    []
+  );
 
-  const handleHoverStart = useCallback((heroName: string) => {
-    setHoveredHero(heroName);
-  }, []);
+  useEffect(() => {
+    if (!canInteract) {
+      setHoveredHero(null);
+    }
+  }, [canInteract]);
 
-  const handleHoverEnd = useCallback(() => {
-    setHoveredHero(null);
-  }, []);
+  const handleHoveredHero = useCallback(async (heroID: string | null) => {
+    if (!canInteract) return;
+    debouncedSetHoveredHero(heroID);
+  }, [canInteract, debouncedSetHoveredHero]);
 
-  if (!room?.heroes_pool || !Array.isArray(room.heroes_pool)) return null;
-  
+  const debouncedHandleClickedHero = useMemo(
+    () => debounce((hero: Hero) => {
+      if (!canInteract) return;
+      const updateArray = room.status === 'ban' ? 'heroes_ban' : 'heroes_selected';
+      const currentArray = currentTeam[updateArray] as Hero[];
+
+      const firstEmptyIndex = currentArray.findIndex(item => !item.selected);
+      if (firstEmptyIndex !== -1) {
+        const updatedArray = [...currentArray];
+        updatedArray[firstEmptyIndex] = { ...hero, selected: false };
+
+        updateTeam(currentTeam.id, {
+          [updateArray]: updatedArray,
+        });
+      }
+    }, DEBOUNCE_TIME),
+    [canInteract, currentTeam, updateTeam, room.status]
+  );
+
+  if (!room) return null;
+
   return (
     <motion.div
       animate={{
-        opacity: team?.isturn || room?.status === 'planning' || team === undefined ? 1 : 0.8,
+        opacity: canInteract || room.status === 'planning' || !currentTeam ? 1 : 0.8,
       }}
-      className={clsx(
-        'relative grid grid-cols-10 gap-2', className
-      )}
+      className={clsx('relative grid grid-cols-10 gap-2', className)}
     >
-      {room.heroes_pool.map((hero: Hero, index: number) => {
-        const isSelected = hero.name === team?.clicked_hero;
-        const isHovered = hero.name === hoveredHero;
-        const imageName = hero.id
-          .toLowerCase()
-          .replace(/\s+/g, '')
-          .replace(/[\W_]+/g, '');
+      {(room.heroes_pool as Hero[]).map((hero, index) => {
+        const isSelected = hero.id === currentHero?.id && canInteract;
+        const isHovered = hero.id === hoveredHero && canInteract;
 
         return (
           <motion.div
-            key={index}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4, delay: 0.01 * index, defaultTransition }}
-              className={clsx('relative overflow-hidden', {
-                'pointer-events-none grayscale': hero.selected,
-                'pointer-events-none': (!team?.isturn || !team.canSelect) && room?.status !== 'planning',
-                'cursor-pointer': !hero.selected && team?.isturn,
-              })}
-              onClick={team?.isturn ? () => handleClickedHero(hero) : undefined}
-              onHoverStart={() => handleHoverStart(hero.name)}
-              onHoverEnd={handleHoverEnd}
-            >
-              {isHovered && !isSelected && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={defaultTransition}
-                  className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
-                >
-                  <p className="flex h-full items-center justify-center text-xs font-bold">
-                    {hero.name}
-                  </p>
-                </motion.div>
-              )}
-              {isSelected && (
-                <motion.div
-                  className={clsx(
-                    'absolute left-0 top-0 z-50 h-full w-full overflow-hidden bg-gradient-to-t',
-                    {
-                      'from-red to-transparent glow-red  border-red-700 border-2 p-4':
-                        isSelected && room.status === 'ban',
-                      'from-yellow-transparent to-transparent border-yellow border p-4':
-                        isSelected && room.status === 'select',
-                    }
-                  )}
-                >
-                  <p className="flex h-full items-center justify-center text-xs font-bold">
-                    {hero.name}
-                  </p>
-                </motion.div>
-              )}
+            key={hero.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, delay: 0.01 * index, defaultTransition }}
+            className={clsx('relative overflow-hidden', {
+              'pointer-events-none grayscale': hero.selected,
+              'cursor-pointer': canInteract,
+            })}
+            onClick={() => canInteract && debouncedHandleClickedHero(hero)}
+            onMouseEnter={() => handleHoveredHero(hero.id)}
+            onMouseLeave={() => handleHoveredHero(null)}
+          >
+            {isHovered && !isSelected && (
               <motion.div
-                animate={{
-                  scale: isHovered && !isSelected ? 1.2 : 1,
-                }}
-                transition={{ duration: 0.1, defaultTransition }}
-                className="relative overflow-hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ defaultTransition, duration: 0.1 }}
+                className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
               >
-                <Image
-                  alt={hero.name}
-                  width={150}
-                  height={150}
-                  priority
-                  src={`/images/champions/tiles/${imageName}.webp`}
-                />
+                <p className="flex h-full text-center w-full items-center justify-center text-xs font-bold">
+                  {hero.name}
+                </p>
               </motion.div>
+            )}
+            {isSelected && (
+              <motion.div
+                className={clsx(
+                  'absolute left-0 top-0 z-50 h-full w-full overflow-hidden bg-gradient-to-t',
+                  {
+                    'from-red to-transparent glow-red border-red-700 border-2': room.status === 'ban',
+                    'from-yellow-transparent to-transparent border-yellow border': room.status === 'select',
+                  }
+                )}
+              >
+                <p className="flex h-full text-center w-full items-center justify-center text-xs font-semibold">
+                  {hero.name}
+                </p>
+              </motion.div>
+            )}
+            <motion.div
+              animate={{
+                scale: isHovered && !isSelected ? 1.2 : 1,
+              }}
+              transition={{ defaultTransition, duration: 0.1 }}
+              className="relative overflow-hidden"
+            >
+              {hero.id && (
+                <ExtendedImage
+                  alt={hero.id}
+                  width={380}
+                  height={380}
+                  priority
+                  type='tiles'
+                  src={hero.id}
+                />
+              )}
             </motion.div>
+          </motion.div>
         );
       })}
     </motion.div>
   );
-};
+});
 
 ChampionsPool.displayName = 'ChampionsPool';
 

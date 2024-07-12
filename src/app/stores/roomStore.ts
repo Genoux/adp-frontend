@@ -1,75 +1,100 @@
 import { supabase } from '@/app/lib/supabase/client';
 import { create } from 'zustand';
+import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
+import { Database } from '@/app/types/supabase';
 
-type Room = {
-  id: string;
-  name: string;
-  status: string;
-  heroes_pool: any[];
-};
+type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
-interface RoomState {
+type RoomState = {
   room: Room | null;
   isLoading: boolean;
-  isSubscribed: boolean;
   error: Error | null;
-  handleRoomUpdate: (payload: any) => void;
-  fetchRoom: (roomId: string) => Promise<void>;
+  fetchRoom: (roomID: number) => Promise<void>;
+  unsubscribe: () => void;
 }
 
-const handleRoomUpdate = (set: any) => (payload: any) => {
-  set({ room: { ...payload.new } });
-};
+const useRoomStore = create<RoomState>((set) => {
+  let unsubscribe: (() => void) | null = null;
 
-export const roomStore = create<RoomState>((set) => ({
-  room: null,
-  isLoading: false,
-  isSubscribed: false,
-  error: null,
+  function handleRoomUpdate(payload: RealtimePostgresUpdatePayload<Room>) {
+    const updatedRoom: Room = payload.new;
+    set({ room: updatedRoom });
+  }
 
-  handleRoomUpdate: handleRoomUpdate(set),
+  const subscribeToRoom = async (roomID: number): Promise<void> => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 5000; // 5 seconds
 
-  fetchRoom: async (roomId: string) => {
-    set({ isLoading: true, error: null, isSubscribed: false });
-    try {
-      const { data: room, error } = await supabase
-        .from('rooms')
-        .select('*')
-        .eq('id', roomId)
-        .single(); // Fetching a single room
-
-      if (error) {
+    const subscribeWithRetry = async (retries = 0): Promise<void> => {
+      try {
+        return new Promise((resolve, reject) => {
+          const channel = supabase
+            .channel(JSON.stringify(roomID))
+            .on(
+              'postgres_changes',
+              {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'rooms',
+                filter: `id=eq.${roomID}`,
+              },
+              handleRoomUpdate
+            )
+            .subscribe((status, err) => {
+              if (err) {
+                console.error(`.subscribe - err ROOM (attempt ${retries + 1}):`, err);
+                if (retries < MAX_RETRIES) {
+                  setTimeout(() => subscribeWithRetry(retries + 1), RETRY_DELAY);
+                } else {
+                  reject(err);
+                }
+              } else {
+                unsubscribe = () => channel.unsubscribe();
+                resolve();
+              }
+            });
+        });
+      } catch (error) {
+        console.error(`Failed to subscribe to room ${roomID} after ${MAX_RETRIES} attempts:`, error);
         throw error;
       }
+    };
 
-      set({ room });
+    return subscribeWithRetry();
+  };
 
-      // Setting up the subscription for the room
-      supabase
-        .channel(roomId)
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'aram_draft_pick',
-            table: 'rooms',
-            filter: `id=eq.${roomId}`,
-          },
-          (payload) => {
-            handleRoomUpdate(set)(payload);
-          }
-        )
-        .subscribe((status, err) => {
-          if (err) {
-            console.error('.subscribe - err ROOM:', err);
-          } else {
-            set({ isSubscribed: true });
-          }
-        });
-    } catch (error) {
-      set({ error } as any);
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-}));
+  return {
+    room: null,
+    isLoading: false,
+    error: null,
+    fetchRoom: async (roomID: number) => {
+      console.log('fetchRoom', roomID);
+      set({ isLoading: true, error: null });
+      try {
+        const { data: room, error } = await supabase
+          .from('rooms')
+          .select('*')
+          .eq('id', roomID)
+          .single();
+        
+        if (error) throw error;
+        
+        set({ room });
+        
+        await subscribeToRoom(roomID);
+        set({ isLoading: false });
+      } catch (error) {
+        console.error('Error fetching room:', error);
+        set({ error: error as Error, isLoading: false });
+      }
+    },
+    unsubscribe: () => {
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
+      }
+    },
+  };
+});
+
+export default useRoomStore;

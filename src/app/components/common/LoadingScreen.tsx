@@ -1,3 +1,5 @@
+import AnimatedDot from '@/app/components/common/AnimatedDot';
+
 interface LoadingScreenProps {
   text?: string;
 }
@@ -8,11 +10,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
   <div className="flex min-h-screen flex-col items-center justify-center">
     <div className="flex gap-1">
       <p>{text}</p>
-      <div className="sending-animation">
-        <span className="sending-animation-dot">.</span>
-        <span className="sending-animation-dot">.</span>
-        <span className="sending-animation-dot">.</span>
-      </div>
+      <AnimatedDot />
     </div>
   </div>
 );

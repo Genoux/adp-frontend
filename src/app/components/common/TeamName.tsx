@@ -1,6 +1,4 @@
-import React from 'react';
-
-interface TeamNameProps {
+type TeamNameProps = {
   color: string;
   name: string;
 }
