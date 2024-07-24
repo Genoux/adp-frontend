@@ -32,14 +32,14 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${GeistSans.className}  mx-auto min-w-[1024px] overflow-x-hidden`}
+        className={`${GeistSans.className} mx-auto min-w-[1024px] overflow-x-hidden`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
           <Toaster />
           <SpeedInsights />
           <Analytics />
-        </ThemeProvider>
+          </ThemeProvider>
       </body>
     </html>
   );

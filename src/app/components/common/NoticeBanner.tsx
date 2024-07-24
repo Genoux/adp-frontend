@@ -28,7 +28,7 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({ message, className }) => {
           animate="animate"
           exit="exit"
           variants={variants}
-          transition={{ delay: 2, ...defaultTransition }}
+          transition={{ delay: 2, defaultTransition }}
           className={clsx('mx-auto flex w-fit cursor-pointer items-center justify-between gap-6 border border-opacity-25 bg-[#0a0a0c] px-4 py-3 text-white', className)}
         >
           <div className="flex items-center gap-2">

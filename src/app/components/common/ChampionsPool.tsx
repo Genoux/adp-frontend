@@ -35,7 +35,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
     if (!canInteract) {
       setHoveredHero(null);
     }
-  }, [canInteract]);
+  }, [canInteract, room.status]);
 
   const handleHoveredHero = useCallback(async (heroID: string | null) => {
     if (!canInteract && room.status !== 'planning') return;
@@ -61,7 +61,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
     [canInteract, currentTeam, updateTeam, room.status]
   );
 
-  if (!room) return null;
+  if (!room || !currentTeam) return null;
 
   return (
     <motion.div
@@ -71,7 +71,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
       className={clsx('relative grid grid-cols-10 gap-2', className)}
     >
       {(room.heroes_pool as Hero[]).map((hero, index) => {
-        const isSelected = hero.id === currentHero?.id;
+        const isSelected = hero.id === currentHero?.id && currentTeam.is_turn;
         const isHovered = hero.id === hoveredHero;
 
         return (
@@ -94,7 +94,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ defaultTransition, duration: 0.1 }}
+                transition={defaultTransition}
                 className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
               >
                 <p className="flex h-full text-center w-full items-center justify-center text-xs font-bold">
@@ -121,7 +121,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
               animate={{
                 scale: isHovered && !isSelected ? 1.2 : 1,
               }}
-              transition={{ defaultTransition, duration: 0.1 }}
+              transition={defaultTransition}
               className="relative overflow-hidden"
             >
               {hero.id && (

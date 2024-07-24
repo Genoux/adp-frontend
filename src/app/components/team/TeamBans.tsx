@@ -128,7 +128,7 @@ const HeroImage = ({ hero, isCurrentSlot }: { hero: Hero; isCurrentSlot: boolean
 );
 
 const EmptySelectedSlot = () => (
-  <div className="bg-zinc-800 bg-opacity-10 h-full w-full flex justify-center items-center">
+  <div className="bg-neutral-950 bg-opacity-50 h-full w-full flex justify-center items-center">
     <svg
       width="32"
       height="33"

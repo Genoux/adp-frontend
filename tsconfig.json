@@ -36,8 +36,6 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "__tests__/checkImages.test.js",
-    "__tests__/checkImages.test.js",
     ".next/types/**/*.ts",
     "next.config.js",
     "postcss.config.js",

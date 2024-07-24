@@ -63,7 +63,13 @@ const HeroPickSlot: React.FC<HeroPickSlotProps> = ({ room, colorTeam, hero, isCu
       className={`relative h-full w-full overflow-hidden ${hero.id ? '' : 'border border-zinc-400 border-opacity-5'
         } bg-black bg-opacity-20`}
     >
-      {borderAnimation && <BorderAnimation />}
+      <motion.div
+        animate={{ opacity: 1 }}
+        initial={{ opacity: 0 }}
+        transition={{ defaultTransition, delay: 1 }}
+      >
+        {borderAnimation && <BorderAnimation />}
+      </motion.div>
       {hero.id && (
         <>
           <p className='absolute z-50 w-full h-full flex justify-center text-center items-end pb-6 font-semibold text-sm tracking-wide'>{hero.name}</p>

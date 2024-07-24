@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 import { useEffect, useState } from 'react';
 import { Database } from '@/app/types/supabase';
+import TeamName from '@/app/components/common/TeamName';
 
 type Team = Database["public"]["Tables"]["teams"]["Row"];
 type Hero = Database["public"]["CompositeTypes"]["hero"];
@@ -23,12 +24,12 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
       duration: 0.3,
       ease: [0.34, 1.56, 0.64, 1],
     }}
-    className="relative h-full min-h-[150px] w-full overflow-hidden"
+    className="relative h-full w-full overflow-hidden"
   >
     <div className="absolute left-0 bottom-0 z-50 flex pb-6 h-full w-full items-end justify-center bg-gradient-to-t from-[#00000096] via-transparent to-[#0000004d] text-center">
       <p className="text-sm xl:text-md font-bold uppercase">{hero.name}</p>
     </div>
-    <div key={hero.id} className='w-full overflow-hidden relative' style={{ height: 'calc(100vh - 140px)', maxHeight: '664px', minHeight: '320px' }}>
+    <div key={hero.id} className='w-full overflow-hidden relative' style={{ height: 'calc(100vh - 140px)', maxHeight: '50px', minHeight: '450px' }}>
       {hero.id && (
         <ExtendedImage
           src={hero.id}
@@ -51,32 +52,32 @@ interface TeamDisplayProps {
 
 const TeamDisplay = ({
   team,
-  position,
   reverseAnimation,
 }: TeamDisplayProps) => {
   const heroes = reverseAnimation ? [...team.heroes_selected as Hero[]].reverse() : team.heroes_selected;
-  
+  const direction = reverseAnimation ? 'justify-end' : 'justify-start';
   return (
-    <div className='mx-6 py-6'>
+    <motion.div
+      initial={{ opacity: 0, x: reverseAnimation ? 50 : -50 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{
+        defaultTransition,
+        delay: 1.8,
+        ease: [0.34, 1.2, 0.34, 1],
+        duration: 0.8,
+      }}
+      className='w-full gap-2 flex flex-col border p-4 bg-zinc-800 bg-opacity-10'>
       <motion.div
-        initial={{ opacity: 0, x: reverseAnimation ? 100 : -100 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{
-          defaultTransition,
-          delay: 2,
-          ease: [0.34, 1.56, 0.64, 1],
-          duration: 0.2,
-        }}
-        className={`mb-4 text-3xl font-black w-full flex uppercase justify-${position}`}
+        className={`${direction} flex`}
       >
-        {team.name}
+        <TeamName name={team.name} color={team.color} />
       </motion.div>
-      <div className={`flex ${reverseAnimation ? 'flex-row-reverse' : ''}`}>
+      <div className={`flex gap-2 ${reverseAnimation ? 'flex-row-reverse' : ''}`}>
         {(heroes as Hero[]).map((hero, index) => (
-          <HeroDisplay key={index} hero={hero} animationDelay={0.5 + index * 0.3} />
+          <HeroDisplay key={index} hero={hero} animationDelay={2 + index * 0.3} />
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -90,53 +91,42 @@ const FinishView: React.FC = () => {
       setTimeout(() => {
         setShowTitle(false);
         setShowTeams(true);
-      }, 2000);
+      }, 1000);
     }
   }, [showTitle]);
 
   if (!redTeam || !blueTeam) return null;
 
   return (
-    <div className="mx-auto flex flex-col items-center justify-center h-screen px-4">
+    <div className="mx-auto flex flex-col items-center justify-center h-screen px-8">
       <AnimatePresence mode='wait'>
         {showTitle && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ defaultTransition, duration: 1, delay: .5 }}
+            transition={{ defaultTransition, duration: 0.5, delay: .5 }}
             exit={{ opacity: 0 }}
             className="absolute left-0 top-0 flex h-full w-full items-center justify-center text-center"
           >
-            <h1 className="text-6xl font-black uppercase">Draft terminé</h1>
+            <h1 className="text-3xl font-bold uppercase">Draft terminé</h1>
           </motion.div>
         )}
       </AnimatePresence>
       {showTeams && (
-        <div className="flex w-full flex-grow h-full items-center justify-center">
+        <div className="flex w-full flex-grow h-full items-center justify-center gap-4">
+
           <div className="w-full flex flex-col gap-4 relative">
-            <motion.div
-              initial={{ x: -100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ defaultTransition, delay: .8, duration: 1 }}
-              className="w-full h-full absolute -z-10 top-0 left-0 border-l-8 border-blue-600 bg-gradient-to-r from-[#0f9efd15] to-transparent"
-            ></motion.div>
             <TeamDisplay team={blueTeam} position="start" />
           </div>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ defaultTransition, delay: 2, duration: 1 }}
-            className="text-4xl font-black uppercase"
+            className="text-2xl font-black uppercase"
           >
             VS
           </motion.div>
           <div className="w-full flex flex-col gap-4 relative">
-            <motion.div
-              initial={{ x: 100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ defaultTransition, delay: .8, duration: 1 }}
-              className="w-full h-full absolute -z-10 top-0 left-0 border-r-8 border-red-600 bg-gradient-to-l from-[#ff22121c] to-transparent"
-            ></motion.div>
             <TeamDisplay
               team={redTeam}
               position="end"

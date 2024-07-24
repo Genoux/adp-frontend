@@ -1,56 +1,30 @@
 import Image, { ImageProps } from 'next/image';
-import React, { useMemo } from 'react';
-import { decode } from 'blurhash';
-import blurhashes from '@/app/data/blurhashes.json';
+import React from 'react';
+import blurData from '@/app/data/blurhashes.json';
 
-//const baseURL = 'https://ddragon.leagueoflegends.com/cdn/img/champion';
-
-interface ExtendedImageProps extends ImageProps {
+interface ExtendedImageProps extends Omit<ImageProps, 'src'> {
   src: string;
   type: 'tiles' | 'splash' | 'centered';
   alt: string;
 }
 
+const BASE_URL = 'https://ddragon.leagueoflegends.com/cdn/img/champion';
+
 const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt, width, height, ...props }) => {
-  //const imageUrl = `${baseURL}/${type}/${src}_0.jpg`;
-
-  const imageUrl = useMemo(() =>
-    `https://ddragon.leagueoflegends.com/cdn/img/champion/${type}/${src}_0.jpg`,
-    [type, src]
-  );
-
-  const blurHash = (blurhashes as Record<string, string>)[src] || '';
-  const blurDataURL = useMemo(() => {
-    if (!blurHash) return undefined;
-
-    const pixels = decode(blurHash, 32, 32);
-    const canvas = document.createElement('canvas');
-    canvas.width = 32;
-    canvas.height = 32;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return undefined;
-
-    const imageData = ctx.createImageData(32, 32);
-    imageData.data.set(pixels);
-    ctx.putImageData(imageData, 0, 0);
-    return canvas.toDataURL();
-  }, [blurHash]);
+  const imageUrl = `${BASE_URL}/${type}/${src}_0.jpg`;
+  const champData = (blurData as unknown as Record<string, { blurhash: string, dataURL: string }>)[src];
 
   if (!src) return null;
-  
-  if(!blurDataURL) {
-    
-  };
 
   return (
     <Image
       src={imageUrl}
-      placeholder={'blur'}
-      blurDataURL={blurDataURL}
+      placeholder={champData?.dataURL ? 'blur' : 'empty'}
+      blurDataURL={champData?.dataURL}
       alt={alt}
       width={width}
       height={height}
-      sizes='100vw'
+      sizes="100vw"
       priority
       quality={80}
       {...props}
@@ -59,5 +33,4 @@ const ExtendedImage: React.FC<ExtendedImageProps> = React.memo(({ src, type, alt
 });
 
 ExtendedImage.displayName = 'ExtendedImage';
-
-export default React.memo(ExtendedImage);
+export default ExtendedImage;

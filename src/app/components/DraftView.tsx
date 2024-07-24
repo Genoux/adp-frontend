@@ -14,7 +14,7 @@ const DraftView = ({ className }: { className?: string }) => {
         className
       )}
     >
-      <div className="grid max-h-[100px] min-h-[100px] w-full grid-cols-3 items-center">
+      <div className="grid max-h-[100px] min-h-[80px] w-full grid-cols-3 items-center">
         <TeamBans team={blueTeam!} />
         <ConfirmButton />
         <TeamBans team={redTeam!} />
