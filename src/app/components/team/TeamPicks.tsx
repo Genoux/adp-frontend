@@ -14,12 +14,16 @@ const TeamPicks = ({ team }: { team: Team }) => {
   const { room } = useRoomStore();
   const { currentTeam, turnTeam } = useTeams();
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+  const [borderAnimationIndex, setBorderAnimationIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (room?.status !== 'select' || !team) return;
     if (team.is_turn && team.can_select) {
       const index = (team.heroes_selected as Hero[]).findIndex((hero) => !hero.selected);
       setCurrentIndex(index);
+      setBorderAnimationIndex(index);
+    } else {
+      setBorderAnimationIndex(null);
     }
   }, [room?.status, team]);
 
@@ -27,26 +31,45 @@ const TeamPicks = ({ team }: { team: Team }) => {
     currentTeam?.is_turn || currentTeam === undefined ? 1 : 0.8,
     [currentTeam]);
 
-  if (!team) return null;
+  if (!room || !team) return null;
 
   return (
-    <motion.div className="flex h-full w-full gap-2" animate={{ opacity }}>
-      {(team.heroes_selected as Hero[]).map((hero, index) => (
-        <HeroPickSlot
-          key={`${index}-${hero.id}`}
-          room={room!}
-          hero={hero}
-          colorTeam={turnTeam?.color}
-          index={index}
-          isCurrentSlot={index === currentIndex}
-          is_turn={team.is_turn}
-        />
-      ))}
+    <motion.div className="flex h-full w-full gap-2 relative" animate={{ opacity }}>
+      {(team.heroes_selected as Hero[]).map((hero, index) => {
+        const isCurrentSlot = index === currentIndex;
+        const setBorder = borderAnimationIndex === index && team.is_turn && room.status === 'select'
+
+        return (
+          <div key={index} className='relative overflow-hidden w-full'>
+            {setBorder && (
+              <AnimatePresence mode='wait'>
+                <motion.div
+                  key={`border-${index}`}
+                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0 }}
+                  transition={{ defaultTransition, delay: 0.8 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <BorderAnimation />
+                </motion.div>
+              </AnimatePresence>
+            )}
+            <HeroPickSlot
+              room={room!}
+              hero={hero}
+              colorTeam={turnTeam?.color}
+              index={index}
+              isCurrentSlot={isCurrentSlot}
+              is_turn={team.is_turn}
+            />
+          </div>
+        );
+      })}
     </motion.div>
   );
 };
 
-interface HeroPickSlotProps {
+type HeroPickSlotProps = {
   room: RoomStatus;
   colorTeam: string | undefined;
   hero: Hero;
@@ -55,21 +78,12 @@ interface HeroPickSlotProps {
   is_turn: boolean;
 }
 
-const HeroPickSlot: React.FC<HeroPickSlotProps> = ({ room, colorTeam, hero, isCurrentSlot, is_turn }) => {
-  const borderAnimation = isCurrentSlot && is_turn && room.status === 'select';
-
+const HeroPickSlot: React.FC<HeroPickSlotProps> = ({ colorTeam, hero, isCurrentSlot }) => {
   return (
-    <motion.div
+    <div
       className={`relative h-full w-full overflow-hidden ${hero.id ? '' : 'border border-zinc-400 border-opacity-5'
         } bg-black bg-opacity-20`}
     >
-      <motion.div
-        animate={{ opacity: 1 }}
-        initial={{ opacity: 0 }}
-        transition={{ defaultTransition, delay: 1 }}
-      >
-        {borderAnimation && <BorderAnimation />}
-      </motion.div>
       {hero.id && (
         <>
           <p className='absolute z-50 w-full h-full flex justify-center text-center items-end pb-6 font-semibold text-sm tracking-wide'>{hero.name}</p>
@@ -90,7 +104,7 @@ const HeroPickSlot: React.FC<HeroPickSlotProps> = ({ room, colorTeam, hero, isCu
           </AnimatePresence>
         </>
       )}
-    </motion.div>
+    </div>
   );
 };
 
