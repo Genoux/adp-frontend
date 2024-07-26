@@ -1,6 +1,6 @@
 import ConfirmButton from '@/app/components/common/ConfirmButton';
-import TeamBans from '@/app/components/team/TeamBans';
-import TeamPicks from '@/app/components/team/TeamPicks';
+import TeamBans from '@/app/components/draft/TeamBans';
+import TeamPicks from '@/app/components/draft/TeamPicks';
 import useTeams from '@/app/hooks/useTeams';
 import clsx from 'clsx';
 

@@ -96,6 +96,7 @@ const Room = ({ params: { roomid, teamid } }: RoomProps) => {
       case 'done':
         return <FinishView />;
       case 'select':
+        return <SelectionsView />;
       case 'ban':
         return (
           <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">

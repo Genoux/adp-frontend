@@ -72,19 +72,7 @@ const viewComponents = {
   waiting: LobbyView,
   planning: PlanningView,
   done: FinishView,
-  select: () => (
-    <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
-      <RoomStatusBar className="z-90 fixed left-0 top-0" />
-      <section className="flex h-full flex-col gap-4 py-4">
-        <div className="h-16"></div>
-        <div className="z-10 flex h-full flex-col justify-between px-4 gap-4">
-          <SelectionsView />
-          <DraftView />
-        </div>
-      </section>
-    </div>
-  ),
-  ban: () => (
+  draft: () => (
     <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
       <RoomStatusBar className="z-90 fixed left-0 top-0" />
       <section className="flex h-full flex-col gap-4 py-4">
@@ -103,10 +91,8 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
   const teamIDNumber = parseInt(teamid, 10);
   const { isConnected, isInitialLoading, room } = useRoomInitialization(roomIDNumber, teamIDNumber);
 
-  // Use useRef to store the previous non-draft status
   const lastNonDraftStatusRef = useRef(room?.status);
 
-  // Use useMemo to derive the animation key
   const animationKey = useMemo(() => {
     if (room?.status === 'ban' || room?.status === 'select') {
       return 'draft';
@@ -125,8 +111,8 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
     throw new Error(`Room ${roomIDNumber} not found`);
   }
 
-  const ViewComponent = viewComponents[room.status as keyof typeof viewComponents];
-
+  const ViewComponent = viewComponents[room.status === 'ban' || room.status === 'select' ? 'draft' : room.status as keyof typeof viewComponents];
+  
   return (
     <main>
       <Preload champions={room.heroes_pool as Hero[]} />
@@ -137,7 +123,7 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={defaultTransition}
+          transition={{ defaultTransition }}
           className={clsx('h-screen', {
             'flex flex-col': room.status === 'select' || room.status === 'ban',
             'flex flex-col justify-center': room.status === 'planning',

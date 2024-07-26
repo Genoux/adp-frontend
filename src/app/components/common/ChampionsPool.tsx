@@ -15,6 +15,7 @@ type Hero = Database["public"]["CompositeTypes"]["hero"];
 const DEBOUNCE_TIME = 50; // ms
 
 const ChampionsPool = React.memo(({ className }: { className?: string }) => {
+
   const { room } = useRoomStore();
   const { currentTeam } = useTeams();
   const { updateTeam } = useTeamStore();
@@ -22,12 +23,14 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   const canInteract = currentTeam?.can_select && currentTeam?.is_turn && room?.status !== 'planning';
   const [hoveredHero, setHoveredHero] = useState<string | null>(null);
 
+  const opacity = currentTeam?.is_turn || currentTeam === undefined && room?.status !== 'planning' ? 1 : 0.8;
+
   if (!room) {
     throw new Error('Room is not initialized');
   }
 
   const debouncedSetHoveredHero = useMemo(
-    () => debounce((heroId: string | null) => setHoveredHero(heroId), DEBOUNCE_TIME),
+    () => debounce((heroID: string | null) => setHoveredHero(heroID), DEBOUNCE_TIME),
     []
   );
 
@@ -35,7 +38,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
     if (!canInteract) {
       setHoveredHero(null);
     }
-  }, [canInteract, room.status]);
+  }, [canInteract]);
 
   const handleHoveredHero = useCallback(async (heroID: string | null) => {
     if (!canInteract && room.status !== 'planning') return;
@@ -65,15 +68,13 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
 
   return (
     <motion.div
-      animate={{
-        opacity: canInteract || room.status === 'planning' || !currentTeam ? 1 : 0.8,
-      }}
+      animate={{ opacity }}
       className={clsx('relative grid grid-cols-10 gap-2', className)}
     >
       {(room.heroes_pool as Hero[]).map((hero, index) => {
+
         const isSelected = hero.id === currentHero?.id && currentTeam.is_turn;
         const isHovered = hero.id === hoveredHero;
-
         return (
           <motion.div
             key={hero.id}
@@ -88,7 +89,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
             onClick={() => canInteract && debouncedHandleClickedHero(hero)}
             onMouseEnter={() => handleHoveredHero(hero.id)}
             onMouseLeave={() => handleHoveredHero(null)}
-          >
+            >
             {isHovered && !isSelected && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -135,7 +136,8 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
                 />
               )}
             </motion.div>
-          </motion.div>
+            </motion.div>
+            
         );
       })}
     </motion.div>

@@ -2,6 +2,7 @@ import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 import Timer from '@/app/components/common/RoomTimer';
 import TeamName from '@/app/components/common/TeamName';
 import useTeams from '@/app/hooks/useTeams';
+import useRoomStore from '@/app/stores/roomStore';
 import defaultTransition from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import React from 'react';
@@ -15,6 +16,8 @@ interface TeamIndicatorProps {
 }
 
 const TeamIndicator: React.FC<TeamIndicatorProps> = ({ team, orientation }) => {
+  const { room } = useRoomStore();
+
   return (
     <div
       className={`flex items-center gap-2 ${
@@ -29,10 +32,11 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({ team, orientation }) => {
         <motion.div
           className={`flex items-center justify-center ${
             orientation === 'right' ? 'mr-2' : 'ml-1'
-          }`}
-          initial={{ opacity: 0, x: orientation === 'right' ? 50 : -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, defaultTransition }}
+            }`}
+          key={team.is_turn ? team.id : undefined}
+          initial={{ opacity: 0, x: orientation === 'right' ? 10 : -10 }}
+          animate={{ opacity: room!.cycle < 17 ? 1 : 0, x: 0 }}
+          transition={{ delay: 0.2, defaultTransition }}
         >
           <ArrowAnimation teamis_turn={team.is_turn} orientation={orientation} />
         </motion.div>

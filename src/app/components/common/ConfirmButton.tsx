@@ -9,6 +9,7 @@ import useRoomStore from '@/app/stores/roomStore';
 import useCurrentHero from '@/app/hooks/useCurrentHero';
 import { supabase } from '@/app/lib/supabase/client';
 import debounce from 'lodash/debounce';
+import defaultTransition from '@/app/lib/animationConfig';
 
 const DEBOUNCE_TIME = 300; // ms
 
@@ -43,7 +44,10 @@ const ConfirmButton: React.FC = () => {
     [handleConfirmSelection]
   );
 
+  if (!room?.ready) return <div></div>;
+
   if (isLoading || !socket) return <div>Loading...</div>;
+
   if (!currentTeam)
     return (
       <div className="flex flex-col items-center justify-center gap-2">
@@ -64,26 +68,32 @@ const ConfirmButton: React.FC = () => {
     </div>
   );
 
+
+
   return (
     <AnimatePresence mode='wait'>
       <motion.div
         initial={{ y: 2, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.15 }}
+        transition={{ defaultTransition }}
         className="flex w-full justify-center"
       >
-        {currentTeam.is_turn ? (
-          <Button
-            size="lg"
-            onClick={debouncedHandleConfirmSelection}
-            className="w-64"
-            variant={currentHero?.id === null || !currentTeam?.can_select ? 'outline' : 'default'}
-            disabled={currentHero?.id === null || !currentTeam?.can_select}
-          >
-            {!currentTeam?.can_select ? <AnimatedDot /> : <>{buttonText}</>}
-          </Button>
-        ) : (
-          <TurnWaitingState />
+        {room?.cycle < 17 && (
+          <>
+            {currentTeam.is_turn ? (
+              <Button
+                size="lg"
+                onClick={debouncedHandleConfirmSelection}
+                className="w-64"
+                variant={currentHero?.id === null || !currentTeam?.can_select ? 'outline' : 'default'}
+                disabled={currentHero?.id === null || !currentTeam?.can_select}
+              >
+                {!currentTeam?.can_select ? <AnimatedDot /> : <>{buttonText}</>}
+              </Button>
+            ) : (
+              <TurnWaitingState />
+            )}
+          </>
         )}
       </motion.div>
     </AnimatePresence>
