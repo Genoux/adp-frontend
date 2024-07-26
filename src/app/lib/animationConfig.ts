@@ -1,7 +1,6 @@
 const defaultTransition = {
-  duration: 0.12,
-  ease: [0.995, 0.625, 0.17, 0.8],
+  duration: .15,
+  ease: [.67,.54,.54,.99],
 };
-
 export default defaultTransition;
 

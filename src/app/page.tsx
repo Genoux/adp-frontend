@@ -13,7 +13,6 @@ import { RoomDisplay } from '@/app/components/RoomDisplay';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import defaultTransition from '@/app/lib/animationConfig';
 import { appVersion } from '@/app/utils/version';
-import { Button } from './components/ui/button';
 
 type Room = Database['public']['Tables']['rooms']['Row'] & {
   blue: Team;
@@ -82,7 +81,6 @@ function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={defaultTransition}
-          className="flex h-[402px] w-full flex-col items-center justify-center"
         >
           <LoadingCircle />
         </motion.div>
@@ -91,23 +89,14 @@ function Home() {
 
     if (room) {
       return (
-        <div className="h-[402px] w-full flex flex-col gap-6 ">
-          <RoomDisplay room={room} blueTeam={room.blue} redTeam={room.red} />
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ defaultTransition, delay: 0.5 }}
-            onClick={() => {setRoom(null);}}
-            className='flex w-full justify-center'
-          >
-            <Button size={'sm'} variant={'default'}>{'Nouvelle chambre'}</Button>
-          </motion.div>
+        <div className="w-full flex flex-col gap-6">
+          <RoomDisplay resetRoom={() => setRoom(null)} room={room} blueTeam={room.blue} redTeam={room.red} />
         </div>
       );
     }
 
     return (
-      <div className='h-[402px] flex flex-col gap-6 justify-start items-center'>
+      <div className='flex flex-col gap-6 justify-start items-center'>
         <RoomCreationForm submit={createRoom} />
         {appMode === 'tournament' && (
           <NoticeBanner message="Si votre équipe n'apparaît pas dans la liste, veuillez contacter un administrateur" />
@@ -126,35 +115,39 @@ function Home() {
   }
 
   return (
-    <AnimatePresence mode='wait'>
-      <main className="h-screen flex items-center justify-center" style={{ height: 'calc(100vh - 126px)' }}>
+    <main className="h-screen flex items-center justify-center">
+      <AnimatePresence mode='wait'>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ defaultTransition, delay: 0.2 }}
-          className="mx-auto flex flex-col items-center justify-center gap-8"
+          className="min-w-[450px]"
         >
-          <div className="flex flex-col items-center justify-center pt-12">
+          <div className="flex flex-col items-center justify-center">
             <Link
-              className="mb-4 inline-flex items-center gap-1 bg-muted py-1 pl-2 pr-3 text-sm font-normal rounded-full"
+              className="transition-all mb-4 inline-flex items-center gap-1 bg-black border hover:bg-white hover:bg-opacity-10 py-1 pl-2 pr-3 text-sm font-normal rounded-full"
               href="http://tournoishaq.ca/"
               target="_blank"
             >
               <Logo size={18} />
               Tournois HAQ
             </Link>
-            <h1 className="text-center text-6xl font-bold tracking-tighter flex justify-end">
-              Aram Draft Pick
-              <p className="text-xs tracking-normal">v{appVersion}</p>
-            </h1>
-            <span className="text-center text-sm text-muted-foreground">
-              Système de Pick & Ban Personnalisé pour ARAM avec 30 Champions Partagés
-            </span>
+            <div className="flex flex-col gap-2 items-center">
+              <h1 className="text-center text-5xl font-bold tracking-tighter flex justify-end">
+                Aram Draft Pick
+                <p className="text-xs tracking-normal">v{appVersion}</p>
+              </h1>
+              <span className="text-center text-xs text-muted-foreground">
+                Système de Pick & Ban Personnalisé pour ARAM avec 30 Champions Partagés
+              </span>
+            </div>
           </div>
-          {renderContent()}
+          <div className='min-h-[400px] flex flex-col items-center justify-center' >
+            {renderContent()}
+          </div>
         </motion.div>
-      </main>
-    </AnimatePresence>
+      </AnimatePresence>
+    </main>
   );
 }
 

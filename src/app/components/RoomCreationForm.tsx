@@ -21,13 +21,13 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0 }}
         transition={{ defaultTransition, delay: 0.5 }}
-        className="flex max-w-md flex-col gap-4 border p-6"
+        className="flex flex-col gap-2 border p-6"
       >
         <div className="flex flex-col space-y-1.5">
           <h3 className="font-semibold leading-none tracking-tight">
             Générer une chambre
           </h3>
-          <p className="text-xs font-normal text-muted-foreground">
+          <p className="text-xs font-normal text-muted-foreground pb-4">
             {
               "Veuillez selectionner les noms des deux équipes qui vont s'affronter"
             }
