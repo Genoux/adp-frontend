@@ -1,5 +1,5 @@
-import { supabase } from '@/app/lib/supabase/client';
 import { NextResponse } from 'next/server';
+import { supabase } from '@/app/lib/supabase/client';
 
 export async function middleware(req: { nextUrl: { pathname: any; }; url: string | URL | undefined; }) {
   const { pathname } = req.nextUrl;
@@ -18,7 +18,7 @@ export async function middleware(req: { nextUrl: { pathname: any; }; url: string
         .single();
 
       if (roomError || !roomData) {
-        return NextResponse.redirect(new URL('/', req.url));
+        return NextResponse.next();
       }
 
       // If it's the spectator route, allow it
@@ -36,12 +36,12 @@ export async function middleware(req: { nextUrl: { pathname: any; }; url: string
           .single();
 
         if (teamError || !teamData) {
-          return NextResponse.redirect(new URL('/', req.url));
+          return NextResponse.next();
         }
       }
     } catch (error) {
       console.error('Middleware error:', error);
-      return NextResponse.redirect(new URL('/', req.url));
+      return NextResponse.next();
     }
   }
 

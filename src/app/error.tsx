@@ -19,14 +19,14 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-8">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-4">
       <Frown size={32} />
       <div className="flex flex-col items-center justify-center text-center gap-4">
         <div>
-          <p className="text-xl font-bold">
+          <p className="text-lg font-normal">
             {'Oups! Une erreur est survenue.'}
           </p>
-          <p className='text-md opacity-50'>{'Si elle persiste, veuillez contacter un administrateur.'}</p>
+          <p className='text-sm opacity-50'>{'Si elle persiste, veuillez contacter un administrateur.'}</p>
         </div>
         <pre className="text-sm opacity-60 text-red-600">
           {error.message}
