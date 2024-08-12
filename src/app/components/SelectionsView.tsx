@@ -25,7 +25,6 @@ const SelectionsView = () => {
 
   return (
     <>
-     <h1> {isSpectator.toString()} </h1>
       {currentHero && (turnTeam || isSpectator) && (
         <AnimatePresence mode='wait'>
           <motion.div

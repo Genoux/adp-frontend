@@ -43,7 +43,7 @@ const ConfirmButton: React.FC = () => {
     [handleConfirmSelection]
   );
 
-  if (!room?.ready || isLoading || !socket) return null;
+  if (isLoading || !socket) return null;
 
   if (isSpectator) {
     return (
@@ -54,7 +54,7 @@ const ConfirmButton: React.FC = () => {
     );
   }
 
-  const buttonText = room.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection';
+  const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection';
   const isCurrentTurn = currentTeam?.is_turn && !isSpectator;
   const isButtonDisabled = currentHero?.id === null || !currentTeam?.can_select;
 
@@ -66,7 +66,7 @@ const ConfirmButton: React.FC = () => {
         transition={defaultTransition}
         className="flex w-full justify-center"
       >
-        {room.cycle < 17 && (
+        {room!.cycle < 17 ? (
           isCurrentTurn ? (
             <Button
               size="lg"
@@ -86,7 +86,7 @@ const ConfirmButton: React.FC = () => {
               </div>
             </div>
           )
-        )}
+        ) : <></>}
       </motion.div>
     </AnimatePresence>
   );
