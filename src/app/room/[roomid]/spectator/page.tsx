@@ -1,24 +1,25 @@
 'use client';
 
-// TODO: FIX spectator route
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import useSocket from '@/app/hooks/useSocket';
 import useRoomStore from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
+import useTeams from '@/app/hooks/useTeams';
 import defaultTransition from '@/app/lib/animationConfig';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
 import StateControllerButtons from '@/app/components/common/StateControllerButtons';
-import LobbyView from '@/app/components/LobbyView';
+import AnimatedDot from '@/app/components/common/AnimatedDot';
 import PlanningView from '@/app/components/PlanningView';
 import FinishView from '@/app/components/FinishView';
 import SelectionsView from '@/app/components/SelectionsView';
 import DraftView from '@/app/components/DraftView';
 import clsx from 'clsx';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
+import ErrorBoundary from '@/app/components/ErrorBoundary';
+import { notFound } from 'next/navigation';
 
 import { Database } from '@/app/types/supabase';
 
@@ -28,7 +29,7 @@ type Room = Database["public"]["Tables"]["rooms"]["Row"];
 type RoomProps = {
   params: {
     roomid: string;
-    teamid: string;
+    teamid?: string;
   };
 };
 
@@ -49,94 +50,134 @@ const Preload = ({ champions }: { champions: Hero[] }) => (
   </>
 );
 
-const useRoomInitialization = (roomIDNumber: number, teamIDNumber: number) => {
-  const { isConnected } = useSocket(roomIDNumber);
-  const { fetchTeams, setCurrentTeamID } = useTeamStore();
+const useRoomInitialization = (roomID: number, teamID: number | null) => {
+  const { isConnected } = useSocket(roomID);
+  const { fetchTeams, setCurrentTeamID, setIsSpectator, teams, currentTeamID } = useTeamStore();
   const { fetchRoom, room } = useRoomStore();
+  const [error, setError] = useState<Error | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
     const initializeRoom = async () => {
-      setCurrentTeamID(teamIDNumber);
-      await Promise.all([
-        fetchTeams(roomIDNumber),
-        fetchRoom(roomIDNumber)
-      ]);
-      setIsInitialLoading(false);
+      try {
+        if (teamID === null) {
+          setIsSpectator(true);
+        } else {
+          await setCurrentTeamID(teamID);
+          setIsSpectator(false);
+        }
+        await Promise.all([
+          fetchTeams(roomID),
+          fetchRoom(roomID)
+        ]);
+      } catch (err) {
+        console.error("Error initializing room:", err);
+        setError(err instanceof Error ? err : new Error('An error occurred during initialization'));
+      } finally {
+        setIsInitialLoading(false);
+      }
     };
 
     initializeRoom();
-  }, [fetchRoom, fetchTeams, roomIDNumber, setCurrentTeamID, teamIDNumber]);
+  }, [fetchRoom, fetchTeams, roomID, setCurrentTeamID, setIsSpectator, teamID]);
 
-  return { isConnected, isInitialLoading, room };
+  return { isConnected, isInitialLoading, room, teams, currentTeamID, error };
+};
+
+const viewComponents = {
+  waiting: () => (
+    <div className='flex h-screen gap-1 items-center justify-center'>
+      <p className='text-base'>{'En attente des deux équipes'}</p><AnimatedDot />
+    </div>
+  ),
+  planning: PlanningView,
+  done: FinishView,
+  draft: () => (
+    <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
+      <RoomStatusBar className="z-90 fixed left-0 top-0" />
+      <section className="flex h-full flex-col gap-4 py-4">
+        <div className="h-16"></div>
+        <div className="z-10 flex h-full flex-col justify-between px-4 gap-4">
+          <SelectionsView />
+          <DraftView />
+        </div>
+      </section>
+    </div>
+  ),
 };
 
 const Room = ({ params: { roomid, teamid } }: RoomProps) => {
-  const roomIDNumber = parseInt(roomid, 10);
-  const teamIDNumber = parseInt(teamid, 10);
-  const { isConnected, isInitialLoading, room } = useRoomInitialization(roomIDNumber, teamIDNumber);
+  const roomID = parseInt(roomid, 10);
+  const teamID = teamid ? parseInt(teamid, 10) : null;
+  const { isConnected, isInitialLoading, room, error } = useRoomInitialization(roomID, teamID);
+  const { socket } = useSocket(roomID);
+  const { redTeam, blueTeam, currentTeam } = useTeams();
+  const { isSpectator } = useTeamStore();
 
-  if (isInitialLoading || !isConnected) {
-    return <LoadingScreen />;
-  }
+  const animationKey = useMemo(() => {
+    return ['ban', 'select'].includes(room?.status || '') ? 'draft' : room?.status || 'initial';
+  }, [room?.status]);
 
-  if (!room) {
-    throw new Error(`Room ${roomIDNumber} not found`);
-  }
-
-  const renderContent = () => {
-    switch (room.status) {
-      case 'waiting':
-        return <LobbyView />;
-      case 'planning':
-        return (
-          <>
-            <PlanningView />
-            <NoticeBanner className='mt-6' message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
-          </>
-        );
-      case 'done':
-        return <FinishView />;
-      case 'select':
-        return <SelectionsView />;
-      case 'ban':
-        return (
-          <div className="mx-auto flex h-screen min-h-[768px] w-full min-w-screen max-w-screen flex-col justify-between overflow-hidden">
-            <RoomStatusBar className="z-90 fixed left-0 top-0" />
-            <section className="flex h-full flex-col gap-4 py-4">
-              <div className="h-16"></div>
-              <div className="z-10 flex h-full flex-col justify-between px-4 gap-4">
-                <SelectionsView />
-                <DraftView />
-              </div>
-            </section>
-          </div>
-        );
-      default:
-        return null;
+  useEffect(() => {
+    if (isConnected && currentTeam && socket && !isSpectator) {
+      socket.emit('joinTeam', { teamId: currentTeam.id });
     }
-  };
+  }, [isConnected, currentTeam, socket, isSpectator]);
+
+  useEffect(() => {
+    if (!isInitialLoading && !room) {
+      socket?.disconnect();
+      notFound();
+    }
+  }, [isInitialLoading, room, socket]);
+
+  if (isInitialLoading) return <LoadingScreen />;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!room) {
+    socket?.disconnect();
+    notFound();
+  }
+
+  const ViewComponent = viewComponents[(['ban', 'select'].includes(room.status) ? 'draft' : room.status) as keyof typeof viewComponents];
 
   return (
-    <main>
-      <Preload champions={room.heroes_pool as Hero[]} />
-      {process.env.NODE_ENV === 'development' && <StateControllerButtons roomID={roomIDNumber} />}
-      <AnimatePresence mode='wait'>
-        <motion.div
-          key={room.status}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={defaultTransition}
-          className={clsx('h-screen', {
-            'flex flex-col': room.status === 'select' || room.status === 'ban',
-            'flex flex-col justify-center': room.status === 'planning',
-          })}
-        >
-          {renderContent()}
-        </motion.div>
-      </AnimatePresence>
-    </main>
+    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+      <main>
+        <Preload champions={room.heroes_pool as Hero[]} />
+        {process.env.NODE_ENV === 'development' && <StateControllerButtons roomID={roomID} />}
+        <AnimatePresence mode='wait'>
+          <motion.div
+            key={animationKey}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ defaultTransition }}
+            className={clsx('h-screen', {
+              'flex flex-col': ['select', 'ban'].includes(room.status),
+              'flex flex-col justify-center': room.status === 'planning',
+            })}
+          >
+            {ViewComponent && <ViewComponent />}
+            {room.status === 'planning' && isSpectator && (
+              <NoticeBanner 
+                className='mt-6' 
+                message={
+                  <>
+                    Vous êtes spectateur de{' '}
+                    <span className='uppercase font-bold'>{blueTeam?.name}</span>
+                    {' vs '}
+                    <span className='uppercase font-bold'>{redTeam?.name}</span>
+                  </>
+                } 
+              />
+            )}
+            {room.status === 'planning' && !isSpectator && (
+              <NoticeBanner className='mt-6' message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </main>
+    </ErrorBoundary>
   );
 };
 

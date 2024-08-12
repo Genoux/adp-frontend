@@ -43,9 +43,8 @@ const Timer = ({ className }: { className?: string }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ defaultTransition, delay: 0.2 }}
             className={className}>
-            {timer && room!.status !== 'done' ? timer : <p className='invisible'>00:00</p>}
+            {timer && room!.cycle < 17 ? timer : <p className='invisible'>00:00</p>}
           </motion.div>
-
         </h1>
       </motion.div>
     </AnimatePresence>
