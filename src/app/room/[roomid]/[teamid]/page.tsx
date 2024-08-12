@@ -6,7 +6,6 @@ import NoticeBanner from '@/app/components/common/NoticeBanner';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
 import StateControllerButtons from '@/app/components/common/StateControllerButtons';
 import DraftView from '@/app/components/DraftView';
-import ErrorBoundary from '@/app/components/ErrorBoundary';
 import FinishView from '@/app/components/FinishView';
 import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
@@ -139,34 +138,32 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
     ];
 
   return (
-    <ErrorBoundary fallback={<div>Something went wrong</div>}>
-      <main>
-        <Preload champions={room.heroes_pool as Hero[]} />
-        {process.env.NODE_ENV === 'development' && (
-          <StateControllerButtons roomID={roomID} />
-        )}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={animationKey}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ defaultTransition }}
-            className={clsx('h-screen', {
-              'flex flex-col': ['select', 'ban'].includes(room.status),
-              'flex flex-col justify-center': room.status === 'planning',
-            })}
-          >
-            {ViewComponent && <ViewComponent />}
-            {room.status === 'planning' && (
-              <NoticeBanner
-                className="mt-6"
-                message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs"
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-    </ErrorBoundary>
+    <main>
+      <Preload champions={room.heroes_pool as Hero[]} />
+      {process.env.NODE_ENV === 'development' && (
+        <StateControllerButtons roomID={roomID} />
+      )}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={animationKey}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ defaultTransition }}
+          className={clsx('h-screen', {
+            'flex flex-col': ['select', 'ban'].includes(room.status),
+            'flex flex-col justify-center': room.status === 'planning',
+          })}
+        >
+          {ViewComponent && <ViewComponent />}
+          {room.status === 'planning' && (
+            <NoticeBanner
+              className="mt-6"
+              message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs"
+            />
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </main>
   );
 }
