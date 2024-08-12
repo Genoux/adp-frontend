@@ -1,5 +1,7 @@
 'use client';
 
+// TODO: FIX spectator route
+
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import useSocket from '@/app/hooks/useSocket';

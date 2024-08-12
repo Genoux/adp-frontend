@@ -12,7 +12,7 @@ interface TeamState {
   error: Error | null;
   currentSelection: string | null;
   fetchTeams: (roomID: number) => Promise<void>;
-  setCurrentTeamID: (teamID: number) => void;
+  setCurrentTeamID: (teamID: number) => Promise<void>;
   updateTeam: (teamID: number, updates: Partial<Team>) => Promise<void>;
   unsubscribe: () => void;
   setCurrentSelection: (heroID: string | null) => void;
@@ -32,7 +32,7 @@ const useTeamStore = create<TeamState>((set) => {
   const subscribeToTeams = async (teams: Team[]): Promise<void> => {
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 5000; // 5 seconds
-  
+
     const subscribeWithRetry = async (team: Team, retries = 0): Promise<void> => {
       try {
         return new Promise((resolve, reject) => {
@@ -67,7 +67,7 @@ const useTeamStore = create<TeamState>((set) => {
         throw error;
       }
     };
-  
+
     await Promise.all(teams.map(team => subscribeWithRetry(team)));
   };
 
@@ -81,36 +81,48 @@ const useTeamStore = create<TeamState>((set) => {
     fetchTeams: async (roomID) => {
       set({ isLoading: true, error: null });
       try {
-        const { data: teams, error } = await supabase
+        const { data: teams } = await supabase
           .from('teams')
           .select('*')
           .eq('room_id', roomID);
-        if (error) throw error;
-        set({ teams });
-        await subscribeToTeams(teams);
-        set({ isLoading: false });
+        if (teams) {
+          await subscribeToTeams(teams);
+          set({ teams, isLoading: false });
+        }
       } catch (error) {
-        set({ error: error as Error, isLoading: false });
+        throw new Error('Error fetching teams');
       }
     },
 
-    setCurrentTeamID: (teamID) => set({ currentTeamID: teamID }),
+    setCurrentTeamID: async (teamID) => {
+      try {
+        const { data } = await supabase
+          .from('teams')
+          .select('*')
+          .eq('id', teamID)
+          .single();
+
+        if (data) {
+          set({ currentTeamID: data.id, isLoading: false });
+        }
+      } catch (error) {
+        throw new Error('Error finding team for this room');
+      }
+    },
 
     updateTeam: async (teamID, updates: Partial<Team>) => {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('teams')
           .update(updates)
           .eq('id', teamID)
           .select('*')
           .single();
-        if (error) throw error;
         if (data && data.is_turn) {
           handleTeamUpdate({ new: { id: teamID, ...updates } as Team } as RealtimePostgresUpdatePayload<Team>);
         }
       } catch (error) {
-        console.error('Error updating team:', error);
-        set({ error: error as Error });
+        throw new Error('Error updating team');
       }
     },
 

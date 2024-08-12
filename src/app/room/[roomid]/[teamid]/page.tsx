@@ -50,22 +50,29 @@ const useRoomInitialization = (roomIDNumber: number, teamIDNumber: number) => {
   const { isConnected } = useSocket(roomIDNumber);
   const { fetchTeams, setCurrentTeamID } = useTeamStore();
   const { fetchRoom, room } = useRoomStore();
+  const [error, setError] = useState<Error | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
     const initializeRoom = async () => {
-      setCurrentTeamID(teamIDNumber);
-      await Promise.all([
-        fetchTeams(roomIDNumber),
-        fetchRoom(roomIDNumber)
-      ]);
-      setIsInitialLoading(false);
+      try {
+        await Promise.all([
+          fetchTeams(roomIDNumber),
+          fetchRoom(roomIDNumber),
+          setCurrentTeamID(teamIDNumber)
+        ]);
+        setIsInitialLoading(false);
+      } catch (err) {
+        console.error("Error initializing room:", err);
+        setError(err as Error);
+        setIsInitialLoading(false);
+      }
     };
 
     initializeRoom();
   }, [fetchRoom, fetchTeams, roomIDNumber, setCurrentTeamID, teamIDNumber]);
 
-  return { isConnected, isInitialLoading, room };
+  return { isConnected, isInitialLoading, room, error };
 };
 
 const viewComponents = {
@@ -89,7 +96,7 @@ const viewComponents = {
 export default function Room({ params: { roomid, teamid } }: RoomProps) {
   const roomIDNumber = parseInt(roomid, 10);
   const teamIDNumber = parseInt(teamid, 10);
-  const { isConnected, isInitialLoading, room } = useRoomInitialization(roomIDNumber, teamIDNumber);
+  const { isConnected, isInitialLoading, room, error } = useRoomInitialization(roomIDNumber, teamIDNumber);
 
   const lastNonDraftStatusRef = useRef(room?.status);
 
@@ -105,6 +112,10 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
 
   if (isInitialLoading || !isConnected) {
     return <LoadingScreen />;
+  }
+
+  if (error) {
+    throw new Error(error.message);
   }
 
   if (!room) {

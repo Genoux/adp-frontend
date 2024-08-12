@@ -9,14 +9,14 @@ const Timer = ({ className }: { className?: string }) => {
   const [timer, setTimer] = useState<string>('');
   const [initialTimer, setInitialTimer] = useState<string>('');
   const { room } = useRoomStore();
-  
+
   const { socket } = useSocket();
 
   const handleSocketEvents = useCallback((event: string) => {
     setTimer(event);
     if (initialTimer === '') {
-    setInitialTimer(event);
-      
+      setInitialTimer(event);
+
     }
   }, [initialTimer]);
 
@@ -29,7 +29,7 @@ const Timer = ({ className }: { className?: string }) => {
   }, [handleSocketEvents, socket]);
 
   return (
-  <AnimatePresence mode='wait'>
+    <AnimatePresence mode='wait'>
       <motion.div
         key={initialTimer}
         initial={{ opacity: 0 }}
@@ -38,23 +38,17 @@ const Timer = ({ className }: { className?: string }) => {
         exit={{ opacity: 0 }}
         className={className}>
         <h1 className={clsx('mx-auto w-fit font-bold text-4xl', className)}>
-          {room!.cycle < 17 ? (
-            <>
-            {timer ? timer : <p className='invisible'>00:00</p>} 
-            </>
-          ) : 
-            <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ defaultTransition, delay: 0.2 }}
-              className={className}>
-            <p >Done</p>
-            </motion.div>
-          }
-          
-          </h1>
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ defaultTransition, delay: 0.2 }}
+            className={className}>
+            {timer && room!.status !== 'done' ? timer : <p className='invisible'>00:00</p>}
+          </motion.div>
+
+        </h1>
       </motion.div>
-  </AnimatePresence>
+    </AnimatePresence>
   );
 };
 
