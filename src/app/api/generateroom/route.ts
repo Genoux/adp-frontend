@@ -12,11 +12,18 @@ const nameMapping: { [key: string]: string } = {
   "Fiddlesticks": "FiddleSticks",
 };
 
+const getLatestVersion = cache(async (): Promise<string> => {
+  const response = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+  const versions = await response.json();
+  return versions[0]; // The first version in the array is the latest
+});
+
 const fetchChampions = cache(async (): Promise<Hero[]> => {
-  const response = await fetch('https://ddragon.leagueoflegends.com/cdn/14.13.1/data/en_US/champion.json');
+  const latestVersion = await getLatestVersion();
+  const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
   const data = await response.json();
   return Object.values(data.data).map((champion: any) => ({
-    id: nameMapping[champion.id] || champion.id,  // Use the mapped name if it exists
+    id: nameMapping[champion.id] || champion.id,
     name: champion.name,
     selected: false,
   }));
@@ -47,57 +54,47 @@ function createHeroesPool(champions: Hero[]): Hero[] {
 async function createRoom(blueTeamName: string, redTeamName: string) {
   const champions = await getRandomChampions(30);
   const id = randomInt8();
-
   try {
     const { error } = await supabase
       .from('rooms')
       .insert({id})
-
     if (error) {
       console.error("createRoom - roomError:", error);
       return { error: error };
     }
-
     const roomID = id;
     const teamsData = [
       { color: 'red', name: redTeamName, is_turn: false },
       { color: 'blue', name: blueTeamName, is_turn: true }
     ];
-
-
     const { data: teams, error: teamsError } = await supabase
-    .from('teams')
-    .insert(teamsData.map(team => ({
-      ...team,
-      heroes_selected: generateArray(5),
-      heroes_ban: generateArray(3),
-      room_id: roomID,
-    })))
-    .select('*');
-
+      .from('teams')
+      .insert(teamsData.map(team => ({
+        ...team,
+        heroes_selected: generateArray(5),
+        heroes_ban: generateArray(3),
+        room_id: roomID,
+      })))
+      .select('*');
     if (teamsError) {
       return { error: teamsError };
     }
-
     const [redTeam, blueTeam] = teams;
-
     const { data: updatedRoom, error: updateError } = await supabase
-    .from('rooms')
-    .update({
-      red_team_id: redTeam.id,
-      blue_team_id: blueTeam.id,
-      heroes_pool: createHeroesPool(champions),
-      status: 'waiting',
-    })
-    .eq('id', roomID)
-    .select('*')
-    .single();
-
+      .from('rooms')
+      .update({
+        red_team_id: redTeam.id,
+        blue_team_id: blueTeam.id,
+        heroes_pool: createHeroesPool(champions),
+        status: 'waiting',
+      })
+      .eq('id', roomID)
+      .select('*')
+      .single();
     if (updateError) {
       console.error('updateRoom - error:', updateError);
       return { error: updateError };
     }
-
     return { room: updatedRoom, red: redTeam, blue: blueTeam };
   } catch (error) {
     console.error('createRoom - error:', error);

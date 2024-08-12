@@ -53,12 +53,17 @@
 
 
 @layer base {
-  button, input, textarea, select, div {
-    &:not(.box-border){
+
+  button,
+  input,
+  textarea,
+  select,
+  div {
+    &:not(.box-border) {
       border-radius: 2px !important;
     }
   }
-  
+
   .dark {
     --card-empty: 240, 19%, 11%, 1;
     --main: 70, 97%, 60%, 1;
@@ -108,6 +113,7 @@ html {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -124,7 +130,7 @@ html {
 }
 
 .circle-loader.black .path {
-  stroke: #000; /* This is black color, change it to match your design */
+  stroke: #000;
 }
 
 @keyframes rotate {
@@ -138,10 +144,12 @@ html {
     stroke-dasharray: 1, 150;
     stroke-dashoffset: 0;
   }
+
   50% {
     stroke-dasharray: 90, 150;
     stroke-dashoffset: -35;
   }
+
   100% {
     stroke-dasharray: 90, 150;
     stroke-dashoffset: -124;
@@ -153,9 +161,11 @@ html {
   0% {
     opacity: 0;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }
@@ -245,6 +255,7 @@ html {
   from {
     filter: blur(20px);
   }
+
   to {
     filter: blur(0);
   }

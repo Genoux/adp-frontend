@@ -1,6 +1,6 @@
 import ConfirmButton from '@/app/components/common/ConfirmButton';
-import TeamBans from '@/app/components/team/TeamBans';
-import TeamPicks from '@/app/components/team/TeamPicks';
+import TeamBans from '@/app/components/draft/TeamBans';
+import TeamPicks from '@/app/components/draft/TeamPicks';
 import useTeams from '@/app/hooks/useTeams';
 import clsx from 'clsx';
 
@@ -14,7 +14,7 @@ const DraftView = ({ className }: { className?: string }) => {
         className
       )}
     >
-      <div className="grid max-h-[100px] min-h-[100px] w-full grid-cols-3 items-center">
+      <div className="grid max-h-[100px] min-h-[80px] w-full grid-cols-3 items-center">
         <TeamBans team={blueTeam!} />
         <ConfirmButton />
         <TeamBans team={redTeam!} />

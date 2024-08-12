@@ -17,17 +17,19 @@ const DEBOUNCE_TIME = 50; // ms
 const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   const { room } = useRoomStore();
   const { currentTeam } = useTeams();
-  const { updateTeam } = useTeamStore();
+  const { updateTeam, isSpectator } = useTeamStore();
   const currentHero = useCurrentHero();
-  const canInteract = currentTeam?.can_select && currentTeam?.is_turn && room?.status !== 'planning';
+  const canInteract = !isSpectator && currentTeam?.can_select && currentTeam?.is_turn && room?.status !== 'planning';
   const [hoveredHero, setHoveredHero] = useState<string | null>(null);
+
+  const opacity = (currentTeam?.is_turn || isSpectator) && room?.status !== 'planning' ? 1 : 0.8;
 
   if (!room) {
     throw new Error('Room is not initialized');
   }
 
   const debouncedSetHoveredHero = useMemo(
-    () => debounce((heroId: string | null) => setHoveredHero(heroId), DEBOUNCE_TIME),
+    () => debounce((heroID: string | null) => setHoveredHero(heroID), DEBOUNCE_TIME),
     []
   );
 
@@ -38,9 +40,9 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   }, [canInteract]);
 
   const handleHoveredHero = useCallback(async (heroID: string | null) => {
-    if (!canInteract && room.status !== 'planning') return;
+    if ((!canInteract && room.status !== 'planning') && !isSpectator) return;
     debouncedSetHoveredHero(heroID);
-  }, [canInteract, debouncedSetHoveredHero, room.status]);
+  }, [canInteract, debouncedSetHoveredHero, room.status, isSpectator]);
 
   const debouncedHandleClickedHero = useMemo(
     () => debounce((hero: Hero) => {
@@ -61,19 +63,14 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
     [canInteract, currentTeam, updateTeam, room.status]
   );
 
-  if (!room) return null;
-
   return (
     <motion.div
-      animate={{
-        opacity: canInteract || room.status === 'planning' || !currentTeam ? 1 : 0.8,
-      }}
+      animate={{ opacity }}
       className={clsx('relative grid grid-cols-10 gap-2', className)}
     >
       {(room.heroes_pool as Hero[]).map((hero, index) => {
-        const isSelected = hero.id === currentHero?.id;
+        const isSelected = hero.id === currentHero?.id && currentTeam?.is_turn;
         const isHovered = hero.id === hoveredHero;
-
         return (
           <motion.div
             key={hero.id}
@@ -83,7 +80,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
             transition={{ duration: 0.4, delay: 0.01 * index, defaultTransition }}
             className={clsx('relative overflow-hidden', {
               'pointer-events-none grayscale': hero.selected,
-              'cursor-pointer': canInteract,
+              'cursor-pointer': canInteract || isSpectator,
             })}
             onClick={() => canInteract && debouncedHandleClickedHero(hero)}
             onMouseEnter={() => handleHoveredHero(hero.id)}
@@ -94,7 +91,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ defaultTransition, duration: 0.1 }}
+                transition={defaultTransition}
                 className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
               >
                 <p className="flex h-full text-center w-full items-center justify-center text-xs font-bold">
@@ -102,7 +99,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
                 </p>
               </motion.div>
             )}
-            {isSelected && (
+            {isSelected && !isSpectator && (
               <motion.div
                 className={clsx(
                   'absolute left-0 top-0 z-50 h-full w-full overflow-hidden bg-gradient-to-t',
@@ -121,7 +118,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
               animate={{
                 scale: isHovered && !isSelected ? 1.2 : 1,
               }}
-              transition={{ defaultTransition, duration: 0.1 }}
+              transition={defaultTransition}
               className="relative overflow-hidden"
             >
               {hero.id && (

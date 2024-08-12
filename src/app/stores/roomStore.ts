@@ -24,7 +24,6 @@ const useRoomStore = create<RoomState>((set) => {
   const subscribeToRoom = async (roomID: number): Promise<void> => {
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 5000; // 5 seconds
-
     const subscribeWithRetry = async (retries = 0): Promise<void> => {
       try {
         return new Promise((resolve, reject) => {
@@ -59,7 +58,6 @@ const useRoomStore = create<RoomState>((set) => {
         throw error;
       }
     };
-
     return subscribeWithRetry();
   };
 
@@ -68,7 +66,6 @@ const useRoomStore = create<RoomState>((set) => {
     isLoading: false,
     error: null,
     fetchRoom: async (roomID: number) => {
-      console.log('fetchRoom', roomID);
       set({ isLoading: true, error: null });
       try {
         const { data: room, error } = await supabase
@@ -76,16 +73,13 @@ const useRoomStore = create<RoomState>((set) => {
           .select('*')
           .eq('id', roomID)
           .single();
-        
         if (error) throw error;
-        
         set({ room });
-        
         await subscribeToRoom(roomID);
         set({ isLoading: false });
       } catch (error) {
         console.error('Error fetching room:', error);
-        set({ error: error as Error, isLoading: false });
+        set({ error: error as Error, isLoading: false, room: null });
       }
     },
     unsubscribe: () => {

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CheckIcon, CopyIcon } from 'lucide-react';
+import { CheckIcon, CopyIcon, X } from 'lucide-react';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { Button } from '@/app/components/ui/button';
@@ -37,6 +37,7 @@ type RoomDisplayProps = {
   room: Room;
   blueTeam: Team;
   redTeam: Team;
+  resetRoom: (room: Room | null) => void;
 };
 
 const copyToClipboard = async (text: string): Promise<void> => {
@@ -82,9 +83,9 @@ const CopyButton: React.FC<{ link: string }> = ({ link }) => {
 
 const getTeamPath = (roomId: number, team: Team | SpectatorTeam): string => {
   if (team.color === 'spectator') {
-    return `room/${roomId}/spectator`;
+    return `/room/${roomId}/spectator`;
   }
-  return `room/${roomId}/${team.id}`;
+  return `/room/${roomId}/${team.id}`;
 };
 
 const Display: React.FC<DisplayProps> = ({ team, roomId }) => {
@@ -100,7 +101,7 @@ const Display: React.FC<DisplayProps> = ({ team, roomId }) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, defaultTransition }}
+      transition={defaultTransition}
     >
       <div className="mb-1 flex items-center gap-1">
         <div
@@ -110,12 +111,13 @@ const Display: React.FC<DisplayProps> = ({ team, roomId }) => {
             'bg-[#353535]': team.color === 'spectator',
           })}
         />
-        <label>{team.name}</label>
+        <label className='text-sm font-normal'>{team.name}</label>
       </div>
       <div className="flex flex-row items-center gap-2">
         <Input
           readOnly
           value={fullLink}
+          className='text-sm font-normal w-72'
           onClick={handleInputClick}
         />
         <Link href={path} target="_blank" passHref>
@@ -131,6 +133,7 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
   room,
   blueTeam,
   redTeam,
+  resetRoom
 }) => {
   const spectatorTeam: SpectatorTeam = {
     name: 'Spectateur',
@@ -145,15 +148,20 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
-        className="border bg-black bg-opacity-20 px-6 pt-6 pb-12"
+        className="border bg-black bg-opacity-20 p-6"
       >
-        <div className="mb-4 text-left">
-          <h1 className="text-2xl font-bold">Chambre générée</h1>
-          <p className="text-sm font-normal opacity-50">
-            {'Rejoignez une chambre associée à votre équipe'}
-          </p>
+        <div className="flex items-start justify-between">
+          <div className="mb-4 text-left">
+            <h1 className="text-xl font-bold">Chambre générée</h1>
+            <p className="text-xs font-normal opacity-50">
+              {'Rejoignez une chambre associée à votre équipe'}
+            </p>
+          </div>
+          <Button variant={'outline'} size={'sm'} onClick={() => { resetRoom(null) }}>
+            <X size={16} className='cursor-pointer' />
+          </Button>
         </div>
-        <div className="flex w-full flex-col justify-center gap-6">
+        <div className="flex w-full flex-col justify-center gap-4">
           <Display team={blueTeam} roomId={room.id} />
           <Display team={redTeam} roomId={room.id} />
           <Display team={spectatorTeam} roomId={room.id} />
