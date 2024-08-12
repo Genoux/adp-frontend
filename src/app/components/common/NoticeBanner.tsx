@@ -5,7 +5,7 @@ import { useState } from 'react';
 import clsx from 'clsx';
 
 type NoticeBannerProps = {
-  message: string;
+  message: string | React.ReactNode;
   className?: string;
 };
 

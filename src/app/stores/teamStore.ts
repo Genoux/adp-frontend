@@ -12,8 +12,10 @@ interface TeamState {
   error: Error | null;
   notFoundError: string | null;
   currentSelection: string | null;
+  isSpectator: boolean;
   fetchTeams: (roomID: number) => Promise<void>;
   setCurrentTeamID: (teamID: number) => Promise<void>;
+  setIsSpectator: (isSpectator: boolean) => void;
   updateTeam: (teamID: number, updates: Partial<Team>) => Promise<void>;
   unsubscribe: () => void;
   setCurrentSelection: (heroID: string | null) => void;
@@ -79,6 +81,7 @@ const useTeamStore = create<TeamState>((set) => {
     error: null,
     notFoundError: null,
     currentSelection: null,
+    isSpectator: false,
 
     fetchTeams: async (roomID) => {
       set({ isLoading: true, error: null, notFoundError: null });
@@ -121,6 +124,8 @@ const useTeamStore = create<TeamState>((set) => {
         set({ error: error instanceof Error ? error : new Error('Error finding team for this room'), isLoading: false });
       }
     },
+
+    setIsSpectator: (isSpectator) => set({ isSpectator }),
 
     updateTeam: async (teamID, updates: Partial<Team>) => {
       try {

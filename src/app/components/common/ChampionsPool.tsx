@@ -15,15 +15,14 @@ type Hero = Database["public"]["CompositeTypes"]["hero"];
 const DEBOUNCE_TIME = 50; // ms
 
 const ChampionsPool = React.memo(({ className }: { className?: string }) => {
-
   const { room } = useRoomStore();
   const { currentTeam } = useTeams();
-  const { updateTeam } = useTeamStore();
+  const { updateTeam, isSpectator } = useTeamStore();
   const currentHero = useCurrentHero();
-  const canInteract = currentTeam?.can_select && currentTeam?.is_turn && room?.status !== 'planning';
+  const canInteract = !isSpectator && currentTeam?.can_select && currentTeam?.is_turn && room?.status !== 'planning';
   const [hoveredHero, setHoveredHero] = useState<string | null>(null);
 
-  const opacity = currentTeam?.is_turn || currentTeam === undefined && room?.status !== 'planning' ? 1 : 0.8;
+  const opacity = (currentTeam?.is_turn || isSpectator) && room?.status !== 'planning' ? 1 : 0.8;
 
   if (!room) {
     throw new Error('Room is not initialized');
@@ -41,9 +40,9 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   }, [canInteract]);
 
   const handleHoveredHero = useCallback(async (heroID: string | null) => {
-    if (!canInteract && room.status !== 'planning') return;
+    if ((!canInteract && room.status !== 'planning') && !isSpectator) return;
     debouncedSetHoveredHero(heroID);
-  }, [canInteract, debouncedSetHoveredHero, room.status]);
+  }, [canInteract, debouncedSetHoveredHero, room.status, isSpectator]);
 
   const debouncedHandleClickedHero = useMemo(
     () => debounce((hero: Hero) => {
@@ -64,16 +63,13 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
     [canInteract, currentTeam, updateTeam, room.status]
   );
 
-  if (!room || !currentTeam) return null;
-
   return (
     <motion.div
       animate={{ opacity }}
       className={clsx('relative grid grid-cols-10 gap-2', className)}
     >
       {(room.heroes_pool as Hero[]).map((hero, index) => {
-
-        const isSelected = hero.id === currentHero?.id && currentTeam.is_turn;
+        const isSelected = hero.id === currentHero?.id && currentTeam?.is_turn;
         const isHovered = hero.id === hoveredHero;
         return (
           <motion.div
@@ -84,12 +80,12 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
             transition={{ duration: 0.4, delay: 0.01 * index, defaultTransition }}
             className={clsx('relative overflow-hidden', {
               'pointer-events-none grayscale': hero.selected,
-              'cursor-pointer': canInteract,
+              'cursor-pointer': canInteract || isSpectator,
             })}
             onClick={() => canInteract && debouncedHandleClickedHero(hero)}
             onMouseEnter={() => handleHoveredHero(hero.id)}
             onMouseLeave={() => handleHoveredHero(null)}
-            >
+          >
             {isHovered && !isSelected && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -103,7 +99,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
                 </p>
               </motion.div>
             )}
-            {isSelected && (
+            {isSelected && !isSpectator && (
               <motion.div
                 className={clsx(
                   'absolute left-0 top-0 z-50 h-full w-full overflow-hidden bg-gradient-to-t',
@@ -136,8 +132,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
                 />
               )}
             </motion.div>
-            </motion.div>
-            
+          </motion.div>
         );
       })}
     </motion.div>
