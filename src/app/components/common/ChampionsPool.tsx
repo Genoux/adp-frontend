@@ -148,8 +148,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
               {hero.id && (
                 <ExtendedImage
                   alt={hero.id}
-                  width={380}
-                  height={380}
+                  params='w_250,h_250,q_50'
                   priority
                   type="tiles"
                   src={hero.id}

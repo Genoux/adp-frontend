@@ -43,8 +43,8 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
           src={hero.id}
           alt={hero.id}
           type="centered"
-          fill
-          style={{ objectFit: 'cover' }}
+          params='w_500,h_720,c_1,q_60'
+          style={{ objectFit: 'cover', width: '100%', height: '100%' }}
           className="w-full"
         />
       )}

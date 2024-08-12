@@ -1,7 +1,6 @@
 'use client';
 
 import AnimatedDot from '@/app/components/common/AnimatedDot';
-import ExtendedImage from '@/app/components/common/ExtendedImage';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
@@ -21,7 +20,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { notFound } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
-type Hero = Database['public']['CompositeTypes']['hero'];
 type Room = Database['public']['Tables']['rooms']['Row'];
 
 type RoomProps = {
@@ -30,23 +28,6 @@ type RoomProps = {
     teamid?: string;
   };
 };
-
-const Preload = ({ champions }: { champions: Hero[] }) => (
-  <>
-    {champions.map((champ) => (
-      <ExtendedImage
-        key={champ.id}
-        rel="preload"
-        src={champ.id || ''}
-        alt={champ.id || ''}
-        type="splash"
-        width={1380}
-        height={1380}
-        className="invisible hidden"
-      />
-    ))}
-  </>
-);
 
 const useRoomInitialization = (roomID: number, teamID: number | null) => {
   const { isConnected } = useSocket(roomID);
@@ -153,7 +134,6 @@ const Room = ({ params: { roomid, teamid } }: RoomProps) => {
 
   return (
     <main>
-      <Preload champions={room.heroes_pool as Hero[]} />
       {process.env.NODE_ENV === 'development' && (
         <StateControllerButtons roomID={roomID} />
       )}
