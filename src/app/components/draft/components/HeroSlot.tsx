@@ -65,7 +65,7 @@ export const HeroSlot: React.FC<HeroSlotProps> = ({
               initial={{ y: 5, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 2, opacity: 0 }}
-              transition={{ defaultTransition, duration: 0.15 }}
+              transition={{ defaultTransition }}
             >
               <HeroImage hero={hero} type={type} />
             </motion.div>
@@ -83,7 +83,7 @@ HeroSlot.displayName = 'HeroSlot';
 const HeroImage: React.FC<{ hero: Hero; type: 'select' | 'ban' }> = React.memo(
   ({ hero, type }) => (
     <motion.div
-      className={clsx('relative h-full w-full', {
+      className={clsx('relative h-full w-full overflow-hidden', {
         grayscale: type === 'ban',
         sepia: type === 'select' && !hero.selected,
       })}
@@ -95,9 +95,9 @@ const HeroImage: React.FC<{ hero: Hero; type: 'select' | 'ban' }> = React.memo(
         <ExtendedImage
           alt={hero.id}
           type={type === 'select' ? 'centered' : 'tiles'}
-          fill
+          params={type === 'select' ? 'w_500,h_720,c_1,q_60' : 'w_250,h_150,q_50,c_1'}
           src={hero.id}
-          style={{ objectPosition: 'center', objectFit: 'cover' }}
+          style={{ objectPosition: 'center', objectFit: 'cover', width: '100%', height: '100%' }}
         />
       )}
     </motion.div>

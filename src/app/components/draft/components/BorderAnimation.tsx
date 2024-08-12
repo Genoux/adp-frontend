@@ -18,7 +18,7 @@ export const BorderAnimation: React.FC<BorderAnimationProps> = ({ type }) => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ defaultTransition, delay: 0.5 }}
+        transition={{ defaultTransition, delay: 1, duration: 0.5 }}
         exit={{ opacity: 0 }}
       >
         <motion.div

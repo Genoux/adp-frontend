@@ -31,9 +31,8 @@ const Preload = ({ champions }: { champions: Hero[] }) => (
         rel="preload"
         src={champ.id || ''}
         alt={champ.id || ''}
-        type="splash"
-        width={1380}
-        height={1380}
+        type="centered"
+        params='w_500,h_720,c_1,q_60'
         className="invisible hidden"
       />
     ))}

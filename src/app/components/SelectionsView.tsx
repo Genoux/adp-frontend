@@ -9,7 +9,6 @@ import useRoomStore from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
 
 const SelectionsView = () => {
   const { room, isLoading } = useRoomStore((state) => ({
@@ -18,7 +17,6 @@ const SelectionsView = () => {
   }));
   const { turnTeam } = useTeams();
   const currentHero = useCurrentHero();
-  const [isLoaded, setIsLoaded] = useState(false);
   const { isSpectator } = useTeamStore();
 
   if (isLoading) return <div>Loading...</div>;
@@ -28,10 +26,10 @@ const SelectionsView = () => {
       {currentHero && (turnTeam || isSpectator) && (
         <AnimatePresence mode="wait">
           <motion.div
-            key={isLoaded ? currentHero.id : undefined}
+            key={currentHero.id}
             initial={{ y: 5, opacity: 0 }}
-            animate={{ y: isLoaded ? 0 : 5, opacity: isLoaded ? 1 : 0 }}
-            transition={{ duration: 0.2, defaultTransition }}
+            animate={{ y: 5, opacity: 1}}
+            transition={{ duration: .2, defaultTransition }}
             exit={{ y: 2, opacity: 0 }}
             className={clsx('fixed top-0 -z-10 h-full w-3/12', {
               'fade-gradient-left left-0':
@@ -43,12 +41,9 @@ const SelectionsView = () => {
             <ExtendedImage
               src={currentHero.id || ''}
               alt={currentHero.id || ''}
-              style={{ objectPosition: 'center', objectFit: 'cover' }}
-              fill
-              onLoad={() => {
-                setIsLoaded(true);
-              }}
-              placeholder="empty"
+              priority
+              params='w_500,h_720,c_1,q_60'
+              style={{ objectPosition: 'center', objectFit: 'cover', width: '100%', height: '100%' }}
               type="centered"
             />
           </motion.div>
