@@ -1,9 +1,9 @@
 import { supabase } from '@/app/lib/supabase/client';
-import { create } from 'zustand';
-import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 import { Database } from '@/app/types/supabase';
+import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
+import { create } from 'zustand';
 
-type Team = Database["public"]["Tables"]["teams"]["Row"];
+type Team = Database['public']['Tables']['teams']['Row'];
 
 interface TeamState {
   teams: Team[];
@@ -36,7 +36,10 @@ const useTeamStore = create<TeamState>((set) => {
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 5000; // 5 seconds
 
-    const subscribeWithRetry = async (team: Team, retries = 0): Promise<void> => {
+    const subscribeWithRetry = async (
+      team: Team,
+      retries = 0
+    ): Promise<void> => {
       try {
         return new Promise((resolve, reject) => {
           const channel = supabase
@@ -53,9 +56,15 @@ const useTeamStore = create<TeamState>((set) => {
             )
             .subscribe((status, err) => {
               if (err) {
-                console.error(`.subscribe - err TEAM (attempt ${retries + 1}):`, err);
+                console.error(
+                  `.subscribe - err TEAM (attempt ${retries + 1}):`,
+                  err
+                );
                 if (retries < MAX_RETRIES) {
-                  setTimeout(() => subscribeWithRetry(team, retries + 1), RETRY_DELAY);
+                  setTimeout(
+                    () => subscribeWithRetry(team, retries + 1),
+                    RETRY_DELAY
+                  );
                 } else {
                   reject(err);
                 }
@@ -66,12 +75,15 @@ const useTeamStore = create<TeamState>((set) => {
             });
         });
       } catch (error) {
-        console.error(`Failed to subscribe to team ${team.id} after ${MAX_RETRIES} attempts:`, error);
+        console.error(
+          `Failed to subscribe to team ${team.id} after ${MAX_RETRIES} attempts:`,
+          error
+        );
         throw error;
       }
     };
 
-    await Promise.all(teams.map(team => subscribeWithRetry(team)));
+    await Promise.all(teams.map((team) => subscribeWithRetry(team)));
   };
 
   return {
@@ -100,7 +112,11 @@ const useTeamStore = create<TeamState>((set) => {
           set({ isLoading: false, notFoundError: 'Room or teams not found' });
         }
       } catch (error) {
-        set({ error: error instanceof Error ? error : new Error('Error fetching teams'), isLoading: false });
+        set({
+          error:
+            error instanceof Error ? error : new Error('Error fetching teams'),
+          isLoading: false,
+        });
       }
     },
 
@@ -121,7 +137,13 @@ const useTeamStore = create<TeamState>((set) => {
           set({ isLoading: false, notFoundError: 'Team not found' });
         }
       } catch (error) {
-        set({ error: error instanceof Error ? error : new Error('Error finding team for this room'), isLoading: false });
+        set({
+          error:
+            error instanceof Error
+              ? error
+              : new Error('Error finding team for this room'),
+          isLoading: false,
+        });
       }
     },
 
@@ -139,10 +161,15 @@ const useTeamStore = create<TeamState>((set) => {
         if (error) throw error;
 
         if (data && data.is_turn) {
-          handleTeamUpdate({ new: { id: teamID, ...updates } as Team } as RealtimePostgresUpdatePayload<Team>);
+          handleTeamUpdate({
+            new: { id: teamID, ...updates } as Team,
+          } as RealtimePostgresUpdatePayload<Team>);
         }
       } catch (error) {
-        set({ error: error instanceof Error ? error : new Error('Error updating team') });
+        set({
+          error:
+            error instanceof Error ? error : new Error('Error updating team'),
+        });
       }
     },
 
@@ -151,7 +178,8 @@ const useTeamStore = create<TeamState>((set) => {
       subscriptions = {};
     },
 
-    setCurrentSelection: (heroID: string | null) => set({ currentSelection: heroID }),
+    setCurrentSelection: (heroID: string | null) =>
+      set({ currentSelection: heroID }),
   };
 });
 

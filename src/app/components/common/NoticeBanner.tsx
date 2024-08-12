@@ -1,8 +1,8 @@
 import defaultTransition from '@/app/lib/animationConfig';
+import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Info, X } from 'lucide-react';
 import { useState } from 'react';
-import clsx from 'clsx';
 
 type NoticeBannerProps = {
   message: string | React.ReactNode;
@@ -29,7 +29,10 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({ message, className }) => {
           exit="exit"
           variants={variants}
           transition={{ delay: 2, defaultTransition }}
-          className={clsx('mx-auto flex w-fit cursor-pointer items-center justify-between gap-6 border border-opacity-25 bg-[#0a0a0c] px-4 py-3 text-white', className)}
+          className={clsx(
+            'mx-auto flex w-fit cursor-pointer items-center justify-between gap-6 border border-opacity-25 bg-[#0a0a0c] px-4 py-3 text-white',
+            className
+          )}
         >
           <div className="flex items-center gap-2">
             <Info size={16} color="#BBBBBB" />

@@ -3,22 +3,22 @@ import { motion } from 'framer-motion';
 const AnimatedDot = ({ className }: { className?: string }) => {
   const dotVariants = {
     initial: {
-      opacity: 0
+      opacity: 0,
     },
     animate: (i: number) => ({
       opacity: [0, 1, 0],
       transition: {
         duration: 1.5,
         repeat: Infinity,
-        ease: "easeInOut",
+        ease: 'easeInOut',
         times: [0, 0.5, 1],
-        delay: i * 0.15
-      }
-    })
+        delay: i * 0.15,
+      },
+    }),
   };
 
   return (
-    <div className={`inline-block text-base whitespace-nowrap ${className}`}>
+    <div className={`inline-block whitespace-nowrap text-base ${className}`}>
       {Array.from({ length: 3 }).map((_, index) => (
         <motion.span
           key={index}

@@ -1,9 +1,9 @@
 import { supabase } from '@/app/lib/supabase/client';
-import { create } from 'zustand';
-import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 import { Database } from '@/app/types/supabase';
+import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
+import { create } from 'zustand';
 
-type Room = Database["public"]["Tables"]["rooms"]["Row"];
+type Room = Database['public']['Tables']['rooms']['Row'];
 
 type RoomState = {
   room: Room | null;
@@ -11,7 +11,7 @@ type RoomState = {
   error: Error | null;
   fetchRoom: (roomID: number) => Promise<void>;
   unsubscribe: () => void;
-}
+};
 
 const useRoomStore = create<RoomState>((set) => {
   let unsubscribe: (() => void) | null = null;
@@ -41,9 +41,15 @@ const useRoomStore = create<RoomState>((set) => {
             )
             .subscribe((status, err) => {
               if (err) {
-                console.error(`.subscribe - err ROOM (attempt ${retries + 1}):`, err);
+                console.error(
+                  `.subscribe - err ROOM (attempt ${retries + 1}):`,
+                  err
+                );
                 if (retries < MAX_RETRIES) {
-                  setTimeout(() => subscribeWithRetry(retries + 1), RETRY_DELAY);
+                  setTimeout(
+                    () => subscribeWithRetry(retries + 1),
+                    RETRY_DELAY
+                  );
                 } else {
                   reject(err);
                 }
@@ -54,7 +60,10 @@ const useRoomStore = create<RoomState>((set) => {
             });
         });
       } catch (error) {
-        console.error(`Failed to subscribe to room ${roomID} after ${MAX_RETRIES} attempts:`, error);
+        console.error(
+          `Failed to subscribe to room ${roomID} after ${MAX_RETRIES} attempts:`,
+          error
+        );
         throw error;
       }
     };

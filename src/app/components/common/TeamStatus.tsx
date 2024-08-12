@@ -1,12 +1,12 @@
 import { CheckIcon } from 'lucide-react';
 
-type TeamStatusProps ={
+type TeamStatusProps = {
   team: {
     ready: boolean;
     [key: string]: any;
   };
   showReadyState?: boolean;
-}
+};
 
 const TeamStatus: React.FC<TeamStatusProps> = ({ team, showReadyState }) => {
   return (

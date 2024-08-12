@@ -1,28 +1,28 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import useSocket from '@/app/hooks/useSocket';
-import useRoomStore from '@/app/stores/roomStore';
-import useTeamStore from '@/app/stores/teamStore';
-import defaultTransition from '@/app/lib/animationConfig';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
 import StateControllerButtons from '@/app/components/common/StateControllerButtons';
+import DraftView from '@/app/components/DraftView';
+import ErrorBoundary from '@/app/components/ErrorBoundary';
+import FinishView from '@/app/components/FinishView';
 import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
-import FinishView from '@/app/components/FinishView';
 import SelectionsView from '@/app/components/SelectionsView';
-import DraftView from '@/app/components/DraftView';
-import clsx from 'clsx';
+import useSocket from '@/app/hooks/useSocket';
+import defaultTransition from '@/app/lib/animationConfig';
+import useRoomStore from '@/app/stores/roomStore';
+import useTeamStore from '@/app/stores/teamStore';
 import { Database } from '@/app/types/supabase';
-import ExtendedImage from '@/app/components/common/ExtendedImage';
-import ErrorBoundary from '@/app/components/ErrorBoundary';
+import clsx from 'clsx';
+import { AnimatePresence, motion } from 'framer-motion';
 import { notFound } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 
-type Hero = Database["public"]["CompositeTypes"]["hero"];
-type RoomProps = { params: { roomid: string; teamid: string; }; };
+type Hero = Database['public']['CompositeTypes']['hero'];
+type RoomProps = { params: { roomid: string; teamid: string } };
 
 const Preload = ({ champions }: { champions: Hero[] }) => (
   <>
@@ -32,10 +32,10 @@ const Preload = ({ champions }: { champions: Hero[] }) => (
         rel="preload"
         src={champ.id || ''}
         alt={champ.id || ''}
-        type='splash'
+        type="splash"
         width={1380}
         height={1380}
-        className='hidden invisible'
+        className="invisible hidden"
       />
     ))}
   </>
@@ -54,11 +54,15 @@ const useRoomInitialization = (roomID: number, teamID: number) => {
         await Promise.all([
           fetchTeams(roomID),
           fetchRoom(roomID),
-          setCurrentTeamID(teamID)
+          setCurrentTeamID(teamID),
         ]);
       } catch (err) {
-        console.error("Error initializing room:", err);
-        setError(err instanceof Error ? err : new Error('An error occurred during initialization'));
+        console.error('Error initializing room:', err);
+        setError(
+          err instanceof Error
+            ? err
+            : new Error('An error occurred during initialization')
+        );
       } finally {
         setIsInitialLoading(false);
       }
@@ -79,7 +83,7 @@ const viewComponents = {
       <RoomStatusBar className="z-90 fixed left-0 top-0" />
       <section className="flex h-full flex-col gap-4 py-4">
         <div className="h-16"></div>
-        <div className="z-10 flex h-full flex-col justify-between px-4 gap-4">
+        <div className="z-10 flex h-full flex-col justify-between gap-4 px-4">
           <SelectionsView />
           <DraftView />
         </div>
@@ -92,13 +96,19 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
   const roomID = parseInt(roomid, 10);
   const teamID = parseInt(teamid, 10);
 
-  const { isConnected, isInitialLoading, room, teams, currentTeamID, error } = useRoomInitialization(roomID, teamID);
+  const { isConnected, isInitialLoading, room, teams, currentTeamID, error } =
+    useRoomInitialization(roomID, teamID);
   const { socket } = useSocket(roomID);
 
-  const currentTeam = useMemo(() => teams.find(team => team.id === currentTeamID), [teams, currentTeamID]);
+  const currentTeam = useMemo(
+    () => teams.find((team) => team.id === currentTeamID),
+    [teams, currentTeamID]
+  );
 
   const animationKey = useMemo(() => {
-    return ['ban', 'select'].includes(room?.status || '') ? 'draft' : room?.status || 'initial';
+    return ['ban', 'select'].includes(room?.status || '')
+      ? 'draft'
+      : room?.status || 'initial';
   }, [room?.status]);
 
   useEffect(() => {
@@ -121,14 +131,21 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
     notFound();
   }
 
-  const ViewComponent = viewComponents[(['ban', 'select'].includes(room.status) ? 'draft' : room.status) as keyof typeof viewComponents];
+  const ViewComponent =
+    viewComponents[
+      (['ban', 'select'].includes(room.status)
+        ? 'draft'
+        : room.status) as keyof typeof viewComponents
+    ];
 
   return (
     <ErrorBoundary fallback={<div>Something went wrong</div>}>
       <main>
         <Preload champions={room.heroes_pool as Hero[]} />
-        {process.env.NODE_ENV === 'development' && <StateControllerButtons roomID={roomID} />}
-        <AnimatePresence mode='wait'>
+        {process.env.NODE_ENV === 'development' && (
+          <StateControllerButtons roomID={roomID} />
+        )}
+        <AnimatePresence mode="wait">
           <motion.div
             key={animationKey}
             initial={{ opacity: 0 }}
@@ -142,7 +159,10 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
           >
             {ViewComponent && <ViewComponent />}
             {room.status === 'planning' && (
-              <NoticeBanner className='mt-6' message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
+              <NoticeBanner
+                className="mt-6"
+                message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs"
+              />
             )}
           </motion.div>
         </AnimatePresence>

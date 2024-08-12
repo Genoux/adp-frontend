@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 type ArrowAnimationProps = {
   teamis_turn?: boolean | null | undefined;
   orientation?: 'left' | 'right';
-}
+};
 
 const ArrowAnimation: React.FC<ArrowAnimationProps> = ({
   teamis_turn = false,

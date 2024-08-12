@@ -4,7 +4,7 @@ type TeamNameProps = {
   color: string;
   name: string;
   className?: string;
-}
+};
 
 const TeamName: React.FC<TeamNameProps> = ({ name, color, className }) => {
   const commonCSS = `uppercase flex w-fit items-center gap-2 border border-opacity-20 bg-opacity-20 px-2 truncate`;

@@ -2,13 +2,13 @@ import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 import Timer from '@/app/components/common/RoomTimer';
 import TeamName from '@/app/components/common/TeamName';
 import useTeams from '@/app/hooks/useTeams';
-import useRoomStore from '@/app/stores/roomStore';
 import defaultTransition from '@/app/lib/animationConfig';
+import useRoomStore from '@/app/stores/roomStore';
+import { Database } from '@/app/types/supabase';
 import { motion } from 'framer-motion';
 import React from 'react';
-import { Database } from '@/app/types/supabase';
 
-type Team = Database["public"]["Tables"]["teams"]["Row"];
+type Team = Database['public']['Tables']['teams']['Row'];
 
 interface TeamIndicatorProps {
   team: Team;
@@ -32,13 +32,16 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({ team, orientation }) => {
         <motion.div
           className={`flex items-center justify-center ${
             orientation === 'right' ? 'mr-2' : 'ml-1'
-            }`}
+          }`}
           key={team.is_turn ? team.id : undefined}
           initial={{ opacity: 0, x: orientation === 'right' ? 10 : -10 }}
           animate={{ opacity: room!.cycle < 17 ? 1 : 0, x: 0 }}
           transition={{ delay: 0.2, defaultTransition }}
         >
-          <ArrowAnimation teamis_turn={team.is_turn} orientation={orientation} />
+          <ArrowAnimation
+            teamis_turn={team.is_turn}
+            orientation={orientation}
+          />
         </motion.div>
         <div className={`${!team.is_turn ? 'opacity-60' : null}`}>
           <TeamName name={team.name} color={team.color} />
@@ -48,7 +51,7 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({ team, orientation }) => {
   );
 };
 
-const RoomStatusBar = ({ className } : { className?: string }) => {
+const RoomStatusBar = ({ className }: { className?: string }) => {
   const { redTeam, blueTeam } = useTeams();
 
   return (

@@ -42,11 +42,11 @@ export default function useSocket(
         }
         socket?.emit('joinRoom', { roomid });
         console.log('Successfully joined room ' + roomid);
-        forceUpdate({});  // Force a re-render to update the UI
+        forceUpdate({}); // Force a re-render to update the UI
       });
 
       socket.on('disconnect', () => {
-        forceUpdate({});  // Force a re-render to update the UI
+        forceUpdate({}); // Force a re-render to update the UI
       });
 
       socket.on('connect_error', () => {
@@ -74,6 +74,6 @@ export default function useSocket(
 
   return {
     socket,
-    isConnected: socket?.connected || false
+    isConnected: socket?.connected || false,
   };
 }

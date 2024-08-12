@@ -1,16 +1,16 @@
-import React, { useCallback, useMemo } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Eye } from 'lucide-react';
-import { Button } from '@/app/components/ui/button';
 import AnimatedDot from '@/app/components/common/AnimatedDot';
+import { Button } from '@/app/components/ui/button';
+import useCurrentHero from '@/app/hooks/useCurrentHero';
 import useSocket from '@/app/hooks/useSocket';
 import useTeams from '@/app/hooks/useTeams';
+import defaultTransition from '@/app/lib/animationConfig';
+import { supabase } from '@/app/lib/supabase/client';
 import useRoomStore from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
-import useCurrentHero from '@/app/hooks/useCurrentHero';
-import { supabase } from '@/app/lib/supabase/client';
+import { AnimatePresence, motion } from 'framer-motion';
 import debounce from 'lodash/debounce';
-import defaultTransition from '@/app/lib/animationConfig';
+import { Eye } from 'lucide-react';
+import React, { useCallback, useMemo } from 'react';
 
 const DEBOUNCE_TIME = 300;
 
@@ -39,7 +39,11 @@ const ConfirmButton: React.FC = () => {
   }, [currentTeam, room, socket]);
 
   const debouncedHandleConfirmSelection = useMemo(
-    () => debounce(handleConfirmSelection, DEBOUNCE_TIME, { leading: true, trailing: false }),
+    () =>
+      debounce(handleConfirmSelection, DEBOUNCE_TIME, {
+        leading: true,
+        trailing: false,
+      }),
     [handleConfirmSelection]
   );
 
@@ -54,12 +58,13 @@ const ConfirmButton: React.FC = () => {
     );
   }
 
-  const buttonText = room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection';
+  const buttonText =
+    room?.status === 'ban' ? 'Confirmer le Ban' : 'Confirmer la Selection';
   const isCurrentTurn = currentTeam?.is_turn && !isSpectator;
   const isButtonDisabled = currentHero?.id === null || !currentTeam?.can_select;
 
   return (
-    <AnimatePresence mode='wait'>
+    <AnimatePresence mode="wait">
       <motion.div
         initial={{ y: 2, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -80,13 +85,15 @@ const ConfirmButton: React.FC = () => {
           ) : (
             <div className="flex w-full flex-col items-center justify-center">
               <p className="text-sm opacity-80">{`Ce n'est pas votre tour`}</p>
-              <div className="text-md px-12 text-center font-medium flex gap-0.5">
+              <div className="text-md flex gap-0.5 px-12 text-center font-medium">
                 <p className="whitespace-nowrap">{`En attente de l'autre équipe`}</p>
                 <AnimatedDot />
               </div>
             </div>
           )
-        ) : <></>}
+        ) : (
+          <></>
+        )}
       </motion.div>
     </AnimatePresence>
   );

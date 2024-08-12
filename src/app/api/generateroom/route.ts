@@ -1,26 +1,30 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { supabase } from '@/app/lib/supabase/client';
 import { Database } from '@/app/types/supabase';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { cache } from 'react';
 
-type Hero = Database["public"]["CompositeTypes"]["hero"];
+type Hero = Database['public']['CompositeTypes']['hero'];
 
 export const runtime = 'edge';
 
 const nameMapping: { [key: string]: string } = {
-  "Fiddlesticks": "FiddleSticks",
+  Fiddlesticks: 'FiddleSticks',
 };
 
 const getLatestVersion = cache(async (): Promise<string> => {
-  const response = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+  const response = await fetch(
+    'https://ddragon.leagueoflegends.com/api/versions.json'
+  );
   const versions = await response.json();
   return versions[0]; // The first version in the array is the latest
 });
 
 const fetchChampions = cache(async (): Promise<Hero[]> => {
   const latestVersion = await getLatestVersion();
-  const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
+  const response = await fetch(
+    `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
+  );
   const data = await response.json();
   return Object.values(data.data).map((champion: any) => ({
     id: nameMapping[champion.id] || champion.id,
@@ -40,14 +44,18 @@ async function getRandomChampions(count: number): Promise<Hero[]> {
 }
 
 function generateArray(length: number): Hero[] {
-  return Array.from({ length }, () => ({ id: null, name: null, selected: false }));
+  return Array.from({ length }, () => ({
+    id: null,
+    name: null,
+    selected: false,
+  }));
 }
 
 function createHeroesPool(champions: Hero[]): Hero[] {
-  return champions.map(champion => ({
+  return champions.map((champion) => ({
     id: champion.id,
     name: champion.name,
-    selected: false
+    selected: false,
   }));
 }
 
@@ -55,26 +63,26 @@ async function createRoom(blueTeamName: string, redTeamName: string) {
   const champions = await getRandomChampions(30);
   const id = randomInt8();
   try {
-    const { error } = await supabase
-      .from('rooms')
-      .insert({id})
+    const { error } = await supabase.from('rooms').insert({ id });
     if (error) {
-      console.error("createRoom - roomError:", error);
+      console.error('createRoom - roomError:', error);
       return { error: error };
     }
     const roomID = id;
     const teamsData = [
       { color: 'red', name: redTeamName, is_turn: false },
-      { color: 'blue', name: blueTeamName, is_turn: true }
+      { color: 'blue', name: blueTeamName, is_turn: true },
     ];
     const { data: teams, error: teamsError } = await supabase
       .from('teams')
-      .insert(teamsData.map(team => ({
-        ...team,
-        heroes_selected: generateArray(5),
-        heroes_ban: generateArray(3),
-        room_id: roomID,
-      })))
+      .insert(
+        teamsData.map((team) => ({
+          ...team,
+          heroes_selected: generateArray(5),
+          heroes_ban: generateArray(3),
+          room_id: roomID,
+        }))
+      )
       .select('*');
     if (teamsError) {
       return { error: teamsError };

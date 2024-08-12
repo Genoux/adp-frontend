@@ -1,30 +1,29 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import useSocket from '@/app/hooks/useSocket';
-import useRoomStore from '@/app/stores/roomStore';
-import useTeamStore from '@/app/stores/teamStore';
-import useTeams from '@/app/hooks/useTeams';
-import defaultTransition from '@/app/lib/animationConfig';
+import AnimatedDot from '@/app/components/common/AnimatedDot';
+import ExtendedImage from '@/app/components/common/ExtendedImage';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
 import StateControllerButtons from '@/app/components/common/StateControllerButtons';
-import AnimatedDot from '@/app/components/common/AnimatedDot';
-import PlanningView from '@/app/components/PlanningView';
-import FinishView from '@/app/components/FinishView';
-import SelectionsView from '@/app/components/SelectionsView';
 import DraftView from '@/app/components/DraftView';
-import clsx from 'clsx';
-import ExtendedImage from '@/app/components/common/ExtendedImage';
 import ErrorBoundary from '@/app/components/ErrorBoundary';
-import { notFound } from 'next/navigation';
-
+import FinishView from '@/app/components/FinishView';
+import PlanningView from '@/app/components/PlanningView';
+import SelectionsView from '@/app/components/SelectionsView';
+import useSocket from '@/app/hooks/useSocket';
+import useTeams from '@/app/hooks/useTeams';
+import defaultTransition from '@/app/lib/animationConfig';
+import useRoomStore from '@/app/stores/roomStore';
+import useTeamStore from '@/app/stores/teamStore';
 import { Database } from '@/app/types/supabase';
+import clsx from 'clsx';
+import { AnimatePresence, motion } from 'framer-motion';
+import { notFound } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 
-type Hero = Database["public"]["CompositeTypes"]["hero"];
-type Room = Database["public"]["Tables"]["rooms"]["Row"];
+type Hero = Database['public']['CompositeTypes']['hero'];
+type Room = Database['public']['Tables']['rooms']['Row'];
 
 type RoomProps = {
   params: {
@@ -41,10 +40,10 @@ const Preload = ({ champions }: { champions: Hero[] }) => (
         rel="preload"
         src={champ.id || ''}
         alt={champ.id || ''}
-        type='splash'
+        type="splash"
         width={1380}
         height={1380}
-        className='hidden invisible'
+        className="invisible hidden"
       />
     ))}
   </>
@@ -52,7 +51,8 @@ const Preload = ({ champions }: { champions: Hero[] }) => (
 
 const useRoomInitialization = (roomID: number, teamID: number | null) => {
   const { isConnected } = useSocket(roomID);
-  const { fetchTeams, setCurrentTeamID, setIsSpectator, teams, currentTeamID } = useTeamStore();
+  const { fetchTeams, setCurrentTeamID, setIsSpectator, teams, currentTeamID } =
+    useTeamStore();
   const { fetchRoom, room } = useRoomStore();
   const [error, setError] = useState<Error | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -66,13 +66,14 @@ const useRoomInitialization = (roomID: number, teamID: number | null) => {
           await setCurrentTeamID(teamID);
           setIsSpectator(false);
         }
-        await Promise.all([
-          fetchTeams(roomID),
-          fetchRoom(roomID)
-        ]);
+        await Promise.all([fetchTeams(roomID), fetchRoom(roomID)]);
       } catch (err) {
-        console.error("Error initializing room:", err);
-        setError(err instanceof Error ? err : new Error('An error occurred during initialization'));
+        console.error('Error initializing room:', err);
+        setError(
+          err instanceof Error
+            ? err
+            : new Error('An error occurred during initialization')
+        );
       } finally {
         setIsInitialLoading(false);
       }
@@ -86,8 +87,9 @@ const useRoomInitialization = (roomID: number, teamID: number | null) => {
 
 const viewComponents = {
   waiting: () => (
-    <div className='flex h-screen gap-1 items-center justify-center'>
-      <p className='text-base'>{'En attente des deux équipes'}</p><AnimatedDot />
+    <div className="flex h-screen items-center justify-center gap-1">
+      <p className="text-base">{'En attente des deux équipes'}</p>
+      <AnimatedDot />
     </div>
   ),
   planning: PlanningView,
@@ -97,7 +99,7 @@ const viewComponents = {
       <RoomStatusBar className="z-90 fixed left-0 top-0" />
       <section className="flex h-full flex-col gap-4 py-4">
         <div className="h-16"></div>
-        <div className="z-10 flex h-full flex-col justify-between px-4 gap-4">
+        <div className="z-10 flex h-full flex-col justify-between gap-4 px-4">
           <SelectionsView />
           <DraftView />
         </div>
@@ -109,13 +111,18 @@ const viewComponents = {
 const Room = ({ params: { roomid, teamid } }: RoomProps) => {
   const roomID = parseInt(roomid, 10);
   const teamID = teamid ? parseInt(teamid, 10) : null;
-  const { isConnected, isInitialLoading, room, error } = useRoomInitialization(roomID, teamID);
+  const { isConnected, isInitialLoading, room, error } = useRoomInitialization(
+    roomID,
+    teamID
+  );
   const { socket } = useSocket(roomID);
   const { redTeam, blueTeam, currentTeam } = useTeams();
   const { isSpectator } = useTeamStore();
 
   const animationKey = useMemo(() => {
-    return ['ban', 'select'].includes(room?.status || '') ? 'draft' : room?.status || 'initial';
+    return ['ban', 'select'].includes(room?.status || '')
+      ? 'draft'
+      : room?.status || 'initial';
   }, [room?.status]);
 
   useEffect(() => {
@@ -138,14 +145,21 @@ const Room = ({ params: { roomid, teamid } }: RoomProps) => {
     notFound();
   }
 
-  const ViewComponent = viewComponents[(['ban', 'select'].includes(room.status) ? 'draft' : room.status) as keyof typeof viewComponents];
+  const ViewComponent =
+    viewComponents[
+      (['ban', 'select'].includes(room.status)
+        ? 'draft'
+        : room.status) as keyof typeof viewComponents
+    ];
 
   return (
     <ErrorBoundary fallback={<div>Something went wrong</div>}>
       <main>
         <Preload champions={room.heroes_pool as Hero[]} />
-        {process.env.NODE_ENV === 'development' && <StateControllerButtons roomID={roomID} />}
-        <AnimatePresence mode='wait'>
+        {process.env.NODE_ENV === 'development' && (
+          <StateControllerButtons roomID={roomID} />
+        )}
+        <AnimatePresence mode="wait">
           <motion.div
             key={animationKey}
             initial={{ opacity: 0 }}
@@ -159,20 +173,25 @@ const Room = ({ params: { roomid, teamid } }: RoomProps) => {
           >
             {ViewComponent && <ViewComponent />}
             {room.status === 'planning' && isSpectator && (
-              <NoticeBanner 
-                className='mt-6' 
+              <NoticeBanner
+                className="mt-6"
                 message={
                   <>
                     Vous êtes spectateur de{' '}
-                    <span className='uppercase font-bold'>{blueTeam?.name}</span>
+                    <span className="font-bold uppercase">
+                      {blueTeam?.name}
+                    </span>
                     {' vs '}
-                    <span className='uppercase font-bold'>{redTeam?.name}</span>
+                    <span className="font-bold uppercase">{redTeam?.name}</span>
                   </>
-                } 
+                }
               />
             )}
             {room.status === 'planning' && !isSpectator && (
-              <NoticeBanner className='mt-6' message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs" />
+              <NoticeBanner
+                className="mt-6"
+                message="Si l'un de vos joueurs ne dispose pas du champion requis, veuillez en informer les administrateurs"
+              />
             )}
           </motion.div>
         </AnimatePresence>

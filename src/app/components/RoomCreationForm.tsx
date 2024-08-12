@@ -6,10 +6,10 @@ import React from 'react';
 type TeamsName = {
   blueTeamName: string;
   redTeamName: string;
-}
+};
 type RoomCreationFormProps = {
   submit: (data: TeamsName) => Promise<void>;
-}
+};
 
 export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
   submit,
@@ -27,16 +27,15 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
           <h3 className="font-semibold leading-none tracking-tight">
             Générer une chambre
           </h3>
-          <p className="text-xs font-normal text-muted-foreground pb-4">
+          <p className="pb-4 text-xs font-normal text-muted-foreground">
             {
               "Veuillez selectionner les noms des deux équipes qui vont s'affronter"
             }
           </p>
         </div>
-     {/* <div className='hidden'>  <InputSelect submit={(data) => submit(data)} /></div> */}
-        <InputForm submit={(data) => submit(data)} /> 
+        {/* <div className='hidden'>  <InputSelect submit={(data) => submit(data)} /></div> */}
+        <InputForm submit={(data) => submit(data)} />
       </motion.div>
-    
     </>
   );
 };

@@ -10,7 +10,7 @@ const DraftView = ({ className }: { className?: string }) => {
   return (
     <div
       className={clsx(
-        'flex h-full flex-col justify-evenly gap-4 border border-[#8f8f8f] bg-black bg-opacity-25 border-opacity-5 p-4',
+        'flex h-full flex-col justify-evenly gap-4 border border-[#8f8f8f] border-opacity-5 bg-black bg-opacity-25 p-4',
         className
       )}
     >

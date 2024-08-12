@@ -8,9 +8,7 @@ const config: Config.InitialOptions = {
     '^.+\\.ts$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js'],
-  transformIgnorePatterns: [
-    '/node_modules/(?!node-fetch)'
-  ],
+  transformIgnorePatterns: ['/node_modules/(?!node-fetch)'],
 };
 
 export default config;

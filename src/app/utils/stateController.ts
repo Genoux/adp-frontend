@@ -47,7 +47,11 @@ async function resetArray(roomID: number): Promise<void> {
       throw new Error('Error updating heroes pool');
     }
 
-    const resetSelected = Array(5).fill({ id: null, name: null, selected: false });
+    const resetSelected = Array(5).fill({
+      id: null,
+      name: null,
+      selected: false,
+    });
     const resetBan = Array(3).fill({ id: null, name: null, selected: false });
 
     const { error: resetError } = await supabase
@@ -95,9 +99,8 @@ export async function setPlanning(roomID: number): Promise<void> {
 }
 
 export async function setDraft(roomID: number): Promise<void> {
-  
   await resetArray(roomID);
-  
+
   try {
     const response = await fetch(`${local}/api/draft?roomID=${roomID}`, {
       method: 'POST',

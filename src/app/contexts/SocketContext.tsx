@@ -7,4 +7,7 @@ interface SocketContextType {
   isConnected: boolean;
 }
 
-export const SocketContext = createContext<SocketContextType>({ socket: null, isConnected: false });
+export const SocketContext = createContext<SocketContextType>({
+  socket: null,
+  isConnected: false,
+});

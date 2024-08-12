@@ -9,20 +9,23 @@ import {
 } from '@/app/components/ui/form';
 import { Input } from '@/app/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useState } from 'react';
 
-const FormSchema = z.object({
-  blueTeamName: z.string().min(2, "Le nom de l'équipe doit contenir au moins 2 caractères"),
-  redTeamName: z.string().min(2, "Le nom de l'équipe doit contenir au moins 2 caractères"),
-}).refine(
-  (data) => data.blueTeamName !== data.redTeamName,
-  {
+const FormSchema = z
+  .object({
+    blueTeamName: z
+      .string()
+      .min(2, "Le nom de l'équipe doit contenir au moins 2 caractères"),
+    redTeamName: z
+      .string()
+      .min(2, "Le nom de l'équipe doit contenir au moins 2 caractères"),
+  })
+  .refine((data) => data.blueTeamName !== data.redTeamName, {
     message: 'Les deux équipes ne peuvent pas avoir le même nom',
     path: ['redTeamName'],
-  }
-);
+  });
 
 type FormData = z.infer<typeof FormSchema>;
 
@@ -66,11 +69,7 @@ export function InputForm({ submit }: InputFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit} className="flex w-full flex-col">
-        {formError && (
-          <FormMessage className="mb-4">
-            {formError}
-          </FormMessage>
-        )}
+        {formError && <FormMessage className="mb-4">{formError}</FormMessage>}
         <div className="flex flex-col gap-6">
           {['blue', 'red'].map((color) => (
             <FormField
@@ -79,7 +78,9 @@ export function InputForm({ submit }: InputFormProps) {
               name={`${color}TeamName` as 'blueTeamName' | 'redTeamName'}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={`flex items-center gap-2 text-${color}`}>
+                  <FormLabel
+                    className={`flex items-center gap-2 text-${color}`}
+                  >
                     <span className={`h-2 w-2 bg-${color}`}></span>
                     Équipe {color === 'blue' ? 'Bleue' : 'Rouge'}
                   </FormLabel>

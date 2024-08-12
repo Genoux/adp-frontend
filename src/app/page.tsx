@@ -1,18 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import LoadingCircle from '@/app/components/common/LoadingCircle';
+import NoticeBanner from '@/app/components/common/NoticeBanner';
+import { RoomCreationForm } from '@/app/components/RoomCreationForm';
+import { RoomDisplay } from '@/app/components/RoomDisplay';
+import { useToast } from '@/app/components/ui/use-toast';
+import defaultTransition from '@/app/lib/animationConfig';
+import { Database } from '@/app/types/supabase';
+import { appVersion } from '@/app/utils/version';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Logo } from 'haq-assets';
 import { BedDouble } from 'lucide-react';
 import Link from 'next/link';
-import { useToast } from "@/app/components/ui/use-toast";
-import { Database } from '@/app/types/supabase';
-import LoadingCircle from '@/app/components/common/LoadingCircle';
-import { RoomCreationForm } from '@/app/components/RoomCreationForm';
-import { RoomDisplay } from '@/app/components/RoomDisplay';
-import NoticeBanner from '@/app/components/common/NoticeBanner';
-import defaultTransition from '@/app/lib/animationConfig';
-import { appVersion } from '@/app/utils/version';
+import { useState } from 'react';
 
 type Room = Database['public']['Tables']['rooms']['Row'] & {
   blue: Team;
@@ -33,7 +33,10 @@ type TeamsName = {
   redTeamName: string;
 };
 
-const mapTeamStructure = (team: Omit<Team, 'borderColor' | 'btnText'>, borderColor: string): Team => ({
+const mapTeamStructure = (
+  team: Omit<Team, 'borderColor' | 'btnText'>,
+  borderColor: string
+): Team => ({
   ...team,
   borderColor: `border-${borderColor} border-t-4`,
   btnText: 'Rejoindre',
@@ -65,9 +68,9 @@ function Home() {
       setRoom({ ...room, blue: mappedBlueTeam, red: mappedRedTeam });
     } catch (error) {
       toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "Something went wrong. Please try again later.",
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: 'Something went wrong. Please try again later.',
       });
     } finally {
       setLoading(false);
@@ -89,14 +92,19 @@ function Home() {
 
     if (room) {
       return (
-        <div className="w-full flex flex-col gap-6">
-          <RoomDisplay resetRoom={() => setRoom(null)} room={room} blueTeam={room.blue} redTeam={room.red} />
+        <div className="flex w-full flex-col gap-6">
+          <RoomDisplay
+            resetRoom={() => setRoom(null)}
+            room={room}
+            blueTeam={room.blue}
+            redTeam={room.red}
+          />
         </div>
       );
     }
 
     return (
-      <div className='flex flex-col gap-6 justify-start items-center'>
+      <div className="flex flex-col items-center justify-start gap-6">
         <RoomCreationForm submit={createRoom} />
         {appMode === 'tournament' && (
           <NoticeBanner message="Si votre équipe n'apparaît pas dans la liste, veuillez contacter un administrateur" />
@@ -115,8 +123,8 @@ function Home() {
   }
 
   return (
-    <main className="h-screen flex items-center justify-center">
-      <AnimatePresence mode='wait'>
+    <main className="flex h-screen items-center justify-center">
+      <AnimatePresence mode="wait">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -125,24 +133,25 @@ function Home() {
         >
           <div className="flex flex-col items-center justify-center">
             <Link
-              className="transition-all mb-4 inline-flex items-center gap-1 bg-black border hover:bg-white hover:bg-opacity-10 py-1 pl-2 pr-3 text-sm font-normal rounded-full"
+              className="mb-4 inline-flex items-center gap-1 rounded-full border bg-black py-1 pl-2 pr-3 text-sm font-normal transition-all hover:bg-white hover:bg-opacity-10"
               href="http://tournoishaq.ca/"
               target="_blank"
             >
               <Logo size={18} />
               Tournois HAQ
             </Link>
-            <div className="flex flex-col gap-2 items-center">
-              <h1 className="text-center text-5xl font-bold tracking-tighter flex justify-end">
+            <div className="flex flex-col items-center gap-2">
+              <h1 className="flex justify-end text-center text-5xl font-bold tracking-tighter">
                 Aram Draft Pick
                 <p className="text-xs tracking-normal">v{appVersion}</p>
               </h1>
               <span className="text-center text-xs text-muted-foreground">
-                Système de Pick & Ban Personnalisé pour ARAM avec 30 Champions Partagés
+                Système de Pick & Ban Personnalisé pour ARAM avec 30 Champions
+                Partagés
               </span>
             </div>
           </div>
-          <div className='min-h-[400px] flex flex-col items-center justify-center' >
+          <div className="flex min-h-[400px] flex-col items-center justify-center">
             {renderContent()}
           </div>
         </motion.div>

@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import ExtendedImage from '@/app/components/common/ExtendedImage';
 import defaultTransition from '@/app/lib/animationConfig';
 import { Database } from '@/app/types/supabase';
-import { BorderAnimation } from './BorderAnimation';
 import clsx from 'clsx';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useMemo } from 'react';
+import { BorderAnimation } from './BorderAnimation';
 
-type Hero = Database["public"]["CompositeTypes"]["hero"];
+type Hero = Database['public']['CompositeTypes']['hero'];
 
 interface HeroSlotProps {
   hero: Hero;
@@ -14,7 +14,11 @@ interface HeroSlotProps {
   type: 'select' | 'ban';
 }
 
-export const HeroSlot: React.FC<HeroSlotProps> = ({ hero, isCurrentSlot, type }) => {
+export const HeroSlot: React.FC<HeroSlotProps> = ({
+  hero,
+  isCurrentSlot,
+  type,
+}) => {
   const isPick = type === 'select';
 
   const borderAnimation = useMemo(() => {
@@ -30,30 +34,34 @@ export const HeroSlot: React.FC<HeroSlotProps> = ({ hero, isCurrentSlot, type })
         'relative h-full w-full overflow-hidden bg-black bg-opacity-20',
         {
           'border-white border-opacity-0': hero.id && isPick,
-          'border border-zinc-400 border-opacity-5': !hero.id || !isPick || !hero.selected,
+          'border border-zinc-400 border-opacity-5':
+            !hero.id || !isPick || !hero.selected,
         }
       )}
     >
       {borderAnimation}
       {hero.id ? (
         <>
-          <p className={clsx(
-            'absolute z-50 w-full h-full flex justify-center font-semibold tracking-wide',
-            isPick ? 'text-center items-end pb-6 text-xs' : 'items-center text-xs'
-          )}>
+          <p
+            className={clsx(
+              'absolute z-50 flex h-full w-full justify-center font-semibold tracking-wide',
+              isPick
+                ? 'items-end pb-6 text-center text-xs'
+                : 'items-center text-xs'
+            )}
+          >
             {hero.name}
           </p>
-          {!isPick && (
-            hero.selected ? (
-              <div className='bg-zinc-950 opacity-25 z-40 absolute top-0 left-0 w-full h-full mix-blend-multiply'></div>
+          {!isPick &&
+            (hero.selected ? (
+              <div className="absolute left-0 top-0 z-40 h-full w-full bg-zinc-950 opacity-25 mix-blend-multiply"></div>
             ) : (
-              <div className='bg-red-500 z-40 opacity-30 absolute top-0 left-0 w-full h-full mix-blend-overlay'></div>
-            )
-          )}
-          <AnimatePresence mode='wait'>
+              <div className="absolute left-0 top-0 z-40 h-full w-full bg-red-500 opacity-30 mix-blend-overlay"></div>
+            ))}
+          <AnimatePresence mode="wait">
             <motion.div
               key={hero.id}
-              className='w-full h-full flex justify-center items-center'
+              className="flex h-full w-full items-center justify-center"
               initial={{ y: 5, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 2, opacity: 0 }}
@@ -72,32 +80,34 @@ export const HeroSlot: React.FC<HeroSlotProps> = ({ hero, isCurrentSlot, type })
 
 HeroSlot.displayName = 'HeroSlot';
 
-const HeroImage: React.FC<{ hero: Hero; type: 'select' | 'ban' }> = React.memo(({ hero, type }) => (
-  <motion.div
-    className={clsx('h-full w-full relative', {
-      'grayscale': type === 'ban',
-      'sepia': type === 'select' && !hero.selected,
-    })}
-    initial={{ scale: 1.25 }}
-    animate={{ scale: hero.selected ? 1 : 1.25 }}
-    transition={{ defaultTransition, duration: 0.6, ease: [1, -1, .5, 1.5] }}
-  >
-    {hero.id && (
-      <ExtendedImage
-        alt={hero.id}
-        type={type === 'select' ? "centered" : "tiles"}
-        fill
-        src={hero.id}
-        style={{ objectPosition: 'center', objectFit: 'cover' }}
-      />
-    )}
-  </motion.div>
-));
+const HeroImage: React.FC<{ hero: Hero; type: 'select' | 'ban' }> = React.memo(
+  ({ hero, type }) => (
+    <motion.div
+      className={clsx('relative h-full w-full', {
+        grayscale: type === 'ban',
+        sepia: type === 'select' && !hero.selected,
+      })}
+      initial={{ scale: 1.25 }}
+      animate={{ scale: hero.selected ? 1 : 1.25 }}
+      transition={{ defaultTransition, duration: 0.6, ease: [1, -1, 0.5, 1.5] }}
+    >
+      {hero.id && (
+        <ExtendedImage
+          alt={hero.id}
+          type={type === 'select' ? 'centered' : 'tiles'}
+          fill
+          src={hero.id}
+          style={{ objectPosition: 'center', objectFit: 'cover' }}
+        />
+      )}
+    </motion.div>
+  )
+);
 
 HeroImage.displayName = 'HeroImage';
 
 const EmptySelectedSlot: React.FC = React.memo(() => (
-  <div className="bg-neutral-950 bg-opacity-50 h-full w-full flex justify-center items-center">
+  <div className="flex h-full w-full items-center justify-center bg-neutral-950 bg-opacity-50">
     <svg
       width="32"
       height="33"

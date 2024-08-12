@@ -1,8 +1,3 @@
-import React, { useState, useCallback } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { CheckIcon, CopyIcon, X } from 'lucide-react';
-import Link from 'next/link';
-import clsx from 'clsx';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import {
@@ -13,8 +8,13 @@ import {
 } from '@/app/components/ui/tooltip';
 import defaultTransition from '@/app/lib/animationConfig';
 import { Database } from '@/app/types/supabase';
+import clsx from 'clsx';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CheckIcon, CopyIcon, X } from 'lucide-react';
+import Link from 'next/link';
+import React, { useCallback, useState } from 'react';
 
-type Room = Database["public"]["Tables"]["rooms"]["Row"];
+type Room = Database['public']['Tables']['rooms']['Row'];
 
 type TeamType = 'blue' | 'red' | 'spectator';
 
@@ -63,7 +63,7 @@ const CopyButton: React.FC<{ link: string }> = ({ link }) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger
-          className="bg-white text-black p-2.5"
+          className="bg-white p-2.5 text-black"
           onMouseLeave={() => setCopied(false)}
           onClick={handleCopyClick}
         >
@@ -92,10 +92,13 @@ const Display: React.FC<DisplayProps> = ({ team, roomId }) => {
   const path = getTeamPath(roomId, team);
   const fullLink = `${window.location.origin}${path}`;
 
-  const handleInputClick = useCallback((event: React.MouseEvent<HTMLInputElement>) => {
-    event.currentTarget.select();
-    copyToClipboard(fullLink);
-  }, [fullLink]);
+  const handleInputClick = useCallback(
+    (event: React.MouseEvent<HTMLInputElement>) => {
+      event.currentTarget.select();
+      copyToClipboard(fullLink);
+    },
+    [fullLink]
+  );
 
   return (
     <motion.div
@@ -111,13 +114,13 @@ const Display: React.FC<DisplayProps> = ({ team, roomId }) => {
             'bg-[#353535]': team.color === 'spectator',
           })}
         />
-        <label className='text-sm font-normal'>{team.name}</label>
+        <label className="text-sm font-normal">{team.name}</label>
       </div>
       <div className="flex flex-row items-center gap-2">
         <Input
           readOnly
           value={fullLink}
-          className='text-sm font-normal w-72'
+          className="w-72 text-sm font-normal"
           onClick={handleInputClick}
         />
         <Link href={path} target="_blank" passHref>
@@ -133,7 +136,7 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
   room,
   blueTeam,
   redTeam,
-  resetRoom
+  resetRoom,
 }) => {
   const spectatorTeam: SpectatorTeam = {
     name: 'Spectateur',
@@ -157,8 +160,14 @@ export const RoomDisplay: React.FC<RoomDisplayProps> = ({
               {'Rejoignez une chambre associée à votre équipe'}
             </p>
           </div>
-          <Button variant={'outline'} size={'sm'} onClick={() => { resetRoom(null) }}>
-            <X size={16} className='cursor-pointer' />
+          <Button
+            variant={'outline'}
+            size={'sm'}
+            onClick={() => {
+              resetRoom(null);
+            }}
+          >
+            <X size={16} className="cursor-pointer" />
           </Button>
         </div>
         <div className="flex w-full flex-col justify-center gap-4">

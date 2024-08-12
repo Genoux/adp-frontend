@@ -15,11 +15,11 @@ import {
   SelectValue,
 } from '@/app/components/ui/select';
 import { supabase } from '@/app/lib/supabase/client';
+import { Database } from '@/app/types/supabase'; // Adjust this import path as needed
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Database } from '@/app/types/supabase'; // Adjust this import path as needed
 
 // Define types using the generated Supabase types
 type Team = Database['public']['Tables']['registrations']['Row'];
@@ -55,10 +55,7 @@ export function InputSelect({ submit }: FormSelectProps) {
 
   useEffect(() => {
     async function fetchTeams() {
-
-      const { data, error } = await supabase
-      .from('registrations')
-      .select('*')
+      const { data, error } = await supabase.from('registrations').select('*');
 
       if (error) {
         console.error('Failed to fetch teams:', error);
