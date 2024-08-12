@@ -10,6 +10,7 @@ interface TeamState {
   currentTeamID: number | null;
   isLoading: boolean;
   error: Error | null;
+  notFoundError: string | null;
   currentSelection: string | null;
   fetchTeams: (roomID: number) => Promise<void>;
   setCurrentTeamID: (teamID: number) => Promise<void>;
@@ -76,53 +77,67 @@ const useTeamStore = create<TeamState>((set) => {
     currentTeamID: null,
     isLoading: false,
     error: null,
+    notFoundError: null,
     currentSelection: null,
 
     fetchTeams: async (roomID) => {
-      set({ isLoading: true, error: null });
+      set({ isLoading: true, error: null, notFoundError: null });
       try {
-        const { data: teams } = await supabase
+        const { data: teams, error } = await supabase
           .from('teams')
           .select('*')
           .eq('room_id', roomID);
-        if (teams) {
+
+        if (error) throw error;
+
+        if (teams && teams.length > 0) {
           await subscribeToTeams(teams);
-          set({ teams, isLoading: false });
+          set({ teams, isLoading: false, notFoundError: null });
+        } else {
+          set({ isLoading: false, notFoundError: 'Room or teams not found' });
         }
       } catch (error) {
-        throw new Error('Error fetching teams');
+        set({ error: error instanceof Error ? error : new Error('Error fetching teams'), isLoading: false });
       }
     },
 
     setCurrentTeamID: async (teamID) => {
+      set({ isLoading: true, error: null });
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('teams')
           .select('*')
           .eq('id', teamID)
           .single();
 
+        if (error) throw error;
+
         if (data) {
           set({ currentTeamID: data.id, isLoading: false });
+        } else {
+          set({ isLoading: false, notFoundError: 'Team not found' });
         }
       } catch (error) {
-        throw new Error('Error finding team for this room');
+        set({ error: error instanceof Error ? error : new Error('Error finding team for this room'), isLoading: false });
       }
     },
 
     updateTeam: async (teamID, updates: Partial<Team>) => {
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('teams')
           .update(updates)
           .eq('id', teamID)
           .select('*')
           .single();
+
+        if (error) throw error;
+
         if (data && data.is_turn) {
           handleTeamUpdate({ new: { id: teamID, ...updates } as Team } as RealtimePostgresUpdatePayload<Team>);
         }
       } catch (error) {
-        throw new Error('Error updating team');
+        set({ error: error instanceof Error ? error : new Error('Error updating team') });
       }
     },
 
