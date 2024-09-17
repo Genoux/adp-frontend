@@ -1,60 +1,92 @@
-import blurData from '@/app/data/blurhashes.json';
-import Image, { ImageProps } from 'next/image';
-import React from 'react';
+'use client';
 
-interface ExtendedImageProps extends Omit<ImageProps, 'src' | 'width' | 'height'> {
-  src: string;
-  type: 'tiles' | 'splash' | 'centered';
+import blurHashes from '@/app/data/blurhashes.json';
+import { useQuery } from '@tanstack/react-query';
+import { ImageOff } from 'lucide-react';
+import Image from 'next/image';
+import React from 'react';
+import { Blurhash } from 'react-blurhash';
+
+interface ExtendedImageProps {
+  heroId: string;
+  type: 'tiles' | 'centered';
+  size: 'small' | 'medium' | 'large' | 'default';
   alt: string;
-  params?: string;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL
-const CDN_URL = 'https://ddragon.leagueoflegends.com/cdn/img/champion';
+const DEFAULT_BLURHASH = 'LEHV6nWB2yk8pyo0adR*.7kCMdnj';
 
-type BlurDataType = Record<string, { dataURL: string }>;
+const fetchImageData = async (heroId: string) => {
+  const response = await fetch(`/api/image/${heroId}`);
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
 
 const ExtendedImage: React.FC<ExtendedImageProps> = ({
-  src,
+  heroId,
   type,
+  size,
   alt,
-  params = '',
   style,
-  ...props
+  className,
 }) => {
-  if (!src) return null;
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['image', heroId],
+    queryFn: () => fetchImageData(heroId),
+    staleTime: Infinity,
+  });
 
-  const imageUrl = `${BASE_URL}/${params}/${CDN_URL}/${type}/${src}_0.jpg`;
+  const [isImageLoaded, setIsImageLoaded] = React.useState(false);
 
-  const widthMatch = params.match(/w_(\d+)/);
-  const heightMatch = params.match(/h_(\d+)/);
-  const width = widthMatch ? parseInt(widthMatch[1]) : undefined;
-  const height = heightMatch ? parseInt(heightMatch[1]) : undefined;
+  const blurhash =
+    (blurHashes as Record<string, { hash: string }>)[heroId]?.hash ||
+    DEFAULT_BLURHASH;
 
-  const useFill = !width && !height;
-
-  const champData = (blurData as BlurDataType)[src];
+  const imageData = data?.imageUrls?.[type]?.[size];
+  const imageUrl = imageData?.url;
 
   return (
-    <Image
-      src={imageUrl}
-      alt={alt}
-      {...(useFill
-        ? { fill: true }
-        : { width: width || 100, height: height || 100 }
+    <div
+      className={`relative h-full w-full ${className || ''}`}
+      style={{ ...style }}
+    >
+      {error ? (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-2 border border-gray-500 bg-slate-700 px-2 opacity-25">
+          <ImageOff size={12} className="text-2xl text-gray-300" />
+          <p className="text-center text-[10px] text-gray-300">
+            {error.message}
+          </p>
+        </div>
+      ) : (
+        <>
+          <Blurhash
+            hash={blurhash}
+            width="100%"
+            height="100%"
+            resolutionX={32}
+            resolutionY={32}
+            punch={1}
+          />
+          {imageUrl && (
+            <Image
+              src={imageUrl}
+              alt={alt}
+              fill
+              style={{
+                objectFit: 'cover',
+                opacity: isImageLoaded ? 1 : 0,
+                transition: 'opacity 0.3s ease-in-out',
+              }}
+              onLoad={() => setIsImageLoaded(true)}
+            />
+          )}
+        </>
       )}
-      style={{
-        objectPosition: 'center',
-        objectFit: 'cover',
-        ...(useFill ? { position: 'absolute' } : {}),
-        ...style
-      }}
-      placeholder={champData?.dataURL ? 'blur' : 'empty'}
-      blurDataURL={champData?.dataURL}
-      priority
-      quality={80}
-      {...props}
-    />
+    </div>
   );
 };
 

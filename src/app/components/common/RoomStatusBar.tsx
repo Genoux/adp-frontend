@@ -1,6 +1,6 @@
 import ArrowAnimation from '@/app/components/common/ArrowAnimation';
 import Timer from '@/app/components/common/RoomTimer';
-import TeamName from '@/app/components/common/TeamName';
+import TeamName from '@/app/components/common/TeamName/TeamName';
 import useTeams from '@/app/hooks/useTeams';
 import defaultTransition from '@/app/lib/animationConfig';
 import useRoomStore from '@/app/stores/roomStore';
@@ -26,7 +26,7 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({ team, orientation }) => {
     >
       <div
         className={`flex items-center ${
-          orientation === 'right' ? 'flex-row-reverse ' : 'flex-row'
+          orientation === 'right' ? 'flex-row-reverse' : 'flex-row'
         }`}
       >
         <motion.div
@@ -43,7 +43,9 @@ const TeamIndicator: React.FC<TeamIndicatorProps> = ({ team, orientation }) => {
             orientation={orientation}
           />
         </motion.div>
-        <div className={`${!team.is_turn ? 'opacity-60' : null}`}>
+        <div
+          className={`${!team.is_turn && room!.cycle < 17 ? 'opacity-60' : null}`}
+        >
           <TeamName name={team.name} color={team.color} />
         </div>
       </div>

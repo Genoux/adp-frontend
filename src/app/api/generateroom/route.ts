@@ -17,7 +17,7 @@ const getLatestVersion = cache(async (): Promise<string> => {
     'https://ddragon.leagueoflegends.com/api/versions.json'
   );
   const versions = await response.json();
-  return versions[0]; // The first version in the array is the latest
+  return versions[0];
 });
 
 const fetchChampions = cache(async (): Promise<Hero[]> => {
@@ -37,8 +37,11 @@ function randomInt8() {
   return Math.floor(Math.random() * 256);
 }
 
-async function getRandomChampions(count: number): Promise<Hero[]> {
+async function getRandomChampions(count?: number): Promise<Hero[]> {
   const allChampions = await fetchChampions();
+
+  if (!count) return allChampions;
+
   const shuffledChampions = [...allChampions].sort(() => Math.random() - 0.5);
   return shuffledChampions.slice(0, count);
 }

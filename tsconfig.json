@@ -24,6 +24,8 @@
       "!/*": ["./public/*"]
     }
   },
+  "esModuleInterop": true,
+  "allowSyntheticDefaultImports": true,
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -31,7 +33,8 @@
     ".next/types/**/*.ts",
     "next.config.js",
     "postcss.config.js",
-    "tailwind.config.js"
+    "tailwind.config.js",
+    "prettier.config.cjs"
   ],
   "exclude": ["node_modules"]
 }
