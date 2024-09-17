@@ -77,13 +77,13 @@ const useRoomStore = create<RoomState>((set) => {
     fetchRoom: async (roomID: number) => {
       set({ isLoading: true, error: null });
       try {
-        const { data: room, error } = await supabase
+        const { data, error } = await supabase
           .from('rooms')
           .select('*')
           .eq('id', roomID)
           .single();
         if (error) throw error;
-        set({ room });
+        set({ room: data });
         await subscribeToRoom(roomID);
         set({ isLoading: false });
       } catch (error) {

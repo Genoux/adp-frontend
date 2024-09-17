@@ -1,4 +1,5 @@
 import { InputForm } from '@/app/components/forms/InputForm';
+import { InputSelect } from '@/app/components/forms/InputSelect';
 import defaultTransition from '@/app/lib/animationConfig';
 import { motion } from 'framer-motion';
 import React from 'react';
@@ -33,8 +34,11 @@ export const RoomCreationForm: React.FC<RoomCreationFormProps> = ({
             }
           </p>
         </div>
-        {/* <div className='hidden'>  <InputSelect submit={(data) => submit(data)} /></div> */}
-        <InputForm submit={(data) => submit(data)} />
+        {process.env.NEXT_PUBLIC_APP_MODE === 'tournament' ? (
+          <InputSelect submit={(data) => submit(data)} />
+        ) : (
+          <InputForm submit={(data) => submit(data)} />
+        )}
       </motion.div>
     </>
   );

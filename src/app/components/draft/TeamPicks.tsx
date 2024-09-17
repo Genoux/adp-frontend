@@ -14,7 +14,12 @@ const TeamPicks: React.FC<{ team: Team }> = ({ team }) => {
   const { currentTeam } = useTeams();
   const { isCurrentSlot } = useSelectionAnimation(room, team, 'select');
 
-  const opacity = currentTeam?.is_turn || currentTeam === undefined ? 1 : 0.8;
+  const opacity =
+    currentTeam?.is_turn ||
+    currentTeam === undefined ||
+    (room?.cycle ?? 0) >= 17
+      ? 1
+      : 0.8;
 
   if (!room || !team) return null;
 

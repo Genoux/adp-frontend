@@ -5,6 +5,7 @@ import React from 'react';
 
 interface BorderAnimationProps {
   type: 'ban' | 'select';
+  isVisible: boolean;
 }
 
 const className = {
@@ -12,14 +13,20 @@ const className = {
   select: 'border-yellow from-yellow to-transparent glow-yellow',
 };
 
-export const BorderAnimation: React.FC<BorderAnimationProps> = ({ type }) => {
+export const BorderAnimation: React.FC<BorderAnimationProps> = ({
+  type,
+  isVisible,
+}) => {
   return (
     <AnimatePresence mode="wait">
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ defaultTransition, delay: 1, duration: 0.5 }}
-        exit={{ opacity: 0 }}
+        animate={{ opacity: isVisible ? 1 : 0 }}
+        transition={{
+          ...defaultTransition,
+          delay: isVisible ? 1 : 0,
+          duration: 0.5,
+        }}
       >
         <motion.div
           className={clsx(

@@ -23,14 +23,14 @@ const SelectionsView = () => {
 
   return (
     <>
-      {currentHero && (turnTeam || isSpectator) && (
-        <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait">
+        {currentHero && (turnTeam || isSpectator) && (
           <motion.div
             key={currentHero.id}
-            initial={{ y: 5, opacity: 0 }}
-            animate={{ y: 5, opacity: 1}}
-            transition={{ duration: .2, defaultTransition }}
-            exit={{ y: 2, opacity: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ ...defaultTransition, duration: 0.2 }}
+            exit={{ opacity: 0, transition: defaultTransition }}
             className={clsx('fixed top-0 -z-10 h-full w-3/12', {
               'fade-gradient-left left-0':
                 isSpectator || turnTeam?.color === 'blue',
@@ -38,17 +38,17 @@ const SelectionsView = () => {
                 !isSpectator && turnTeam?.color === 'red',
             })}
           >
-            <ExtendedImage
-              src={currentHero.id || ''}
-              alt={currentHero.id || ''}
-              priority
-              params='w_500,h_720,c_1,q_60'
-              style={{ objectPosition: 'center', objectFit: 'cover', width: '100%', height: '100%' }}
-              type="centered"
-            />
+            {currentHero.id && (
+              <ExtendedImage
+                heroId={currentHero.id}
+                type="centered"
+                size="large"
+                alt={currentHero.id}
+              />
+            )}
           </motion.div>
-        </AnimatePresence>
-      )}
+        )}
+      </AnimatePresence>
       {room!.status === 'ban' && (
         <motion.div
           initial={{ opacity: 0 }}

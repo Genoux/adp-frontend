@@ -14,6 +14,29 @@ type Hero = Database['public']['CompositeTypes']['hero'];
 
 const DEBOUNCE_TIME = 50; // ms
 
+// New BorderAnimation component
+const BorderAnimation: React.FC<{
+  isVisible: boolean;
+  type: 'ban' | 'select';
+}> = ({ isVisible, type }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isVisible ? 1 : 0 }}
+      transition={defaultTransition}
+      className={clsx(
+        'absolute left-0 top-0 z-40 h-full w-full bg-gradient-to-t',
+        {
+          'glow-red border border-red-700 from-red to-transparent':
+            type === 'ban',
+          'border border-yellow from-yellow-transparent to-transparent':
+            type === 'select',
+        }
+      )}
+    />
+  );
+};
+
 const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   const { room } = useRoomStore();
   const { currentTeam } = useTeams();
@@ -27,7 +50,10 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   const [hoveredHero, setHoveredHero] = useState<string | null>(null);
 
   const opacity =
-    (currentTeam?.is_turn || isSpectator) && room?.status !== 'planning'
+    isSpectator ||
+    room?.status === 'planning' ||
+    currentTeam?.is_turn ||
+    (room?.cycle ?? 0) >= 17
       ? 1
       : 0.8;
 
@@ -36,11 +62,7 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
   }
 
   const debouncedSetHoveredHero = useMemo(
-    () =>
-      debounce(
-        (heroID: string | null) => setHoveredHero(heroID),
-        DEBOUNCE_TIME
-      ),
+    () => debounce((heroID: string | null) => setHoveredHero(heroID), 25),
     []
   );
 
@@ -90,72 +112,69 @@ const ChampionsPool = React.memo(({ className }: { className?: string }) => {
         const isSelected = hero.id === currentHero?.id && currentTeam?.is_turn;
         const isHovered = hero.id === hoveredHero;
         return (
-          <motion.div
-            key={hero.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: 0.4,
-              delay: 0.01 * index,
-              defaultTransition,
-            }}
-            className={clsx('relative overflow-hidden', {
-              'pointer-events-none grayscale': hero.selected,
-              'cursor-pointer': canInteract || isSpectator,
-            })}
-            onClick={() => canInteract && debouncedHandleClickedHero(hero)}
-            onMouseEnter={() => handleHoveredHero(hero.id)}
-            onMouseLeave={() => handleHoveredHero(null)}
-          >
-            {isHovered && !isSelected && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={defaultTransition}
-                className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
-              >
-                <p className="flex h-full w-full items-center justify-center text-center text-xs font-bold">
-                  {hero.name}
-                </p>
-              </motion.div>
-            )}
-            {isSelected && !isSpectator && (
-              <motion.div
-                className={clsx(
-                  'absolute left-0 top-0 z-50 h-full w-full overflow-hidden bg-gradient-to-t',
-                  {
-                    'glow-red border-2 border-red-700 from-red to-transparent':
-                      room.status === 'ban',
-                    'border border-yellow from-yellow-transparent to-transparent':
-                      room.status === 'select',
-                  }
-                )}
-              >
-                <p className="flex h-full w-full items-center justify-center text-center text-xs font-semibold">
-                  {hero.name}
-                </p>
-              </motion.div>
-            )}
+          <div key={hero.id}>
             <motion.div
-              animate={{
-                scale: isHovered && !isSelected ? 1.2 : 1,
+              key={hero.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: 0.4,
+                delay: 0.01 * index,
+                defaultTransition,
               }}
-              transition={defaultTransition}
-              className="relative overflow-hidden"
+              className={clsx('relative aspect-square overflow-hidden', {
+                'pointer-events-none grayscale': hero.selected,
+                'cursor-pointer': canInteract || isSpectator,
+              })}
+              onClick={() => canInteract && debouncedHandleClickedHero(hero)}
+              onMouseEnter={() => handleHoveredHero(hero.id)}
+              onMouseLeave={() => handleHoveredHero(null)}
             >
-              {hero.id && (
-                <ExtendedImage
-                  alt={hero.id}
-                  params='w_250,h_250,q_50'
-                  priority
-                  type="tiles"
-                  src={hero.id}
-                />
+              {isHovered && !isSelected && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={defaultTransition}
+                  className="absolute left-0 top-0 z-20 h-full w-full bg-gray-900 bg-opacity-70"
+                >
+                  <p className="flex h-full w-full items-center justify-center text-center text-xs font-bold">
+                    {hero.name}
+                  </p>
+                </motion.div>
               )}
+
+              <BorderAnimation
+                isVisible={!!(isSelected && !isSpectator)}
+                type={room.status as 'ban' | 'select'}
+              />
+              {isSelected && !isSpectator && (
+                <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center">
+                  <p className="text-center text-xs font-semibold">
+                    {hero.name}
+                  </p>
+                </div>
+              )}
+              <motion.div
+                animate={{
+                  scale: isHovered && !isSelected ? 1.2 : 1,
+                }}
+                transition={defaultTransition}
+                className="relative overflow-hidden"
+              >
+                {hero.id && (
+                  <ExtendedImage
+                    heroId={hero.id}
+                    type="tiles"
+                    size="default"
+                    alt={hero.id}
+                    className="aspect-square"
+                  />
+                )}
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         );
       })}
     </motion.div>

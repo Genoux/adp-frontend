@@ -1,15 +1,14 @@
 'use client';
 
-import ExtendedImage from '@/app/components/common/ExtendedImage';
 import LoadingScreen from '@/app/components/common/LoadingScreen';
 import NoticeBanner from '@/app/components/common/NoticeBanner';
 import RoomStatusBar from '@/app/components/common/RoomStatusBar';
 import StateControllerButtons from '@/app/components/common/StateControllerButtons';
 import DraftView from '@/app/components/DraftView';
 import FinishView from '@/app/components/FinishView';
-import LobbyView from '@/app/components/LobbyView';
 import PlanningView from '@/app/components/PlanningView';
 import SelectionsView from '@/app/components/SelectionsView';
+import LobbyView from '@/app/components/views/lobby/LobbyView';
 import useSocket from '@/app/hooks/useSocket';
 import defaultTransition from '@/app/lib/animationConfig';
 import useRoomStore from '@/app/stores/roomStore';
@@ -20,24 +19,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { notFound } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
-type Hero = Database['public']['CompositeTypes']['hero'];
-type RoomProps = { params: { roomid: string; teamid: string } };
+type Room = Database['public']['Tables']['rooms']['Row'];
 
-const Preload = ({ champions }: { champions: Hero[] }) => (
-  <>
-    {champions.map((champ) => (
-      <ExtendedImage
-        key={champ.id}
-        rel="preload"
-        src={champ.id || ''}
-        alt={champ.id || ''}
-        type="centered"
-        params='w_500,h_720,c_1,q_60'
-        className="invisible hidden"
-      />
-    ))}
-  </>
-);
+type RoomProps = { params: { roomid: string; teamid: string } };
 
 const useRoomInitialization = (roomID: number, teamID: number) => {
   const { isConnected } = useSocket(roomID);
@@ -114,7 +98,8 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
       socket.emit('joinTeam', { teamId: currentTeam.id });
     }
   }, [isConnected, currentTeam, socket]);
-
+  
+  // TODO: Fix missing notFound
   useEffect(() => {
     if (!isInitialLoading && (!room || !currentTeam)) {
       socket?.disconnect();
@@ -131,14 +116,13 @@ export default function Room({ params: { roomid, teamid } }: RoomProps) {
 
   const ViewComponent =
     viewComponents[
-      (['ban', 'select'].includes(room.status)
+      (['ban', 'select'].includes(room!.status)
         ? 'draft'
-        : room.status) as keyof typeof viewComponents
+        : room!.status) as keyof typeof viewComponents
     ];
 
   return (
     <main>
-      <Preload champions={room.heroes_pool as Hero[]} />
       {process.env.NODE_ENV === 'development' && (
         <StateControllerButtons roomID={roomID} />
       )}

@@ -3,7 +3,10 @@ const nextConfig = {
   reactStrictMode: false,
   images: {
     unoptimized: true,
-    domains: ['ddragon.leagueoflegends.com'], // Add the domain for your CDN
+    domains: [
+      'ddragon.leagueoflegends.com',
+      'sunny-reprieve-production.up.railway.app',
+    ],
   },
 };
 

@@ -46,8 +46,6 @@ function Home() {
   const [room, setRoom] = useState<Room | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const appState = process.env.NEXT_PUBLIC_APP_STATE;
-  const appMode = process.env.NEXT_PUBLIC_APP_MODE;
 
   const createRoom = async (data: TeamsName) => {
     setLoading(true);
@@ -106,14 +104,14 @@ function Home() {
     return (
       <div className="flex flex-col items-center justify-start gap-6">
         <RoomCreationForm submit={createRoom} />
-        {appMode === 'tournament' && (
+        {process.env.NEXT_PUBLIC_APP_MODE === 'tournament' && (
           <NoticeBanner message="Si votre équipe n'apparaît pas dans la liste, veuillez contacter un administrateur" />
         )}
       </div>
     );
   };
 
-  if (appState === 'false') {
+  if (process.env.NEXT_PUBLIC_APP_STATE === 'false') {
     return (
       <div className="flex h-full animate-pulse flex-col items-center justify-center gap-2">
         <BedDouble className="h-6 w-6" />

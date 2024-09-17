@@ -4,6 +4,7 @@ import { Toaster } from '@/app/components/ui/toaster';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistSans } from 'geist/font/sans';
+import { TanstackProvider } from './TanstackProvider';
 
 export const metadata = {
   title: 'HAQ - Aram draft pick',
@@ -34,12 +35,14 @@ export default function RootLayout({
       <body
         className={`${GeistSans.className} mx-auto min-w-[1024px] overflow-x-hidden bg-zinc-950`}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          {children}
-          <Toaster />
-          <SpeedInsights />
-          <Analytics />
-        </ThemeProvider>
+        <TanstackProvider>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+            {children}
+            <Toaster />
+            <SpeedInsights />
+            <Analytics />
+          </ThemeProvider>
+        </TanstackProvider>
       </body>
     </html>
   );

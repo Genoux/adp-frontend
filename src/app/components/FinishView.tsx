@@ -1,5 +1,5 @@
 import ExtendedImage from '@/app/components/common/ExtendedImage';
-import TeamName from '@/app/components/common/TeamName';
+import TeamName from '@/app/components/common/TeamName/TeamName';
 import useTeams from '@/app/hooks/useTeams';
 import defaultTransition from '@/app/lib/animationConfig';
 import { Database } from '@/app/types/supabase';
@@ -26,7 +26,7 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
     }}
     className="relative h-full w-full overflow-hidden"
   >
-    <div className="absolute bottom-0 left-0 z-50 flex h-full w-full items-end justify-center bg-gradient-to-t from-[#00000096] via-transparent to-[#0000004d] pb-6 text-center">
+    <div className="absolute bottom-0 left-0 z-50 flex h-full w-full items-end justify-center pb-6 text-center">
       <p className="xl:text-md text-sm font-bold uppercase">{hero.name}</p>
     </div>
     <div
@@ -40,10 +40,10 @@ const HeroDisplay = ({ hero, animationDelay }: HeroDisplayProps) => (
     >
       {hero.id && (
         <ExtendedImage
-          src={hero.id}
+          heroId={hero.id}
           alt={hero.id}
           type="centered"
-          params='w_500,h_720,c_1,q_60'
+          size='large'
           style={{ objectFit: 'cover', width: '100%', height: '100%' }}
           className="w-full"
         />

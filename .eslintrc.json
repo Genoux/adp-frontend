@@ -7,11 +7,21 @@
     },
     "ecmaVersion": 2023,
     "sourceType": "module",
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.eslint.json"
   },
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-asserted-optional-chain": "off"
     // Your custom rules here
-  }
+  },
+  "ignorePatterns": ["prettier.config.cjs"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {
+        // TypeScript-specific rules can go here
+      }
+    }
+  ]
 }

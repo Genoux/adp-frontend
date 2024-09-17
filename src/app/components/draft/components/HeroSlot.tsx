@@ -3,7 +3,7 @@ import defaultTransition from '@/app/lib/animationConfig';
 import { Database } from '@/app/types/supabase';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { BorderAnimation } from './BorderAnimation';
 
 type Hero = Database['public']['CompositeTypes']['hero'];
@@ -21,13 +21,6 @@ export const HeroSlot: React.FC<HeroSlotProps> = ({
 }) => {
   const isPick = type === 'select';
 
-  const borderAnimation = useMemo(() => {
-    if (isCurrentSlot) {
-      return <BorderAnimation type={type} />;
-    }
-    return null;
-  }, [isCurrentSlot, type]);
-
   return (
     <motion.div
       className={clsx(
@@ -39,7 +32,7 @@ export const HeroSlot: React.FC<HeroSlotProps> = ({
         }
       )}
     >
-      {borderAnimation}
+      <BorderAnimation type={type} isVisible={isCurrentSlot} />
       {hero.id ? (
         <>
           <p
@@ -62,10 +55,10 @@ export const HeroSlot: React.FC<HeroSlotProps> = ({
             <motion.div
               key={hero.id}
               className="flex h-full w-full items-center justify-center"
-              initial={{ y: 5, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 2, opacity: 0 }}
-              transition={{ defaultTransition }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ defaultTransition, duration: 0.2 }}
             >
               <HeroImage hero={hero} type={type} />
             </motion.div>
@@ -95,9 +88,14 @@ const HeroImage: React.FC<{ hero: Hero; type: 'select' | 'ban' }> = React.memo(
         <ExtendedImage
           alt={hero.id}
           type={type === 'select' ? 'centered' : 'tiles'}
-          params={type === 'select' ? 'w_500,h_720,c_1,q_60' : 'w_250,h_150,q_50,c_1'}
-          src={hero.id}
-          style={{ objectPosition: 'center', objectFit: 'cover', width: '100%', height: '100%' }}
+          size="default"
+          heroId={hero.id}
+          style={{
+            objectPosition: 'center',
+            objectFit: 'cover',
+            width: '100%',
+            height: '100%',
+          }}
         />
       )}
     </motion.div>
