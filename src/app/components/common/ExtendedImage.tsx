@@ -37,7 +37,7 @@ const ExtendedImage: React.FC<ExtendedImageProps> = ({
   const { data, error, isLoading } = useQuery({
     queryKey: ['image', heroId],
     queryFn: () => fetchImageData(heroId),
-    staleTime: Infinity,
+    staleTime: 14 * 24 * 60 * 60 * 1000
   });
 
   const [isImageLoaded, setIsImageLoaded] = React.useState(false);
