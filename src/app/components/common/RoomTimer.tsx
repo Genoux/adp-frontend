@@ -43,11 +43,7 @@ const Timer = ({ className }: { className?: string }) => {
         >
           <div>
             <p className={clsx('mx-auto w-fit text-4xl font-bold', className)}>
-              {room && room.cycle < 17 ? (
-                timer || '\u00A0'
-              ) : (
-                <span className="invisible">00:00</span>
-              )}
+              {timer || '\u00A0'}
             </p>
           </div>
         </motion.div>
