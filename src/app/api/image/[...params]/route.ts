@@ -7,11 +7,11 @@ const DEFAULT_BLURHASH = 'LEHV6nWB2yk8pyo0adR*.7kCMdnj';
 
 const PREDEFINED_SIZES = {
   tiles: {
-    default: { width: 150, height: 150, quality: 80 },
+    default: { width: 250, height: 250, quality: 80 },
   },
   centered: {
-    default: { width: 400, height: 720, quality: 80 },
-    large: { width: 1215, height: 720, quality: 60 },
+    default: { width: 1000, height: 1000, quality: 90 },
+    large: { width: 1280, height: 720, quality: 100 },
   },
 };
 
