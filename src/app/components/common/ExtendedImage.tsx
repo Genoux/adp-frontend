@@ -69,7 +69,7 @@ const ExtendedImage: React.FC<ExtendedImageProps> = ({
             height="100%"
             resolutionX={32}
             resolutionY={32}
-            punch={1}
+            punch={0}
           />
           {imageUrl && (
             <Image

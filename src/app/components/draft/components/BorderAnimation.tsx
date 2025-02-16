@@ -24,8 +24,7 @@ export const BorderAnimation: React.FC<BorderAnimationProps> = ({
         animate={{ opacity: isVisible ? 1 : 0 }}
         transition={{
           ...defaultTransition,
-          delay: isVisible ? 1 : 0,
-          duration: 0.5,
+          duration: 0.8,
         }}
       >
         <motion.div

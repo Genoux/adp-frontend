@@ -6,7 +6,7 @@ import useRoomStore from '@/app/stores/roomStore';
 import useTeamStore from '@/app/stores/teamStore';
 import { Database } from '@/app/types/supabase';
 import clsx from 'clsx';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -20,10 +20,11 @@ const BorderAnimation: React.FC<{
   type: 'ban' | 'select';
 }> = ({ isVisible, type }) => {
   return (
+    <AnimatePresence mode='wait'>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: isVisible ? 1 : 0 }}
-      transition={defaultTransition}
+      transition={{defaultTransition, duration: 0.25}}
       className={clsx(
         'absolute left-0 top-0 z-40 h-full w-full bg-gradient-to-t',
         {
@@ -33,7 +34,8 @@ const BorderAnimation: React.FC<{
             type === 'select',
         }
       )}
-    />
+      />
+      </AnimatePresence>
   );
 };
 
