@@ -22,19 +22,42 @@ const ConfirmButton: React.FC = () => {
   const currentHero = useCurrentHero();
 
   const handleConfirmSelection = useCallback(async () => {
-    if (!currentTeam?.can_select || !room) return;
+    if (!currentTeam?.can_select || !room) {
+      console.log('Cannot select: team not ready or room not available');
+      return;
+    }
+    
     try {
+      console.log(`Confirming selection for room ${room.id}, team ${currentTeam.id}`);
+      
+      // Update team state in database first
       const { data, error } = await supabase
         .from('teams')
         .update({ can_select: false })
         .eq('id', currentTeam.id)
         .select('*');
-      if (error) throw error;
+        
+      if (error) {
+        console.error('Database update error:', error);
+        throw error;
+      }
+      
       if (data) {
+        console.log('Team updated successfully, emitting SELECT_CHAMPION event');
         socket?.emit('SELECT_CHAMPION', { roomid: room.id });
       }
     } catch (error) {
       console.error('Error confirming selection:', error);
+      
+      // Reset team state on error
+      try {
+        await supabase
+          .from('teams')
+          .update({ can_select: true })
+          .eq('id', currentTeam.id);
+      } catch (resetError) {
+        console.error('Error resetting team state:', resetError);
+      }
     }
   }, [currentTeam, room, socket]);
 
