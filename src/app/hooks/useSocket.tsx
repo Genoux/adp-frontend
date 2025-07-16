@@ -22,7 +22,7 @@ export default function useSocket(
   useEffect(() => {
     if (!socket && roomid) {
       const socketServerUrl =
-        process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:1313';
+        process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:4000';
       socket = io(socketServerUrl);
 
       const tryConnect = () => {
@@ -46,6 +46,7 @@ export default function useSocket(
       });
 
       socket.on('disconnect', () => {
+        console.log('Disconnected from server');
         forceUpdate({}); // Force a re-render to update the UI
       });
 
@@ -54,6 +55,22 @@ export default function useSocket(
         if (!retryInterval) {
           retryInterval = setInterval(tryConnect, 2000);
         }
+      });
+
+      // Handle server messages
+      socket.on('message', (message: string) => {
+        console.log('Server message:', message);
+      });
+
+      // Handle server errors
+      socket.on('error', (error: string) => {
+        console.error('Server error:', error);
+      });
+
+      // Handle timer updates for admin/inspector
+      socket.on('timerUpdate', (data: any) => {
+        console.log('Timer update:', data);
+        // This is mainly for admin/inspector, not critical for regular users
       });
     }
 
@@ -66,9 +83,15 @@ export default function useSocket(
     }
 
     return () => {
+      // Clean up custom event handlers
       handlers.eventHandlers?.forEach(({ eventName, eventHandler }) => {
         socket?.off(eventName, eventHandler);
       });
+      
+      // Clean up built-in event handlers
+      socket?.off('message');
+      socket?.off('error');
+      socket?.off('timerUpdate');
     };
   }, [roomid, handlers.eventHandlers]);
 
