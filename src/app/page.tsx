@@ -9,7 +9,7 @@ import defaultTransition from '@/app/lib/animationConfig';
 import { Database } from '@/app/types/supabase';
 import { appVersion } from '@/app/utils/version';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Logo } from 'haq-assets';
+import Logo from '@/components/Logo';
 import { BedDouble } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
