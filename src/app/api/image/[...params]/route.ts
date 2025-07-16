@@ -1,7 +1,6 @@
 import blurHashes from '@/app/data/blurhashes.json';
 import { NextRequest, NextResponse } from 'next/server';
 
-const BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
 const CDN_URL = 'https://ddragon.leagueoflegends.com/cdn/img/champion';
 const DEFAULT_BLURHASH = 'LEHV6nWB2yk8pyo0adR*.7kCMdnj';
 
@@ -16,7 +15,7 @@ const PREDEFINED_SIZES = {
 };
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { params: string[] } }
 ) {
   if (!Array.isArray(params.params)) {
@@ -38,10 +37,10 @@ export async function GET(
   for (const [type, sizes] of Object.entries(PREDEFINED_SIZES)) {
     imageUrls[type] = {};
     for (const [sizeName, size] of Object.entries(sizes)) {
+      // Serve directly from ddragon CDN
       const cdnImageUrl = `${CDN_URL}/${type}/${heroId}_0.jpg`;
-      const params = `w_${size.width},h_${size.height},q_${size.quality}`;
       imageUrls[type][sizeName] = {
-        url: `${BASE_URL}/upload/${params}/${encodeURIComponent(cdnImageUrl)}`,
+        url: cdnImageUrl,
         width: size.width,
         height: size.height,
       };
