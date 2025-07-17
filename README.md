@@ -46,8 +46,9 @@ Socket.IO Client    Socket.IO Server
 
 ### Room Creation
 
-![Room Creation](https://github.com/Genoux/adp-frontend/tree/main/public/room.png)
+<img width="3022" height="1692" alt="room" src="https://github.com/user-attachments/assets/baf259dd-b7b1-418b-9346-83ce423b7b95" />
 
 ### Planning Phase
 
-![Planning Phase](https://github.com/Genoux/adp-frontend/tree/main/public/planning.png)
+<img width="2981" height="1657" alt="planning" src="https://github.com/user-attachments/assets/0fa9f8e0-4627-42f6-8bcc-d1dd65a78074" />
+
