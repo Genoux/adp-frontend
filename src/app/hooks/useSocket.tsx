@@ -51,7 +51,6 @@ export default function useSocket(
       });
 
       socket.on('connect_error', () => {
-        console.error('Connection failed. Retrying in a few seconds...');
         if (!retryInterval) {
           retryInterval = setInterval(tryConnect, 2000);
         }
@@ -65,12 +64,6 @@ export default function useSocket(
       // Handle server errors
       socket.on('error', (error: string) => {
         console.error('Server error:', error);
-      });
-
-      // Handle timer updates for admin/inspector
-      socket.on('timerUpdate', (data: any) => {
-        console.log('Timer update:', data);
-        // This is mainly for admin/inspector, not critical for regular users
       });
     }
 
@@ -87,11 +80,10 @@ export default function useSocket(
       handlers.eventHandlers?.forEach(({ eventName, eventHandler }) => {
         socket?.off(eventName, eventHandler);
       });
-      
+
       // Clean up built-in event handlers
       socket?.off('message');
       socket?.off('error');
-      socket?.off('timerUpdate');
     };
   }, [roomid, handlers.eventHandlers]);
 
