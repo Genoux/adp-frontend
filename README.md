@@ -1,34 +1,53 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ARAM Draft Pick (ADP)
 
-## Getting Started
+A real-time draft application for League of Legends ARAM matches, enabling teams to strategically pick and ban champions in a competitive format.
 
-First, run the development server:
+## 🚀 Live Demo
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+**Live Application:** [https://haq-draft.vercel.app](https://haq-draft.vercel.app)
+
+## 📖 Overview
+
+ADP transforms casual ARAM games into strategic draft experiences with:
+
+- **Real-time multiplayer drafting** with Socket.IO
+- **Team-based champion selection** with pick/ban phases
+- **Live timer management** for each draft phase
+- **Responsive UI** built with Next.js and Tailwind CSS
+- **Champion data integration** from Riot Games API
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js 14, TypeScript, Tailwind CSS
+- **Backend:** Node.js, Express, Socket.IO
+- **Database:** Supabase (PostgreSQL)
+- **Deployment:** Vercel (frontend), Fly.io (backend)
+- **State Management:** Zustand
+- **Real-time:** Socket.IO WebSocket connections
+
+## 🎯 Key Features
+
+- **Room Creation:** Generate unique draft rooms for teams
+- **Live Drafting:** Real-time pick/ban phases with turn timers
+- **Champion Pool:** Browse and select from League of Legends champions
+- **Team Management:** 2-team draft with spectator mode
+- **Responsive Design:** Mobile-friendly interface
+- **Error Handling:** Robust connection retry logic
+
+## 🏗️ Architecture
+
+```text
+Frontend (Next.js) ←→ Backend (Node.js) ←→ Database (Supabase)
+     ↓                    ↓
+Socket.IO Client    Socket.IO Server
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📱 Screenshots
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Room Creation
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+![Room Creation](https://github.com/Genoux/adp-frontend/tree/main/public/room.png)
 
-## Learn More
+### Planning Phase
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+![Planning Phase](https://github.com/Genoux/adp-frontend/tree/main/public/planning.png)
