@@ -52,3 +52,8 @@ Socket.IO Client    Socket.IO Server
 
 <img width="2981" height="1657" alt="planning" src="https://github.com/user-attachments/assets/0fa9f8e0-4627-42f6-8bcc-d1dd65a78074" />
 
+### Draft Phase
+
+<img width="3019" height="1723" alt="CleanShot 2025-07-17 at 11 44 10@2x" src="https://github.com/user-attachments/assets/2bd87168-02be-4ad7-af67-f773a85f8913" />
+
+
